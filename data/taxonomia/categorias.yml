@@ -1,0 +1,275 @@
+# Taxonomia de Pautas ZIL
+# Este arquivo define as categorias temáticas do Manifesto ZIL
+# usadas para classificar proposições e votações do Congresso.
+#
+# Cada categoria inclui:
+#   - codigo: identificador único
+#   - nome: nome legível
+#   - descricao: o que a categoria cobre
+#   - keywords: palavras-chave para classificação automática (baseline)
+#   - exemplos_positivos: votações que seriam "pró-soberania"
+#   - exemplos_negativos: votações que seriam "contra soberania"
+
+categorias:
+  - codigo: ZIL-FER
+    nome: Fertilizantes
+    descricao: >
+      Produção nacional de fertilizantes, redução de dependência de
+      importação, Plano Nacional de Fertilizantes, biofertilizantes,
+      segurança alimentar via insumos nacionais.
+    keywords:
+      - fertilizante
+      - fertilizantes
+      - potássio
+      - fosfato
+      - nitrogênio
+      - NPK
+      - Embrapa
+      - PNF
+      - Plano Nacional de Fertilizantes
+      - Autazes
+      - Santa Quitéria
+      - biofertilizante
+      - remineralizador
+      - adubação
+      - nutrição vegetal
+      - potassa
+    exemplos_positivos:
+      - Aumento de investimento em produção nacional de fertilizantes
+      - Incentivos fiscais para indústria de fertilizantes no Brasil
+      - Financiamento para projetos como Autazes e Santa Quitéria
+    exemplos_negativos:
+      - Redução de tarifas de importação de fertilizantes sem contrapartida
+      - Fechamento ou privatização de fábricas de fertilizantes
+
+  - codigo: ZIL-MIN
+    nome: Minerais Estratégicos
+    descricao: >
+      Nióbio, terras raras, lítio, grafite e outros minerais críticos.
+      Processamento local, restrições à exportação de brutos,
+      transferência tecnológica em parcerias estrangeiras.
+    keywords:
+      - nióbio
+      - niobio
+      - terras raras
+      - terras-raras
+      - lítio
+      - litio
+      - grafite
+      - mineral crítico
+      - minerais críticos
+      - mineral estratégico
+      - minerais estratégicos
+      - CBMM
+      - ferroniobio
+      - ferroniobium
+      - beneficiamento mineral
+      - cadeia mineral
+      - processamento mineral
+    exemplos_positivos:
+      - Exigência de processamento local antes de exportação
+      - Classificação de minerais como ativo de segurança nacional
+      - Transferência tecnológica obrigatória em parcerias minerais
+    exemplos_negativos:
+      - Flexibilização de exportação de minério bruto sem beneficiamento
+      - Concessões minerais sem requisitos de valor agregado local
+
+  - codigo: ZIL-SEM
+    nome: Semicondutores
+    descricao: >
+      Cadeia nacional de semicondutores, design de chips,
+      empacotamento, PADIS, Brasil Semicon, formação de
+      engenheiros em microeletrônica.
+    keywords:
+      - semicondutor
+      - semicondutores
+      - chip
+      - chips
+      - microeletrônica
+      - microeletronica
+      - Padis
+      - Brasil Semicon
+      - RISC-V
+      - circuito integrado
+      - wafer
+      - foundry
+      - fabless
+      - Ceitec
+      - empacotamento de chips
+    exemplos_positivos:
+      - Investimento em fábricas de semicondutores no Brasil
+      - Extensão de incentivos fiscais para indústria de chips
+      - Programas de formação em microeletrônica
+    exemplos_negativos:
+      - Liquidação de empresas públicas de semicondutores
+      - Redução de incentivos para P&D em microeletrônica
+
+  - codigo: ZIL-ENE
+    nome: Energia e Transição
+    descricao: >
+      Pré-sal, hidrogênio verde, cadeia de baterias, etanol,
+      fundo soberano com receita petroleira, transição energética
+      com industrialização.
+    keywords:
+      - pré-sal
+      - pre-sal
+      - hidrogênio verde
+      - hidrogenio verde
+      - bateria
+      - baterias
+      - Petrobras
+      - etanol
+      - biocombustível
+      - biocombustivel
+      - renovável
+      - renovavel
+      - fundo soberano
+      - energia solar
+      - energia eólica
+      - energia eolica
+      - transição energética
+    exemplos_positivos:
+      - Criação de fundo soberano com receita do pré-sal
+      - Investimento em cadeia de baterias nacional
+      - Programas de hidrogênio verde
+    exemplos_negativos:
+      - Privatização de ativos estratégicos da Petrobras
+      - Venda de refinarias sem contrapartida industrial
+
+  - codigo: ZIL-DIG
+    nome: Soberania Digital
+    descricao: >
+      Proteção de dados, telecomunicações soberanas, satélites
+      brasileiros, regulação de plataformas estrangeiras,
+      fibra óptica na Amazônia.
+    keywords:
+      - Starlink
+      - dados pessoais
+      - LGPD
+      - satélite
+      - satelite
+      - fibra óptica
+      - fibra optica
+      - 5G
+      - soberania digital
+      - proteção de dados
+      - telecomunicação
+      - telecomunicacao
+      - plataforma digital
+      - regulação digital
+    exemplos_positivos:
+      - Investimento em infraestrutura de comunicações nacional
+      - Regulação de coleta de dados por empresas estrangeiras
+      - Programa de satélites brasileiros
+    exemplos_negativos:
+      - Flexibilização de regras para plataformas estrangeiras
+      - Redução de investimento em fibra óptica pública
+
+  - codigo: ZIL-DEF
+    nome: Defesa e Institucional
+    descricao: >
+      Embraer, defesa cibernética, proteção de ativos estratégicos
+      contra aquisição predatória, planejamento estratégico de
+      longo prazo, institucionalidade.
+    keywords:
+      - Embraer
+      - defesa cibernética
+      - defesa cibernetica
+      - ativo estratégico
+      - ativos estratégicos
+      - privatização
+      - privatizacao
+      - CFIUS
+      - proteção de ativos
+      - planejamento estratégico
+      - segurança nacional
+      - indústria de defesa
+      - KC-390
+      - Gripen
+    exemplos_positivos:
+      - Criação de comitê de proteção de ativos estratégicos
+      - Investimento em capacidade cibernética
+      - Fortalecimento da Embraer como polo dual-use
+    exemplos_negativos:
+      - Privatização de empresas estratégicas sem proteção
+      - Venda de ativos de defesa para capital estrangeiro sem contrapartida
+
+  - codigo: ZIL-EDU
+    nome: Capital Humano
+    descricao: >
+      Formação de engenheiros e técnicos em áreas estratégicas,
+      repatriação de talentos, centros de pesquisa, formação
+      técnica dual (escola-empresa).
+    keywords:
+      - engenharia
+      - STEM
+      - ITA
+      - Ceitec
+      - repatriação
+      - repatriacao
+      - formação técnica
+      - formacao tecnica
+      - pesquisa
+      - P&D
+      - pesquisa e desenvolvimento
+      - universidade
+      - bolsa
+      - cientista
+      - técnico
+    exemplos_positivos:
+      - Aumento de vagas em engenharia de áreas estratégicas
+      - Programas de repatriação de pesquisadores brasileiros
+      - Investimento em centros de pesquisa aplicada
+    exemplos_negativos:
+      - Corte de bolsas de pesquisa em áreas estratégicas
+      - Fechamento de programas de formação técnica
+
+  - codigo: ZIL-AGR
+    nome: Agro-Indústria
+    descricao: >
+      Processamento agrícola no Brasil, valor agregado em
+      exportações agro, cadeia integrada do campo à indústria.
+    keywords:
+      - agroindústria
+      - agroindustria
+      - processamento agrícola
+      - valor agregado
+      - industrialização rural
+      - cadeia produtiva
+      - agro processamento
+      - exportação processada
+    exemplos_positivos:
+      - Incentivos para processamento de soja/milho/carne no Brasil
+      - Investimento em agroindústria para exportação de produtos acabados
+    exemplos_negativos:
+      - Políticas que incentivam exportação de grão bruto sem processamento
+
+  - codigo: ZIL-COM
+    nome: Comércio e Tarifas
+    descricao: >
+      Acordos comerciais, tarifas, proteção comercial,
+      Mercosul, BRICS, reciprocidade, política de comércio
+      exterior alinhada com industrialização.
+    keywords:
+      - tarifa
+      - tarifas
+      - OMC
+      - Mercosul
+      - acordo bilateral
+      - BRICS
+      - reciprocidade
+      - proteção comercial
+      - exportação
+      - importação
+      - comércio exterior
+      - acordo comercial
+      - livre comércio
+      - dumping
+      - anti-dumping
+    exemplos_positivos:
+      - Acordos comerciais com cláusulas de transferência tecnológica
+      - Tarifas de proteção para indústria nascente estratégica
+      - Acordos Mercosul-UE com benefícios industriais
+    exemplos_negativos:
+      - Abertura comercial unilateral sem reciprocidade
+      - Acordos que aumentam dependência de importação em setores críticos

@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+body {
+  font-family: "Archivo", sans-serif;
+  background-color: #f0ebe0;
+  color: #1a1714;
+}
+
+::selection {
+  background-color: #1b6b3a;
+  color: #fff;
+}
