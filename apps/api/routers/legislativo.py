@@ -1,15 +1,16 @@
 """Endpoints for proposições and votações."""
 
+import os
 from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, HTTPException
 from sqlalchemy import select, func, cast, Text
 from sqlalchemy.orm import Session
 
-from core.config import get_db
+from core.config import get_db, settings
 from models import Proposicao, Votacao, Voto, Parlamentar, IngestionRun
-from schemas import ProposicaoRead, VotacaoRead, VotoRead
+from schemas import ProposicaoRead, VotacaoRead, VotoRead, ProposicaoContexto, LeiReferenciadaRead
 
 router = APIRouter(tags=["Proposições e Votações"])
 
@@ -47,6 +48,70 @@ def obter_proposicao(proposicao_id: UUID, db: Session = Depends(get_db)):
     if not p:
         raise HTTPException(status_code=404, detail="Proposição não encontrada")
     return p
+
+
+@router.get("/proposicoes/{proposicao_id}/contexto", response_model=ProposicaoContexto)
+def contexto_proposicao(proposicao_id: UUID, db: Session = Depends(get_db)):
+    """Retorna o contexto enriquecido de uma proposição (Feature 002)."""
+    p = db.get(Proposicao, proposicao_id)
+    if not p:
+        raise HTTPException(status_code=404, detail="Proposição não encontrada")
+
+    leis_ref: Optional[list[LeiReferenciadaRead]] = None
+    fontes: list[str] = []
+    if p.leis_referenciadas:
+        leis_ref = [LeiReferenciadaRead(**r) for r in p.leis_referenciadas]
+        fontes = [r.get("url_planalto") for r in p.leis_referenciadas if r.get("url_planalto")]
+
+    return ProposicaoContexto(
+        proposicao_id=p.id,
+        ementa_original=p.ementa,
+        contexto_status=p.contexto_status,
+        resumo_simples=p.resumo_simples,
+        glossario=p.glossario,
+        impacto_zil=p.impacto_zil,
+        leis_referenciadas=leis_ref,
+        confianca=float(p.confianca) if p.confianca is not None else None,
+        enriquecido_em=p.enriquecido_em,
+        versao_pipeline="1.0",
+        modelo_llm=settings.ENRICHMENT_MODEL,
+        fontes=fontes,
+    )
+
+
+@router.post("/proposicoes/{proposicao_id}/enriquecer")
+def forcar_enriquecimento(
+    proposicao_id: UUID,
+    background_tasks: BackgroundTasks,
+    admin_token: str = Query(..., description="Token de administração"),
+    db: Session = Depends(get_db),
+):
+    """Força re-enriquecimento de uma proposição (admin only, Feature 002)."""
+    expected = settings.ADMIN_TOKEN
+    if not expected or admin_token != expected:
+        raise HTTPException(status_code=403, detail="Token inválido")
+
+    p = db.get(Proposicao, proposicao_id)
+    if not p:
+        raise HTTPException(status_code=404, detail="Proposição não encontrada")
+
+    # Try Celery; fallback to FastAPI BackgroundTask with its own session
+    try:
+        from workers.tasks import task_enriquecer_proposicao as _task
+        _task.delay(str(proposicao_id), force=True)
+        return {"status": "enqueued", "proposicao_id": str(proposicao_id)}
+    except Exception:
+        def _run_inline(pid: str) -> None:
+            from core.config import SessionLocal
+            from workers.enrichment import enriquecer_proposicao
+            _db = SessionLocal()
+            try:
+                enriquecer_proposicao(UUID(pid), _db, force=True)
+            finally:
+                _db.close()
+
+        background_tasks.add_task(_run_inline, str(proposicao_id))
+        return {"status": "processing", "proposicao_id": str(proposicao_id)}
 
 
 @router.get("/proposicoes/{proposicao_id}/votacoes", response_model=list[VotacaoRead])

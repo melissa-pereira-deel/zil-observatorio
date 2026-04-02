@@ -104,11 +104,22 @@ class Proposicao(Base):
     metadata_extra: Mapped[Optional[dict]] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+    # ── Enrichment fields (Feature 002) ──
+    contexto_status: Mapped[Optional[str]] = mapped_column(String(20))  # pendente|processando|pronto|falhou|llm_falhou
+    resumo_simples: Mapped[Optional[str]] = mapped_column(Text)
+    glossario: Mapped[Optional[dict]] = mapped_column(JSON)
+    impacto_zil: Mapped[Optional[str]] = mapped_column(Text)
+    leis_referenciadas: Mapped[Optional[list]] = mapped_column(JSON)
+    confianca: Mapped[Optional[float]] = mapped_column(Numeric(3, 2))
+    ementa_hash: Mapped[Optional[str]] = mapped_column(String(64))
+    enriquecido_em: Mapped[Optional[datetime]] = mapped_column(DateTime)
+
     votacoes: Mapped[list["Votacao"]] = relationship(back_populates="proposicao")
 
     __table_args__ = (
         UniqueConstraint("fonte_id", "fonte", name="uq_proposicao_fonte"),
         Index("ix_proposicao_tipo_ano", "tipo", "ano"),
+        Index("ix_proposicao_contexto_status", "contexto_status"),
     )
 
 
@@ -198,6 +209,26 @@ class IngestionRun(Base):
 
     __table_args__ = (
         Index("ix_ingestion_tipo_status_dt", "tipo", "status", "iniciado_em"),
+    )
+
+
+class LeiArtigo(Base):
+    """Cache de artigos de lei obtidos do Planalto.gov.br (Feature 002)."""
+    __tablename__ = "lei_artigos"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    lei_id: Mapped[str] = mapped_column(String(50), nullable=False)        # e.g. "14744-2023", "lc-87-1996"
+    numero_artigo: Mapped[str] = mapped_column(String(20), nullable=False)  # e.g. "4", "3"
+    texto_artigo: Mapped[Optional[str]] = mapped_column(Text)
+    url_planalto: Mapped[Optional[str]] = mapped_column(String(500))
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default="resolvido")
+    obtido_em: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    expira_em: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("lei_id", "numero_artigo", name="uq_lei_artigo"),
+        Index("ix_lei_artigo_lei_id", "lei_id"),
+        Index("ix_lei_artigo_expira_em", "expira_em"),
     )
 
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
+import { ContextoBadge } from "@/components/ContextoBadge";
 import type { Proposicao } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -141,8 +142,14 @@ export default function ProposicoesPage() {
                     {p.situacao}
                   </span>
                 )}
+                <ContextoBadge status={p.contexto_status} confianca={p.confianca} />
               </div>
-              <p className="text-sm text-zil-soft leading-relaxed mb-2 line-clamp-2">
+              {p.resumo_simples ? (
+                <p className="text-sm text-zil-fg leading-relaxed mb-1 line-clamp-2">
+                  {p.resumo_simples}
+                </p>
+              ) : null}
+              <p className="text-xs text-zil-muted leading-relaxed mb-2 line-clamp-2">
                 {p.ementa}
               </p>
               <div className="flex flex-wrap items-center gap-2">
