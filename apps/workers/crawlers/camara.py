@@ -164,9 +164,18 @@ def sync_votacoes(db: Session, ano: int) -> int:
         try:
             with CamaraClient() as client:
                 detalhes = client.obter_votacao_detalhes(str(vot.id))
-            prop_raw = detalhes.get("proposicaoPrincipal") if detalhes else None
+            # A API retorna a proposição principal em `proposicoesAfetadas[0]`
+            # ou, em versões mais antigas, em `proposicaoPrincipal`.
+            prop_raw = None
+            if detalhes:
+                prop_raw = detalhes.get("proposicaoPrincipal")
+                if not prop_raw:
+                    afetadas = detalhes.get("proposicoesAfetadas") or []
+                    if afetadas:
+                        prop_raw = afetadas[0]
             if prop_raw:
-                proposicao = _upsert_proposicao(db, client, prop_raw)
+                with CamaraClient() as client:
+                    proposicao = _upsert_proposicao(db, client, prop_raw)
                 if proposicao:
                     proposicao_id = proposicao.id
         except Exception as e:

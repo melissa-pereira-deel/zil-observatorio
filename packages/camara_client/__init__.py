@@ -144,8 +144,39 @@ class CamaraClient:
     # ── Votações ──
 
     def listar_votacoes(self, ano: int) -> list[VotacaoAPI]:
-        """Lista todas as votações de um ano."""
-        dados = self._get_paginated("/votacoes", {"ano": ano, "ordem": "DESC", "ordenarPor": "dataHoraRegistro"})
+        """Lista todas as votações de um ano.
+
+        A API exige janelas de no máximo 3 meses; iteramos trimestre a trimestre.
+        """
+        from datetime import date
+
+        trimestres = [
+            (f"{ano}-01-01", f"{ano}-03-31"),
+            (f"{ano}-04-01", f"{ano}-06-30"),
+            (f"{ano}-07-01", f"{ano}-09-30"),
+            (f"{ano}-10-01", f"{ano}-12-31"),
+        ]
+
+        # Para o ano corrente, não pedir datas futuras
+        hoje = date.today().isoformat()
+
+        todos: list[dict] = []
+        for inicio, fim in trimestres:
+            if inicio > hoje:
+                break
+            fim_efetivo = min(fim, hoje)
+            dados = self._get_paginated(
+                "/votacoes",
+                {
+                    "dataInicio": inicio,
+                    "dataFim": fim_efetivo,
+                    "ordem": "DESC",
+                    "ordenarPor": "dataHoraRegistro",
+                },
+            )
+            todos.extend(dados)
+            time.sleep(0.3)
+
         return [
             VotacaoAPI(
                 id=v.get("id", ""),
@@ -153,7 +184,7 @@ class CamaraClient:
                 descricao=v.get("descricao", ""),
                 aprovacao=v.get("aprovacao"),
             )
-            for v in dados
+            for v in todos
         ]
 
     def obter_votos(self, votacao_id: str) -> list[VotoAPI]:

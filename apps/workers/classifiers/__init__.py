@@ -15,7 +15,7 @@ import yaml
 logger = logging.getLogger(__name__)
 
 # Carregar taxonomia
-TAXONOMIA_PATH = Path(__file__).parent.parent.parent / "data" / "taxonomia" / "categorias.yml"
+TAXONOMIA_PATH = Path(__file__).parent.parent.parent.parent / "data" / "taxonomia" / "categorias.yml"
 
 
 def _load_taxonomia() -> list[dict]:

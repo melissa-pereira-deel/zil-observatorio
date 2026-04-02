@@ -158,13 +158,88 @@ Infraestrutura para a plataforma estar acessível publicamente.
 
 ---
 
+#### 011 — Bootstrap de Dados Históricos (sync operacional)
+
+O crawler `sync_votacoes` existe mas só roda via Celery beat. Para o ambiente de
+desenvolvimento e para a carga inicial em produção, precisamos de um caminho direto
+que não exija o stack Celery completo.
+
+Problema atual: `sync_votacoes` para um ano inteiro faz ~3.000 chamadas à API
+(1.000 votações × detalhes + votos). Para votações sem relevância ZIL, buscar os
+votos individuais é desperdício. A solução é um modo "ZIL-first" que adia o fetch
+de votos para votações não classificadas.
+
+**Tasks:**
+
+- [ ] `scripts/bootstrap_sync.py` — CLI que roda `sync_deputados` +
+  `sync_votacoes(anos)` direto contra o banco sem precisar do Celery.
+  Aceita `--anos 2024 2025`, `--fonte camara|senado|ambos`, `--dry-run`.
+  Mostra progresso em tempo real (barra, contadores).
+
+- [ ] Modo ZIL-smart no crawler: em `sync_votacoes`, classificar a descrição
+  **antes** de buscar votos individuais. Se `categorias_zil` for vazio, registrar
+  a votação sem votos (metadado apenas). Buscar votos só para votações ZIL.
+  Reduz o tempo de sync de ~60 min para ~5 min por ano.
+
+- [ ] `GET /ingestion/status` — endpoint que retorna o estado da última
+  `IngestionRun` por tipo (`deputados`, `votacoes`, `votacoes_senado`), data/hora,
+  contadores e eventuais erros. Usado para monitoramento e healthcheck.
+
+- [ ] `scripts/listar_sem_direcao.py` — lista votações com `categorias_zil` definido
+  mas `direcao_esperada` ausente; exporta CSV para revisão editorial.
+  Aceita `--categoria ZIL-FER` para filtrar por categoria.
+
+- [ ] Runbook em `docs/SYNC_RUNBOOK.md`: como fazer a carga inicial, como
+  monitorar o Celery em produção, o que fazer quando o sync falha.
+
+- [ ] Atualizar `CLAUDE.md` com instrução `python scripts/bootstrap_sync.py`
+  no bloco de comandos.
+
+**Dependências:** nenhuma (independente).
+
+---
+
+#### 012 — Cobertura Editorial: Score com Dados Reais
+
+Para que os scores apareçam no ranking, todas as votações ZIL classificadas pelo
+classificador automático precisam ter `direcao_esperada` definida por maintainers.
+
+Este fluxo de trabalho deve se tornar um processo contínuo: sempre que novos votos
+relevantes chegam via sync, a equipe editorial revisa e classifica.
+
+**Tasks:**
+
+- [ ] Preencher `data/direcoes/2024.yml` com todas as votações ZIL identificadas
+  em 2024 (post-sync). Mínimo 20 votações. Ver `docs/EDITORIAL.md`.
+
+- [ ] Preencher `data/direcoes/2025.yml` com votações ZIL de 2025 até a data atual.
+
+- [ ] Criar `docs/EDITORIAL.md` — guia para maintainers: como identificar votações
+  relevantes, como escrever justificativas, critério de peso (processual vs.
+  plenário final), como abrir PR, processo de revisão no Discord.
+
+- [ ] Adicionar validação em `scripts/apply_direcoes.py`: antes de aplicar,
+  verificar se todos os `fonte_id` existem no banco. Imprimir aviso para os que
+  não existem (votação ainda não sincronizada).
+
+- [ ] Script `scripts/recalcular_scores.py` — standalone, sem Celery.
+  Chama `recalcular_todos_scores(db)` e imprime resumo (N scored, média, top 5,
+  bottom 5).
+
+- [ ] Cobertura mínima para lançamento: ≥ 50 votações classificadas com
+  `direcao_esperada`, cobrindo todas as 9 categorias ZIL.
+
+**Dependências:** 011 (sync precisa ter rodado para ter votações no banco).
+
+---
+
 ### Diagrama de dependências v1
 
 ```
-001 (✅) ──────┬──── 004 (/ranking)
-               │
-               ├──── 005 (/parlamentar/[id])
-               │
+001 (✅) ──────┬──── 004 (/ranking) ◄─── 012 (scores reais)
+               │                              ▲
+               ├──── 005 (/parlamentar/[id])   │
+               │                          011 (sync bootstrap)
                └──── 006 (/proposicoes)
 
 002 (Senado) ──┘ (enriquece 004/005, não bloqueia)
@@ -176,6 +251,8 @@ Infraestrutura para a plataforma estar acessível publicamente.
 009 (CI/CD) ── independente
 
 010 (Deploy) ── depende de tudo
+
+011 (bootstrap) ──── 012 (cobertura editorial) ──── scores no ranking
 ```
 
 ---
@@ -227,7 +304,8 @@ Infraestrutura para a plataforma estar acessível publicamente.
 | Métrica | Meta |
 |---------|------|
 | Parlamentares com score calculado | 100% dos 513 deputados; 80%+ dos 81 senadores |
-| Votações ZIL classificadas com direção esperada | ≥ 50 votações-chave (2024-2026) |
+| Votações ZIL classificadas com direção esperada | ≥ 50 votações-chave (2024-2026) — ver feature 012 |
+| Tempo de sync inicial (bootstrap) | < 10 min para 2 anos (modo ZIL-smart, feature 011) |
 | Latência dado → plataforma | < 24h |
 | Uptime | ≥ 99% |
 | Tempo de resposta da API | < 500ms (p95) |

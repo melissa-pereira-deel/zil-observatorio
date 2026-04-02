@@ -1,8 +1,13 @@
 """Core configuration and database setup."""
 
+from pathlib import Path
+
 from pydantic_settings import BaseSettings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
+
+# Root .env file, resolved relative to this file so it works regardless of cwd
+_ENV_FILE = Path(__file__).parent.parent.parent.parent / ".env"
 
 
 class Settings(BaseSettings):
@@ -16,7 +21,7 @@ class Settings(BaseSettings):
     SENADO_API_BASE: str = "https://legis.senado.leg.br/dadosabertos"
 
     class Config:
-        env_file = ".env"
+        env_file = str(_ENV_FILE)
 
 
 settings = Settings()

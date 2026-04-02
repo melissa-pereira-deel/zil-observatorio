@@ -29,10 +29,10 @@ packages/          camara_client ✅ | senado_client (backlog)
 data/taxonomia/    categorias.yml — keywords das 9 categorias ZIL
 data/direcoes/     direcao_esperada por votação (backlog, workflow editorial)
 data/bussula/      indicadores estratégicos (backlog)
-scripts/           apply_direcoes.py (backlog)
+scripts/           apply_direcoes.py | sync_votacoes_zil.py | recalcular_scores.py (backlog)
 tests/             unit/ integration/ contract/
 specs/             Specify Kit specs por feature
-docs/              PRD, ARCHITECTURE, GOVERNANCE, ROADMAP
+docs/              PRD, ARCHITECTURE, GOVERNANCE, ROADMAP, CHANGELOG
 ```
 
 ---
@@ -56,6 +56,21 @@ celery -A apps.workers.tasks beat --loglevel=info
 
 # Docker (ambiente completo)
 docker-compose up
+
+# Pipeline de dados editorial (rodar na ordem, da raiz)
+python3 scripts/sync_votacoes_zil.py        # sync só votações ZIL definidas nos YAMLs
+python3 scripts/apply_direcoes.py           # aplica direcao_esperada + peso ao banco
+python3 -c "
+import sys; sys.path.insert(0,'apps/api'); sys.path.insert(0,'.')
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from core.config import settings
+from apps.workers.scoring import recalcular_todos_scores
+engine = create_engine(settings.DATABASE_URL)
+with Session(engine) as db: print(recalcular_todos_scores(db), 'scores calculados')
+"
+# Ou, se Celery estiver rodando:
+# celery -A apps.workers.tasks call apps.workers.tasks.task_recalcular_scores
 ```
 
 ---
@@ -123,6 +138,55 @@ Toda gestão editorial é via código — sem interface admin:
 - Aplicar ao banco: `python scripts/apply_direcoes.py`
 
 **Princípio operacional:** na dúvida sobre direção esperada, não classificar.
+
+---
+
+## Changelog
+
+**Arquivo:** [`docs/CHANGELOG.md`](docs/CHANGELOG.md)
+**Formato:** [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+
+### Quando atualizar
+
+Atualizar o changelog é **obrigatório** ao:
+- Completar qualquer feature do backlog v1 (001–010)
+- Corrigir um bug que afete comportamento observável
+- Fazer breaking changes em contratos de API ou modelos
+- Alterar arquivos de dados editoriais (`data/`)
+- Mudar configuração de CI, Docker ou ambiente de desenvolvimento
+
+Não é necessário para: refatorações internas sem impacto externo, atualizações de docs, correções de lint.
+
+### Como atualizar
+
+1. **Durante o desenvolvimento** — adicionar entradas em `## [Unreleased]`, sob a
+   sub-seção correta:
+   - `Added` — nova funcionalidade
+   - `Changed` — mudança em funcionalidade existente
+   - `Fixed` — correção de bug
+   - `Removed` — remoção de funcionalidade
+   - `Security` — vulnerabilidade corrigida
+
+2. **Ao criar uma release** — renomear `[Unreleased]` para `[X.Y.Z] — YYYY-MM-DD`,
+   adicionar novo `## [Unreleased]` vazio no topo, e atualizar os links de comparação
+   no rodapé do arquivo.
+
+3. **Formato de entrada:**
+   ```
+   - `caminho/do/arquivo.py`: descrição objetiva da mudança — consequência ou motivação
+   ```
+   Entradas devem ser legíveis por alguém que não viu o PR. Evitar "fixed bug" sem
+   descrever qual bug; evitar "updated file" sem descrever o que mudou.
+
+4. **Versionamento semântico:**
+   - `MAJOR` (X.0.0): breaking change em API pública ou modelo de dados
+   - `MINOR` (0.X.0): nova feature sem quebrar compatibilidade
+   - `PATCH` (0.0.X): correção de bug, ajuste de config, fix de CI
+
+### Regra geral
+
+> Se a mudança vale um commit `feat:` ou `fix:`, vale uma entrada no changelog.
+> Se vale um commit `chore:` ou `refactor:`, provavelmente não vale.
 
 ---
 

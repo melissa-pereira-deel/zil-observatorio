@@ -1,0 +1,65 @@
+# Direção esperada de votações — 2025
+#
+# Formato:
+#   fonte_id: ID da votação na API de origem
+#   fonte: camara | senado
+#   direcao: sim | nao  ("sim" = votar SIM é pró-soberania industrial)
+#   peso: 0.5 | 1.0 | 2.0 | 3.0  (processual | padrão | comissão | plenário final)
+#   justificativa: explicação em português (obrigatória)
+#   categoria_principal: código ZIL principal desta votação
+#
+# Processo: discussão no Discord → PR com 2 aprovações de maintainers
+# Princípio: na dúvida, não classificar.
+#
+# Aplique ao banco: python scripts/apply_direcoes.py
+#
+# ─────────────────────────────────────────────────────────────────────────
+# VERSÃO v0.1 — RASCUNHO EDITORIAL
+#
+# Gerado em 2026-04-02 a partir de pesquisa direta na API de Dados Abertos
+# da Câmara dos Deputados. Cobertura parcial: Q1-Q2 2025.
+#
+# ATENÇÃO: Rascunho para teste de pipeline. Revisar antes do lançamento.
+# ─────────────────────────────────────────────────────────────────────────
+
+direcoes:
+
+  # ── ZIL-SEM: Semicondutores e Microeletrônica ─────────────────────────
+
+  - fonte_id: "2426923-22"
+    fonte: camara
+    direcao: sim
+    peso: 2.0
+    categoria_principal: ZIL-SEM
+    justificativa: >
+      PL 1264/2024 — Preferência nas compras públicas para empresas
+      certificadas no PADIS (Programa de Apoio ao Desenvolvimento
+      Tecnológico da Indústria de Semicondutores e Displays). Parecer
+      aprovado em comissão em 07/05/2025. O projeto altera a Lei
+      14.744/2023 para estabelecer margem de preferência de até 25% nas
+      licitações federais para produtos fabricados por empresas
+      beneficiárias do PADIS. O poder de compra do Estado é instrumento
+      central de política industrial em semicondutores: EUA (CHIPS Act),
+      UE (European Chips Act) e China usam esse mecanismo. Votar SIM
+      cria demanda doméstica garantida para fabricantes nacionais de
+      chips e displays, reduzindo o risco de investimento. Peso 2.0 por
+      ser votação de comissão (parecer); aguardar votação de plenário
+      para atualizar para 3.0. Consenso editorial inicial: 2026-04-02.
+
+  # ── VOTAÇÕES PENDENTES DE IDENTIFICAÇÃO ───────────────────────────────
+  #
+  # Q1-Q2 2025: scan da API encontrou 0 votações com keywords ZIL nos
+  # campos de descrição. Isso indica que as votações relevantes de 2025
+  # ainda estão em fase de comissão (pareceres, não plenário).
+  #
+  # Monitorar em 2025:
+  # - PL 719/2024 (PADIS extensão 2029): sem plenário ainda
+  # - PL 3187/2024 (PADIS alteração): parecer comissão em 2026-03-18
+  # - PL 5751/2023 (Marco Legal Hidrogênio): sem relator designado
+  # - PL 4367/2023 (CFEM lítio): em comissão
+  # - PDL 262/2024 (Acordo Defesa Brasil-Turquia): plenário 2433070-46 em 2025-04-10
+  #   PENDENTE DE DIREÇÃO EDITORIAL: verificar se favorece exportações ou importações
+  #   de defesa. Se pro-exportação → direcao: sim, peso: 3.0, categoria: ZIL-DEF
+  # - PEC 63/2023 (desoneração folha constitucional): em comissão
+  #
+  # Adicionar entradas aqui conforme votações chegarem ao plenário.

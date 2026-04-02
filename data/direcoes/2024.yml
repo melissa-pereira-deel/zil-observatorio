@@ -12,15 +12,142 @@
 # Princípio: na dúvida, não classificar.
 #
 # Aplique ao banco: python scripts/apply_direcoes.py
-
-direcoes: []
-# Exemplo (remover comentário e preencher quando houver votações classificadas):
 #
-# - fonte_id: "12345"
-#   fonte: camara
-#   direcao: sim
-#   peso: 3.0
-#   justificativa: >
-#     PL 1234/2024 exige processamento local de nióbio antes de exportação.
-#     Votar sim é pró-soberania (ZIL-MIN). Consenso editorial em 2026-04-01.
-#   categoria_principal: ZIL-MIN
+# ─────────────────────────────────────────────────────────────────────────
+# VERSÃO v0.1 — RASCUNHO EDITORIAL
+#
+# Gerado em 2026-04-02 a partir de pesquisa direta na API de Dados Abertos
+# da Câmara dos Deputados. Votações identificadas por relevância ZIL nos
+# anos 2024.
+#
+# ATENÇÃO: Este arquivo é um rascunho para fins de teste de pipeline.
+# Deve ser revisado, validado e aprovado via PR antes do lançamento público.
+# Ver docs/EDITORIAL.md para o processo editorial completo.
+# ─────────────────────────────────────────────────────────────────────────
+
+direcoes:
+
+  # ── ZIL-SEM: Semicondutores e Microeletrônica ─────────────────────────
+
+  - fonte_id: "2454704-53"
+    fonte: camara
+    direcao: sim
+    peso: 3.0
+    categoria_principal: ZIL-SEM
+    justificativa: >
+      PL 1847/2024 — Desoneração da folha de pagamento do setor de
+      Tecnologia da Informação e Comunicação (TIC). Aprovado em plenário
+      em 12/09/2024 com placar 253 × 67 (73% de apoio).
+      O projeto prorroga o regime de Contribuição Previdenciária sobre
+      Receita Bruta (CPRB) para empresas de TI, software, hardware e
+      semicondutores, reduzindo o custo de mão-de-obra em ~20%
+      comparado ao modelo padrão. Votar SIM preserva a competitividade
+      das empresas nacionais de tecnologia e mantém o incentivo à
+      contratação de engenheiros, reduzindo a migração de talentos para
+      empresas estrangeiras. Consenso editorial inicial: 2026-04-02.
+
+  # ── ZIL-COM: Competitividade Industrial ───────────────────────────────
+
+  - fonte_id: "2416804-43"
+    fonte: camara
+    direcao: sim
+    peso: 3.0
+    categoria_principal: ZIL-COM
+    justificativa: >
+      PL 2/2024 — Depreciação acelerada de bens de capital para empresas
+      industriais. Aprovação da Subemenda Substitutiva Global em
+      19/03/2024. O projeto permite que empresas industriais depreciem
+      máquinas e equipamentos em até 2 anos (em vez de 5-10 anos),
+      gerando benefício fiscal imediato ao reinvestimento em
+      equipamentos modernos. Instrumento clássico de política industrial:
+      reduz o custo de modernização produtiva e aumenta a produtividade
+      do parque industrial brasileiro. Votar SIM favorece
+      reindustrialização e adoção de tecnologia avançada. Consenso
+      editorial inicial: 2026-04-02.
+
+  # ── ZIL-ENE: Energia e Recursos Estratégicos ──────────────────────────
+
+  - fonte_id: "2269745-73"
+    fonte: camara
+    direcao: sim
+    peso: 3.0
+    categoria_principal: ZIL-ENE
+    justificativa: >
+      PL 327/2021 — PATEN (Programa de Aceleração da Transição
+      Energética). Aprovação da Subemenda Substitutiva Global em
+      20/03/2024. Cria o marco legal da transição energética brasileira:
+      estabelece o Fundo de Transição Energética, metas de energia limpa,
+      mecanismos de financiamento para biocombustíveis avançados,
+      hidrogênio de baixo carbono e eficiência energética industrial.
+      Votar SIM posiciona o Brasil como ator relevante na corrida global
+      por energia limpa, aproveitando vantagens comparativas em
+      biomassa, solar e eólico para criar nova cadeia industrial
+      doméstica. Consenso editorial inicial: 2026-04-02.
+
+  - fonte_id: "2269745-144"
+    fonte: camara
+    direcao: sim
+    peso: 3.0
+    categoria_principal: ZIL-ENE
+    justificativa: >
+      PL 327/2021 — PATEN. Aprovação das Emendas do Senado Federal em
+      18/12/2024 — votação final que encaminha o projeto para sanção
+      presidencial. Esta é a votação definitiva que determina se o PATEN
+      será ou não lei. Votar SIM em 2024-12 reafirma o compromisso com
+      a transição energética nacional após ajustes técnicos do Senado.
+      Peso máximo (3.0): é a votação de promulgação efetiva da política.
+      Consenso editorial inicial: 2026-04-02.
+
+  - fonte_id: "2238434-80"
+    fonte: camara
+    direcao: sim
+    peso: 3.0
+    categoria_principal: ZIL-ENE
+    justificativa: >
+      PL 528/2020 — Lei de Mobilidade Sustentável. Aprovação da
+      Subemenda Substitutiva Global em 13/03/2024. Cria o marco legal
+      da mobilidade sustentável no Brasil: define metas de eletrificação
+      da frota de transporte público, cria incentivos para veículos
+      elétricos e híbridos, estabelece critérios para biocombustíveis
+      de aviação (SAF), e obriga a renovação da frota de ônibus com
+      emissão zero. Votar SIM impulsiona a demanda interna por veículos
+      elétricos e abre mercado para a cadeia produtiva nacional de
+      baterias, sistemas de propulsão elétrica e bioenergia.
+      Consenso editorial inicial: 2026-04-02.
+
+  - fonte_id: "2238434-154"
+    fonte: camara
+    direcao: sim
+    peso: 3.0
+    categoria_principal: ZIL-ENE
+    justificativa: >
+      PL 528/2020 — Lei de Mobilidade Sustentável. Aprovação das
+      Emendas do Senado Federal em 11/09/2024 — votação final antes
+      da sanção. As emendas do Senado reforçaram as metas de
+      eletrificação do transporte público e incluíram dispositivos
+      sobre infraestrutura de recarga. Votar SIM na votação final
+      concretiza o mais abrangente instrumento de política industrial
+      verde do Brasil desde o ProCOP. Consenso editorial inicial:
+      2026-04-02.
+
+  # ── CATEGORIAS PENDENTES DE COBERTURA EDITORIAL ───────────────────────
+  #
+  # As seguintes categorias ZIL não têm votações cobertas em 2024.
+  # Motivos e sugestões para o editorial:
+  #
+  # ZIL-FER (Fertilizantes): Nenhum projeto de grande impacto chegou a
+  #   plenário em 2024. Acompanhar PL sobre Plano Nacional de Fertilizantes
+  #   e eventual legislação sobre a mina de Autazes (potássio).
+  #
+  # ZIL-MIN (Minerais Estratégicos): PL 4367/2023 (CFEM lítio) e
+  #   PL 840/2022 (royalties nióbio) ainda em comissão em 2024.
+  #   Acompanhar aprovações.
+  #
+  # ZIL-DEF (Defesa/Industrial): Embraer e Base Industrial de Defesa
+  #   não tiveram votações plenárias classificáveis em 2024.
+  #
+  # ZIL-DIG (Soberania Digital): LGPD implementação e projetos de
+  #   regulação de plataformas (PL 2630/2020) em comissão.
+  #
+  # ZIL-AGR (Agroindústria): Sem votações de valor agregado industrial
+  #   identificadas em 2024. Focar em 2025.

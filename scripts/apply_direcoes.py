@@ -111,7 +111,7 @@ def main():
     if args.dry_run:
         print("[DRY RUN — no changes will be written]")
 
-    engine = create_engine(settings.database_url)
+    engine = create_engine(settings.DATABASE_URL)
     with Session(engine) as db:
         stats = apply_direcoes(direcoes, db, dry_run=args.dry_run)
         if not args.dry_run:
