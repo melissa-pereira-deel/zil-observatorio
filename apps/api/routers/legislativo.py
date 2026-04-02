@@ -49,6 +49,20 @@ def obter_proposicao(proposicao_id: UUID, db: Session = Depends(get_db)):
     return p
 
 
+@router.get("/proposicoes/{proposicao_id}/votacoes", response_model=list[VotacaoRead])
+def votacoes_da_proposicao(proposicao_id: UUID, db: Session = Depends(get_db)):
+    """Lista votações vinculadas a uma proposição."""
+    p = db.get(Proposicao, proposicao_id)
+    if not p:
+        raise HTTPException(status_code=404, detail="Proposição não encontrada")
+    query = (
+        select(Votacao)
+        .where(Votacao.proposicao_id == proposicao_id)
+        .order_by(Votacao.data.desc().nulls_last())
+    )
+    return db.execute(query).scalars().all()
+
+
 # ── Votações ──
 
 @router.get("/votacoes", response_model=list[VotacaoRead])
@@ -71,6 +85,14 @@ def listar_votacoes(
     query = query.offset((page - 1) * per_page).limit(per_page)
 
     return db.execute(query).scalars().all()
+
+
+@router.get("/votacoes/{votacao_id}", response_model=VotacaoRead)
+def obter_votacao(votacao_id: UUID, db: Session = Depends(get_db)):
+    v = db.get(Votacao, votacao_id)
+    if not v:
+        raise HTTPException(status_code=404, detail="Votação não encontrada")
+    return v
 
 
 @router.get("/votacoes/{votacao_id}/votos", response_model=list[VotoRead])

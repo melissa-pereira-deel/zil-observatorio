@@ -38,6 +38,16 @@ app.conf.beat_schedule = {
         "task": "workers.tasks.task_sync_votacoes",
         "schedule": crontab(hour="*/6", minute=15),
     },
+    # Senadores — toda segunda-feira às 03:30 (logo após deputados)
+    "sync-senadores-semanal": {
+        "task": "workers.tasks.task_sync_senadores",
+        "schedule": crontab(hour=3, minute=30, day_of_week=1),
+    },
+    # Votações Senado — a cada 6 horas
+    "sync-votacoes-senado-6h": {
+        "task": "workers.tasks.task_sync_votacoes_senado",
+        "schedule": crontab(hour="*/6", minute=30),
+    },
     # Recalcular scores — diário às 04:00 (após a ingestão das 00:15)
     "recalc-scores-diario": {
         "task": "workers.tasks.task_recalcular_scores",
@@ -131,6 +141,65 @@ def task_sync_votacoes(self, ano: int | None = None):
         return {"status": "ok", "ano": ano, "novas_votacoes": count}
     except Exception as exc:
         logger.error(f"Task: task_sync_votacoes ({ano}) falhou: {exc}")
+        _close_ingestion_run(db, run, status="failed", processados=0, criados=0, atualizados=0, erros=1,
+                             erro_detalhes=[{"ano": ano, "mensagem": str(exc), "tentativa": self.request.retries + 1}])
+        raise
+    finally:
+        db.close()
+
+
+@app.task(
+    name="workers.tasks.task_sync_senadores",
+    bind=True,
+    autoretry_for=(Exception,),
+    max_retries=3,
+    retry_backoff=True,
+    retry_backoff_max=600,
+    retry_jitter=False,
+)
+def task_sync_senadores(self):
+    """Sincroniza senadores do Senado Federal."""
+    logger.info("Task: task_sync_senadores iniciada")
+    db = _get_db()
+    run = _open_ingestion_run(db, tipo="senadores")
+    try:
+        from apps.workers.crawlers.senado import sync_senadores
+        count = sync_senadores(db)
+        _close_ingestion_run(db, run, status="success", processados=count, criados=count, atualizados=0, erros=0)
+        logger.info(f"Task: task_sync_senadores concluída — {count} senadores")
+        return {"status": "ok", "novos": count}
+    except Exception as exc:
+        logger.error(f"Task: task_sync_senadores falhou: {exc}")
+        _close_ingestion_run(db, run, status="failed", processados=0, criados=0, atualizados=0, erros=1,
+                             erro_detalhes=[{"mensagem": str(exc), "tentativa": self.request.retries + 1}])
+        raise
+    finally:
+        db.close()
+
+
+@app.task(
+    name="workers.tasks.task_sync_votacoes_senado",
+    bind=True,
+    autoretry_for=(Exception,),
+    max_retries=3,
+    retry_backoff=True,
+    retry_backoff_max=600,
+    retry_jitter=False,
+)
+def task_sync_votacoes_senado(self, ano: int | None = None):
+    """Sincroniza matérias e votações do Senado do ano atual."""
+    ano = ano or datetime.now().year
+    logger.info(f"Task: task_sync_votacoes_senado ({ano}) iniciada")
+    db = _get_db()
+    run = _open_ingestion_run(db, tipo="votacoes_senado", ano=ano)
+    try:
+        from apps.workers.crawlers.senado import sync_materias
+        count = sync_materias(db, ano=ano)
+        _close_ingestion_run(db, run, status="success", processados=count, criados=count, atualizados=0, erros=0)
+        logger.info(f"Task: task_sync_votacoes_senado ({ano}) concluída — {count} matérias")
+        return {"status": "ok", "ano": ano, "novas_materias": count}
+    except Exception as exc:
+        logger.error(f"Task: task_sync_votacoes_senado ({ano}) falhou: {exc}")
         _close_ingestion_run(db, run, status="failed", processados=0, criados=0, atualizados=0, erros=1,
                              erro_detalhes=[{"ano": ano, "mensagem": str(exc), "tentativa": self.request.retries + 1}])
         raise

@@ -4,7 +4,7 @@ from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy import func, select, case
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.config import get_db
@@ -21,7 +21,7 @@ def listar_parlamentares(
     uf: Optional[str] = Query(None),
     ordem: str = Query("score_desc", regex="^(score_desc|score_asc|nome)$"),
     page: int = Query(1, ge=1),
-    per_page: int = Query(50, ge=1, le=100),
+    per_page: int = Query(50, ge=1, le=600),
     db: Session = Depends(get_db),
 ):
     """Lista parlamentares com score ZIL, com filtros e paginação."""

@@ -6,6 +6,8 @@ O Brasil tem 94% do nióbio mundial e importa 87% dos fertilizantes. Exporta pet
 
 [Manifesto](docs/MANIFESTO.md) · [PRD](docs/PRD.md) · [Arquitetura](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
 
+[![CI](https://github.com/melissa-pereira-deel/manifesto-zil/actions/workflows/ci.yml/badge.svg)](https://github.com/melissa-pereira-deel/manifesto-zil/actions/workflows/ci.yml)
+
 ---
 
 ## O que é

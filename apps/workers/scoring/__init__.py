@@ -16,7 +16,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 # Ensure apps/api is in sys.path so internal imports resolve consistently
@@ -26,7 +26,7 @@ if _api_dir not in sys.path:
 
 from models import (  # noqa: E402
     Parlamentar, Votacao, Voto, ScoreVotacao,
-    VotoEnum, FonteEnum,
+    VotoEnum,
 )
 
 logger = logging.getLogger(__name__)

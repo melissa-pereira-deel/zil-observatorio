@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
 import type { VotoHistorico } from "@/lib/api";
@@ -22,6 +23,18 @@ interface ParlamentarDetail {
   frentes_parlamentares: string[] | null;
 }
 
+const LABEL: Record<string, string> = {
+  "ZIL-FER": "Fertilizantes",
+  "ZIL-MIN": "Minerais",
+  "ZIL-SEM": "Semicondutores",
+  "ZIL-ENE": "Energia",
+  "ZIL-DIG": "Digital",
+  "ZIL-DEF": "Defesa",
+  "ZIL-EDU": "Educação",
+  "ZIL-AGR": "Agro",
+  "ZIL-COM": "Comércio",
+};
+
 export default function ParlamentarPage() {
   const params = useParams();
   const id = params?.parlamentar_id as string;
@@ -29,6 +42,7 @@ export default function ParlamentarPage() {
   const [parl, setParl] = useState<ParlamentarDetail | null>(null);
   const [votos, setVotos] = useState<VotoHistorico[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filtroCategoria, setFiltroCategoria] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -50,6 +64,28 @@ export default function ParlamentarPage() {
     load();
   }, [id]);
 
+  // Category breakdown computed from vote history
+  const breakdown = useMemo(() => {
+    const map: Record<string, { alinhados: number; contra: number; total: number }> = {};
+    for (const v of votos) {
+      for (const cat of v.categorias_zil ?? []) {
+        if (!map[cat]) map[cat] = { alinhados: 0, contra: 0, total: 0 };
+        map[cat].total++;
+        if (v.alinhado === true) map[cat].alinhados++;
+        if (v.alinhado === false) map[cat].contra++;
+      }
+    }
+    return Object.entries(map)
+      .sort((a, b) => b[1].total - a[1].total);
+  }, [votos]);
+
+  const votosFiltrados = filtroCategoria
+    ? votos.filter((v) => v.categorias_zil?.includes(filtroCategoria))
+    : votos;
+
+  const alinhados = votos.filter((v) => v.alinhado === true).length;
+  const contra = votos.filter((v) => v.alinhado === false).length;
+
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-6 py-20 text-center font-mono text-sm text-zil-muted">
@@ -66,13 +102,18 @@ export default function ParlamentarPage() {
     );
   }
 
-  const alinhados = votos.filter((v) => v.alinhado === true).length;
-  const contra = votos.filter((v) => v.alinhado === false).length;
-
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
+      {/* Back */}
+      <Link
+        href="/ranking"
+        className="font-mono text-xs text-zil-muted hover:text-zil-green mb-8 inline-block"
+      >
+        ← Voltar ao ranking
+      </Link>
+
       {/* Profile header */}
-      <div className="flex items-start gap-6 flex-wrap mb-12">
+      <div className="flex items-start gap-6 flex-wrap mb-10">
         <div className="w-24 h-24 rounded-full bg-zil-divider overflow-hidden shrink-0">
           {parl.foto_url && (
             <img
@@ -110,6 +151,11 @@ export default function ParlamentarPage() {
         <div className="text-center">
           <ScoreGauge score={parl.score_zil} size="lg" />
           <p className="font-mono text-xs text-zil-muted mt-2">Score ZIL</p>
+          {parl.score_atualizado_em && (
+            <p className="font-mono text-xs text-zil-muted opacity-50 mt-1">
+              atualizado {new Date(parl.score_atualizado_em).toLocaleDateString("pt-BR")}
+            </p>
+          )}
         </div>
       </div>
 
@@ -120,7 +166,7 @@ export default function ParlamentarPage() {
           <div className="font-mono text-xs text-zil-muted">votos alinhados</div>
         </div>
         <div>
-          <div className="font-display text-xl text-orange-500">{contra}</div>
+          <div className="font-display text-xl text-zil-orange">{contra}</div>
           <div className="font-mono text-xs text-zil-muted">votos contra</div>
         </div>
         <div>
@@ -129,29 +175,84 @@ export default function ParlamentarPage() {
         </div>
       </div>
 
+      {/* Category breakdown */}
+      {breakdown.length > 0 && (
+        <div className="mb-10">
+          <h2 className="font-display text-base uppercase tracking-wide mb-4">
+            Participação por pauta
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {breakdown.map(([cat, stats]) => {
+              const pct = stats.total > 0
+                ? Math.round((stats.alinhados / stats.total) * 100)
+                : 0;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setFiltroCategoria(filtroCategoria === cat ? "" : cat)}
+                  className={`text-left p-3 border transition-colors ${
+                    filtroCategoria === cat
+                      ? "border-zil-green bg-zil-green/5"
+                      : "border-zil-divider hover:border-zil-green"
+                  }`}
+                >
+                  <div className="font-mono text-xs text-zil-muted mb-1">{cat}</div>
+                  <div className="font-display text-sm text-zil-fg">
+                    {LABEL[cat] ?? cat}
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="flex-1 h-1 bg-zil-divider rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-zil-green rounded-full"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="font-mono text-xs text-zil-muted whitespace-nowrap">
+                      {stats.alinhados}/{stats.total}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          {filtroCategoria && (
+            <button
+              onClick={() => setFiltroCategoria("")}
+              className="mt-3 font-mono text-xs text-zil-muted hover:text-zil-fg"
+            >
+              × Limpar filtro
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Vote history */}
-      <h2 className="font-display text-lg uppercase tracking-wide mb-6">
+      <h2 className="font-display text-base uppercase tracking-wide mb-4">
         Histórico de votos em pautas ZIL
+        {filtroCategoria && (
+          <span className="font-mono text-xs text-zil-muted normal-case tracking-normal ml-2">
+            — {LABEL[filtroCategoria] ?? filtroCategoria}
+          </span>
+        )}
       </h2>
 
-      {votos.length === 0 ? (
+      {votosFiltrados.length === 0 ? (
         <p className="text-sm text-zil-muted py-8">
-          Nenhuma votação em pauta ZIL registrada ainda.
+          Nenhuma votação registrada{filtroCategoria ? " nessa categoria" : ""}.
         </p>
       ) : (
-        <div className="space-y-0 border-t border-zil-divider">
-          {votos.map((v) => (
+        <div className="border-t border-zil-divider">
+          {votosFiltrados.map((v) => (
             <div
               key={v.votacao_id}
               className="py-4 border-b border-zil-divider flex items-start gap-4"
             >
-              {/* Alignment indicator */}
               <div
                 className={`w-2 h-2 rounded-full mt-2 shrink-0 ${
                   v.alinhado === true
                     ? "bg-zil-green"
                     : v.alinhado === false
-                    ? "bg-orange-400"
+                    ? "bg-zil-orange"
                     : "bg-zil-divider"
                 }`}
               />
@@ -172,13 +273,12 @@ export default function ParlamentarPage() {
                 </div>
               </div>
 
-              {/* Vote chip */}
               <span
                 className={`shrink-0 font-mono text-xs px-3 py-1 rounded-sm ${
                   v.voto === "sim"
                     ? "bg-zil-green/10 text-zil-green"
                     : v.voto === "nao"
-                    ? "bg-orange-50 text-orange-600"
+                    ? "bg-zil-orange-light text-zil-orange"
                     : "bg-zil-card text-zil-muted"
                 }`}
               >

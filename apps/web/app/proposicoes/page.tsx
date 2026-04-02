@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
 import type { Proposicao } from "@/lib/api";
 
@@ -18,17 +19,26 @@ const CATEGORIAS = [
   { code: "ZIL-COM", label: "Comércio" },
 ];
 
+const TIPOS = ["PL", "PEC", "PLP", "MPV", "PDL", "PRC"];
+
+const ANO_ATUAL = new Date().getFullYear();
+const ANOS = Array.from({ length: 10 }, (_, i) => ANO_ATUAL - i);
+
 export default function ProposicoesPage() {
   const [proposicoes, setProposicoes] = useState<Proposicao[]>([]);
   const [loading, setLoading] = useState(true);
-  const [categoria, setCategoria] = useState<string>("");
+  const [categoria, setCategoria] = useState("");
+  const [tipo, setTipo] = useState("");
+  const [ano, setAno] = useState("");
 
   useEffect(() => {
     async function load() {
       setLoading(true);
       try {
-        const params = new URLSearchParams({ per_page: "50" });
+        const params = new URLSearchParams({ per_page: "100" });
         if (categoria) params.set("categoria", categoria);
+        if (tipo) params.set("tipo", tipo);
+        if (ano) params.set("ano", ano);
         const res = await fetch(`${API_BASE}/proposicoes?${params}`);
         setProposicoes(await res.json());
       } catch (err) {
@@ -38,7 +48,7 @@ export default function ProposicoesPage() {
       }
     }
     load();
-  }, [categoria]);
+  }, [categoria, tipo, ano]);
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
@@ -54,7 +64,7 @@ export default function ProposicoesPage() {
       </p>
 
       {/* Category filter */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="flex flex-wrap gap-2 mb-4">
         <button
           onClick={() => setCategoria("")}
           className={`px-3 py-1.5 text-xs font-mono tracking-wider border transition-colors ${
@@ -68,7 +78,7 @@ export default function ProposicoesPage() {
         {CATEGORIAS.map((c) => (
           <button
             key={c.code}
-            onClick={() => setCategoria(c.code)}
+            onClick={() => setCategoria(categoria === c.code ? "" : c.code)}
             className={`px-3 py-1.5 text-xs font-mono tracking-wider border transition-colors ${
               categoria === c.code
                 ? "bg-zil-green text-white border-zil-green"
@@ -78,6 +88,31 @@ export default function ProposicoesPage() {
             {c.label.toUpperCase()}
           </button>
         ))}
+      </div>
+
+      {/* Tipo + Ano filters */}
+      <div className="flex flex-wrap gap-3 mb-8">
+        <select
+          value={tipo}
+          onChange={(e) => setTipo(e.target.value)}
+          className="px-3 py-2 border border-zil-divider bg-zil-bg text-sm font-body focus:outline-none focus:border-zil-green"
+        >
+          <option value="">Todos os tipos</option>
+          {TIPOS.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+
+        <select
+          value={ano}
+          onChange={(e) => setAno(e.target.value)}
+          className="px-3 py-2 border border-zil-divider bg-zil-bg text-sm font-body focus:outline-none focus:border-zil-green"
+        >
+          <option value="">Todos os anos</option>
+          {ANOS.map((a) => (
+            <option key={a} value={String(a)}>{a}</option>
+          ))}
+        </select>
       </div>
 
       {/* Results */}
@@ -92,11 +127,12 @@ export default function ProposicoesPage() {
       ) : (
         <div className="border-t border-zil-divider">
           {proposicoes.map((p) => (
-            <div
+            <Link
               key={p.id}
-              className="py-4 border-b border-zil-divider hover:bg-zil-card transition-colors px-4"
+              href={`/proposicoes/${p.id}`}
+              className="block py-4 border-b border-zil-divider hover:bg-zil-card transition-colors px-4 -mx-4"
             >
-              <div className="flex items-baseline gap-3 mb-2">
+              <div className="flex items-baseline gap-3 mb-1">
                 <span className="font-display text-sm text-zil-fg">
                   {p.tipo} {p.numero}/{p.ano}
                 </span>
@@ -106,7 +142,7 @@ export default function ProposicoesPage() {
                   </span>
                 )}
               </div>
-              <p className="text-sm text-zil-soft leading-relaxed mb-2">
+              <p className="text-sm text-zil-soft leading-relaxed mb-2 line-clamp-2">
                 {p.ementa}
               </p>
               <div className="flex flex-wrap items-center gap-2">
@@ -119,8 +155,14 @@ export default function ProposicoesPage() {
                   </span>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
+        </div>
+      )}
+
+      {!loading && (
+        <div className="mt-6 text-xs font-mono text-zil-muted">
+          {proposicoes.length} proposições
         </div>
       )}
     </div>

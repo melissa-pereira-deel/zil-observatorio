@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import settings, engine
 from models import Base
-from routers import parlamentares, legislativo
+from routers import parlamentares, legislativo, bussula
 
 
 @asynccontextmanager
@@ -41,6 +41,7 @@ app.add_middleware(
 
 app.include_router(parlamentares.router)
 app.include_router(legislativo.router)
+app.include_router(bussula.router)
 
 
 @app.get("/", tags=["Root"])
