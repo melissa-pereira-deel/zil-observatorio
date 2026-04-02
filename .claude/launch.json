@@ -32,11 +32,11 @@
     },
     {
       "name": "All Services (Docker Compose)",
-      "runtimeExecutable": "docker",
-      "runtimeArgs": ["compose", "up"],
-      "port": 8080,
+      "runtimeExecutable": "uvicorn",
+      "runtimeArgs": ["main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
+      "port": 8000,
       "autoPort": true,
-      "cwd": "."
+      "cwd": "apps/api"
     }
   ]
 }
