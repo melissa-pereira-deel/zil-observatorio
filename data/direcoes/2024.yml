@@ -1,0 +1,26 @@
+# Direção esperada de votações — 2024
+#
+# Formato:
+#   fonte_id: ID da votação na API de origem
+#   fonte: camara | senado
+#   direcao: sim | nao  ("sim" = votar SIM é pró-soberania industrial)
+#   peso: 0.5 | 1.0 | 2.0 | 3.0  (processual | padrão | comissão | plenário final)
+#   justificativa: explicação em português (obrigatória)
+#   categoria_principal: código ZIL principal desta votação
+#
+# Processo: discussão no Discord → PR com 2 aprovações de maintainers
+# Princípio: na dúvida, não classificar.
+#
+# Aplique ao banco: python scripts/apply_direcoes.py
+
+direcoes: []
+# Exemplo (remover comentário e preencher quando houver votações classificadas):
+#
+# - fonte_id: "12345"
+#   fonte: camara
+#   direcao: sim
+#   peso: 3.0
+#   justificativa: >
+#     PL 1234/2024 exige processamento local de nióbio antes de exportação.
+#     Votar sim é pró-soberania (ZIL-MIN). Consenso editorial em 2026-04-01.
+#   categoria_principal: ZIL-MIN

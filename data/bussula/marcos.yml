@@ -1,0 +1,87 @@
+# Bússola ZIL — Indicadores Estratégicos
+#
+# Estado atual da soberania industrial brasileira, por categoria ZIL.
+# Gerenciado pelos maintainers via PRs. Atualização trimestral ou quando
+# dado oficial for publicado.
+#
+# Processo: PR com link para a fonte no body + 1 aprovação de maintainer
+#
+# Formato de cada indicador:
+#   codigo:           identificador único (BUSSULA-CAT-NN)
+#   nome:             nome legível
+#   categoria:        código ZIL (ZIL-FER, ZIL-MIN, etc.)
+#   descricao:        o que o indicador mede
+#   valor_atual:      valor numérico atual
+#   unidade:          unidade de medida
+#   tendencia:        avancando | retrocedendo | estavel
+#   meta:             valor alvo (se definido)
+#   prazo:            ano-alvo da meta (se definido)
+#   fonte:            nome da fonte oficial
+#   fonte_url:        URL da fonte
+#   ultima_atualizacao: YYYY-MM (mês do dado)
+#   governo_referencia: governo em que o dado foi medido
+
+marcos:
+  - codigo: BUSSULA-FER-01
+    nome: Dependência de importação de fertilizantes
+    categoria: ZIL-FER
+    descricao: >
+      Percentual do consumo nacional de fertilizantes suprido por importações.
+      O Brasil importa principalmente ureia (nitrogênio), fosfato e cloreto de potássio.
+    valor_atual: 87
+    unidade: "% do consumo total importado"
+    tendencia: estavel
+    meta: 60
+    prazo: 2030
+    fonte: ANDA (Associação Nacional para Difusão de Adubos)
+    fonte_url: https://anda.org.br/
+    ultima_atualizacao: "2024-12"
+    governo_referencia: Lula III
+
+  - codigo: BUSSULA-MIN-01
+    nome: Exportação de nióbio processado vs. bruto
+    categoria: ZIL-MIN
+    descricao: >
+      Percentual da exportação de nióbio que sai como produto processado
+      (ferroniobio, liga) vs. minério bruto. Brasil detém 94% das reservas globais.
+    valor_atual: 95
+    unidade: "% exportado como produto processado (ferroniobio)"
+    tendencia: estavel
+    meta: 100
+    prazo: 2028
+    fonte: ANM (Agência Nacional de Mineração)
+    fonte_url: https://www.gov.br/anm/
+    ultima_atualizacao: "2024-06"
+    governo_referencia: Lula III
+
+  - codigo: BUSSULA-ENE-01
+    nome: Participação de renováveis na matriz elétrica
+    categoria: ZIL-ENE
+    descricao: >
+      Percentual da capacidade instalada de geração elétrica proveniente
+      de fontes renováveis (hidro, eólica, solar, biomassa).
+    valor_atual: 83
+    unidade: "% da matriz elétrica"
+    tendencia: avancando
+    meta: 90
+    prazo: 2030
+    fonte: ANEEL (Agência Nacional de Energia Elétrica)
+    fonte_url: https://www.aneel.gov.br/
+    ultima_atualizacao: "2024-12"
+    governo_referencia: Lula III
+
+  - codigo: BUSSULA-EDU-01
+    nome: Investimento em P&D como % do PIB
+    categoria: ZIL-EDU
+    descricao: >
+      Percentual do PIB investido em pesquisa e desenvolvimento.
+      Referência: Coreia do Sul 4.9%, Alemanha 3.1%, Brasil historicamente ~1.2%.
+    valor_atual: 1.2
+    unidade: "% do PIB"
+    tendencia: estavel
+    meta: 2.0
+    prazo: 2030
+    fonte: MCTI (Ministério da Ciência, Tecnologia e Inovação)
+    fonte_url: https://www.gov.br/mcti/
+    ultima_atualizacao: "2023-12"
+    governo_referencia: Lula III
