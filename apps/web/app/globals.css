@@ -4,6 +4,7 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
+/* ── Base ── */
 body {
   font-family: "Archivo", sans-serif;
   background-color: #f0ebe0;
@@ -13,4 +14,46 @@ body {
 ::selection {
   background-color: #1b6b3a;
   color: #fff;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d6cfc3;
+  border-radius: 3px;
+}
+
+/* ── Focus ring ── */
+@layer base {
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-zil-green;
+  }
+}
+
+/* ── Reusable component classes ── */
+@layer components {
+  .zil-container {
+    @apply max-w-5xl mx-auto px-5 md:px-8;
+  }
+
+  .zil-section {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  .zil-prose {
+    @apply max-w-3xl;
+  }
+
+  .zil-divider-line {
+    @apply h-px bg-zil-divider;
+  }
+
+  .zil-section-number {
+    @apply font-display text-4xl md:text-5xl text-zil-divider select-none;
+  }
 }

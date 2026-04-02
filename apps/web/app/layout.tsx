@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
+import { NavBar } from "@/components/NavBar";
 
 export const metadata: Metadata = {
   title: "ZIL Observatório — Soberania Industrial do Brasil",
@@ -22,52 +23,14 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="min-h-screen">
-        {/* Navigation */}
-        <nav className="border-b border-zil-divider">
-          <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3">
-              <span className="font-display text-2xl tracking-wider">ZIL</span>
-              <div className="flex gap-0.5">
-                <div className="w-5 h-1 bg-zil-gold skew-x-[-12deg]" />
-                <div className="w-2 h-1 bg-zil-green skew-x-[-12deg]" />
-              </div>
-            </Link>
-
-            <div className="flex items-center gap-6 text-sm font-medium text-zil-soft">
-              <Link
-                href="/ranking"
-                className="hover:text-zil-green transition-colors"
-              >
-                Ranking
-              </Link>
-              <Link
-                href="/proposicoes"
-                className="hover:text-zil-green transition-colors"
-              >
-                Proposições
-              </Link>
-              <Link
-                href="/manifesto"
-                className="hover:text-zil-green transition-colors"
-              >
-                Manifesto
-              </Link>
-              <Link
-                href="/sobre"
-                className="hover:text-zil-green transition-colors"
-              >
-                Sobre
-              </Link>
-            </div>
-          </div>
-        </nav>
+        <NavBar />
 
         <main>{children}</main>
 
         {/* Footer */}
         <footer className="bg-zil-green-dark text-zil-bg mt-20">
-          <div className="max-w-5xl mx-auto px-6 py-12">
-            <div className="flex justify-between items-start flex-wrap gap-8">
+          <div className="max-w-5xl mx-auto px-5 md:px-8 py-10 md:py-12">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-8">
               <div>
                 <div className="flex items-center gap-3 mb-3">
                   <span className="font-display text-xl">ZIL</span>
@@ -78,9 +41,9 @@ export default function RootLayout({
                   Brasil é de todos — e a soberania também.
                 </p>
               </div>
-              <div className="text-right">
+              <div className="sm:text-right">
                 <p className="font-mono text-xs tracking-widest opacity-30">
-                  2026 · AGPL-3.0
+                  2026 &middot; AGPL-3.0
                 </p>
                 <a
                   href="https://github.com/zil-observatorio/zil-observatorio"
