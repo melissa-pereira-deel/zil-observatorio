@@ -4,11 +4,11 @@ from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy import select, func
+from sqlalchemy import select, func, cast, Text
 from sqlalchemy.orm import Session
 
 from core.config import get_db
-from models import Proposicao, Votacao, Voto, Parlamentar
+from models import Proposicao, Votacao, Voto, Parlamentar, IngestionRun
 from schemas import ProposicaoRead, VotacaoRead, VotoRead
 
 router = APIRouter(tags=["Proposições e Votações"])
@@ -29,7 +29,7 @@ def listar_proposicoes(
     query = select(Proposicao).where(Proposicao.categorias_zil.isnot(None))
 
     if categoria:
-        query = query.where(Proposicao.categorias_zil.any(categoria))
+        query = query.where(cast(Proposicao.categorias_zil, Text).like(f'%"{categoria}"%'))
     if tipo:
         query = query.where(Proposicao.tipo == tipo.upper())
     if ano:
@@ -63,7 +63,7 @@ def listar_votacoes(
     query = select(Votacao).where(Votacao.categorias_zil.isnot(None))
 
     if categoria:
-        query = query.where(Votacao.categorias_zil.any(categoria))
+        query = query.where(cast(Votacao.categorias_zil, Text).like(f'%"{categoria}"%'))
     if ano:
         query = query.where(func.extract("year", Votacao.data) == ano)
 
@@ -105,7 +105,7 @@ def votos_da_votacao(votacao_id: UUID, db: Session = Depends(get_db)):
 
 @router.get("/stats")
 def estatisticas(db: Session = Depends(get_db)):
-    """Estatísticas gerais da plataforma."""
+    """Estatísticas gerais da plataforma (US-3 AC-1)."""
     total_parl = db.execute(select(func.count(Parlamentar.id))).scalar() or 0
     total_dep = db.execute(
         select(func.count(Parlamentar.id)).where(Parlamentar.fonte == "camara")
@@ -123,6 +123,11 @@ def estatisticas(db: Session = Depends(get_db)):
         select(func.avg(Parlamentar.score_zil)).where(Parlamentar.score_zil.isnot(None))
     ).scalar()
 
+    # ultima_atualizacao: finalizado_em do IngestionRun mais recente com status success (FR-009)
+    ultima_atualizacao = db.execute(
+        select(func.max(IngestionRun.finalizado_em)).where(IngestionRun.status == "success")
+    ).scalar()
+
     return {
         "total_parlamentares": total_parl,
         "total_deputados": total_dep,
@@ -130,4 +135,5 @@ def estatisticas(db: Session = Depends(get_db)):
         "total_proposicoes_zil": total_prop,
         "total_votacoes_zil": total_vot,
         "score_medio": round(float(score_medio), 2) if score_medio else None,
+        "ultima_atualizacao": ultima_atualizacao,
     }

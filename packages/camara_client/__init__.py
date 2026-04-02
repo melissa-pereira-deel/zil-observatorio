@@ -81,16 +81,17 @@ class CamaraClient:
                 data = resp.json()
                 return data.get("dados", data)
             except httpx.HTTPStatusError as e:
-                if e.response.status_code == 429:
-                    wait = RETRY_DELAY * (attempt + 1)
-                    logger.warning(f"Rate limited, aguardando {wait}s...")
+                if e.response.status_code in (429, 503, 504):
+                    wait = RETRY_DELAY * (2 ** attempt)
+                    logger.warning(f"HTTP {e.response.status_code} em {path}, aguardando {wait}s (tentativa {attempt + 1}/{MAX_RETRIES})...")
                     time.sleep(wait)
                     continue
                 raise
             except httpx.RequestError as e:
                 if attempt < MAX_RETRIES - 1:
-                    logger.warning(f"Request error (attempt {attempt + 1}): {e}")
-                    time.sleep(RETRY_DELAY)
+                    wait = RETRY_DELAY * (2 ** attempt)
+                    logger.warning(f"Request error (tentativa {attempt + 1}): {e}, aguardando {wait}s...")
+                    time.sleep(wait)
                     continue
                 raise
         return []
@@ -174,6 +175,17 @@ class CamaraClient:
     def obter_votacao_detalhes(self, votacao_id: str) -> dict:
         """Detalhes de uma votação, incluindo proposição associada."""
         return self._get(f"/votacoes/{votacao_id}")
+
+    def obter_votacao_orientacoes(self, votacao_id: str) -> list[dict]:
+        """Orientações dos partidos em uma votação.
+
+        Retorna lista de {siglaPartido, orientacao} para montar
+        o mapa partido → orientacao_partido nos votos individuais.
+        """
+        dados = self._get(f"/votacoes/{votacao_id}/orientacoes")
+        if not isinstance(dados, list):
+            return []
+        return dados
 
     # ── Proposições ──
 

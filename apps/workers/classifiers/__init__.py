@@ -97,12 +97,17 @@ def classificar_votacao(descricao: Optional[str] = None) -> list[str]:
     return classificar_texto(descricao or "")
 
 
-def relevancia_score(texto: str, categorias: list[str]) -> float:
+def relevancia_score(texto: str, categorias: Optional[list[str]] = None) -> float:
     """Calcula score de relevância (0.0 a 1.0) baseado em densidade de keywords.
 
     Útil para ranking de proposições por relevância dentro de uma categoria.
+    Se `categorias` for None, verifica contra todas as categorias ZIL.
     """
-    if not texto or not categorias:
+    if not texto:
+        return 0.0
+    if categorias is None:
+        categorias = list(_patterns.keys())
+    if not categorias:
         return 0.0
 
     total_matches = 0

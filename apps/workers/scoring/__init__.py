@@ -12,12 +12,19 @@ Onde:
 """
 
 import logging
+import sys
 from datetime import datetime
+from pathlib import Path
 
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
-from apps.api.models import (
+# Ensure apps/api is in sys.path so internal imports resolve consistently
+_api_dir = str(Path(__file__).parent.parent.parent / "apps" / "api")
+if _api_dir not in sys.path:
+    sys.path.insert(0, _api_dir)
+
+from models import (  # noqa: E402
     Parlamentar, Votacao, Voto, ScoreVotacao,
     VotoEnum, FonteEnum,
 )
@@ -42,7 +49,7 @@ def calcular_alinhamento(voto: VotoEnum, direcao_esperada: str) -> float:
 
 
 def recalcular_score_parlamentar(db: Session, parlamentar_id) -> float | None:
-    """Recalcula o Score ZIL de um parlamentar.
+    """Recalcula o Score ZIL de um parlamentar e persiste ScoreVotacao por voto.
 
     Returns:
         O score calculado, ou None se não houver dados suficientes.
@@ -70,6 +77,32 @@ def recalcular_score_parlamentar(db: Session, parlamentar_id) -> float | None:
 
         soma_ponderada += alinhamento * peso
         soma_pesos += peso
+
+        # Persistir ScoreVotacao (upsert por parlamentar_id + votacao_id)
+        existing_sv = db.execute(
+            select(ScoreVotacao).where(
+                ScoreVotacao.parlamentar_id == parlamentar_id,
+                ScoreVotacao.votacao_id == votacao.id,
+            )
+        ).scalar_one_or_none()
+
+        categoria = votacao.categorias_zil[0] if votacao.categorias_zil else "ZIL-????"
+        justificativa = f"Voto: {voto.voto.value} | Esperado: {votacao.direcao_esperada}"
+
+        if existing_sv:
+            existing_sv.impacto = alinhamento
+            existing_sv.peso = peso
+            existing_sv.justificativa = justificativa
+        else:
+            sv = ScoreVotacao(
+                parlamentar_id=parlamentar_id,
+                votacao_id=votacao.id,
+                categoria_zil=categoria,
+                impacto=alinhamento,
+                peso=peso,
+                justificativa=justificativa,
+            )
+            db.add(sv)
 
     if soma_pesos == 0:
         return None
