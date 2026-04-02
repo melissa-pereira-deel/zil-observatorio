@@ -1,8 +1,15 @@
 """Tests for the ZIL scoring engine."""
 
-import pytest
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).parent.parent
+for _p in (str(REPO_ROOT), str(REPO_ROOT / "apps" / "api")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 from apps.workers.scoring import calcular_alinhamento
-from apps.api.models import VotoEnum
+from models import VotoEnum
 
 
 class TestAlinhamento:
