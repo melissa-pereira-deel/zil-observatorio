@@ -58,6 +58,7 @@ celery -A apps.workers.tasks beat --loglevel=info
 docker-compose up
 
 # Pipeline de dados editorial (rodar na ordem, da raiz)
+python3 scripts/migrate_enrichment.py       # migração: novos campos Feature 002 (idempotente)
 python3 scripts/sync_votacoes_zil.py        # sync só votações ZIL definidas nos YAMLs
 python3 scripts/apply_direcoes.py           # aplica direcao_esperada + peso ao banco
 python3 -c "

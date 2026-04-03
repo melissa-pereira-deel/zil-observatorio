@@ -230,3 +230,80 @@ def task_recalcular_scores(self):
         raise
     finally:
         db.close()
+
+
+@app.task(
+    name="workers.tasks.task_enriquecer_proposicao",
+    bind=True,
+    max_retries=3,
+    default_retry_delay=30,
+    retry_backoff=True,
+    retry_backoff_max=270,
+    retry_jitter=False,
+)
+def task_enriquecer_proposicao(self, proposicao_id: str, force: bool = False):
+    """
+    Enrich a proposição with LLM-generated context (Feature 002, FR-008).
+    Retries with backoff: 30s → 90s → 270s.
+    """
+    logger.info(f"Task: task_enriquecer_proposicao proposicao={proposicao_id} force={force}")
+    db = _get_db()
+    try:
+        from uuid import UUID
+        from apps.workers.enrichment import enriquecer_proposicao
+        result = enriquecer_proposicao(UUID(proposicao_id), db, force=force)
+        logger.info(f"Task: task_enriquecer_proposicao done — {result}")
+        return result
+    except Exception as exc:
+        logger.error(f"Task: task_enriquecer_proposicao falhou proposicao={proposicao_id}: {exc}")
+        raise self.retry(exc=exc)
+    finally:
+        db.close()
+
+
+@app.task(
+    name="workers.tasks.task_enriquecer_pendentes",
+    bind=True,
+    autoretry_for=(Exception,),
+    max_retries=2,
+    retry_backoff=True,
+    retry_backoff_max=300,
+    retry_jitter=False,
+)
+def task_enriquecer_pendentes(self):
+    """
+    Enqueue enrichment for all proposicoes with categorias_zil but no enrichment yet.
+    Runs hourly via beat schedule. Dispatches individual tasks per proposição.
+    """
+    from sqlalchemy import select
+    from apps.api.models import Proposicao
+
+    logger.info("Task: task_enriquecer_pendentes iniciada")
+    db = _get_db()
+    try:
+        pendentes = db.execute(
+            select(Proposicao.id).where(
+                Proposicao.categorias_zil.isnot(None),
+                Proposicao.contexto_status.is_(None),
+            )
+        ).scalars().all()
+
+        count = 0
+        for pid in pendentes:
+            task_enriquecer_proposicao.delay(str(pid), force=False)
+            count += 1
+
+        logger.info(f"Task: task_enriquecer_pendentes enqueued {count} tasks")
+        return {"status": "ok", "enqueued": count}
+    except Exception as exc:
+        logger.error(f"Task: task_enriquecer_pendentes falhou: {exc}")
+        raise
+    finally:
+        db.close()
+
+
+# Add hourly enrichment schedule
+app.conf.beat_schedule["enriquecer-pendentes-horario"] = {
+    "task": "workers.tasks.task_enriquecer_pendentes",
+    "schedule": 3600,  # every hour
+}

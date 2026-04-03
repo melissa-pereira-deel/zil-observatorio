@@ -23,6 +23,33 @@ export interface Proposicao {
   data_apresentacao: string | null;
   categorias_zil: string[] | null;
   relevancia_zil: number | null;
+  // Enrichment fields (Feature 002)
+  contexto_status: string | null;
+  resumo_simples: string | null;
+  confianca: number | null;
+}
+
+export interface LeiReferenciada {
+  lei_id: string;
+  numero_artigo: string;
+  url_planalto: string | null;
+  status: string;
+  texto_snippet: string | null;
+}
+
+export interface ProposicaoContexto {
+  proposicao_id: string;
+  ementa_original: string | null;
+  contexto_status: string | null;
+  resumo_simples: string | null;
+  glossario: Record<string, string> | null;
+  impacto_zil: string | null;
+  leis_referenciadas: LeiReferenciada[] | null;
+  confianca: number | null;
+  enriquecido_em: string | null;
+  versao_pipeline: string;
+  modelo_llm: string | null;
+  fontes: string[];
 }
 
 export interface VotoHistorico {
@@ -74,5 +101,7 @@ export const api = {
     listar: (params?: Record<string, string>) =>
       fetchApi<Proposicao[]>("/proposicoes", params),
     obter: (id: string) => fetchApi<Proposicao>(`/proposicoes/${id}`),
+    contexto: (id: string) =>
+      fetchApi<ProposicaoContexto>(`/proposicoes/${id}/contexto`),
   },
 };

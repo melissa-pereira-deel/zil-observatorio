@@ -4,7 +4,7 @@ from datetime import datetime, date
 from uuid import UUID
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 # ── Parlamentar ──
@@ -58,9 +58,40 @@ class ProposicaoRead(BaseModel):
     categorias_zil: Optional[list[str]] = None
     relevancia_zil: Optional[float] = None
     url_inteiro_teor: Optional[str] = None
+    # Enrichment fields (Feature 002)
+    contexto_status: Optional[str] = None
+    resumo_simples: Optional[str] = None
+    confianca: Optional[float] = None
 
     class Config:
         from_attributes = True
+
+
+# ── Enrichment / Contexto (Feature 002) ──
+
+class LeiReferenciadaRead(BaseModel):
+    lei_id: str
+    numero_artigo: str
+    url_planalto: Optional[str] = None
+    status: str
+    texto_snippet: Optional[str] = None
+
+
+class ProposicaoContexto(BaseModel):
+    proposicao_id: UUID
+    ementa_original: Optional[str] = None
+    contexto_status: Optional[str] = None
+    resumo_simples: Optional[str] = None
+    glossario: Optional[dict] = None
+    impacto_zil: Optional[str] = None
+    leis_referenciadas: Optional[list[LeiReferenciadaRead]] = None
+    confianca: Optional[float] = None
+    enriquecido_em: Optional[datetime] = None
+    versao_pipeline: str = "1.0"
+    modelo_llm: Optional[str] = None
+    fontes: list[str] = []
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Votação ──

@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     ENV: str = "development"
     CAMARA_API_BASE: str = "https://dadosabertos.camara.leg.br/api/v2"
     SENADO_API_BASE: str = "https://legis.senado.leg.br/dadosabertos"
+    # Enrichment pipeline (Feature 002)
+    ANTHROPIC_API_KEY: str = ""
+    ADMIN_TOKEN: str = ""
+    ENRICHMENT_MODEL: str = "claude-haiku-4-5-20251001"
 
     class Config:
         env_file = str(_ENV_FILE)
