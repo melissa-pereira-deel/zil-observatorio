@@ -129,6 +129,15 @@ with Session(engine) as db: print(recalcular_todos_scores(db), 'scores calculado
 | UI-007 | Unificar sistema de badges — `Badge.tsx` com variantes `category`, `status`, `result` | Visual | `components/ui/Badge.tsx` (novo), `/[id]/page.tsx` |
 | UI-008 | Ementa colapsada por padrão — primeira dobra sem jargão legal quando não há resumo_simples | Visual | `proposicoes/[id]/page.tsx` |
 
+### UI/UX — Direção esperada e detalhes de proposição (design critique 2026-04-02 #2)
+
+| # | Task | Severidade | Arquivos principais |
+|---|------|-----------|-------------------|
+| UI-009 | `DirecaoBadge` — componente compartilhado para `direcao_esperada`; exibe FAVORÁVEL/CONTRÁRIA com link para /metodologia | Estrutural | `components/DirecaoBadge.tsx` (novo), `proposicoes/[id]/page.tsx`, `votacoes/[id]/page.tsx` |
+| UI-010 | Síntese de posição ZIL na proposição — "ZIL avalia: FAVORÁVEL · com base em N votações" acima da lista de votações | Estrutural | `proposicoes/[id]/page.tsx` |
+| UI-011 | `resultado` inferido de `votos_sim/votos_nao` quando null — badge com `*` + `title` explicativo | Comportamental | `proposicoes/[id]/page.tsx` |
+| UI-012 | Unificar padrão de collapse — substituir `useState` accordion por `<details>/<summary>` nativo | Visual | `proposicoes/[id]/page.tsx` |
+
 ## Fora do escopo v1 (não implementar)
 
 - Autenticação / login / contas de usuário
