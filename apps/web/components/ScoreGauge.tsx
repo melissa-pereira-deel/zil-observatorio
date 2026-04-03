@@ -29,8 +29,8 @@ export function ScoreGauge({ score, size = "md" }: ScoreGaugeProps) {
     if (s >= 5) return { bg: "bg-zil-green/10", border: "border-zil-green", text: "text-zil-green" };
     if (s >= 2) return { bg: "bg-zil-green/5", border: "border-zil-green/50", text: "text-zil-green" };
     if (s >= -2) return { bg: "bg-zil-gold/10", border: "border-zil-gold", text: "text-zil-gold-dark" };
-    if (s >= -5) return { bg: "bg-orange-50", border: "border-orange-300", text: "text-orange-600" };
-    return { bg: "bg-red-50", border: "border-red-300", text: "text-red-600" };
+    if (s >= -5) return { bg: "bg-zil-orange-light", border: "border-zil-orange", text: "text-zil-orange" };
+    return { bg: "bg-zil-red/10", border: "border-zil-red", text: "text-zil-red" };
   };
 
   const colors = getColor(score);

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
+import { CATEGORIA_LABELS } from "@/lib/categorias";
 import type { VotoHistorico } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -23,18 +24,6 @@ interface ParlamentarDetail {
   frentes_parlamentares: string[] | null;
 }
 
-const LABEL: Record<string, string> = {
-  "ZIL-FER": "Fertilizantes",
-  "ZIL-MIN": "Minerais",
-  "ZIL-SEM": "Semicondutores",
-  "ZIL-ENE": "Energia",
-  "ZIL-DIG": "Digital",
-  "ZIL-DEF": "Defesa",
-  "ZIL-EDU": "Educação",
-  "ZIL-AGR": "Agro",
-  "ZIL-COM": "Comércio",
-};
-
 const VOTO_LABEL: Record<string, string> = {
   sim: "SIM",
   nao: "NÃO",
@@ -46,6 +35,7 @@ const VOTO_LABEL: Record<string, string> = {
 
 export default function ParlamentarPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params?.parlamentar_id as string;
 
   const [parl, setParl] = useState<ParlamentarDetail | null>(null);
@@ -73,7 +63,6 @@ export default function ParlamentarPage() {
     load();
   }, [id]);
 
-  // Category breakdown computed from vote history
   const breakdown = useMemo(() => {
     const map: Record<string, { alinhados: number; contra: number; total: number }> = {};
     for (const v of votos) {
@@ -84,8 +73,7 @@ export default function ParlamentarPage() {
         if (v.alinhado === false) map[cat].contra++;
       }
     }
-    return Object.entries(map)
-      .sort((a, b) => b[1].total - a[1].total);
+    return Object.entries(map).sort((a, b) => b[1].total - a[1].total);
   }, [votos]);
 
   const votosFiltrados = filtroCategoria
@@ -94,6 +82,15 @@ export default function ParlamentarPage() {
 
   const alinhados = votos.filter((v) => v.alinhado === true).length;
   const contra = votos.filter((v) => v.alinhado === false).length;
+  const semDirecao = votos.length - alinhados - contra;
+  const pctAlinhado = votos.length > 0 ? Math.round((alinhados / votos.length) * 100) : 0;
+
+  const scoreDisplay =
+    parl?.score_zil !== null && parl?.score_zil !== undefined
+      ? parl.score_zil > 0
+        ? `+${parl.score_zil.toFixed(1)}`
+        : parl.score_zil.toFixed(1)
+      : null;
 
   if (loading) {
     return (
@@ -114,16 +111,16 @@ export default function ParlamentarPage() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
       {/* Back */}
-      <Link
-        href="/ranking"
+      <button
+        onClick={() => router.back()}
         className="font-mono text-xs text-zil-muted hover:text-zil-green mb-8 inline-block"
       >
-        ← Voltar ao ranking
-      </Link>
+        ← Voltar
+      </button>
 
       {/* Profile header */}
-      <div className="flex items-start gap-6 flex-wrap mb-10">
-        <div className="w-24 h-24 rounded-full bg-zil-divider overflow-hidden shrink-0">
+      <div className="flex items-start gap-6 flex-wrap mb-8">
+        <div className="w-20 h-20 rounded-full bg-zil-divider overflow-hidden shrink-0">
           {parl.foto_url && (
             <img
               src={parl.foto_url}
@@ -156,40 +153,83 @@ export default function ParlamentarPage() {
             </a>
           )}
         </div>
-
-        <div className="text-center">
-          <ScoreGauge score={parl.score_zil} size="lg" />
-          <p className="font-mono text-xs text-zil-muted mt-2">Score ZIL</p>
-          {parl.score_atualizado_em && (
-            <p className="font-mono text-xs text-zil-muted opacity-50 mt-1">
-              atualizado {new Date(parl.score_atualizado_em).toLocaleDateString("pt-BR")}
-            </p>
-          )}
-        </div>
       </div>
 
-      {/* Stats bar */}
-      <div className="flex gap-8 py-4 border-y border-zil-divider mb-10">
-        <div>
-          <div className="font-display text-xl text-zil-green">{alinhados}</div>
-          <div className="font-mono text-xs text-zil-muted">votos alinhados</div>
+      {/* Hero Metric Block — UI-013 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zil-divider border border-zil-divider mb-10">
+
+        {/* Coluna esquerda: Score */}
+        <div className="bg-zil-white px-6 py-5 flex items-center gap-5">
+          <ScoreGauge score={parl.score_zil} size="lg" />
+          <div>
+            <div className="font-mono text-2xs text-zil-muted uppercase tracking-wider mb-1">
+              Score ZIL
+            </div>
+            <div className="font-display text-4xl text-zil-fg leading-none mb-1">
+              {scoreDisplay ?? "—"}
+            </div>
+            <div className="font-mono text-2xs text-zil-muted">
+              escala de −10 a +10
+            </div>
+            {parl.score_atualizado_em && (
+              <div className="font-mono text-2xs text-zil-muted opacity-60 mt-1">
+                atualizado {new Date(parl.score_atualizado_em).toLocaleDateString("pt-BR")}
+              </div>
+            )}
+          </div>
         </div>
-        <div>
-          <div className="font-display text-xl text-zil-orange">{contra}</div>
-          <div className="font-mono text-xs text-zil-muted">votos contra</div>
-        </div>
-        <div>
-          <div className="font-display text-xl text-zil-soft">{votos.length}</div>
-          <div className="font-mono text-xs text-zil-muted">total pautas ZIL</div>
+
+        {/* Coluna direita: Proporção de alinhamento */}
+        <div className="bg-zil-white px-6 py-5">
+          <div className="font-mono text-2xs text-zil-muted uppercase tracking-wider mb-3">
+            Alinhamento ZIL
+          </div>
+          {votos.length > 0 ? (
+            <>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="font-display text-3xl text-zil-green leading-none">
+                  {alinhados}
+                </span>
+                <span className="font-mono text-sm text-zil-muted">
+                  de {votos.length} votos
+                </span>
+                <span className="font-mono text-sm text-zil-soft font-semibold">
+                  ({pctAlinhado}%)
+                </span>
+              </div>
+              <div className="h-2 bg-zil-divider rounded-full overflow-hidden mb-2">
+                <div
+                  className="h-full bg-zil-green rounded-full transition-all"
+                  style={{ width: `${pctAlinhado}%` }}
+                />
+              </div>
+              <div className="font-mono text-2xs text-zil-muted">
+                {contra > 0 && <span>{contra} contra · </span>}
+                {semDirecao > 0 && <span>{semDirecao} sem posição definida</span>}
+              </div>
+            </>
+          ) : (
+            <p className="font-mono text-xs text-zil-muted">
+              Nenhuma votação ZIL registrada para este parlamentar.
+              <br />
+              <span className="opacity-70">
+                A cobertura atual inclui votações da Câmara dos Deputados.
+              </span>
+            </p>
+          )}
         </div>
       </div>
 
       {/* Category breakdown */}
       {breakdown.length > 0 && (
         <div className="mb-10">
-          <h2 className="font-display text-base uppercase tracking-wide mb-4">
+          <h2 className="font-display text-base uppercase tracking-wide mb-1">
             Participação por pauta
           </h2>
+          {/* UI-015: instrução de interatividade */}
+          <p className="font-mono text-2xs text-zil-muted mb-4">
+            Clique em uma pauta para filtrar o histórico abaixo
+          </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {breakdown.map(([cat, stats]) => {
               const pct = stats.total > 0
@@ -199,6 +239,7 @@ export default function ParlamentarPage() {
                 <button
                   key={cat}
                   onClick={() => setFiltroCategoria(filtroCategoria === cat ? "" : cat)}
+                  title={`Filtrar histórico por ${CATEGORIA_LABELS[cat] ?? cat}`}
                   className={`text-left p-3 border transition-colors ${
                     filtroCategoria === cat
                       ? "border-zil-green bg-zil-green/5"
@@ -207,7 +248,7 @@ export default function ParlamentarPage() {
                 >
                   <div className="font-mono text-xs text-zil-muted mb-1">{cat}</div>
                   <div className="font-display text-sm text-zil-fg">
-                    {LABEL[cat] ?? cat}
+                    {CATEGORIA_LABELS[cat] ?? cat}
                   </div>
                   <div className="flex items-center gap-2 mt-2">
                     <div className="flex-1 h-1 bg-zil-divider rounded-full overflow-hidden">
@@ -224,33 +265,71 @@ export default function ParlamentarPage() {
               );
             })}
           </div>
+
+          {/* UI-015: filtro ativo com badge */}
           {filtroCategoria && (
-            <button
-              onClick={() => setFiltroCategoria("")}
-              className="mt-3 font-mono text-xs text-zil-muted hover:text-zil-fg"
-            >
-              × Limpar filtro
-            </button>
+            <div className="mt-3 flex items-center gap-2">
+              <span className="font-mono text-xs text-zil-soft border border-zil-green/40 px-2 py-0.5 bg-zil-green/5">
+                Filtrando: {CATEGORIA_LABELS[filtroCategoria] ?? filtroCategoria}
+              </span>
+              <button
+                onClick={() => setFiltroCategoria("")}
+                className="font-mono text-xs text-zil-muted hover:text-zil-fg"
+              >
+                × Limpar
+              </button>
+            </div>
           )}
         </div>
       )}
 
-      {/* Vote history */}
-      <h2 className="font-display text-base uppercase tracking-wide mb-4">
-        Histórico de votos em pautas ZIL
-        {filtroCategoria && (
-          <span className="font-mono text-xs text-zil-muted normal-case tracking-normal ml-2">
-            — {LABEL[filtroCategoria] ?? filtroCategoria}
+      {/* Vote history — UI-017: título com contagem */}
+      <div className="flex items-baseline justify-between mb-4">
+        <h2 className="font-display text-base uppercase tracking-wide">
+          Histórico de votos em pautas ZIL
+          {filtroCategoria && (
+            <span className="font-mono text-xs text-zil-muted normal-case tracking-normal ml-2">
+              — {CATEGORIA_LABELS[filtroCategoria] ?? filtroCategoria}
+            </span>
+          )}
+        </h2>
+        <span className="font-mono text-xs text-zil-muted shrink-0">
+          {filtroCategoria
+            ? `${votosFiltrados.length} de ${votos.length}`
+            : votos.length}{" "}
+          votações
+        </span>
+      </div>
+
+      {/* UI-014: Legenda do duplo encoding */}
+      {votos.length > 0 && (
+        <div className="flex flex-wrap gap-x-5 gap-y-1 mb-3 pb-3 border-b border-zil-divider">
+          <span className="font-mono text-2xs text-zil-muted flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-zil-green inline-block shrink-0" />
+            alinhado com ZIL
           </span>
-        )}
-      </h2>
+          <span className="font-mono text-2xs text-zil-muted flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-zil-orange inline-block shrink-0" />
+            contra a posição ZIL
+          </span>
+          <span className="font-mono text-2xs text-zil-muted flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-zil-divider inline-block shrink-0" />
+            sem posição definida
+          </span>
+          <span className="font-mono text-2xs text-zil-muted opacity-70">
+            · badge = voto registrado
+          </span>
+        </div>
+      )}
 
       {votosFiltrados.length === 0 ? (
         <p className="text-sm text-zil-muted py-8">
-          Nenhuma votação registrada{filtroCategoria ? " nessa categoria" : ""}.
+          {filtroCategoria
+            ? "Nenhuma votação nessa categoria."
+            : "Nenhuma votação ZIL registrada para este parlamentar."}
         </p>
       ) : (
-        <div className="border-t border-zil-divider">
+        <div>
           {votosFiltrados.map((v) => (
             <div
               key={v.votacao_id}
@@ -267,7 +346,6 @@ export default function ParlamentarPage() {
               />
 
               <div className="flex-1 min-w-0">
-                {/* Proposição como identificador principal */}
                 {v.proposicao_label && (
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-display text-sm text-zil-fg">
@@ -284,7 +362,6 @@ export default function ParlamentarPage() {
                     )}
                   </div>
                 )}
-                {/* Descrição processual como secundária */}
                 <p className={`leading-relaxed ${v.proposicao_label ? "text-xs text-zil-muted" : "text-sm text-zil-fg"}`}>
                   {v.descricao || "Votação sem descrição"}
                 </p>

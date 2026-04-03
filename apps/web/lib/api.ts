@@ -23,6 +23,7 @@ export interface Proposicao {
   data_apresentacao: string | null;
   categorias_zil: string[] | null;
   relevancia_zil: number | null;
+  url_inteiro_teor: string | null;
   // Enrichment fields (Feature 002)
   contexto_status: string | null;
   resumo_simples: string | null;
