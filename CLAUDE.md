@@ -106,15 +106,28 @@ with Session(engine) as db: print(recalcular_todos_scores(db), 'scores calculado
 | # | Feature | Status |
 |---|---------|--------|
 | 001 | Ingestão Câmara + scoring + API | ✅ concluído |
-| 002 | Ingestão Senado Federal | backlog |
+| 002 | Pipeline de enriquecimento legislativo (LLM + Planalto) | ✅ concluído |
 | 003 | Workflow editorial via código (YAML + scripts) | backlog |
-| 004 | Frontend: /ranking com dados reais | backlog |
-| 005 | Frontend: /parlamentar/[id] | backlog |
-| 006 | Frontend: /proposicoes | backlog |
+| 004 | Frontend: /ranking com dados reais | ✅ concluído |
+| 005 | Frontend: /parlamentar/[id] | ✅ concluído |
+| 006 | Frontend: /proposicoes | ✅ concluído |
 | 007 | Frontend: /bussula | backlog |
 | 008 | Frontend: /metodologia | backlog |
 | 009 | CI/CD (GitHub Actions) | backlog |
 | 010 | Deploy produção | backlog |
+
+### UI/UX — Melhorias de credibilidade e usabilidade (design critique 2026-04-02)
+
+| # | Task | Severidade | Arquivos principais |
+|---|------|-----------|-------------------|
+| UI-001 | Score com âncora de credibilidade — tooltip no gauge com "baseado em N votos · ver metodologia →" | Estrutural | `ScoreGauge.tsx`, `ranking/page.tsx`, `parlamentar/[id]/page.tsx` |
+| UI-002 | Remover "Contexto pendente" da UI pública — badge só aparece quando `pronto` | Estrutural | `ContextoBadge.tsx` |
+| UI-003 | Contagem de resultados acima da lista — escopo visível antes de rolar | Comportamental | `ranking/page.tsx`, `proposicoes/page.tsx` |
+| UI-004 | Empty states significativos — explicar ausência de dados vs. limitação de cobertura | Comportamental | `parlamentar/[id]/page.tsx`, `proposicoes/page.tsx`, `ranking/page.tsx` |
+| UI-005 | Unificar linguagem de filtros — busca textual na mesma linha dos dropdowns; ordenação separada de filtros | Comportamental | `proposicoes/page.tsx`, `ranking/page.tsx` |
+| UI-006 | Remover decoração tipográfica sem função — letra gigante (R, P) nos títulos de seção | Visual | `ranking/page.tsx`, `proposicoes/page.tsx` |
+| UI-007 | Unificar sistema de badges — `Badge.tsx` com variantes `category`, `status`, `result` | Visual | `components/ui/Badge.tsx` (novo), `/[id]/page.tsx` |
+| UI-008 | Ementa colapsada por padrão — primeira dobra sem jargão legal quando não há resumo_simples | Visual | `proposicoes/[id]/page.tsx` |
 
 ## Fora do escopo v1 (não implementar)
 
