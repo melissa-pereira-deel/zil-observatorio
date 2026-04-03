@@ -31,6 +31,7 @@ export default function ProposicoesPage() {
   const [categoria, setCategoria] = useState("");
   const [tipo, setTipo] = useState("");
   const [ano, setAno] = useState("");
+  const [busca, setBusca] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -50,6 +51,13 @@ export default function ProposicoesPage() {
     }
     load();
   }, [categoria, tipo, ano]);
+
+  const filtered = busca
+    ? proposicoes.filter((p) =>
+        p.ementa?.toLowerCase().includes(busca.toLowerCase()) ||
+        p.resumo_simples?.toLowerCase().includes(busca.toLowerCase())
+      )
+    : proposicoes;
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
@@ -91,8 +99,16 @@ export default function ProposicoesPage() {
         ))}
       </div>
 
-      {/* Tipo + Ano filters */}
+      {/* Tipo + Ano + Busca filters */}
       <div className="flex flex-wrap gap-3 mb-8">
+        <input
+          type="text"
+          placeholder="Buscar por ementa..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          className="px-4 py-2 border border-zil-divider bg-transparent text-sm font-body focus:outline-none focus:border-zil-green w-64"
+        />
+
         <select
           value={tipo}
           onChange={(e) => setTipo(e.target.value)}
@@ -121,13 +137,13 @@ export default function ProposicoesPage() {
         <div className="py-20 text-center font-mono text-sm text-zil-muted">
           Carregando proposições...
         </div>
-      ) : proposicoes.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="py-20 text-center font-mono text-sm text-zil-muted">
           Nenhuma proposição encontrada.
         </div>
       ) : (
         <div className="border-t border-zil-divider">
-          {proposicoes.map((p) => (
+          {filtered.map((p) => (
             <Link
               key={p.id}
               href={`/proposicoes/${p.id}`}
@@ -169,7 +185,7 @@ export default function ProposicoesPage() {
 
       {!loading && (
         <div className="mt-6 text-xs font-mono text-zil-muted">
-          {proposicoes.length} proposições
+          {filtered.length}{busca && filtered.length !== proposicoes.length ? ` de ${proposicoes.length}` : ""} proposições
         </div>
       )}
     </div>

@@ -10,7 +10,52 @@ from sqlalchemy.orm import Session
 
 from core.config import get_db, settings
 from models import Proposicao, Votacao, Voto, Parlamentar, IngestionRun
-from schemas import ProposicaoRead, VotacaoRead, VotoRead, ProposicaoContexto, LeiReferenciadaRead
+from schemas import ProposicaoRead, VotacaoRead, VotoRead, ProposicaoContexto, LeiReferenciadaRead, ProposicaoSnippet
+
+import re
+
+_PLACAR_RE = re.compile(
+    r"[.,]?\s*sim\s*:\s*\d+\s*;.*$",
+    re.IGNORECASE,
+)
+
+def _strip_placar(descricao: Optional[str]) -> Optional[str]:
+    """Remove inline vote tally from Câmara session description.
+
+    E.g. 'Aprovada a subemenda. Sim: 429; não: 19; abstenção: 3; total: 451.'
+    becomes 'Aprovada a subemenda.'
+    """
+    if not descricao:
+        return descricao
+    return _PLACAR_RE.sub("", descricao).strip().rstrip(".")
+
+
+def _votacao_to_read(v: Votacao, proposicao: Optional[Proposicao] = None) -> VotacaoRead:
+    snippet = None
+    if proposicao:
+        snippet = ProposicaoSnippet(
+            id=proposicao.id,
+            tipo=proposicao.tipo,
+            numero=proposicao.numero,
+            ano=proposicao.ano,
+            ementa=proposicao.ementa,
+            resumo_simples=proposicao.resumo_simples,
+        )
+    return VotacaoRead(
+        id=v.id,
+        fonte_id=v.fonte_id,
+        fonte=v.fonte.value,
+        data=v.data,
+        descricao=_strip_placar(v.descricao),
+        resultado=v.resultado,
+        votos_sim=v.votos_sim,
+        votos_nao=v.votos_nao,
+        categorias_zil=v.categorias_zil,
+        direcao_esperada=v.direcao_esperada,
+        peso=v.peso,
+        proposicao=snippet,
+    )
+
 
 router = APIRouter(tags=["Proposições e Votações"])
 
@@ -125,7 +170,8 @@ def votacoes_da_proposicao(proposicao_id: UUID, db: Session = Depends(get_db)):
         .where(Votacao.proposicao_id == proposicao_id)
         .order_by(Votacao.data.desc().nulls_last())
     )
-    return db.execute(query).scalars().all()
+    votacoes = db.execute(query).scalars().all()
+    return [_votacao_to_read(v, p) for v in votacoes]
 
 
 # ── Votações ──
@@ -139,7 +185,11 @@ def listar_votacoes(
     db: Session = Depends(get_db),
 ):
     """Lista votações classificadas por pauta ZIL."""
-    query = select(Votacao).where(Votacao.categorias_zil.isnot(None))
+    query = (
+        select(Votacao, Proposicao)
+        .outerjoin(Proposicao, Votacao.proposicao_id == Proposicao.id)
+        .where(Votacao.categorias_zil.isnot(None))
+    )
 
     if categoria:
         query = query.where(cast(Votacao.categorias_zil, Text).like(f'%"{categoria}"%'))
@@ -149,15 +199,21 @@ def listar_votacoes(
     query = query.order_by(Votacao.data.desc().nulls_last())
     query = query.offset((page - 1) * per_page).limit(per_page)
 
-    return db.execute(query).scalars().all()
+    rows = db.execute(query).all()
+    return [_votacao_to_read(v, p) for v, p in rows]
 
 
 @router.get("/votacoes/{votacao_id}", response_model=VotacaoRead)
 def obter_votacao(votacao_id: UUID, db: Session = Depends(get_db)):
-    v = db.get(Votacao, votacao_id)
-    if not v:
+    row = db.execute(
+        select(Votacao, Proposicao)
+        .outerjoin(Proposicao, Votacao.proposicao_id == Proposicao.id)
+        .where(Votacao.id == votacao_id)
+    ).first()
+    if not row:
         raise HTTPException(status_code=404, detail="Votação não encontrada")
-    return v
+    v, p = row
+    return _votacao_to_read(v, p)
 
 
 @router.get("/votacoes/{votacao_id}/votos", response_model=list[VotoRead])

@@ -261,22 +261,39 @@ export default function ProposicaoDetailPage() {
             <div key={v.id} className="py-5 border-b border-zil-divider">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-zil-fg leading-relaxed mb-2">
-                    {v.descricao || "Votação sem descrição"}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-zil-muted">
+                  {/* Resultado como elemento principal */}
+                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                    {v.resultado && (
+                      <span
+                        className={`font-mono text-xs font-semibold px-2 py-0.5 rounded-sm ${
+                          v.resultado.toLowerCase().includes("aprovad")
+                            ? "bg-zil-green/10 text-zil-green"
+                            : v.resultado.toLowerCase().includes("rejeitad")
+                            ? "bg-zil-orange-light text-zil-orange"
+                            : "bg-zil-card text-zil-muted"
+                        }`}
+                      >
+                        {v.resultado}
+                      </span>
+                    )}
                     {v.data && (
-                      <span>
+                      <span className="font-mono text-xs text-zil-muted">
                         {new Date(v.data).toLocaleDateString("pt-BR")}
                       </span>
                     )}
-                    {v.resultado && <span>{v.resultado}</span>}
                     {v.direcao_esperada && (
-                      <span className={v.direcao_esperada === "sim" ? "text-zil-green" : "text-zil-orange"}>
-                        Direção esperada: votar {v.direcao_esperada.toUpperCase()}
+                      <span className={`font-mono text-xs ${v.direcao_esperada === "sim" ? "text-zil-green" : "text-zil-orange"}`}>
+                        Direção esperada: {v.direcao_esperada.toUpperCase()}
                       </span>
                     )}
                   </div>
+
+                  {/* Descrição processual como secundária */}
+                  {v.descricao && (
+                    <p className="text-xs text-zil-muted leading-relaxed">
+                      {v.descricao}
+                    </p>
+                  )}
                 </div>
 
                 {/* Placar */}

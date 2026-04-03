@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.config import get_db
-from models import Parlamentar, Voto, Votacao, FonteEnum
+from models import Parlamentar, Voto, Votacao, Proposicao, FonteEnum
 from schemas import ParlamentarRead, ParlamentarRanking, VotoHistorico
 
 router = APIRouter(prefix="/parlamentares", tags=["Parlamentares"])
@@ -93,8 +93,9 @@ def votos_zil_parlamentar(
         raise HTTPException(status_code=404, detail="Parlamentar não encontrado")
 
     query = (
-        select(Voto, Votacao)
+        select(Voto, Votacao, Proposicao)
         .join(Votacao, Voto.votacao_id == Votacao.id)
+        .outerjoin(Proposicao, Votacao.proposicao_id == Proposicao.id)
         .where(Voto.parlamentar_id == parlamentar_id)
         .where(Votacao.categorias_zil.isnot(None))
         .order_by(Votacao.data.desc())
@@ -103,13 +104,17 @@ def votos_zil_parlamentar(
     rows = db.execute(query).all()
 
     results = []
-    for voto, votacao in rows:
+    for voto, votacao, proposicao in rows:
         if categoria and (not votacao.categorias_zil or categoria not in votacao.categorias_zil):
             continue
 
         alinhado = None
         if votacao.direcao_esperada:
             alinhado = voto.voto.value == votacao.direcao_esperada
+
+        prop_label = None
+        if proposicao and proposicao.tipo and proposicao.numero and proposicao.ano:
+            prop_label = f"{proposicao.tipo} {proposicao.numero}/{proposicao.ano}"
 
         results.append(VotoHistorico(
             votacao_id=votacao.id,
@@ -119,6 +124,8 @@ def votos_zil_parlamentar(
             voto=voto.voto.value,
             direcao_esperada=votacao.direcao_esperada,
             alinhado=alinhado,
+            proposicao_label=prop_label,
+            proposicao_id=proposicao.id if proposicao else None,
         ))
 
     return results

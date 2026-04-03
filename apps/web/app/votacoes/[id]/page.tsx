@@ -7,6 +7,15 @@ import { CategoriaBadge } from "@/components/CategoriaBadge";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+interface ProposicaoSnippet {
+  id: string;
+  tipo: string | null;
+  numero: number | null;
+  ano: number | null;
+  ementa: string | null;
+  resumo_simples: string | null;
+}
+
 interface VotoIndividual {
   parlamentar_id: string;
   parlamentar_nome: string;
@@ -26,7 +35,17 @@ interface VotacaoDetail {
   categorias_zil: string[] | null;
   direcao_esperada: string | null;
   peso: number | null;
+  proposicao: ProposicaoSnippet | null;
 }
+
+const VOTO_LABEL: Record<string, string> = {
+  sim: "SIM",
+  nao: "NÃO",
+  abstencao: "ABSTENÇÃO",
+  ausente: "AUSENTE",
+  obstrucao: "OBSTRUÇÃO",
+  artigo_17: "ART.17",
+};
 
 const VOTO_STYLE: Record<string, string> = {
   sim: "bg-zil-green/10 text-zil-green",
@@ -75,6 +94,12 @@ export default function VotacaoDetailPage() {
     return acc;
   }, {});
 
+  const prop = votacao?.proposicao;
+  const propLabel = prop
+    ? `${prop.tipo ?? ""} ${prop.numero ?? ""}/${prop.ano ?? ""}`.trim()
+    : null;
+  const propDescricao = prop?.resumo_simples || prop?.ementa;
+
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-6 py-20 text-center font-mono text-sm text-zil-muted">
@@ -85,23 +110,66 @@ export default function VotacaoDetailPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
-      <Link
-        href="/proposicoes"
-        className="font-mono text-xs text-zil-muted hover:text-zil-green mb-8 inline-block"
-      >
-        ← Voltar às proposições
-      </Link>
+      {/* Back */}
+      {prop ? (
+        <Link
+          href={`/proposicoes/${prop.id}`}
+          className="font-mono text-xs text-zil-muted hover:text-zil-green mb-8 inline-block"
+        >
+          ← Voltar à proposição
+        </Link>
+      ) : (
+        <Link
+          href="/proposicoes"
+          className="font-mono text-xs text-zil-muted hover:text-zil-green mb-8 inline-block"
+        >
+          ← Voltar às proposições
+        </Link>
+      )}
 
-      {/* Header */}
+      {/* Header — proposição como protagonista */}
       <div className="mb-8">
-        <h1 className="font-display text-xl uppercase tracking-wide mb-2">
-          {votacao?.descricao || "Votação"}
-        </h1>
+        {propLabel && (
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
+            <h1 className="font-display text-2xl uppercase tracking-wide">
+              {propLabel}
+            </h1>
+            {prop && (
+              <Link
+                href={`/proposicoes/${prop.id}`}
+                className="font-mono text-xs text-zil-green hover:underline"
+              >
+                Ver proposição completa ↗
+              </Link>
+            )}
+          </div>
+        )}
+
+        {/* Descrição da proposição (resumo ou ementa) */}
+        {propDescricao && (
+          <p className="text-base text-zil-fg leading-relaxed mb-3 max-w-3xl">
+            {propDescricao}
+          </p>
+        )}
+
+        {/* Metadados da votação */}
         <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-zil-muted mb-3">
           {votacao?.data && (
             <span>{new Date(votacao.data).toLocaleDateString("pt-BR")}</span>
           )}
-          {votacao?.resultado && <span>{votacao.resultado}</span>}
+          {votacao?.resultado && (
+            <span
+              className={
+                votacao.resultado.toLowerCase().includes("aprovad")
+                  ? "text-zil-green"
+                  : votacao.resultado.toLowerCase().includes("rejeitad")
+                  ? "text-zil-orange"
+                  : ""
+              }
+            >
+              {votacao.resultado}
+            </span>
+          )}
           {votacao?.direcao_esperada && (
             <span
               className={
@@ -114,14 +182,27 @@ export default function VotacaoDetailPage() {
             </span>
           )}
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        <div className="flex flex-wrap gap-2 mb-3">
           {votacao?.categorias_zil?.map((c) => (
             <CategoriaBadge key={c} codigo={c} />
           ))}
         </div>
+
+        {/* Detalhes processuais colapsados */}
+        {votacao?.descricao && (
+          <details className="mt-2">
+            <summary className="font-mono text-xs text-zil-muted cursor-pointer select-none hover:text-zil-soft">
+              Ver detalhes da sessão ↓
+            </summary>
+            <p className="text-sm text-zil-muted leading-relaxed mt-2 max-w-3xl pl-2 border-l border-zil-divider">
+              {votacao.descricao}
+            </p>
+          </details>
+        )}
       </div>
 
-      {/* Placar summary */}
+      {/* Placar */}
       <div className="flex flex-wrap gap-6 py-4 border-y border-zil-divider mb-8">
         {Object.entries(contagem)
           .sort((a, b) => b[1] - a[1])
@@ -133,9 +214,19 @@ export default function VotacaoDetailPage() {
                 filtroVoto && filtroVoto !== voto ? "opacity-30" : ""
               }`}
             >
-              <div className="font-display text-xl">{count}</div>
+              <div
+                className={`font-display text-xl ${
+                  voto === "sim"
+                    ? "text-zil-green"
+                    : voto === "nao"
+                    ? "text-zil-orange"
+                    : "text-zil-soft"
+                }`}
+              >
+                {count}
+              </div>
               <div className="font-mono text-xs text-zil-muted uppercase">
-                {voto}
+                {VOTO_LABEL[voto] ?? voto}
               </div>
             </button>
           ))}
@@ -149,7 +240,7 @@ export default function VotacaoDetailPage() {
         )}
       </div>
 
-      {/* Votes list */}
+      {/* Lista de votos individuais */}
       <div className="border-t border-zil-divider">
         {filtered.map((v) => (
           <Link
@@ -158,7 +249,9 @@ export default function VotacaoDetailPage() {
             className="flex items-center gap-4 py-3 border-b border-zil-divider hover:bg-zil-card transition-colors"
           >
             <div className="flex-1 min-w-0">
-              <span className="text-sm text-zil-fg font-semibold">{v.parlamentar_nome}</span>
+              <span className="text-sm text-zil-fg font-semibold">
+                {v.parlamentar_nome}
+              </span>
               <span className="text-xs text-zil-muted font-mono ml-2">
                 {v.parlamentar_partido} · {v.parlamentar_uf}
               </span>
@@ -168,14 +261,15 @@ export default function VotacaoDetailPage() {
                 VOTO_STYLE[v.voto] ?? "bg-zil-card text-zil-muted"
               }`}
             >
-              {v.voto.toUpperCase()}
+              {VOTO_LABEL[v.voto] ?? v.voto.toUpperCase()}
             </span>
           </Link>
         ))}
       </div>
 
       <div className="mt-4 text-xs font-mono text-zil-muted">
-        {filtered.length} votos{filtroVoto ? ` (${filtroVoto})` : ""}
+        {filtered.length} votos
+        {filtroVoto ? ` — ${VOTO_LABEL[filtroVoto] ?? filtroVoto}` : ""}
       </div>
     </div>
   );
