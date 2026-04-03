@@ -181,6 +181,11 @@ export default function RankingPage() {
       {!loading && (
         <div className="mt-6 text-xs font-mono text-zil-muted">
           {filtered.length} parlamentares
+          {comScore.length > 0 && (
+            <span className="ml-2 opacity-60">
+              · {comScore.length} com score · {semScore.length} sem votos ZIL suficientes
+            </span>
+          )}
         </div>
       )}
     </div>

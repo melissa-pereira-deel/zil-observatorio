@@ -35,6 +35,15 @@ const LABEL: Record<string, string> = {
   "ZIL-COM": "Comércio",
 };
 
+const VOTO_LABEL: Record<string, string> = {
+  sim: "SIM",
+  nao: "NÃO",
+  abstencao: "ABSTENÇÃO",
+  ausente: "AUSENTE",
+  obstrucao: "OBSTRUÇÃO",
+  artigo_17: "ART.17",
+};
+
 export default function ParlamentarPage() {
   const params = useParams();
   const id = params?.parlamentar_id as string;
@@ -270,6 +279,13 @@ export default function ParlamentarPage() {
                       {new Date(v.data).toLocaleDateString("pt-BR")}
                     </span>
                   )}
+                  <Link
+                    href={`/votacoes/${v.votacao_id}`}
+                    className="font-mono text-xs text-zil-green hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    ver votação →
+                  </Link>
                 </div>
               </div>
 
@@ -282,7 +298,7 @@ export default function ParlamentarPage() {
                     : "bg-zil-card text-zil-muted"
                 }`}
               >
-                {v.voto.toUpperCase()}
+                {VOTO_LABEL[v.voto] ?? v.voto.toUpperCase()}
               </span>
             </div>
           ))}
