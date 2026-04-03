@@ -138,6 +138,16 @@ with Session(engine) as db: print(recalcular_todos_scores(db), 'scores calculado
 | UI-011 | `resultado` inferido de `votos_sim/votos_nao` quando null — badge com `*` + `title` explicativo | Comportamental | `proposicoes/[id]/page.tsx` |
 | UI-012 | Unificar padrão de collapse — substituir `useState` accordion por `<details>/<summary>` nativo | Visual | `proposicoes/[id]/page.tsx` |
 
+### UI/UX — Página do parlamentar: IA, hierarquia e duplo encoding (design critique 2026-04-02 #3)
+
+| # | Task | Severidade | Arquivos principais |
+|---|------|-----------|-------------------|
+| UI-013 | Hero metric zone — score e síntese de alinhamento como protagonistas visuais; substituir stats bar por bloco de 2 colunas com gauge + proporção | Estrutural | `parlamentar/[id]/page.tsx`, `ScoreGauge.tsx` |
+| UI-014 | Legenda do duplo encoding — nota explicativa acima do histórico de votos: dot = alinhamento ZIL, badge = voto registrado | Estrutural | `parlamentar/[id]/page.tsx` |
+| UI-015 | Affordance nos cards de categoria — subtítulo de instrução + indicador visual de filtro ativo | Comportamental | `parlamentar/[id]/page.tsx` |
+| UI-016 | Consolidar design tokens e mapa de categorias — ScoreGauge usa `zil-*`; extrair `LABEL` para `lib/categorias.ts` | Visual | `ScoreGauge.tsx`, `CategoriaBadge.tsx`, `lib/categorias.ts` (novo), `parlamentar/[id]/page.tsx` |
+| UI-017 | Scope e navegação no histórico de votos — contagem sempre visível no título + corrigir back link hardcoded | Comportamental | `parlamentar/[id]/page.tsx` |
+
 ## Fora do escopo v1 (não implementar)
 
 - Autenticação / login / contas de usuário
