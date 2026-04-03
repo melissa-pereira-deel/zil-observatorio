@@ -96,6 +96,17 @@ class ProposicaoContexto(BaseModel):
 
 # ── Votação ──
 
+class ProposicaoSnippet(BaseModel):
+    id: UUID
+    tipo: Optional[str] = None
+    numero: Optional[int] = None
+    ano: Optional[int] = None
+    ementa: Optional[str] = None
+    resumo_simples: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class VotacaoRead(BaseModel):
     id: UUID
     fonte_id: str
@@ -108,6 +119,7 @@ class VotacaoRead(BaseModel):
     categorias_zil: Optional[list[str]] = None
     direcao_esperada: Optional[str] = None
     peso: Optional[float] = None
+    proposicao: Optional[ProposicaoSnippet] = None
 
     class Config:
         from_attributes = True
@@ -137,6 +149,8 @@ class VotoHistorico(BaseModel):
     voto: str
     direcao_esperada: Optional[str] = None
     alinhado: Optional[bool] = None
+    proposicao_label: Optional[str] = None  # e.g. "PL 528/2020"
+    proposicao_id: Optional[UUID] = None
 
 
 # ── Stats ──

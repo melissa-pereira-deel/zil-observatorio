@@ -60,6 +60,8 @@ export interface VotoHistorico {
   voto: string;
   direcao_esperada: string | null;
   alinhado: boolean | null;
+  proposicao_label: string | null;
+  proposicao_id: string | null;
 }
 
 export interface Stats {

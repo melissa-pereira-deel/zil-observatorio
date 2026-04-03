@@ -267,7 +267,25 @@ export default function ParlamentarPage() {
               />
 
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-zil-fg leading-relaxed">
+                {/* Proposição como identificador principal */}
+                {v.proposicao_label && (
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-display text-sm text-zil-fg">
+                      {v.proposicao_label}
+                    </span>
+                    {v.proposicao_id && (
+                      <Link
+                        href={`/proposicoes/${v.proposicao_id}`}
+                        className="font-mono text-xs text-zil-muted hover:text-zil-green"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        ver proposição ↗
+                      </Link>
+                    )}
+                  </div>
+                )}
+                {/* Descrição processual como secundária */}
+                <p className={`leading-relaxed ${v.proposicao_label ? "text-xs text-zil-muted" : "text-sm text-zil-fg"}`}>
                   {v.descricao || "Votação sem descrição"}
                 </p>
                 <div className="flex flex-wrap items-center gap-2 mt-2">
