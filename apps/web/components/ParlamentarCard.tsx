@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ParlamentarAvatar } from "./ParlamentarAvatar";
 import { ScoreGauge } from "./ScoreGauge";
 import type { Parlamentar } from "@/lib/api";
 
@@ -21,16 +22,7 @@ export function ParlamentarCard({ parlamentar: p, rank }: ParlamentarCardProps) 
       )}
 
       {/* Photo */}
-      <div className="w-12 h-12 rounded-full bg-zil-divider overflow-hidden shrink-0">
-        {p.foto_url && (
-          <img
-            src={p.foto_url}
-            alt={p.nome}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        )}
-      </div>
+      <ParlamentarAvatar nome={p.nome} fotoUrl={p.foto_url} size="md" />
 
       {/* Info */}
       <div className="flex-1 min-w-0">

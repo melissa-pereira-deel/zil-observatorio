@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { ParlamentarAvatar } from "@/components/ParlamentarAvatar";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
 import { CATEGORIA_LABELS } from "@/lib/categorias";
@@ -120,15 +121,7 @@ export default function ParlamentarPage() {
 
       {/* Profile header */}
       <div className="flex items-start gap-6 flex-wrap mb-8">
-        <div className="w-20 h-20 rounded-full bg-zil-divider overflow-hidden shrink-0">
-          {parl.foto_url && (
-            <img
-              src={parl.foto_url}
-              alt={parl.nome}
-              className="w-full h-full object-cover"
-            />
-          )}
-        </div>
+        <ParlamentarAvatar nome={parl.nome} fotoUrl={parl.foto_url} size="lg" />
 
         <div className="flex-1 min-w-0">
           <h1 className="font-display text-2xl uppercase tracking-wide">
