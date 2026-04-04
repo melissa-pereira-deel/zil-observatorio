@@ -148,6 +148,16 @@ with Session(engine) as db: print(recalcular_todos_scores(db), 'scores calculado
 | UI-016 | Consolidar design tokens e mapa de categorias — ScoreGauge usa `zil-*`; extrair `LABEL` para `lib/categorias.ts` | Visual | `ScoreGauge.tsx`, `CategoriaBadge.tsx`, `lib/categorias.ts` (novo), `parlamentar/[id]/page.tsx` |
 | UI-017 | Scope e navegação no histórico de votos — contagem sempre visível no título + corrigir back link hardcoded | Comportamental | `parlamentar/[id]/page.tsx` |
 
+### UI/UX — Perfil do parlamentar: redundância e clareza (design critique 2026-04-04 #4)
+
+| # | Task | Severidade | Arquivos principais |
+|---|------|-----------|-------------------|
+| UI-018 | Eliminar score duplicado no hero — substituir `text-4xl` redundante por frase interpretativa de alinhamento | Estrutural | `parlamentar/[id]/page.tsx` |
+| UI-019 | Consolidar contagem de votos — unificar "com base em N votos" e "N de N votos" num único local | Estrutural | `parlamentar/[id]/page.tsx`, `ScoreGauge.tsx` |
+| UI-020 | Legenda do duplo encoding com exemplo visual — substituir "badge = voto registrado" por mini badge real | Comportamental | `parlamentar/[id]/page.tsx` |
+| UI-021 | Remover código interno dos cards de categoria — esconder "ZIL-ENE" do público, mover para `title` | Visual | `parlamentar/[id]/page.tsx` |
+| UI-022 | Frase de síntese interpretativa — "Votou a favor em N de N pautas monitoradas" acima do hero metric | Estrutural | `parlamentar/[id]/page.tsx` |
+
 ## Fora do escopo v1 (não implementar)
 
 - Autenticação / login / contas de usuário

@@ -586,9 +586,222 @@ UI-006 → UI-002 → UI-001 → UI-003 → UI-008 → UI-005 → UI-004 → UI-
 
 Rationale do bloco #3: corrigir tokens primeiro (016 — sem risco), depois a reestruturação arquitetural (013), depois scope e navegação (017 — depende de 013 absorver a stats bar), depois as camadas explicativas (014, 015 — dependem da lista estar estabilizada).
 
+---
+
+## Design Critique #4 — Perfil do parlamentar: redundância e clareza
+**Data:** 2026-04-04
+**Foco:** Score duplicado, contagens redundantes, legenda críptica, código interno visível, ausência de síntese interpretativa
+
+### UI-018 — Eliminar score duplicado no hero: frase interpretativa em vez de `text-4xl`
+**Severidade:** Estrutural
+**Problema:** O valor "+10.0" aparece 3 vezes na primeira dobra: (1) dentro do ScoreGauge circular (`text-2xl`), (2) como texto `text-4xl font-display` ao lado, e (3) implicitamente no label "com base em N votos". O gauge circular já é o indicador canônico — o `text-4xl` é redundância pura que compete em vez de complementar. O espaço poderia comunicar algo que o gauge não diz: uma interpretação textual do alinhamento.
+
+**Solução:**
+- Remover o `<div className="font-display text-4xl">` que exibe o score numérico ao lado do gauge
+- No lugar, renderizar uma **frase interpretativa** baseada no valor do score:
+
+```tsx
+function getScoreLabel(score: number | null): string {
+  if (score === null) return "Sem dados suficientes";
+  if (score >= 8) return "Alinhamento total";
+  if (score >= 4) return "Majoritariamente alinhado";
+  if (score >= 1) return "Parcialmente alinhado";
+  if (score >= -1) return "Posição neutra";
+  if (score >= -4) return "Parcialmente contrário";
+  if (score >= -8) return "Majoritariamente contrário";
+  return "Posição contrária";
+}
+```
+
+- A frase fica em `font-display text-lg text-zil-fg` (menor que o antigo `text-4xl`, maior que o contexto)
+- O label "SCORE ZIL" e "escala de −10 a +10" permanecem como contexto
+- A data de atualização permanece
+
+**Layout resultante da coluna esquerda:**
+```tsx
+<div className="bg-zil-white px-6 py-5 flex items-center gap-5">
+  <ScoreGauge score={parl.score_zil} size="lg" totalVotosZil={votos.length} />
+  <div>
+    <div className="font-mono text-2xs text-zil-muted uppercase tracking-wider mb-1">
+      Score ZIL
+    </div>
+    <div className="font-display text-lg text-zil-fg leading-snug mb-1">
+      {getScoreLabel(parl.score_zil)}
+    </div>
+    <div className="font-mono text-2xs text-zil-muted">
+      escala de −10 a +10
+    </div>
+    {parl.score_atualizado_em && (
+      <div className="font-mono text-2xs text-zil-muted opacity-60 mt-1">
+        atualizado {new Date(parl.score_atualizado_em).toLocaleDateString("pt-BR")}
+      </div>
+    )}
+  </div>
+</div>
+```
+
+**Acceptance criteria:**
+- [ ] Score numérico `text-4xl` removido da coluna esquerda do hero
+- [ ] Frase interpretativa renderizada em `font-display text-lg`
+- [ ] ScoreGauge circular (lg) permanece como indicador visual canônico com número
+- [ ] 7 faixas de interpretação cobrindo -10 a +10
+- [ ] Score null renderiza "Sem dados suficientes"
+- [ ] Zero mudança no ScoreGauge component — alteração apenas no page
+
+---
+
+### UI-019 — Consolidar contagem de votos num único local
+**Severidade:** Estrutural
+**Problema:** A contagem de votos aparece em 2 lugares próximos: (1) "com base em 4 votos" abaixo do ScoreGauge na coluna esquerda, e (2) "4 de 4 votos (100%)" na coluna direita (Alinhamento ZIL). São dados diferentes (base de cálculo vs. rate de alinhamento), mas a linguagem similar e a proximidade criam confusão.
+
+**Solução:**
+- Suprimir o label "com base em N votos" do ScoreGauge **quando usado no hero metric block** (size="lg")
+- A contagem de votos fica **exclusivamente** na coluna de Alinhamento ZIL ("4 de 4 votos")
+- O ScoreGauge em `size="lg"` no hero **não** renderiza o sub-label
+- O ScoreGauge em outros contextos (ranking cards, etc.) continua com o label
+
+**Implementação:**
+- Adicionar prop `hideVotosLabel?: boolean` ao ScoreGauge
+- No hero: `<ScoreGauge score={parl.score_zil} size="lg" totalVotosZil={votos.length} hideVotosLabel />`
+- No componente ScoreGauge, condicionar a renderização:
+```tsx
+{size !== "sm" && totalVotosZil != null && totalVotosZil > 0 && !hideVotosLabel && (
+  <span className="font-mono text-2xs text-zil-muted text-center">
+    com base em {totalVotosZil} votos
+  </span>
+)}
+```
+
+**Acceptance criteria:**
+- [ ] Hero metric block: ScoreGauge lg não mostra "com base em N votos"
+- [ ] Coluna de Alinhamento ZIL permanece como único local com contagem
+- [ ] ScoreGauge em `ParlamentarCard` (sm) e ranking preview continua sem mudança
+- [ ] Prop `hideVotosLabel` tem default `false` — backward-compatible
+
+---
+
+### UI-020 — Legenda com exemplo visual em vez de "badge = voto registrado"
+**Severidade:** Comportamental
+**Problema:** Na legenda do duplo encoding, a última entrada diz "· badge = voto registrado". A palavra "badge" é jargão de UI/design que o cidadão não entende. Não há referência visual para o que seria esse "badge" — o usuário precisa deduzir que se refere ao chip "SIM"/"NÃO" à direita de cada votação.
+
+**Solução:**
+- Substituir o texto "badge = voto registrado" por um **mini exemplo visual** do badge real, seguido de "= voto registrado"
+- Renderizar um chip estilizado idêntico ao usado na lista de votos (mas em miniatura):
+
+```tsx
+<span className="font-mono text-2xs text-zil-muted flex items-center gap-1.5">
+  <span className="font-mono text-2xs px-1.5 py-0.5 bg-zil-green/10 text-zil-green rounded-sm">
+    SIM
+  </span>
+  = voto registrado
+</span>
+```
+
+- O mini badge usa os mesmos tokens do badge real (`bg-zil-green/10 text-zil-green rounded-sm`), apenas com `text-2xs` e padding menor
+
+**Acceptance criteria:**
+- [ ] Texto "badge = voto registrado" removido
+- [ ] Mini badge visual "SIM" renderizado na legenda com mesmos tokens de cor
+- [ ] Texto "= voto registrado" segue o mini badge
+- [ ] Legenda continua em uma única linha fluida no desktop
+- [ ] Responsivo: no mobile, wraps naturalmente sem quebra
+
+---
+
+### UI-021 — Remover código interno "ZIL-ENE" dos cards de categoria
+**Severidade:** Visual
+**Problema:** Os cards de "Participação por pauta" exibem o código técnico "ZIL-ENE" em `text-xs text-zil-muted` acima do nome legível "Energia". Esse identificador é interno da plataforma e não agrega valor para o cidadão. Ocupa espaço vertical, adiciona ruído visual e expõe nomenclatura de sistema.
+
+**Solução:**
+- Remover o `<div>` que exibe `{cat}` (o código bruto) do corpo visível do card
+- Mover o código para o atributo `title` do botão (já existe parcialmente)
+- O card exibe apenas o nome legível da categoria
+
+**De:**
+```tsx
+<div className="font-mono text-xs text-zil-muted mb-1">{cat}</div>
+<div className="font-display text-sm text-zil-fg">
+  {CATEGORIA_LABELS[cat] ?? cat}
+</div>
+```
+
+**Para:**
+```tsx
+<div className="font-display text-sm text-zil-fg">
+  {CATEGORIA_LABELS[cat] ?? cat}
+</div>
+```
+
+- O `title` do `<button>` já contém o nome legível; atualizar para incluir o código como referência técnica:
+  `title={`${cat} — Filtrar histórico por ${CATEGORIA_LABELS[cat] ?? cat}`}`
+
+**Acceptance criteria:**
+- [ ] Código "ZIL-ENE", "ZIL-SEM", etc. não aparece visível nos cards
+- [ ] Nome legível ("Energia", "Semicondutores") é o único texto de label
+- [ ] Código técnico acessível via `title` attribute no hover
+- [ ] Cards visualmente mais limpos — uma linha a menos de texto por card
+
+---
+
+### UI-022 — Frase de síntese interpretativa acima do hero metric
+**Severidade:** Estrutural
+**Problema:** O cidadão chega nessa página com uma pergunta: "Meu deputado vota a favor da soberania industrial?" A resposta está fragmentada em 3 widgets (gauge, texto numérico, barra de proporção). Em nenhum lugar aparece uma **frase direta** que responda à pergunta. O usuário precisa reconstruí-la mentalmente.
+
+**Solução:**
+- Adicionar uma frase de síntese entre o header do parlamentar e o hero metric block
+- A frase é gerada a partir dos dados já disponíveis (`alinhados`, `votos.length`, `score_zil`)
+
+```tsx
+function getSynthesis(alinhados: number, total: number, score: number | null): string | null {
+  if (total === 0) return null;
+  const pct = Math.round((alinhados / total) * 100);
+  if (pct === 100) return `Votou a favor da soberania industrial em todas as ${total} pautas monitoradas.`;
+  if (pct >= 75) return `Votou a favor da soberania industrial na maioria das pautas monitoradas (${alinhados} de ${total}).`;
+  if (pct >= 50) return `Votou a favor da soberania industrial em ${alinhados} de ${total} pautas monitoradas.`;
+  if (pct >= 25) return `Votou contra a posição de soberania industrial na maioria das pautas monitoradas (${total - alinhados} de ${total}).`;
+  if (pct > 0) return `Votou contra a posição de soberania industrial em quase todas as pautas monitoradas (${total - alinhados} de ${total}).`;
+  return `Votou contra a posição de soberania industrial em todas as ${total} pautas monitoradas.`;
+}
+```
+
+- Renderizar entre o header e o hero metric block:
+```tsx
+{synthesis && (
+  <p className="font-body text-base text-zil-soft mb-6 max-w-xl">
+    {synthesis}
+  </p>
+)}
+```
+
+- Tipografia: `font-body text-base text-zil-soft` — não compite com o h1 (`font-display text-2xl`), mas é legível e direto
+- `max-w-xl` evita que a frase estique em telas largas
+
+**Acceptance criteria:**
+- [ ] Frase visível entre header e hero metric block
+- [ ] 6 variações cobrindo 0%, 1-24%, 25-49%, 50-74%, 75-99%, 100%
+- [ ] Quando `votos.length === 0`: frase não renderizada (null)
+- [ ] Texto usa números absolutos ("3 de 4") — não percentuais isolados
+- [ ] Linguagem neutra e apartidária: "votou a favor" / "votou contra a posição de soberania"
+- [ ] `max-w-xl` limita largura da frase
+
+---
+
+## Ordem de implementação sugerida (completa, incluindo bloco #4)
+
+```
+UI-006 → UI-002 → UI-001 → UI-003 → UI-008 → UI-005 → UI-004 → UI-007
+→ UI-009 → UI-012 → UI-011 → UI-010
+→ UI-016 → UI-013 → UI-017 → UI-014 → UI-015
+→ UI-021 → UI-019 → UI-018 → UI-020 → UI-022
+```
+
+Rationale do bloco #4: começar pela remoção de ruído visual (021 — sem risco), depois consolidar contagem (019 — altera prop do ScoreGauge), depois substituir o score duplicado pela frase interpretativa (018 — depende de 019 ter removido o label), depois a legenda visual (020 — independente), e por último a síntese que é a cereja do bolo (022 — depende de tudo estar estabilizado).
+
 ## O que não muda
 
 - Design tokens (`zil-*`) — sistema de cores permanece
 - `font-display` uppercase nos títulos — identidade editorial mantida
 - Layout geral das páginas — sem reestruturação de rotas ou seções
 - Backend/API — zero mudanças de schema ou endpoints
+- ScoreGauge circular — permanece como indicador visual canônico (número + cor)
+- Coluna de Alinhamento ZIL — layout e progress bar inalterados
