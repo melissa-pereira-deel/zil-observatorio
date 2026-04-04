@@ -72,7 +72,7 @@ export function RankingPreview() {
     <div className="space-y-8">
       {/* Open data badge */}
       <div className="flex flex-wrap gap-3 items-center">
-        <Badge variant="green">Dados públicos</Badge>
+        <Badge color="green">Dados públicos</Badge>
         <span className="text-xs text-zil-muted">
           Acesso livre. Nenhuma conta necessária para consultar.
         </span>

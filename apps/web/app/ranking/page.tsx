@@ -36,7 +36,6 @@ export default function RankingPage() {
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState("score_desc");
 
-  // Load party list once for the dropdown
   useEffect(() => {
     fetch(`${API_BASE}/parlamentares/partidos/ranking`)
       .then((r) => r.json())
@@ -46,7 +45,6 @@ export default function RankingPage() {
       .catch(() => {});
   }, []);
 
-  // Server-side filters: fonte, uf, partido, ordem
   useEffect(() => {
     async function load() {
       setLoading(true);
@@ -66,7 +64,6 @@ export default function RankingPage() {
     load();
   }, [fonte, uf, partido, ordem]);
 
-  // Client-side name search
   const filtered = busca
     ? parlamentares.filter((p) =>
         p.nome.toLowerCase().includes(busca.toLowerCase())
@@ -76,22 +73,28 @@ export default function RankingPage() {
   const comScore = filtered.filter((p) => p.score_zil !== null);
   const semScore = filtered.filter((p) => p.score_zil === null);
 
+  const hasFilters = !!(busca || fonte || uf || partido);
+
+  function clearFilters() {
+    setBusca("");
+    setFonte("");
+    setUf("");
+    setPartido("");
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
-      {/* Header */}
-      <div className="flex items-baseline gap-4 mb-2">
-        <span className="font-display text-6xl text-zil-divider">R</span>
-        <h1 className="font-display text-2xl uppercase tracking-wide">
-          Ranking ZIL
-        </h1>
-      </div>
+      {/* Header — UI-006: sem letra decorativa */}
+      <h1 className="font-display text-2xl uppercase tracking-wide mb-2">
+        Ranking ZIL
+      </h1>
       <p className="text-sm text-zil-soft mb-10 max-w-lg">
-        Score de alinhamento com a soberania industrial do Brasil, de -10
+        Score de alinhamento com a soberania industrial do Brasil, de −10
         (contra) a +10 (a favor), calculado a partir dos votos em pautas ZIL.
       </p>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-8">
+      {/* Filters — UI-005: filtros numa linha, ordenação separada */}
+      <div className="flex flex-wrap gap-3 mb-3">
         <input
           type="text"
           placeholder="Buscar por nome..."
@@ -99,7 +102,6 @@ export default function RankingPage() {
           onChange={(e) => setBusca(e.target.value)}
           className="px-4 py-2 border border-zil-divider bg-transparent text-sm font-body focus:outline-none focus:border-zil-green w-56"
         />
-
         <select
           value={fonte}
           onChange={(e) => setFonte(e.target.value)}
@@ -109,7 +111,6 @@ export default function RankingPage() {
           <option value="camara">Deputados</option>
           <option value="senado">Senadores</option>
         </select>
-
         <select
           value={uf}
           onChange={(e) => setUf(e.target.value)}
@@ -120,7 +121,6 @@ export default function RankingPage() {
             <option key={u} value={u}>{u}</option>
           ))}
         </select>
-
         <select
           value={partido}
           onChange={(e) => setPartido(e.target.value)}
@@ -131,7 +131,13 @@ export default function RankingPage() {
             <option key={p} value={p}>{p}</option>
           ))}
         </select>
+      </div>
 
+      {/* Ordenação separada com label — UI-005 */}
+      <div className="flex items-center gap-2 mb-8">
+        <span className="font-mono text-2xs text-zil-muted uppercase tracking-wider">
+          Ordenar por
+        </span>
         <select
           value={ordem}
           onChange={(e) => setOrdem(e.target.value)}
@@ -151,11 +157,34 @@ export default function RankingPage() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-20 text-center text-zil-muted font-mono text-sm">
-          Nenhum parlamentar encontrado com esses filtros.
+        /* UI-004: empty state com Limpar filtros */
+        <div className="py-16 text-center space-y-3">
+          <p className="font-mono text-sm text-zil-muted">
+            {hasFilters
+              ? "Nenhum resultado para esses filtros."
+              : "Nenhum parlamentar encontrado."}
+          </p>
+          {hasFilters && (
+            <button
+              onClick={clearFilters}
+              className="font-mono text-xs text-zil-green border border-zil-green/40 px-4 py-1.5 hover:bg-zil-green/5 transition-colors"
+            >
+              Limpar filtros
+            </button>
+          )}
         </div>
       ) : (
         <>
+          {/* UI-003: contagem acima da lista */}
+          <div className="flex justify-end mb-2">
+            <span className="font-mono text-xs text-zil-muted">
+              {comScore.length} com score
+              {semScore.length > 0 && (
+                <span className="opacity-60"> · {semScore.length} sem votos ZIL suficientes</span>
+              )}
+            </span>
+          </div>
+
           <div className="border-t border-zil-divider">
             {comScore.map((p, i) => (
               <ParlamentarCard key={p.id} parlamentar={p} rank={i + 1} />
@@ -175,18 +204,6 @@ export default function RankingPage() {
             </div>
           )}
         </>
-      )}
-
-      {/* Count */}
-      {!loading && (
-        <div className="mt-6 text-xs font-mono text-zil-muted">
-          {filtered.length} parlamentares
-          {comScore.length > 0 && (
-            <span className="ml-2 opacity-60">
-              · {comScore.length} com score · {semScore.length} sem votos ZIL suficientes
-            </span>
-          )}
-        </div>
       )}
     </div>
   );
