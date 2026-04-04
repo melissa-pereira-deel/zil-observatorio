@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
+import { DirecaoBadge } from "@/components/DirecaoBadge";
+import { Badge } from "@/components/ui/Badge";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -158,29 +160,20 @@ export default function VotacaoDetailPage() {
             <span>{new Date(votacao.data).toLocaleDateString("pt-BR")}</span>
           )}
           {votacao?.resultado && (
-            <span
-              className={
+            <Badge
+              variant="result"
+              color={
                 votacao.resultado.toLowerCase().includes("aprovad")
-                  ? "text-zil-green"
+                  ? "green"
                   : votacao.resultado.toLowerCase().includes("rejeitad")
-                  ? "text-zil-orange"
-                  : ""
+                  ? "orange"
+                  : "muted"
               }
             >
               {votacao.resultado}
-            </span>
+            </Badge>
           )}
-          {votacao?.direcao_esperada && (
-            <span
-              className={
-                votacao.direcao_esperada === "sim"
-                  ? "text-zil-green"
-                  : "text-zil-orange"
-              }
-            >
-              Direção esperada: votar {votacao.direcao_esperada.toUpperCase()}
-            </span>
-          )}
+          <DirecaoBadge direcao={votacao?.direcao_esperada} />
         </div>
 
         <div className="flex flex-wrap gap-2 mb-3">

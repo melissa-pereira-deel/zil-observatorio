@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
 import { ContextoBadge } from "@/components/ContextoBadge";
+import { DirecaoBadge } from "@/components/DirecaoBadge";
+import { Badge } from "@/components/ui/Badge";
 import type { Proposicao, ProposicaoContexto } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -22,6 +24,13 @@ interface Votacao {
   peso: number | null;
 }
 
+function resultadoColor(texto: string): "green" | "orange" | "muted" {
+  const t = texto.toLowerCase();
+  if (t.includes("aprovad")) return "green";
+  if (t.includes("rejeitad")) return "orange";
+  return "muted";
+}
+
 export default function ProposicaoDetailPage() {
   const params = useParams();
   const id = params?.id as string;
@@ -30,7 +39,6 @@ export default function ProposicaoDetailPage() {
   const [votacoes, setVotacoes] = useState<Votacao[]>([]);
   const [contexto, setContexto] = useState<ProposicaoContexto | null>(null);
   const [loading, setLoading] = useState(true);
-  const [contextoOpen, setContextoOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -43,7 +51,8 @@ export default function ProposicaoDetailPage() {
           fetch(`${API_BASE}/proposicoes/${id}/contexto`),
         ]);
         setProposicao(await pRes.json());
-        setVotacoes(await vRes.json());
+        const vData = await vRes.json();
+        setVotacoes(Array.isArray(vData) ? vData : []);
         if (cRes.ok) setContexto(await cRes.json());
       } catch (err) {
         console.error(err);
@@ -53,6 +62,29 @@ export default function ProposicaoDetailPage() {
     }
     load();
   }, [id]);
+
+  // UI-010: Síntese da posição ZIL
+  const posicaoZil = useMemo(() => {
+    const comDirecao = votacoes.filter((v) => v.direcao_esperada !== null);
+    if (comDirecao.length === 0) return null;
+    const favoraveis = comDirecao.filter((v) => v.direcao_esperada === "sim").length;
+    const contrarias = comDirecao.filter((v) => v.direcao_esperada === "nao").length;
+    return {
+      label:
+        favoraveis > 0 && contrarias === 0
+          ? "FAVORÁVEL"
+          : contrarias > 0 && favoraveis === 0
+          ? "CONTRÁRIA"
+          : "POSIÇÃO MISTA",
+      color:
+        favoraveis > 0 && contrarias === 0
+          ? ("green" as const)
+          : contrarias > 0 && favoraveis === 0
+          ? ("orange" as const)
+          : ("gold" as const),
+      total: comDirecao.length,
+    };
+  }, [votacoes]);
 
   if (loading) {
     return (
@@ -70,8 +102,7 @@ export default function ProposicaoDetailPage() {
     );
   }
 
-  const hasContexto =
-    contexto?.contexto_status === "pronto" && contexto.resumo_simples;
+  const hasContexto = contexto?.contexto_status === "pronto" && contexto.resumo_simples;
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
@@ -107,10 +138,18 @@ export default function ProposicaoDetailPage() {
           </p>
         )}
 
-        {/* Ementa original — sempre visível */}
-        <details className={hasContexto ? "mb-4" : "mb-4 open"} open={!hasContexto}>
+        {/* UI-008: placeholder quando sem análise LLM */}
+        {!hasContexto && (
+          <p className="text-sm text-zil-muted italic mb-3 max-w-3xl">
+            Esta proposição ainda não foi analisada pela plataforma.
+            A ementa técnica original está disponível abaixo.
+          </p>
+        )}
+
+        {/* UI-008: ementa sempre colapsada por padrão */}
+        <details className="mb-4">
           <summary className="font-mono text-xs text-zil-muted cursor-pointer select-none hover:text-zil-soft">
-            {hasContexto ? "Ver ementa técnica original ↓" : "Ementa"}
+            Ver ementa técnica ↓
           </summary>
           <p className="text-sm text-zil-soft leading-relaxed mt-2 max-w-3xl">
             {proposicao.ementa}
@@ -149,101 +188,94 @@ export default function ProposicaoDetailPage() {
         </div>
       </div>
 
-      {/* Context accordion — glossário + artigos */}
+      {/* UI-012: Context accordion — details/summary nativo (sem useState) */}
       {contexto && (contexto.glossario || contexto.leis_referenciadas?.length) && (
-        <div className="mb-10 border border-zil-divider">
-          <button
-            onClick={() => setContextoOpen((v) => !v)}
-            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-zil-card transition-colors"
-          >
-            <span className="font-mono text-xs uppercase tracking-wider text-zil-soft">
-              Ver contexto completo
-            </span>
-            <span className="font-mono text-xs text-zil-muted">
-              {contextoOpen ? "▲" : "▼"}
-            </span>
-          </button>
+        <details className="mb-10 border border-zil-divider">
+          <summary className="px-4 py-3 font-mono text-xs uppercase tracking-wider text-zil-soft cursor-pointer hover:bg-zil-card transition-colors list-none flex items-center justify-between">
+            <span>Ver contexto completo</span>
+            <span className="text-zil-muted">▼</span>
+          </summary>
 
-          {contextoOpen && (
-            <div className="px-4 pb-6 border-t border-zil-divider space-y-6 pt-4">
-
-              {/* Glossário */}
-              {contexto.glossario && Object.keys(contexto.glossario).length > 0 && (
-                <div>
-                  <h3 className="font-mono text-xs uppercase tracking-wider text-zil-muted mb-3">
-                    Glossário
-                  </h3>
-                  <dl className="space-y-2">
-                    {Object.entries(contexto.glossario).map(([term, def]) => (
-                      <div key={term}>
-                        <dt className="font-display text-sm text-zil-fg inline">
-                          {term}:{" "}
-                        </dt>
-                        <dd className="text-sm text-zil-soft inline">{def}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              )}
-
-              {/* Artigos referenciados */}
-              {contexto.leis_referenciadas && contexto.leis_referenciadas.length > 0 && (
-                <div>
-                  <h3 className="font-mono text-xs uppercase tracking-wider text-zil-muted mb-3">
-                    Leis referenciadas
-                  </h3>
-                  <ul className="space-y-3">
-                    {contexto.leis_referenciadas.map((lei) => (
-                      <li key={`${lei.lei_id}-${lei.numero_artigo}`} className="border border-zil-divider p-3">
-                        <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-                          <span className="font-mono text-xs font-semibold text-zil-fg">
-                            {lei.lei_id} — Art. {lei.numero_artigo}
-                          </span>
-                          {lei.status !== "resolvido" && (
-                            <span className="font-mono text-xs text-zil-orange">
-                              ({lei.status.replace(/_/g, " ")})
-                            </span>
-                          )}
-                          {lei.url_planalto && lei.status === "resolvido" && (
-                            <a
-                              href={lei.url_planalto}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-mono text-xs text-zil-green hover:underline"
-                            >
-                              Ver lei ↗
-                            </a>
-                          )}
-                        </div>
-                        {lei.texto_snippet && (
-                          <p className="text-xs text-zil-muted leading-relaxed line-clamp-3">
-                            {lei.texto_snippet}
-                          </p>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Metadados */}
-              <div className="font-mono text-xs text-zil-muted space-y-1 border-t border-zil-divider pt-4">
-                {contexto.enriquecido_em && (
-                  <p>
-                    Atualizado em{" "}
-                    {new Date(contexto.enriquecido_em).toLocaleDateString("pt-BR")}
-                  </p>
-                )}
-                {contexto.confianca !== null && contexto.confianca !== undefined && (
-                  <p>Confiança: {Math.round(contexto.confianca * 100)}%</p>
-                )}
-                <p>
-                  Modelo: {contexto.modelo_llm} · Pipeline v{contexto.versao_pipeline}
-                </p>
+          <div className="px-4 pb-6 border-t border-zil-divider space-y-6 pt-4">
+            {/* Glossário */}
+            {contexto.glossario && Object.keys(contexto.glossario).length > 0 && (
+              <div>
+                <h3 className="font-mono text-xs uppercase tracking-wider text-zil-muted mb-3">
+                  Glossário
+                </h3>
+                <dl className="space-y-2">
+                  {Object.entries(contexto.glossario).map(([term, def]) => (
+                    <div key={term}>
+                      <dt className="font-display text-sm text-zil-fg inline">
+                        {term}:{" "}
+                      </dt>
+                      <dd className="text-sm text-zil-soft inline">{def}</dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
+            )}
+
+            {/* Artigos referenciados */}
+            {contexto.leis_referenciadas && contexto.leis_referenciadas.length > 0 && (
+              <div>
+                <h3 className="font-mono text-xs uppercase tracking-wider text-zil-muted mb-3">
+                  Leis referenciadas
+                </h3>
+                <ul className="space-y-3">
+                  {contexto.leis_referenciadas.map((lei) => (
+                    <li
+                      key={`${lei.lei_id}-${lei.numero_artigo}`}
+                      className="border border-zil-divider p-3"
+                    >
+                      <div className="flex items-baseline gap-2 mb-1 flex-wrap">
+                        <span className="font-mono text-xs font-semibold text-zil-fg">
+                          {lei.lei_id} — Art. {lei.numero_artigo}
+                        </span>
+                        {lei.status !== "resolvido" && (
+                          <span className="font-mono text-xs text-zil-orange">
+                            ({lei.status.replace(/_/g, " ")})
+                          </span>
+                        )}
+                        {lei.url_planalto && lei.status === "resolvido" && (
+                          <a
+                            href={lei.url_planalto}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono text-xs text-zil-green hover:underline"
+                          >
+                            Ver lei ↗
+                          </a>
+                        )}
+                      </div>
+                      {lei.texto_snippet && (
+                        <p className="text-xs text-zil-muted leading-relaxed line-clamp-3">
+                          {lei.texto_snippet}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Metadados */}
+            <div className="font-mono text-xs text-zil-muted space-y-1 border-t border-zil-divider pt-4">
+              {contexto.enriquecido_em && (
+                <p>
+                  Atualizado em{" "}
+                  {new Date(contexto.enriquecido_em).toLocaleDateString("pt-BR")}
+                </p>
+              )}
+              {contexto.confianca !== null && contexto.confianca !== undefined && (
+                <p>Confiança: {Math.round(contexto.confianca * 100)}%</p>
+              )}
+              <p>
+                Modelo: {contexto.modelo_llm} · Pipeline v{contexto.versao_pipeline}
+              </p>
             </div>
-          )}
-        </div>
+          </div>
+        </details>
       )}
 
       {/* Votações */}
@@ -251,79 +283,118 @@ export default function ProposicaoDetailPage() {
         Votações ({votacoes.length})
       </h2>
 
+      {/* UI-010: Síntese da posição ZIL */}
+      {posicaoZil && (
+        <div className="flex items-baseline gap-3 mb-6 pb-4 border-b border-zil-divider flex-wrap">
+          <span className="font-mono text-xs text-zil-muted">
+            ZIL avalia esta proposição como
+          </span>
+          <span
+            className={`font-display text-base ${
+              posicaoZil.color === "green"
+                ? "text-zil-green"
+                : posicaoZil.color === "orange"
+                ? "text-zil-orange"
+                : "text-zil-gold"
+            }`}
+          >
+            {posicaoZil.label}
+          </span>
+          <span className="font-mono text-xs text-zil-muted">
+            · com base em {posicaoZil.total}{" "}
+            {posicaoZil.total === 1 ? "votação monitorada" : "votações monitoradas"}{" "}
+            <Link href="/metodologia" className="text-zil-green hover:underline">
+              ver metodologia →
+            </Link>
+          </span>
+        </div>
+      )}
+
       {votacoes.length === 0 ? (
         <p className="text-sm text-zil-muted py-8 border-t border-zil-divider">
-          Nenhuma votação registrada para esta proposição ainda.
+          Nenhuma votação plenária registrada para esta proposição.
         </p>
       ) : (
         <div className="border-t border-zil-divider">
-          {votacoes.map((v) => (
-            <div key={v.id} className="py-5 border-b border-zil-divider">
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div className="flex-1 min-w-0">
-                  {/* Resultado como elemento principal */}
-                  <div className="flex flex-wrap items-center gap-3 mb-2">
-                    {v.resultado && (
-                      <span
-                        className={`font-mono text-xs font-semibold px-2 py-0.5 rounded-sm ${
-                          v.resultado.toLowerCase().includes("aprovad")
-                            ? "bg-zil-green/10 text-zil-green"
-                            : v.resultado.toLowerCase().includes("rejeitad")
-                            ? "bg-zil-orange-light text-zil-orange"
-                            : "bg-zil-card text-zil-muted"
-                        }`}
-                      >
-                        {v.resultado}
-                      </span>
-                    )}
-                    {v.data && (
-                      <span className="font-mono text-xs text-zil-muted">
-                        {new Date(v.data).toLocaleDateString("pt-BR")}
-                      </span>
-                    )}
-                    {v.direcao_esperada && (
-                      <span className={`font-mono text-xs ${v.direcao_esperada === "sim" ? "text-zil-green" : "text-zil-orange"}`}>
-                        Direção esperada: {v.direcao_esperada.toUpperCase()}
-                      </span>
+          {votacoes.map((v) => {
+            // UI-011: resultado inferido quando null
+            const resultadoDisplay =
+              v.resultado ??
+              (v.votos_sim !== null && v.votos_nao !== null
+                ? v.votos_sim > v.votos_nao
+                  ? "Aprovado*"
+                  : "Rejeitado*"
+                : null);
+            const resultadoInferido = !v.resultado && resultadoDisplay !== null;
+
+            return (
+              <div key={v.id} className="py-5 border-b border-zil-divider">
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      {/* UI-007: Badge variant="result" + UI-011: resultado inferido */}
+                      {resultadoDisplay && (
+                        <Badge
+                          variant="result"
+                          color={resultadoColor(resultadoDisplay)}
+                          title={
+                            resultadoInferido
+                              ? "Resultado inferido dos votos registrados"
+                              : undefined
+                          }
+                        >
+                          {resultadoDisplay}
+                        </Badge>
+                      )}
+                      {v.data && (
+                        <span className="font-mono text-xs text-zil-muted">
+                          {new Date(v.data).toLocaleDateString("pt-BR")}
+                        </span>
+                      )}
+                      {/* UI-009: DirecaoBadge */}
+                      <DirecaoBadge direcao={v.direcao_esperada} />
+                    </div>
+
+                    {v.descricao && (
+                      <p className="text-xs text-zil-muted leading-relaxed">
+                        {v.descricao}
+                      </p>
                     )}
                   </div>
 
-                  {/* Descrição processual como secundária */}
-                  {v.descricao && (
-                    <p className="text-xs text-zil-muted leading-relaxed">
-                      {v.descricao}
-                    </p>
+                  {/* Placar */}
+                  {(v.votos_sim !== null || v.votos_nao !== null) && (
+                    <div className="flex gap-4 shrink-0">
+                      <div className="text-center">
+                        <div className="font-display text-lg text-zil-green">
+                          {v.votos_sim ?? "—"}
+                        </div>
+                        <div className="font-mono text-xs text-zil-muted">SIM</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-display text-lg text-zil-orange">
+                          {v.votos_nao ?? "—"}
+                        </div>
+                        <div className="font-mono text-xs text-zil-muted">NÃO</div>
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                {/* Placar */}
-                {(v.votos_sim !== null || v.votos_nao !== null) && (
-                  <div className="flex gap-4 shrink-0">
-                    <div className="text-center">
-                      <div className="font-display text-lg text-zil-green">{v.votos_sim ?? "—"}</div>
-                      <div className="font-mono text-xs text-zil-muted">SIM</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-display text-lg text-zil-orange">{v.votos_nao ?? "—"}</div>
-                      <div className="font-mono text-xs text-zil-muted">NÃO</div>
-                    </div>
-                  </div>
-                )}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {v.categorias_zil?.map((c) => (
+                    <CategoriaBadge key={c} codigo={c} />
+                  ))}
+                  <Link
+                    href={`/votacoes/${v.id}`}
+                    className="font-mono text-xs text-zil-green hover:underline ml-auto"
+                  >
+                    Ver como cada parlamentar votou →
+                  </Link>
+                </div>
               </div>
-
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                {v.categorias_zil?.map((c) => (
-                  <CategoriaBadge key={c} codigo={c} />
-                ))}
-                <Link
-                  href={`/votacoes/${v.id}`}
-                  className="font-mono text-xs text-zil-green hover:underline ml-auto"
-                >
-                  Ver como cada parlamentar votou →
-                </Link>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

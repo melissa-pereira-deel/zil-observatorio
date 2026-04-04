@@ -3,40 +3,26 @@
   "configurations": [
     {
       "name": "Web (Next.js)",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "/opt/homebrew/Cellar/node/24.4.1/bin/node",
+      "runtimeArgs": ["node_modules/next/dist/bin/next", "dev"],
       "port": 3000,
       "autoPort": true,
       "cwd": "apps/web"
     },
     {
       "name": "API (FastAPI)",
-      "runtimeExecutable": "uvicorn",
-      "runtimeArgs": ["main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
+      "runtimeExecutable": "/opt/homebrew/bin/python3",
+      "runtimeArgs": ["-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
       "port": 8000,
       "cwd": "apps/api"
-    },
-    {
-      "name": "Worker (Celery)",
-      "runtimeExecutable": "celery",
-      "runtimeArgs": ["-A", "workers.tasks", "worker", "--loglevel=info", "--concurrency=2"],
-      "port": null,
-      "cwd": "apps"
-    },
-    {
-      "name": "Beat (Celery Scheduler)",
-      "runtimeExecutable": "celery",
-      "runtimeArgs": ["-A", "workers.tasks", "beat", "--loglevel=info"],
-      "port": null,
-      "cwd": "apps"
     },
     {
       "name": "All Services (Docker Compose)",
-      "runtimeExecutable": "uvicorn",
-      "runtimeArgs": ["main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
-      "port": 8000,
+      "runtimeExecutable": "/opt/homebrew/Cellar/node/24.4.1/bin/node",
+      "runtimeArgs": ["node_modules/next/dist/bin/next", "dev"],
+      "port": 3000,
       "autoPort": true,
-      "cwd": "apps/api"
+      "cwd": "apps/web"
     }
   ]
 }

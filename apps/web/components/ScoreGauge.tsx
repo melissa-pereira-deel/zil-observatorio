@@ -1,26 +1,35 @@
 /**
  * ScoreGauge — visual indicator for the ZIL score (-10 to +10).
- * Green = aligned with sovereignty, gold border = neutral, red tones = against.
+ * Green = aligned with sovereignty, gold = neutral, orange/red = against.
  */
 
 interface ScoreGaugeProps {
   score: number | null;
   size?: "sm" | "md" | "lg";
+  totalVotosZil?: number;
 }
 
-export function ScoreGauge({ score, size = "md" }: ScoreGaugeProps) {
+export function ScoreGauge({ score, size = "md", totalVotosZil }: ScoreGaugeProps) {
   const sizeClasses = {
     sm: "w-10 h-10 text-sm",
     md: "w-14 h-14 text-lg",
     lg: "w-20 h-20 text-2xl",
   };
 
+  const title =
+    totalVotosZil != null && totalVotosZil > 0
+      ? `Score calculado a partir de ${totalVotosZil} votos em pautas ZIL · Saiba mais em /metodologia`
+      : undefined;
+
   if (score === null || score === undefined) {
     return (
-      <div
-        className={`${sizeClasses[size]} rounded-full border-2 border-zil-divider flex items-center justify-center font-display text-zil-muted`}
-      >
-        —
+      <div className="inline-flex flex-col items-center gap-1">
+        <div
+          className={`${sizeClasses[size]} rounded-full border-2 border-zil-divider flex items-center justify-center font-display text-zil-muted`}
+          title={title}
+        >
+          —
+        </div>
       </div>
     );
   }
@@ -37,11 +46,18 @@ export function ScoreGauge({ score, size = "md" }: ScoreGaugeProps) {
   const display = score > 0 ? `+${score.toFixed(1)}` : score.toFixed(1);
 
   return (
-    <div
-      className={`${sizeClasses[size]} rounded-full border-2 ${colors.border} ${colors.bg} flex items-center justify-center font-display ${colors.text}`}
-      title={`Score ZIL: ${display}`}
-    >
-      {display}
+    <div className="inline-flex flex-col items-center gap-1">
+      <div
+        className={`${sizeClasses[size]} rounded-full border-2 ${colors.border} ${colors.bg} flex items-center justify-center font-display ${colors.text}`}
+        title={title ?? `Score ZIL: ${display}`}
+      >
+        {display}
+      </div>
+      {size !== "sm" && totalVotosZil != null && totalVotosZil > 0 && (
+        <span className="font-mono text-2xs text-zil-muted text-center">
+          com base em {totalVotosZil} votos
+        </span>
+      )}
     </div>
   );
 }

@@ -160,7 +160,7 @@ export default function ParlamentarPage() {
 
         {/* Coluna esquerda: Score */}
         <div className="bg-zil-white px-6 py-5 flex items-center gap-5">
-          <ScoreGauge score={parl.score_zil} size="lg" />
+          <ScoreGauge score={parl.score_zil} size="lg" totalVotosZil={votos.length} />
           <div>
             <div className="font-mono text-2xs text-zil-muted uppercase tracking-wider mb-1">
               Score ZIL

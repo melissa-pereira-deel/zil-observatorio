@@ -50,7 +50,7 @@ export function ParlamentarCard({ parlamentar: p, rank }: ParlamentarCardProps) 
       </div>
 
       {/* Score */}
-      <ScoreGauge score={p.score_zil} size="sm" />
+      <ScoreGauge score={p.score_zil} size="sm" totalVotosZil={p.total_votos_zil} />
     </Link>
   );
 }
