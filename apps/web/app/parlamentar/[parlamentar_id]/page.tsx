@@ -86,12 +86,29 @@ export default function ParlamentarPage() {
   const semDirecao = votos.length - alinhados - contra;
   const pctAlinhado = votos.length > 0 ? Math.round((alinhados / votos.length) * 100) : 0;
 
-  const scoreDisplay =
-    parl?.score_zil !== null && parl?.score_zil !== undefined
-      ? parl.score_zil > 0
-        ? `+${parl.score_zil.toFixed(1)}`
-        : parl.score_zil.toFixed(1)
-      : null;
+  function getScoreLabel(score: number | null): string {
+    if (score === null) return "Sem dados suficientes";
+    if (score >= 8) return "Alinhamento total";
+    if (score >= 4) return "Majoritariamente alinhado";
+    if (score >= 1) return "Parcialmente alinhado";
+    if (score >= -1) return "Posição neutra";
+    if (score >= -4) return "Parcialmente contrário";
+    if (score >= -8) return "Majoritariamente contrário";
+    return "Posição contrária";
+  }
+
+  function getSynthesis(): string | null {
+    if (votos.length === 0) return null;
+    const pct = Math.round((alinhados / votos.length) * 100);
+    if (pct === 100) return `Votou a favor da soberania industrial em todas as ${votos.length} pautas monitoradas.`;
+    if (pct >= 75) return `Votou a favor da soberania industrial na maioria das pautas monitoradas (${alinhados} de ${votos.length}).`;
+    if (pct >= 50) return `Votou a favor da soberania industrial em ${alinhados} de ${votos.length} pautas monitoradas.`;
+    if (pct >= 25) return `Votou contra a posição de soberania industrial na maioria das pautas monitoradas (${votos.length - alinhados} de ${votos.length}).`;
+    if (pct > 0) return `Votou contra a posição de soberania industrial em quase todas as pautas monitoradas (${votos.length - alinhados} de ${votos.length}).`;
+    return `Votou contra a posição de soberania industrial em todas as ${votos.length} pautas monitoradas.`;
+  }
+
+  const synthesis = getSynthesis();
 
   if (loading) {
     return (
@@ -148,18 +165,25 @@ export default function ParlamentarPage() {
         </div>
       </div>
 
+      {/* UI-022: Frase de síntese interpretativa */}
+      {synthesis && (
+        <p className="font-body text-base text-zil-soft mb-6 max-w-xl">
+          {synthesis}
+        </p>
+      )}
+
       {/* Hero Metric Block — UI-013 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zil-divider border border-zil-divider mb-10">
 
         {/* Coluna esquerda: Score */}
         <div className="bg-zil-white px-6 py-5 flex items-center gap-5">
-          <ScoreGauge score={parl.score_zil} size="lg" totalVotosZil={votos.length} />
+          <ScoreGauge score={parl.score_zil} size="lg" totalVotosZil={votos.length} hideVotosLabel />
           <div>
             <div className="font-mono text-2xs text-zil-muted uppercase tracking-wider mb-1">
               Score ZIL
             </div>
-            <div className="font-display text-4xl text-zil-fg leading-none mb-1">
-              {scoreDisplay ?? "—"}
+            <div className="font-display text-lg text-zil-fg leading-snug mb-1">
+              {getScoreLabel(parl.score_zil)}
             </div>
             <div className="font-mono text-2xs text-zil-muted">
               escala de −10 a +10
@@ -232,14 +256,13 @@ export default function ParlamentarPage() {
                 <button
                   key={cat}
                   onClick={() => setFiltroCategoria(filtroCategoria === cat ? "" : cat)}
-                  title={`Filtrar histórico por ${CATEGORIA_LABELS[cat] ?? cat}`}
+                  title={`${cat} — Filtrar histórico por ${CATEGORIA_LABELS[cat] ?? cat}`}
                   className={`text-left p-3 border transition-colors ${
                     filtroCategoria === cat
                       ? "border-zil-green bg-zil-green/5"
                       : "border-zil-divider hover:border-zil-green"
                   }`}
                 >
-                  <div className="font-mono text-xs text-zil-muted mb-1">{cat}</div>
                   <div className="font-display text-sm text-zil-fg">
                     {CATEGORIA_LABELS[cat] ?? cat}
                   </div>
@@ -309,8 +332,11 @@ export default function ParlamentarPage() {
             <span className="w-2 h-2 rounded-full bg-zil-divider inline-block shrink-0" />
             sem posição definida
           </span>
-          <span className="font-mono text-2xs text-zil-muted opacity-70">
-            · badge = voto registrado
+          <span className="font-mono text-2xs text-zil-muted flex items-center gap-1.5">
+            <span className="font-mono text-2xs px-1.5 py-0.5 bg-zil-green/10 text-zil-green rounded-sm leading-none">
+              SIM
+            </span>
+            = voto registrado
           </span>
         </div>
       )}

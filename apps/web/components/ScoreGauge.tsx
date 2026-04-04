@@ -7,9 +7,10 @@ interface ScoreGaugeProps {
   score: number | null;
   size?: "sm" | "md" | "lg";
   totalVotosZil?: number;
+  hideVotosLabel?: boolean;
 }
 
-export function ScoreGauge({ score, size = "md", totalVotosZil }: ScoreGaugeProps) {
+export function ScoreGauge({ score, size = "md", totalVotosZil, hideVotosLabel = false }: ScoreGaugeProps) {
   const sizeClasses = {
     sm: "w-10 h-10 text-sm",
     md: "w-14 h-14 text-lg",
@@ -53,7 +54,7 @@ export function ScoreGauge({ score, size = "md", totalVotosZil }: ScoreGaugeProp
       >
         {display}
       </div>
-      {size !== "sm" && totalVotosZil != null && totalVotosZil > 0 && (
+      {size !== "sm" && totalVotosZil != null && totalVotosZil > 0 && !hideVotosLabel && (
         <span className="font-mono text-2xs text-zil-muted text-center">
           com base em {totalVotosZil} votos
         </span>
