@@ -36,6 +36,10 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   necessidade de recalcular scores manualmente
 
 ### Fixed
+- **Enrichment API key loading**: `apps/workers/enrichment/__init__.py` now reads
+  `ANTHROPIC_API_KEY` and `ENRICHMENT_MODEL` from `core.config.settings` instead of
+  `os.getenv()` — fixes enrichment failure when shell environment has empty override
+  that takes precedence over `.env` file (Pydantic BaseSettings priority: env > .env)
 - **CORS**: `main.py` now uses `allow_origin_regex` to allow all `localhost:*` ports in
   development, fixing API calls from preview servers on dynamic ports
 - **SQLite path**: `.env` now uses an absolute path for `DATABASE_URL` so the same

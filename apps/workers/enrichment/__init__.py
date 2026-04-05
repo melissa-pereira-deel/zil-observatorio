@@ -345,8 +345,8 @@ def augment_with_llm(ementa: str, artigos: list[ArtigoResolvido], modelo: str) -
     except ImportError:
         return {"error": "anthropic não instalado — execute: pip install anthropic"}
 
-    import os
-    api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    from core.config import settings
+    api_key = settings.ANTHROPIC_API_KEY
     if not api_key:
         return {"error": "ANTHROPIC_API_KEY não configurado"}
 
@@ -414,10 +414,10 @@ def enriquecer_proposicao(
     Full pipeline: EXTRACT → RESOLVE → AUGMENT → VALIDATE → SERVE.
     Idempotent: skips if ementa_hash unchanged and status == 'pronto' (unless force=True).
     """
-    import os
     from models import Proposicao
+    from core.config import settings
 
-    modelo = os.getenv("ENRICHMENT_MODEL", "claude-haiku-4-5-20251001")
+    modelo = settings.ENRICHMENT_MODEL
 
     proposicao = db.get(Proposicao, proposicao_id)
     if not proposicao:
