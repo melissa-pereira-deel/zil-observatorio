@@ -1,9 +1,23 @@
-# Feature Specification: Pipeline de Enriquecimento de Texto Legislativo
+# Feature Specification: Pipeline de Enriquecimento Legislativo Completo
 
 **Feature Branch**: `002-legislative-enrichment-pipeline`
 **Created**: 2026-04-02
+**Updated**: 2026-04-04
 **Status**: Draft
 **Abordagem escolhida**: D — Híbrido (extração de citações + scraping Planalto + síntese LLM com contexto injetado)
+**Escopo expandido**: Pipeline completo — descoberta de proposições, sync de votações, enriquecimento LLM e recálculo de scores (orquestrado)
+
+---
+
+## Clarifications
+
+### Session 2026-04-04
+
+- Q: Should this spec cover only LLM enrichment, or the full orchestrated pipeline (discovery → votação sync → enrichment → scoring)? → A: Option A — Expand to cover full orchestrated pipeline. The orchestration gap is the root cause of proposições without votações and stale rankings.
+- Q: Should the system auto-sync votações from the Câmara API for discovered proposições, or only sync editorially curated ones from YAML files? → A: Option B — Auto-sync all votações from API; leave `direcao_esperada` NULL until editorial review.
+- Q: Should the system sync all votação types (plenário, committee, procedural) or filter to only meaningful votes? → A: Option B — Sync all votações; editorial review decides which get `direcao_esperada` for scoring.
+- Q: When should score recalculation trigger? → A: Option B — Trigger immediately after `apply_direcoes.py` (editorial direction applied); keep daily 04:00 schedule as safety net.
+- Q: What rate-limiting strategy for Câmara API votação fetch? → A: 300ms delay between requests + respect `Retry-After` headers + max 3 retries with exponential backoff (matches existing CamaraClient pattern).
 
 ---
 
@@ -15,6 +29,8 @@ Textos legislativos retornados pelas APIs da Câmara e do Senado são escritos e
 > "Altera a Lei nº 14.744, de 21 de novembro de 2023, para incluir a margem de preferência de até 25% (vinte e cinco por cento) nas licitações e contratações diretas da administração pública federal para produtos e serviços de tecnologia da informação e comunicação fabricados por empresas beneficiárias do PADIS."
 
 O usuário precisa saber: o que é o PADIS? O que diz o art. modificado? Por que isso importa para semicondutores? Qual é o impacto prático?
+
+Além do problema de linguagem, a plataforma possui apenas 5 proposições com votações vinculadas (7 votações totais) de um universo de 400+ proposições relevantes descobertas via busca por keywords. 126 dessas proposições possuem votações na API da Câmara que nunca foram buscadas, e o ranking de parlamentares está baseado em apenas 7 votações editorialmente curadas. O pipeline precisa ser orquestrado de ponta a ponta: descoberta → sync de votações → enriquecimento LLM → recálculo de scores.
 
 ### Por que Abordagem D — Híbrido
 
@@ -121,6 +137,9 @@ O frontend `/proposicoes` exibe o resumo em linguagem simples acima da ementa t�
 - **Proposição sem categoria ZIL**: Pipeline DEVE ser acionado apenas para proposições com `categorias_zil != null`. Proposições não classificadas ficam com `contexto_status = null`.
 - **Falha da API Claude**: Se a API do Claude retornar erro 5xx, pipeline salva os artigos resolvidos (etapa RESOLVE concluída) e marca `contexto_status = "llm_falhou"` para retry apenas da etapa AUGMENT.
 - **Texto idêntico ao já enriquecido**: Se `ementa` não mudou desde o último enriquecimento, pipeline DEVE pular (idempotência baseada em hash SHA-256 da ementa).
+- **Votação processual vs. plenário**: API retorna todos os tipos de votação (plenário, comissão, requerimento de urgência, etc.). O sistema sincroniza TODAS — somente a curadoria editorial (YAML) decide quais recebem `direcao_esperada` e impactam o scoring. Votações sem direção ficam visíveis na UI mas não alteram `score_zil`.
+- **Proposição sem votações na API**: Muitas proposições recém-apresentadas não têm votações ainda. O sync de votações por proposição DEVE ser idempotente e tolerante a resultados vazios — `proposição.votacoes = []` é estado válido.
+- **Votação duplicada (descoberta por dois caminhos)**: A mesma votação pode ser encontrada pelo sync anual (`listar_votacoes(ano)`) e pelo sync por proposição (`/proposicoes/{id}/votacoes`). Deduplicação via `UniqueConstraint(fonte_id, fonte)` garante que a votação é criada apenas uma vez.
 
 ---
 
@@ -141,6 +160,10 @@ O frontend `/proposicoes` exibe o resumo em linguagem simples acima da ementa t�
 - **FR-011**: Sistema DEVE ser idempotente: se `ementa` não mudou (hash SHA-256 igual), reprocessamento DEVE ser ignorado com log "skipped: ementa unchanged"
 - **FR-012**: Sistema DEVE suportar re-enriquecimento forçado via endpoint `POST /proposicoes/{id}/enriquecer` (admin-only por query param `?force=true`)
 - **FR-013**: Frontend DEVE exibir badge de status: "Contexto verificado" (verde, confianca >= 0.7), "Contexto parcial" (amarelo, 0 < confianca < 0.7), "Contexto pendente" (cinza, status = pendente), "Contexto indisponível" (vermelho, status = falhou) — sem nunca esconder a ementa original
+- **FR-014**: Sistema DEVE descobrir proposições relevantes via busca por keywords das 9 categorias ZIL na API da Câmara (`/proposicoes?keywords=...`), iterando por trimestre (restrição da API de 3 meses), classificando localmente, e persistindo com dados completos (`ementa_detalhada`, `situacao`, `url_inteiro_teor`)
+- **FR-015**: Sistema DEVE buscar votações para cada proposição no banco via API da Câmara (`/proposicoes/{id}/votacoes`), sincronizando votações e votos individuais. Votações auto-sincronizadas são persistidas com `direcao_esperada = NULL` e `peso = NULL` — somente curadoria editorial (YAML) define esses campos. Rate limiting: 300ms entre requests, respeitar `Retry-After`, max 3 retries com backoff exponencial
+- **FR-016**: Sistema DEVE recalcular `score_zil` de todos os parlamentares imediatamente após `apply_direcoes.py` definir `direcao_esperada` em votações. O schedule diário (04:00) permanece como safety net para garantir consistência
+- **FR-017**: Sistema DEVE orquestrar os 4 módulos na ordem correta: (1) descoberta de proposições → (2) sync de votações por proposição → (3) enriquecimento LLM → (4) recálculo de scores. Cada etapa pode rodar independentemente mas o orquestrador garante a sequência
 
 ### Key Entities
 

@@ -29,7 +29,7 @@ packages/          camara_client ✅ | senado_client (backlog)
 data/taxonomia/    categorias.yml — keywords das 9 categorias ZIL
 data/direcoes/     direcao_esperada por votação (backlog, workflow editorial)
 data/bussula/      indicadores estratégicos (backlog)
-scripts/           apply_direcoes.py | sync_votacoes_zil.py | recalcular_scores.py (backlog)
+scripts/           apply_direcoes.py | sync_votacoes_zil.py | discover_proposicoes.py | sync_votacoes_proposicoes.py | sync_pipeline.py | recalcular_scores.py (backlog)
 tests/             unit/ integration/ contract/
 specs/             Specify Kit specs por feature
 docs/              PRD, ARCHITECTURE, GOVERNANCE, ROADMAP, CHANGELOG
@@ -41,7 +41,7 @@ docs/              PRD, ARCHITECTURE, GOVERNANCE, ROADMAP, CHANGELOG
 
 ```bash
 # Backend (rodar da raiz)
-python -m pytest tests/          # 98 testes
+python -m pytest tests/          # 151 testes
 ruff check apps/ packages/       # lint Python
 
 # Frontend
@@ -60,7 +60,24 @@ docker-compose up
 # Pipeline de dados editorial (rodar na ordem, da raiz)
 python3 scripts/migrate_enrichment.py       # migração: novos campos Feature 002 (idempotente)
 python3 scripts/sync_votacoes_zil.py        # sync só votações ZIL definidas nos YAMLs
-python3 scripts/apply_direcoes.py           # aplica direcao_esperada + peso ao banco
+python3 scripts/apply_direcoes.py           # aplica direcao_esperada + peso + recalcula scores
+
+# Sync de votações por proposição (busca votações na API da Câmara para cada proposição)
+python3 scripts/sync_votacoes_proposicoes.py --dry-run             # preview sem gravar
+python3 scripts/sync_votacoes_proposicoes.py                       # sync completo (pula proposições com votos)
+python3 scripts/sync_votacoes_proposicoes.py --no-skip             # sync forçado (inclui todas)
+python3 scripts/sync_votacoes_proposicoes.py --proposicao-id UUID  # sync de uma proposição específica
+
+# Pipeline orquestrado (roda os 4 passos em sequência)
+python3 scripts/sync_pipeline.py                                   # discovery → votações → enrichment → scores
+python3 scripts/sync_pipeline.py --dry-run                         # preview completo
+python3 scripts/sync_pipeline.py --skip-enrichment --skip-scores   # só discovery + votações
+python3 scripts/sync_pipeline.py --skip-discovery --skip-votacoes  # só enrichment + scores
+
+# Descoberta de proposições (busca na API da Câmara por keywords ZIL)
+python3 scripts/discover_proposicoes.py --dry-run              # apenas mostra o que seria descoberto
+python3 scripts/discover_proposicoes.py --enriquecer           # persiste + marca para enriquecimento
+python3 scripts/discover_proposicoes.py --ano-inicio 2020      # janela temporal customizada
 python3 -c "
 import sys; sys.path.insert(0,'apps/api'); sys.path.insert(0,'.')
 from sqlalchemy import create_engine
@@ -256,3 +273,10 @@ chore:    infra, CI, deps
 5. **Design system** — tokens `zil-*`, componentes reutilizáveis, sem inline styles
 6. **API-first** — funcionalidade acessível via API antes de ter UI
 7. **Qualidade** — testes obrigatórios para scoring, classifier e endpoints críticos
+
+## Active Technologies
+- Python 3.12 (backend/workers), TypeScript 5 (frontend) + FastAPI 0.111, SQLAlchemy 2.0, Pydantic 2, Celery 5, httpx 0.27, anthropic SDK, Next.js 14, React 18, Tailwind CSS (002-legislative-enrichment-pipeline)
+- SQLite (development, in-memory for tests), PostgreSQL 16 (production), Redis 7 (Celery broker/cache) (002-legislative-enrichment-pipeline)
+
+## Recent Changes
+- 002-legislative-enrichment-pipeline: Added Python 3.12 (backend/workers), TypeScript 5 (frontend) + FastAPI 0.111, SQLAlchemy 2.0, Pydantic 2, Celery 5, httpx 0.27, anthropic SDK, Next.js 14, React 18, Tailwind CSS

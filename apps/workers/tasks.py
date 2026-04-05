@@ -281,10 +281,14 @@ def task_enriquecer_pendentes(self):
     logger.info("Task: task_enriquecer_pendentes iniciada")
     db = _get_db()
     try:
+        from sqlalchemy import or_
         pendentes = db.execute(
             select(Proposicao.id).where(
                 Proposicao.categorias_zil.isnot(None),
-                Proposicao.contexto_status.is_(None),
+                or_(
+                    Proposicao.contexto_status.is_(None),
+                    Proposicao.contexto_status == "pendente",
+                ),
             )
         ).scalars().all()
 
