@@ -10,42 +10,100 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
-- `scripts/discover_proposicoes.py`: script de descoberta de proposições via API da Câmara —
-  busca por keywords das 9 categorias ZIL, classifica localmente, persiste com dados completos;
-  suporta `--dry-run`, `--enriquecer`, e janela temporal customizada (`--ano-inicio`/`--ano-fim`)
-- `packages/camara_client/__init__.py`: novo método `pesquisar_proposicoes()` com busca por keywords,
-  iteração trimestral (restrição da API de 3 meses), e deduplicação por ID
-- `apps/workers/tasks.py`: `task_enriquecer_pendentes` agora também processa proposições com
-  `contexto_status = "pendente"` (além de `NULL`), integrando com o script de descoberta
-- `packages/camara_client/__init__.py`: novo método `listar_votacoes_proposicao(proposicao_id)`
-  para buscar votações de uma proposição específica via `GET /proposicoes/{id}/votacoes`
-- `scripts/sync_votacoes_proposicoes.py`: script de sync de votações por proposição — itera
-  todas as proposições no banco, busca votações na API da Câmara, sincroniza votações + votos
+
+#### Pipeline de dados — discovery, sync e orquestração
+- `scripts/discover_proposicoes.py`: descoberta de proposições via API da Câmara —
+  busca por keywords das 9 categorias ZIL, classifica localmente, persiste com dados
+  completos; suporta `--dry-run`, `--enriquecer`, e janela temporal customizada
+- `scripts/sync_votacoes_proposicoes.py`: sync de votações por proposição — itera
+  proposições no banco, busca votações na API da Câmara, sincroniza votações + votos
   individuais; suporta `--dry-run`, `--proposicao-id`, `--skip-with-votes`/`--no-skip`
-- `scripts/sync_pipeline.py`: orquestrador dos 4 passos do pipeline — discovery → votação sync →
-  enrichment → score recalculation; suporta `--skip-*` flags e `--dry-run`
-- `tests/unit/test_camara_client.py`: testes unitários para `listar_votacoes_proposicao`
-- `tests/unit/test_sync_votacoes.py`: testes unitários para `sync_votacoes_por_proposicao`
-  com mock de CamaraClient — cobre criação, dedup, skip, dry-run, e classificação
-- `tests/integration/test_pipeline_scoring.py`: teste de integração validando que
-  `apply_direcoes` + `recalcular_todos_scores` atualiza `score_zil` corretamente
+- `scripts/sync_pipeline.py`: orquestrador sequencial dos 4 passos do pipeline —
+  discovery → votação sync → enrichment → score recalculation; suporta `--skip-*`
+  flags individuais e `--dry-run` global
+- `packages/camara_client/__init__.py`: novo método `pesquisar_proposicoes()` com
+  busca por keywords, iteração trimestral (restrição da API), e deduplicação por ID
+- `packages/camara_client/__init__.py`: novo método `listar_votacoes_proposicao()`
+  para buscar votações de uma proposição específica via API da Câmara
+- `apps/workers/tasks.py`: `task_enriquecer_pendentes` agora processa proposições
+  com `contexto_status = "pendente"` (além de `NULL`)
+
+#### UI/UX — credibilidade, acessibilidade e componentes compartilhados (UI-001 a UI-022)
+- `components/ParlamentarAvatar.tsx`: componente reutilizável com fallback de iniciais
+  quando foto está ausente ou falha ao carregar — suporta tamanhos sm/md/lg
+- `components/DirecaoBadge.tsx`: badge de direção esperada (FAVORÁVEL/CONTRÁRIA) com
+  link para /metodologia — usado em proposições e votações
+- `components/ui/Badge.tsx`: sistema unificado de badges com variantes `category`,
+  `status`, `result` — substitui badges ad hoc espalhados pelas páginas
+- `lib/categorias.ts`: mapa centralizado de categorias ZIL com labels legíveis —
+  elimina duplicação de strings de categoria em múltiplos componentes
+- `ScoreGauge.tsx`: tooltip com âncora de credibilidade ("baseado em N votos ·
+  ver metodologia →"), design tokens `zil-*` consolidados (UI-001, UI-016, UI-019)
+- `ContextoBadge.tsx`: badge "Contexto pendente" removido da UI pública — aparece
+  apenas quando `contexto_status === "pronto"` (UI-002)
+- `ranking/page.tsx`: contagem de resultados acima da lista, empty state explicativo,
+  busca textual na mesma linha dos filtros, remoção de decoração tipográfica (UI-003/004/005/006)
+- `proposicoes/page.tsx`: contagem de resultados, empty state, unificação de filtros,
+  remoção de letra decorativa (UI-003/004/005/006)
+- `proposicoes/[id]/page.tsx`: síntese de posição ZIL ("ZIL avalia: FAVORÁVEL · com
+  base em N votações"), `resultado` inferido de votos quando null, collapse nativo
+  com `<details>/<summary>` (UI-010/011/012)
+- `votacoes/[id]/page.tsx`: redesign com linguagem mais acessível, placar visual,
+  filtro por tipo de voto, links para perfil do parlamentar
+- `parlamentar/[id]/page.tsx`: hero metric zone com gauge + proporção em 2 colunas,
+  legenda do duplo encoding (dot = alinhamento, badge = voto) com mini badge visual,
+  affordance nos cards de categoria, frase de síntese interpretativa, remoção de
+  score duplicado e código interno das categorias (UI-013 a UI-022)
+
+#### Segurança — hardening de secrets
+- `.pre-commit-config.yaml`: hooks `detect-secrets` (Yelp v1.5.0) e
+  `detect-private-key` para bloquear commits com API keys ou chaves privadas
+- `core/config.py`: validação de startup em produção — app recusa iniciar se
+  variáveis obrigatórias estiverem ausentes ou se DATABASE_URL for SQLite
+- `.gitignore`: catch-all para variantes `.env.*` (exceto `.env.example`) +
+  padrões para chaves privadas, certificados e credenciais
+- `.env.example`: contém apenas placeholders vazios com comentários instrutivos —
+  nunca valores reais
+- `docker-compose.yml`: credenciais substituídas por `${VAR:-default}` para
+  carregamento seguro via `.env`
+- `CLAUDE.md`: seção "Segurança e segredos" com 7 regras para manuseio de secrets
+
+#### Testes
+- `tests/unit/test_camara_client.py`: 6 testes para `listar_votacoes_proposicao`
+  (retorno, lista vazia, resposta non-list, endpoint correto, mapeamento, campos opcionais)
+- `tests/unit/test_sync_votacoes.py`: 6 testes para `sync_votacoes_por_proposicao`
+  (criação, dedup, skip, dry-run, classificação, linking)
+- `tests/integration/test_pipeline_scoring.py`: 3 testes end-to-end validando
+  apply_direcoes + recalcular_todos_scores (score positivo, negativo, sem direção)
+- Total: **151 testes passando**
+
+#### Documentação
+- `specs/002-legislative-enrichment-pipeline/`: spec completo com tasks.md (12 tasks),
+  plan.md, contracts/api.md, data-model.md, quickstart.md, research.md
+- `specs/ui-ux-credibility-polish/spec.md`: spec das 22 tasks UI/UX
 
 ### Changed
 - `scripts/apply_direcoes.py`: agora chama `recalcular_todos_scores(db)` automaticamente
-  após aplicar direções (quando `--dry-run` não está ativo e houve atualizações) — elimina
-  necessidade de recalcular scores manualmente
+  após aplicar direções — elimina necessidade de recalcular scores manualmente
+- `apps/api/routers/legislativo.py`: endpoints de proposições e votações retornam campos
+  de enriquecimento (resumo_simples, categorias) em linguagem mais acessível
+- `apps/api/routers/parlamentares.py`: campo de contagem de votos adicionado à resposta
+- `apps/api/schemas/__init__.py`: novos schemas para campos de enriquecimento
 
 ### Fixed
-- **Enrichment API key loading**: `apps/workers/enrichment/__init__.py` now reads
-  `ANTHROPIC_API_KEY` and `ENRICHMENT_MODEL` from `core.config.settings` instead of
-  `os.getenv()` — fixes enrichment failure when shell environment has empty override
-  that takes precedence over `.env` file (Pydantic BaseSettings priority: env > .env)
-- **CORS**: `main.py` now uses `allow_origin_regex` to allow all `localhost:*` ports in
-  development, fixing API calls from preview servers on dynamic ports
-- **SQLite path**: `.env` now uses an absolute path for `DATABASE_URL` so the same
-  database is used regardless of which directory the API server is launched from
-- **env_file resolution**: `core/config.py` resolves `.env` relative to the config file
-  location instead of the process cwd, making the launch.json config reliable
+- **Enrichment não executava**: `apps/workers/enrichment/__init__.py` usava `os.getenv()`
+  para ler configurações — falha silenciosa quando variável de ambiente vazia sobrescreve
+  o `.env` (Pydantic BaseSettings dá precedência a env vars). Corrigido para usar
+  `core.config.settings` consistentemente com o resto do codebase. 406 proposições
+  enriquecidas com sucesso após a correção.
+- **CORS em dev**: `main.py` agora usa `allow_origin_regex` para aceitar qualquer porta
+  localhost, corrigindo chamadas de API de preview servers em portas dinâmicas
+- **Caminho SQLite**: DATABASE_URL usa caminho absoluto — mesmo banco independente
+  do diretório de execução
+- **Resolução de .env**: `core/config.py` resolve `.env` relativo ao arquivo de config,
+  não ao cwd do processo
+- **Proxy Next.js → FastAPI**: `next.config.js` com rewrite para que preview no browser
+  alcance a API backend
 
 ---
 
