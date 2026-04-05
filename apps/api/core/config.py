@@ -30,6 +30,21 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+# ── Production safety: require secrets to be set ──
+if settings.ENV == "production":
+    _missing = []
+    if not settings.ANTHROPIC_API_KEY:
+        _missing.append("ANTHROPIC_API_KEY")
+    if not settings.ADMIN_TOKEN:
+        _missing.append("ADMIN_TOKEN")
+    if settings.DATABASE_URL.startswith("sqlite"):
+        _missing.append("DATABASE_URL (must be PostgreSQL in production)")
+    if _missing:
+        raise RuntimeError(
+            f"Production environment requires these variables: {', '.join(_missing)}. "
+            f"Set them in your environment or .env file."
+        )
+
 engine = create_engine(settings.DATABASE_URL, echo=(settings.ENV == "development"))
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

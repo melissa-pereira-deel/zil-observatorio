@@ -32,10 +32,10 @@ Thumbs.db
 # Docker
 docker-compose.override.yml
 
-# Environment
+# Environment — catch ALL .env variants except the template
 .env
-.env.local
-.env.production
+.env.*
+!.env.example
 
 # Database
 *.db
@@ -43,6 +43,15 @@ docker-compose.override.yml
 
 # Logs
 *.log
+
+# Secrets / credentials — never commit
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+*secret*key*
 
 # Data downloads (large files)
 data/downloads/

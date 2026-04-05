@@ -110,6 +110,16 @@ with Session(engine) as db: print(recalcular_todos_scores(db), 'scores calculado
 - Componentes genéricos (Button, Badge, Card) em `components/ui/` — reutilizar, não recriar
 - Novos tokens de cor/tipografia: adicionar em `tailwind.config.js` antes de usar
 
+### Segurança e segredos
+
+- **NUNCA commitar chaves, tokens ou senhas** — `.env` e variantes são gitignored
+- `.env.example` contém APENAS placeholders vazios — nunca valores reais
+- Secrets (API keys, tokens) devem ser vazios em defaults de código (`ANTHROPIC_API_KEY: str = ""`)
+- Em produção, variáveis obrigatórias (`ANTHROPIC_API_KEY`, `ADMIN_TOKEN`) são validadas no startup — app recusa iniciar se ausentes
+- Docker Compose carrega credenciais de `.env` via `env_file:` — nunca hardcoded no YAML para secrets reais
+- Pre-commit hook `detect-secrets` bloqueia commits que contenham padrões de API keys
+- Ao revisar código ou PRs: verificar se não há strings que pareçam tokens (prefixos `sk-`, `ghp_`, `Bearer`, etc.)
+
 ### Geral
 
 - Não adicionar features além do solicitado
