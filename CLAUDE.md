@@ -287,6 +287,8 @@ chore:    infra, CI, deps
 ## Active Technologies
 - Python 3.12 (backend/workers), TypeScript 5 (frontend) + FastAPI 0.111, SQLAlchemy 2.0, Pydantic 2, Celery 5, httpx 0.27, anthropic SDK, Next.js 14, React 18, Tailwind CSS (002-legislative-enrichment-pipeline)
 - SQLite (development, in-memory for tests), PostgreSQL 16 (production), Redis 7 (Celery broker/cache) (002-legislative-enrichment-pipeline)
+- Python 3.12 (backend), TypeScript 5 (frontend) + FastAPI 0.111, Pydantic 2, SQLAlchemy 2.0, Next.js 14, React 18, Tailwind CSS (011-resumo-simples-votos-historico)
+- SQLite (dev) / PostgreSQL 16 (prod) — campo `resumo_simples` ja existe no modelo `Proposicao` (011-resumo-simples-votos-historico)
 
 ## Recent Changes
 - 002-legislative-enrichment-pipeline: Added Python 3.12 (backend/workers), TypeScript 5 (frontend) + FastAPI 0.111, SQLAlchemy 2.0, Pydantic 2, Celery 5, httpx 0.27, anthropic SDK, Next.js 14, React 18, Tailwind CSS

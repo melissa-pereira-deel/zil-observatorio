@@ -63,6 +63,7 @@ export interface VotoHistorico {
   alinhado: boolean | null;
   proposicao_label: string | null;
   proposicao_id: string | null;
+  resumo_simples: string | null;
 }
 
 export interface Stats {

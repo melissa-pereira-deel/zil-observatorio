@@ -381,9 +381,17 @@ export default function ParlamentarPage() {
                     )}
                   </div>
                 )}
-                <p className={`leading-relaxed ${v.proposicao_label ? "text-xs text-zil-muted" : "text-sm text-zil-fg"}`}>
-                  {v.descricao || "Votação sem descrição"}
-                </p>
+                {v.resumo_simples ? (
+                  <p className="text-sm text-zil-fg leading-relaxed">
+                    {v.resumo_simples.length > 200
+                      ? v.resumo_simples.slice(0, 200).trimEnd() + "..."
+                      : v.resumo_simples}
+                  </p>
+                ) : (
+                  <p className={`leading-relaxed ${v.proposicao_label ? "text-xs text-zil-muted" : "text-sm text-zil-fg"}`}>
+                    {v.descricao || "Votação sem descrição"}
+                  </p>
+                )}
                 <div className="flex flex-wrap items-center gap-2 mt-2">
                   {v.categorias_zil?.map((c) => (
                     <CategoriaBadge key={c} codigo={c} />
