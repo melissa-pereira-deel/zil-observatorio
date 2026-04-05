@@ -9,6 +9,32 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Added
+- `scripts/discover_proposicoes.py`: script de descoberta de proposições via API da Câmara —
+  busca por keywords das 9 categorias ZIL, classifica localmente, persiste com dados completos;
+  suporta `--dry-run`, `--enriquecer`, e janela temporal customizada (`--ano-inicio`/`--ano-fim`)
+- `packages/camara_client/__init__.py`: novo método `pesquisar_proposicoes()` com busca por keywords,
+  iteração trimestral (restrição da API de 3 meses), e deduplicação por ID
+- `apps/workers/tasks.py`: `task_enriquecer_pendentes` agora também processa proposições com
+  `contexto_status = "pendente"` (além de `NULL`), integrando com o script de descoberta
+- `packages/camara_client/__init__.py`: novo método `listar_votacoes_proposicao(proposicao_id)`
+  para buscar votações de uma proposição específica via `GET /proposicoes/{id}/votacoes`
+- `scripts/sync_votacoes_proposicoes.py`: script de sync de votações por proposição — itera
+  todas as proposições no banco, busca votações na API da Câmara, sincroniza votações + votos
+  individuais; suporta `--dry-run`, `--proposicao-id`, `--skip-with-votes`/`--no-skip`
+- `scripts/sync_pipeline.py`: orquestrador dos 4 passos do pipeline — discovery → votação sync →
+  enrichment → score recalculation; suporta `--skip-*` flags e `--dry-run`
+- `tests/unit/test_camara_client.py`: testes unitários para `listar_votacoes_proposicao`
+- `tests/unit/test_sync_votacoes.py`: testes unitários para `sync_votacoes_por_proposicao`
+  com mock de CamaraClient — cobre criação, dedup, skip, dry-run, e classificação
+- `tests/integration/test_pipeline_scoring.py`: teste de integração validando que
+  `apply_direcoes` + `recalcular_todos_scores` atualiza `score_zil` corretamente
+
+### Changed
+- `scripts/apply_direcoes.py`: agora chama `recalcular_todos_scores(db)` automaticamente
+  após aplicar direções (quando `--dry-run` não está ativo e houve atualizações) — elimina
+  necessidade de recalcular scores manualmente
+
 ### Fixed
 - **CORS**: `main.py` now uses `allow_origin_regex` to allow all `localhost:*` ports in
   development, fixing API calls from preview servers on dynamic ports

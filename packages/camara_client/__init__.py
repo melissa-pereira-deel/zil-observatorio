@@ -218,6 +218,31 @@ class CamaraClient:
             return []
         return dados
 
+    def listar_votacoes_proposicao(self, proposicao_id: int) -> list[VotacaoAPI]:
+        """Lista todas as votações de uma proposição específica.
+
+        Usa o endpoint GET /proposicoes/{id}/votacoes da Câmara.
+        Retorna lista de VotacaoAPI (mesmo dataclass de listar_votacoes).
+
+        Args:
+            proposicao_id: ID numérico da proposição na API da Câmara.
+        """
+        dados = self._get(f"/proposicoes/{proposicao_id}/votacoes")
+        if not isinstance(dados, list):
+            return []
+
+        results = [
+            VotacaoAPI(
+                id=v.get("id", ""),
+                data=v.get("dataHoraRegistro") or v.get("data"),
+                descricao=v.get("descricao", ""),
+                aprovacao=v.get("aprovacao"),
+            )
+            for v in dados
+        ]
+        time.sleep(0.3)  # respeitar rate limit (R4: 300ms entre requests)
+        return results
+
     # ── Proposições ──
 
     def listar_proposicoes(self, ano: int, tipo: Optional[str] = None) -> list[ProposicaoAPI]:
@@ -236,6 +261,79 @@ class CamaraClient:
                 ementa=p.get("ementa"),
             )
             for p in dados
+        ]
+
+    def pesquisar_proposicoes(
+        self,
+        keywords: list[str],
+        ano_inicio: int = 2020,
+        ano_fim: Optional[int] = None,
+        tipos: Optional[list[str]] = None,
+        max_pages_per_quarter: int = 5,
+    ) -> list[ProposicaoAPI]:
+        """Pesquisa proposições por palavras-chave na API da Câmara.
+
+        A API exige janelas de no máximo 3 meses; iteramos trimestre a trimestre
+        (mesmo padrão de listar_votacoes).
+
+        Args:
+            keywords: Lista de termos de busca (enviados como OR via vírgula).
+            ano_inicio: Ano inicial da janela de busca.
+            ano_fim: Ano final (default: ano corrente).
+            tipos: Tipos de proposição (ex: ["PL", "PEC", "PLP"]).
+            max_pages_per_quarter: Máximo de páginas por trimestre.
+        """
+        from datetime import date
+
+        if ano_fim is None:
+            ano_fim = date.today().year
+
+        hoje = date.today().isoformat()
+        todos: list[dict] = []
+        seen_ids: set[int] = set()
+
+        for ano in range(ano_inicio, ano_fim + 1):
+            trimestres = [
+                (f"{ano}-01-01", f"{ano}-03-31"),
+                (f"{ano}-04-01", f"{ano}-06-30"),
+                (f"{ano}-07-01", f"{ano}-09-30"),
+                (f"{ano}-10-01", f"{ano}-12-31"),
+            ]
+            for inicio, fim in trimestres:
+                if inicio > hoje:
+                    break
+                fim_efetivo = min(fim, hoje)
+
+                params: dict[str, Any] = {
+                    "dataApresentacaoInicio": inicio,
+                    "dataApresentacaoFim": fim_efetivo,
+                    "keywords": ",".join(keywords),
+                    "ordem": "DESC",
+                    "ordenarPor": "id",
+                }
+                if tipos:
+                    params["siglaTipo"] = ",".join(tipos)
+
+                dados = self._get_paginated(
+                    "/proposicoes", params, max_pages=max_pages_per_quarter,
+                )
+                for p in dados:
+                    pid = p.get("id", 0)
+                    if pid not in seen_ids:
+                        seen_ids.add(pid)
+                        todos.append(p)
+
+                time.sleep(0.3)
+
+        return [
+            ProposicaoAPI(
+                id=p.get("id", 0),
+                siglaTipo=p.get("siglaTipo"),
+                numero=p.get("numero"),
+                ano=p.get("ano"),
+                ementa=p.get("ementa"),
+            )
+            for p in todos
         ]
 
     def obter_proposicao(self, proposicao_id: int) -> dict:

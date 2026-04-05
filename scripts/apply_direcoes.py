@@ -17,16 +17,19 @@ from pathlib import Path
 
 import yaml
 
-# Add apps/api to sys.path (ADR-002)
+# Add repo root + apps/api to sys.path (ADR-002)
+_repo_root = str(Path(__file__).parent.parent)
 _api_dir = str(Path(__file__).parent.parent / "apps" / "api")
-if _api_dir not in sys.path:
-    sys.path.insert(0, _api_dir)
+for _p in (_repo_root, _api_dir):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from core.config import settings
 from models import Votacao
+from apps.workers.scoring import recalcular_todos_scores
 
 
 def load_direcoes(data_dir: Path, ano: int | None = None) -> list[dict]:
@@ -116,6 +119,12 @@ def main():
         stats = apply_direcoes(direcoes, db, dry_run=args.dry_run)
         if not args.dry_run:
             db.commit()
+
+        # Recalculate scores after applying directions (FR-016)
+        if not args.dry_run and stats["updated"] > 0:
+            score_count = recalcular_todos_scores(db)
+            db.commit()
+            print(f"\n{score_count} scores recalculados")
 
     print(
         f"\nDone. matched={stats['matched']} updated={stats['updated']} "
