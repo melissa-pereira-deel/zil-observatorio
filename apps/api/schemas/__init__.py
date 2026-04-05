@@ -151,6 +151,7 @@ class VotoHistorico(BaseModel):
     alinhado: Optional[bool] = None
     proposicao_label: Optional[str] = None  # e.g. "PL 528/2020"
     proposicao_id: Optional[UUID] = None
+    resumo_simples: Optional[str] = None  # AI-generated plain-language summary
 
 
 # ── Stats ──
