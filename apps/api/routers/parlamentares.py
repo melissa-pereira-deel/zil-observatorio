@@ -8,8 +8,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.config import get_db
-from models import Parlamentar, Voto, Votacao, Proposicao, FonteEnum
-from schemas import ParlamentarRead, ParlamentarRanking, VotoHistorico
+from models import Parlamentar, Voto, Votacao, Proposicao, ProposicaoAutor, FonteEnum
+from schemas import ParlamentarRead, ParlamentarRanking, VotoHistorico, ProposicaoRead
 
 router = APIRouter(prefix="/parlamentares", tags=["Parlamentares"])
 
@@ -129,6 +129,38 @@ def votos_zil_parlamentar(
         ))
 
     return results
+
+
+@router.get("/{parlamentar_id}/proposicoes", response_model=list[ProposicaoRead])
+def proposicoes_de_autoria(
+    parlamentar_id: UUID,
+    tipo: Optional[str] = Query(None, description="Tipo (PL, PEC, PLP...)"),
+    page: int = Query(1, ge=1),
+    per_page: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    """Lista proposições de autoria de um parlamentar."""
+    p = db.get(Parlamentar, parlamentar_id)
+    if not p:
+        raise HTTPException(status_code=404, detail="Parlamentar não encontrado")
+
+    query = (
+        select(Proposicao)
+        .join(ProposicaoAutor, ProposicaoAutor.proposicao_id == Proposicao.id)
+        .where(ProposicaoAutor.parlamentar_id == parlamentar_id)
+    )
+
+    if tipo:
+        query = query.where(Proposicao.tipo == tipo.upper())
+
+    query = query.order_by(Proposicao.data_apresentacao.desc().nulls_last())
+    query = query.offset((page - 1) * per_page).limit(per_page)
+
+    props = db.execute(query).scalars().all()
+
+    # Build enriched response using the legislativo helper
+    from routers.legislativo import _proposicao_to_read
+    return [_proposicao_to_read(prop, db) for prop in props]
 
 
 @router.get("/partidos/ranking")

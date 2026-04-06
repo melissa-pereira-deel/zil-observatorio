@@ -287,6 +287,8 @@ chore:    infra, CI, deps
 ## Active Technologies
 - Python 3.12 (backend/workers), TypeScript 5 (frontend) + FastAPI 0.111, SQLAlchemy 2.0, Pydantic 2, Celery 5, httpx 0.27, anthropic SDK, Next.js 14, React 18, Tailwind CSS (002-legislative-enrichment-pipeline)
 - SQLite (development, in-memory for tests), PostgreSQL 16 (production), Redis 7 (Celery broker/cache) (002-legislative-enrichment-pipeline)
+- Python 3.12 (backend), TypeScript 5 (frontend) + FastAPI 0.111, Pydantic 2, SQLAlchemy 2.0, Next.js 14, React 18, Tailwind CSS (012-enriquecimento-dados-proposicoes)
+- SQLite (dev/tests) / PostgreSQL 16 (prod) — JSON generico por ADR-001 (012-enriquecimento-dados-proposicoes)
 
 ## Recent Changes
 - 002-legislative-enrichment-pipeline: Added Python 3.12 (backend/workers), TypeScript 5 (frontend) + FastAPI 0.111, SQLAlchemy 2.0, Pydantic 2, Celery 5, httpx 0.27, anthropic SDK, Next.js 14, React 18, Tailwind CSS

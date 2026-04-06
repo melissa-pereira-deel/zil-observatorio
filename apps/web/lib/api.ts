@@ -11,6 +11,45 @@ export interface Parlamentar {
   total_votos_zil: number;
 }
 
+export interface ParlamentarSnippet {
+  id: string;
+  nome: string;
+  partido: string | null;
+  uf: string | null;
+  foto_url: string | null;
+}
+
+export interface CadeiaRead {
+  principal_fonte_id: string | null;
+  anterior_fonte_id: string | null;
+  posterior_fonte_id: string | null;
+}
+
+export interface TemaRead {
+  cod: number;
+  tema: string;
+}
+
+export interface AutorRead {
+  id: string;
+  nome: string;
+  tipo: string;
+  ordem: number;
+  proponente: boolean;
+  parlamentar: ParlamentarSnippet | null;
+}
+
+export interface RelacionadaRead {
+  id: string;
+  tipo_relacao: string;
+  sigla_tipo: string | null;
+  numero: number | null;
+  ano: number | null;
+  ementa: string | null;
+  relacionada_fonte_id: string;
+  proposicao_id_zil: string | null;
+}
+
 export interface Proposicao {
   id: string;
   fonte_id: string;
@@ -28,6 +67,19 @@ export interface Proposicao {
   contexto_status: string | null;
   resumo_simples: string | null;
   confianca: number | null;
+  // Detail fields (Feature 012)
+  cod_situacao: number | null;
+  regime: string | null;
+  apreciacao: string | null;
+  keywords_camara: string | null;
+  urn_final: string | null;
+  url_lei: string | null;
+  situacao_grupo: string | null;
+  temas_camara: TemaRead[] | null;
+  autor_principal: ParlamentarSnippet | null;
+  orgao_situacao: string | null;
+  relator: ParlamentarSnippet | null;
+  cadeia: CadeiaRead | null;
 }
 
 export interface LeiReferenciada {
@@ -63,6 +115,8 @@ export interface VotoHistorico {
   alinhado: boolean | null;
   proposicao_label: string | null;
   proposicao_id: string | null;
+  resumo_simples: string | null;
+  aprovacao: number | null;
 }
 
 export interface Stats {
@@ -93,6 +147,8 @@ export const api = {
     obter: (id: string) => fetchApi<Parlamentar>(`/parlamentares/${id}`),
     votosZil: (id: string) =>
       fetchApi<VotoHistorico[]>(`/parlamentares/${id}/votos-zil`),
+    proposicoes: (id: string, params?: Record<string, string>) =>
+      fetchApi<Proposicao[]>(`/parlamentares/${id}/proposicoes`, params),
     rankingPartidos: (params?: Record<string, string>) =>
       fetchApi<{ partido: string; score_medio: number; membros: number }[]>(
         "/parlamentares/partidos/ranking",
@@ -106,5 +162,11 @@ export const api = {
     obter: (id: string) => fetchApi<Proposicao>(`/proposicoes/${id}`),
     contexto: (id: string) =>
       fetchApi<ProposicaoContexto>(`/proposicoes/${id}/contexto`),
+    autores: (id: string) =>
+      fetchApi<AutorRead[]>(`/proposicoes/${id}/autores`),
+    temas: (id: string) =>
+      fetchApi<TemaRead[]>(`/proposicoes/${id}/temas`),
+    relacionadas: (id: string, params?: Record<string, string>) =>
+      fetchApi<RelacionadaRead[]>(`/proposicoes/${id}/relacionadas`, params),
   },
 };

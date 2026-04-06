@@ -7,7 +7,7 @@ import { ParlamentarAvatar } from "@/components/ParlamentarAvatar";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
 import { CATEGORIA_LABELS } from "@/lib/categorias";
-import type { VotoHistorico } from "@/lib/api";
+import type { VotoHistorico, Proposicao } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -41,6 +41,7 @@ export default function ParlamentarPage() {
 
   const [parl, setParl] = useState<ParlamentarDetail | null>(null);
   const [votos, setVotos] = useState<VotoHistorico[]>([]);
+  const [proposicoes, setProposicoes] = useState<Proposicao[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState("");
 
@@ -49,12 +50,14 @@ export default function ParlamentarPage() {
     async function load() {
       setLoading(true);
       try {
-        const [pRes, vRes] = await Promise.all([
+        const [pRes, vRes, propRes] = await Promise.all([
           fetch(`${API_BASE}/parlamentares/${id}`),
           fetch(`${API_BASE}/parlamentares/${id}/votos-zil`),
+          fetch(`${API_BASE}/parlamentares/${id}/proposicoes`).catch(() => null),
         ]);
         setParl(await pRes.json());
         setVotos(await vRes.json());
+        if (propRes?.ok) setProposicoes(await propRes.json());
       } catch (err) {
         console.error(err);
       } finally {
@@ -297,6 +300,43 @@ export default function ParlamentarPage() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Proposicoes de autoria (Feature 012, T041) */}
+      {proposicoes.length > 0 && (
+        <details className="mb-8">
+          <summary className="cursor-pointer font-display text-base uppercase tracking-wide mb-3">
+            Proposições de autoria
+            <span className="font-mono text-xs text-zil-muted normal-case tracking-normal ml-2">
+              — {proposicoes.length} proposições
+            </span>
+          </summary>
+          <div className="space-y-3 mt-3">
+            {proposicoes.map((p) => (
+              <Link
+                key={p.id}
+                href={`/proposicoes/${p.id}`}
+                className="block p-3 bg-zil-card rounded border border-zil-divider hover:border-zil-green/50 transition-colors"
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  {p.tipo && (
+                    <span className="font-mono text-xs px-1.5 py-0.5 bg-zil-bg rounded text-zil-muted">
+                      {p.tipo} {p.numero}/{p.ano}
+                    </span>
+                  )}
+                  {p.situacao_grupo && (
+                    <span className="font-mono text-xs text-zil-muted">
+                      {p.situacao_grupo === "tramitando" ? "Em tramitação" : p.situacao_grupo === "aprovada" ? "Aprovada" : p.situacao_grupo === "arquivada" ? "Arquivada" : ""}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-zil-fg leading-relaxed line-clamp-2">
+                  {p.resumo_simples || p.ementa || "Sem descrição"}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </details>
       )}
 
       {/* Vote history — UI-017: título com contagem */}

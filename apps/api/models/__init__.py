@@ -104,6 +104,20 @@ class Proposicao(Base):
     metadata_extra: Mapped[Optional[dict]] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+    # ── Detail fields (Feature 012) ──
+    cod_situacao: Mapped[Optional[int]] = mapped_column(Integer)
+    regime: Mapped[Optional[str]] = mapped_column(String(50))
+    apreciacao: Mapped[Optional[str]] = mapped_column(String(100))
+    keywords_camara: Mapped[Optional[str]] = mapped_column(Text)
+    urn_final: Mapped[Optional[str]] = mapped_column(String(500))
+    temas_camara: Mapped[Optional[list]] = mapped_column(JSON(none_as_null=True))
+    prop_principal_id: Mapped[Optional[str]] = mapped_column(String(50))
+    prop_anterior_id: Mapped[Optional[str]] = mapped_column(String(50))
+    prop_posterior_id: Mapped[Optional[str]] = mapped_column(String(50))
+    orgao_situacao: Mapped[Optional[str]] = mapped_column(String(50))
+    relator_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), ForeignKey("parlamentares.id"))
+    detalhes_sincronizados_em: Mapped[Optional[datetime]] = mapped_column(DateTime)
+
     # ── Enrichment fields (Feature 002) ──
     contexto_status: Mapped[Optional[str]] = mapped_column(String(20))  # pendente|processando|pronto|falhou|llm_falhou
     resumo_simples: Mapped[Optional[str]] = mapped_column(Text)
@@ -115,11 +129,21 @@ class Proposicao(Base):
     enriquecido_em: Mapped[Optional[datetime]] = mapped_column(DateTime)
 
     votacoes: Mapped[list["Votacao"]] = relationship(back_populates="proposicao")
+    autores_rel: Mapped[list["ProposicaoAutor"]] = relationship(back_populates="proposicao", cascade="all, delete-orphan")
+    relacionadas: Mapped[list["ProposicaoRelacao"]] = relationship(
+        back_populates="proposicao",
+        cascade="all, delete-orphan",
+        foreign_keys="ProposicaoRelacao.proposicao_id",
+    )
+    relator: Mapped[Optional["Parlamentar"]] = relationship(foreign_keys=[relator_id])
 
     __table_args__ = (
         UniqueConstraint("fonte_id", "fonte", name="uq_proposicao_fonte"),
         Index("ix_proposicao_tipo_ano", "tipo", "ano"),
         Index("ix_proposicao_contexto_status", "contexto_status"),
+        Index("ix_proposicao_cod_situacao", "cod_situacao"),
+        Index("ix_proposicao_regime", "regime"),
+        Index("ix_proposicao_detalhes_sync", "detalhes_sincronizados_em"),
     )
 
 
@@ -141,6 +165,10 @@ class Votacao(Base):
     peso: Mapped[Optional[float]] = mapped_column(Numeric(3, 1), default=1.0)
     metadata_extra: Mapped[Optional[dict]] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    # ── Detail fields (Feature 012) ──
+    aprovacao: Mapped[Optional[int]] = mapped_column(Integer)  # 1=approved, 0=rejected, null=unknown
+    sigla_orgao: Mapped[Optional[str]] = mapped_column(String(20))
+    proposicao_objeto: Mapped[Optional[str]] = mapped_column(Text)
 
     proposicao: Mapped[Optional["Proposicao"]] = relationship(back_populates="votacoes")
     votos: Mapped[list["Voto"]] = relationship(back_populates="votacao")
@@ -167,6 +195,56 @@ class Voto(Base):
 
     __table_args__ = (
         UniqueConstraint("votacao_id", "parlamentar_id", name="uq_voto_votacao_parlamentar"),
+    )
+
+
+class ProposicaoAutor(Base):
+    """Author of a proposicao with optional link to Parlamentar (Feature 012, F-006)."""
+    __tablename__ = "proposicao_autores"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    proposicao_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("proposicoes.id", ondelete="CASCADE"), nullable=False)
+    parlamentar_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), ForeignKey("parlamentares.id"))
+    nome: Mapped[str] = mapped_column(String(255), nullable=False)
+    tipo: Mapped[str] = mapped_column(String(50), nullable=False)  # Deputado, Senador, Orgao, Lideranca
+    ordem: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    proponente: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    uri_autor: Mapped[Optional[str]] = mapped_column(String(500))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    proposicao: Mapped["Proposicao"] = relationship(back_populates="autores_rel")
+    parlamentar: Mapped[Optional["Parlamentar"]] = relationship()
+
+    __table_args__ = (
+        UniqueConstraint("proposicao_id", "ordem", name="uq_autor_proposicao_ordem"),
+        Index("ix_autor_parlamentar", "parlamentar_id"),
+        Index("ix_autor_proposicao", "proposicao_id"),
+    )
+
+
+class ProposicaoRelacao(Base):
+    """Relationship between proposicoes — emendas, pareceres, substitutivos, etc. (Feature 012, F-003)."""
+    __tablename__ = "proposicao_relacoes"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    proposicao_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("proposicoes.id", ondelete="CASCADE"), nullable=False)
+    relacionada_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), ForeignKey("proposicoes.id"))
+    relacionada_fonte_id: Mapped[str] = mapped_column(String(50), nullable=False)
+    tipo_relacao: Mapped[str] = mapped_column(String(30), nullable=False)  # emenda, substitutivo, parecer, etc.
+    sigla_tipo: Mapped[Optional[str]] = mapped_column(String(20))
+    numero: Mapped[Optional[int]] = mapped_column(Integer)
+    ano: Mapped[Optional[int]] = mapped_column(Integer)
+    ementa: Mapped[Optional[str]] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    proposicao: Mapped["Proposicao"] = relationship(back_populates="relacionadas", foreign_keys=[proposicao_id])
+    relacionada: Mapped[Optional["Proposicao"]] = relationship(foreign_keys=[relacionada_id])
+
+    __table_args__ = (
+        UniqueConstraint("proposicao_id", "relacionada_fonte_id", name="uq_relacao_prop_rel"),
+        Index("ix_relacao_proposicao", "proposicao_id"),
+        Index("ix_relacao_relacionada", "relacionada_id"),
+        Index("ix_relacao_tipo", "tipo_relacao"),
     )
 
 

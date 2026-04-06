@@ -68,6 +68,36 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   carregamento seguro via `.env`
 - `CLAUDE.md`: seção "Segurança e segredos" com 7 regras para manuseio de secrets
 
+#### Feature 012 — Enriquecimento de Dados de Proposicoes
+- `apps/api/models/__init__.py`: 12 novos campos em Proposicao (cod_situacao, regime,
+  apreciacao, keywords_camara, urn_final, temas_camara, prop_principal/anterior/posterior_id,
+  orgao_situacao, relator_id, detalhes_sincronizados_em) + 3 em Votacao (aprovacao,
+  sigla_orgao, proposicao_objeto) + 2 novas tabelas (ProposicaoAutor, ProposicaoRelacao)
+- `apps/api/lib/situacao.py`: helper para mapear 97 codSituacao em 4 grupos UI
+- `apps/api/lib/urn.py`: parser de URN LexML para URLs do Planalto
+- `apps/api/lib/relacoes.py`: classificador de siglaTipo em 9 categorias semanticas
+- `apps/api/schemas/__init__.py`: 5 novos schemas (ParlamentarSnippet, CadeiaRead,
+  TemaRead, AutorRead, RelacionadaRead) + expansao de ProposicaoRead e VotacaoRead
+- `apps/api/routers/legislativo.py`: filtros regime/situacao_grupo em GET /proposicoes,
+  campos computados (url_lei, situacao_grupo, cadeia) em respostas, 3 novos endpoints
+  (autores, temas, relacionadas)
+- `apps/api/routers/parlamentares.py`: novo endpoint GET /parlamentares/{id}/proposicoes
+- `packages/camara_client/__init__.py`: 3 novos metodos (listar_autores_proposicao,
+  listar_temas_proposicao, listar_relacionadas_proposicao)
+- `scripts/migrate_012_detail_fields.py`: migracao idempotente em 3 fases
+- `scripts/sync_detalhes_proposicoes.py`: backfill script com 3 fases
+- `scripts/sync_pipeline.py`: novo Step 1.5 (detail sync) integrado ao pipeline
+- `apps/web/lib/api.ts`: tipos TypeScript para todos os novos schemas + metodos API
+- `apps/web/lib/proposicao.ts`: helpers de cor/label para situacao, regime, tipo_relacao
+- `apps/web/components/AutoresLine.tsx`: sumario inline de autor com link para perfil
+- `apps/web/components/CadeiaNode.tsx`: timeline visual de cadeia legislativa
+- `apps/web/app/proposicoes/page.tsx`: filtros de situacao/regime, badges coloridos,
+  autor na listagem
+- `apps/web/app/proposicoes/[id]/page.tsx`: badges de situacao/regime/orgao/"VIROU LEI",
+  autores, relator, keywords, temas, cadeia, resultado autoritativo de votacao,
+  progressive disclosure com `<details>/<summary>`
+- `apps/web/app/parlamentar/[parlamentar_id]/page.tsx`: secao "Proposicoes de autoria"
+
 #### Testes
 - `tests/unit/test_camara_client.py`: 6 testes para `listar_votacoes_proposicao`
   (retorno, lista vazia, resposta non-list, endpoint correto, mapeamento, campos opcionais)
@@ -75,7 +105,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   (criação, dedup, skip, dry-run, classificação, linking)
 - `tests/integration/test_pipeline_scoring.py`: 3 testes end-to-end validando
   apply_direcoes + recalcular_todos_scores (score positivo, negativo, sem direção)
-- Total: **151 testes passando**
+- `tests/unit/test_situacao.py`: 9 testes para mapeamento de codSituacao em grupos UI
+- `tests/unit/test_urn.py`: 5 testes para parser URN → URL Planalto
+- `tests/unit/test_relacoes.py`: 7 testes para classificador de tipo_relacao
+- `tests/unit/test_proposicao_autores.py`: 4 testes para matching autor-parlamentar
+- `tests/integration/test_detail_endpoints.py`: 29 testes para endpoints de autores,
+  temas, relacionadas, cadeia, orgao/relator, filtros de situacao/regime
+- Total: **205 testes passando**
 
 #### Documentação
 - `specs/002-legislative-enrichment-pipeline/`: spec completo com tasks.md (12 tasks),

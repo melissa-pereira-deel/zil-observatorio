@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
 import { ContextoBadge } from "@/components/ContextoBadge";
+import AutoresLine from "@/components/AutoresLine";
+import { situacaoColor, situacaoLabel, regimeLabel, regimeColor } from "@/lib/proposicao";
 import { CATEGORIA_LABELS } from "@/lib/categorias";
 import type { Proposicao } from "@/lib/api";
 
@@ -22,6 +24,8 @@ export default function ProposicoesPage() {
   const [categoria, setCategoria] = useState("");
   const [tipo, setTipo] = useState("");
   const [ano, setAno] = useState("");
+  const [situacaoGrupo, setSituacaoGrupo] = useState("");
+  const [regime, setRegime] = useState("");
   const [busca, setBusca] = useState("");
 
   useEffect(() => {
@@ -32,6 +36,8 @@ export default function ProposicoesPage() {
         if (categoria) params.set("categoria", categoria);
         if (tipo) params.set("tipo", tipo);
         if (ano) params.set("ano", ano);
+        if (situacaoGrupo) params.set("situacao_grupo", situacaoGrupo);
+        if (regime) params.set("regime", regime);
         const res = await fetch(`${API_BASE}/proposicoes?${params}`);
         setProposicoes(await res.json());
       } catch (err) {
@@ -41,7 +47,7 @@ export default function ProposicoesPage() {
       }
     }
     load();
-  }, [categoria, tipo, ano]);
+  }, [categoria, tipo, ano, situacaoGrupo, regime]);
 
   const filtered = busca
     ? proposicoes.filter((p) =>
@@ -50,13 +56,15 @@ export default function ProposicoesPage() {
       )
     : proposicoes;
 
-  const hasFilters = !!(busca || categoria || tipo || ano);
+  const hasFilters = !!(busca || categoria || tipo || ano || situacaoGrupo || regime);
 
   function clearFilters() {
     setBusca("");
     setCategoria("");
     setTipo("");
     setAno("");
+    setSituacaoGrupo("");
+    setRegime("");
   }
 
   return (
@@ -126,6 +134,27 @@ export default function ProposicoesPage() {
             <option key={a} value={String(a)}>{a}</option>
           ))}
         </select>
+        <select
+          value={situacaoGrupo}
+          onChange={(e) => setSituacaoGrupo(e.target.value)}
+          className="px-3 py-2 border border-zil-divider bg-zil-bg text-sm font-body focus:outline-none focus:border-zil-green"
+        >
+          <option value="">Todas as situacoes</option>
+          <option value="tramitando">Em Tramitacao</option>
+          <option value="aprovada">Aprovada</option>
+          <option value="arquivada">Arquivada</option>
+          <option value="outras">Outras</option>
+        </select>
+        <select
+          value={regime}
+          onChange={(e) => setRegime(e.target.value)}
+          className="px-3 py-2 border border-zil-divider bg-zil-bg text-sm font-body focus:outline-none focus:border-zil-green"
+        >
+          <option value="">Todos os regimes</option>
+          <option value="URGENCIA">Urgencia</option>
+          <option value="ESPECIAL">Especial</option>
+          <option value="ORDINARIO">Ordinario</option>
+        </select>
       </div>
 
       {/* Results */}
@@ -174,9 +203,14 @@ export default function ProposicoesPage() {
                   <span className="font-display text-sm text-zil-fg">
                     {p.tipo} {p.numero}/{p.ano}
                   </span>
-                  {p.situacao && (
-                    <span className="font-mono text-xs text-zil-muted">
-                      {p.situacao}
+                  {p.situacao_grupo && (
+                    <span className={`font-mono text-xs px-2 py-0.5 rounded ${situacaoColor(p.situacao_grupo)}`}>
+                      {situacaoLabel(p.situacao_grupo)}
+                    </span>
+                  )}
+                  {p.regime && p.regime.toUpperCase() !== "ORDINARIO" && (
+                    <span className={`font-mono text-xs px-2 py-0.5 rounded ${regimeColor(p.regime)}`}>
+                      {regimeLabel(p.regime)}
                     </span>
                   )}
                   <ContextoBadge status={p.contexto_status} confianca={p.confianca} />
@@ -189,6 +223,7 @@ export default function ProposicoesPage() {
                 <p className="text-xs text-zil-muted leading-relaxed mb-2 line-clamp-2">
                   {p.ementa}
                 </p>
+                <AutoresLine autorPrincipal={p.autor_principal ?? null} />
                 <div className="flex flex-wrap items-center gap-2">
                   {p.categorias_zil?.map((c) => (
                     <CategoriaBadge key={c} codigo={c} />

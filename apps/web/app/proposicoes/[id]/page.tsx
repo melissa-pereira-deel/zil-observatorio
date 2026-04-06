@@ -7,6 +7,9 @@ import { CategoriaBadge } from "@/components/CategoriaBadge";
 import { ContextoBadge } from "@/components/ContextoBadge";
 import { DirecaoBadge } from "@/components/DirecaoBadge";
 import { Badge } from "@/components/ui/Badge";
+import AutoresLine from "@/components/AutoresLine";
+import CadeiaNode from "@/components/CadeiaNode";
+import { situacaoColor, situacaoLabel, regimeLabel, regimeColor } from "@/lib/proposicao";
 import type { Proposicao, ProposicaoContexto } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -22,6 +25,7 @@ interface Votacao {
   categorias_zil: string[] | null;
   direcao_esperada: string | null;
   peso: number | null;
+  aprovacao: number | null;
 }
 
 function resultadoColor(texto: string): "green" | "orange" | "muted" {
@@ -120,10 +124,30 @@ export default function ProposicaoDetailPage() {
           <h1 className="font-display text-2xl uppercase tracking-wide">
             {proposicao.tipo} {proposicao.numero}/{proposicao.ano}
           </h1>
-          {proposicao.situacao && (
-            <span className="font-mono text-xs text-zil-muted border border-zil-divider px-2 py-1">
-              {proposicao.situacao}
+          {proposicao.situacao_grupo && (
+            <span className={`font-mono text-xs px-2 py-1 rounded ${situacaoColor(proposicao.situacao_grupo)}`}>
+              {situacaoLabel(proposicao.situacao_grupo)}
             </span>
+          )}
+          {proposicao.regime && proposicao.regime.toUpperCase() !== "ORDINARIO" && (
+            <span className={`font-mono text-xs px-2 py-1 rounded ${regimeColor(proposicao.regime)}`}>
+              {regimeLabel(proposicao.regime)}
+            </span>
+          )}
+          {proposicao.orgao_situacao && (
+            <span className="font-mono text-xs px-2 py-1 rounded bg-blue-100 text-blue-800">
+              {proposicao.orgao_situacao}
+            </span>
+          )}
+          {proposicao.url_lei && (
+            <a
+              href={proposicao.url_lei}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs px-2 py-1 rounded bg-green-100 text-green-800 hover:underline"
+            >
+              VIROU LEI ↗
+            </a>
           )}
           <ContextoBadge
             status={proposicao.contexto_status}
@@ -143,6 +167,25 @@ export default function ProposicaoDetailPage() {
           <p className="text-sm text-zil-muted italic mb-3 max-w-3xl">
             Esta proposição ainda não foi analisada pela plataforma.
             A ementa técnica original está disponível abaixo.
+          </p>
+        )}
+
+        {/* Autor principal */}
+        <div className="mb-3">
+          <AutoresLine autorPrincipal={proposicao.autor_principal ?? null} />
+        </div>
+
+        {/* Relator */}
+        {proposicao.relator && (
+          <p className="text-sm text-zil-muted mb-3">
+            <span className="font-medium text-zil-fg">Relator: </span>
+            <Link
+              href={`/parlamentar/${proposicao.relator.id}`}
+              className="text-zil-accent hover:underline"
+            >
+              {proposicao.relator.nome}
+              {proposicao.relator.partido && ` (${proposicao.relator.partido}/${proposicao.relator.uf || "?"})`}
+            </Link>
           </p>
         )}
 
@@ -186,6 +229,51 @@ export default function ProposicaoDetailPage() {
             </a>
           )}
         </div>
+
+        {/* Keywords da Camara — progressive disclosure */}
+        {proposicao.keywords_camara && (
+          <details className="mt-4">
+            <summary className="font-mono text-xs text-zil-muted cursor-pointer select-none hover:text-zil-soft">
+              Palavras-chave ↓
+            </summary>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {proposicao.keywords_camara.split(",").map((kw) => (
+                <span
+                  key={kw.trim()}
+                  className="font-mono text-xs px-2 py-0.5 rounded bg-zil-card border border-zil-divider text-zil-soft"
+                >
+                  {kw.trim()}
+                </span>
+              ))}
+            </div>
+          </details>
+        )}
+
+        {/* Temas da Camara — progressive disclosure */}
+        {proposicao.temas_camara && proposicao.temas_camara.length > 0 && (
+          <details className="mt-4">
+            <summary className="font-mono text-xs text-zil-muted cursor-pointer select-none hover:text-zil-soft">
+              Temas ({proposicao.temas_camara.length}) ↓
+            </summary>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {proposicao.temas_camara.map((t) => (
+                <span
+                  key={t.cod}
+                  className="font-mono text-xs px-2 py-0.5 rounded bg-zil-card border border-zil-divider text-zil-soft"
+                >
+                  {t.tema}
+                </span>
+              ))}
+            </div>
+          </details>
+        )}
+
+        {/* Cadeia legislativa */}
+        {proposicao.cadeia && (
+          <div className="mt-4">
+            <CadeiaNode cadeia={proposicao.cadeia} />
+          </div>
+        )}
       </div>
 
       {/* UI-012: Context accordion — details/summary nativo (sem useState) */}
@@ -317,33 +405,51 @@ export default function ProposicaoDetailPage() {
       ) : (
         <div className="border-t border-zil-divider">
           {votacoes.map((v) => {
-            // UI-011: resultado inferido quando null
-            const resultadoDisplay =
-              v.resultado ??
-              (v.votos_sim !== null && v.votos_nao !== null
-                ? v.votos_sim > v.votos_nao
-                  ? "Aprovado*"
-                  : "Rejeitado*"
-                : null);
-            const resultadoInferido = !v.resultado && resultadoDisplay !== null;
+            // Aprovacao-based badge: 1 = Aprovada (green), 0 = Rejeitada (red)
+            // Falls back to resultado text with inference when aprovacao is null
+            let aprovacaoLabel: string | null = null;
+            let aprovacaoColor: "green" | "orange" | "muted" = "muted";
+            let aprovacaoInferido = false;
+
+            if (v.aprovacao === 1) {
+              aprovacaoLabel = "Aprovada";
+              aprovacaoColor = "green";
+            } else if (v.aprovacao === 0) {
+              aprovacaoLabel = "Rejeitada";
+              aprovacaoColor = "orange";
+            } else {
+              // UI-011: resultado inferido quando null
+              const resultadoDisplay =
+                v.resultado ??
+                (v.votos_sim !== null && v.votos_nao !== null
+                  ? v.votos_sim > v.votos_nao
+                    ? "Aprovado*"
+                    : "Rejeitado*"
+                  : null);
+              if (resultadoDisplay) {
+                aprovacaoLabel = resultadoDisplay;
+                aprovacaoColor = resultadoColor(resultadoDisplay);
+                aprovacaoInferido = !v.resultado;
+              }
+            }
 
             return (
               <div key={v.id} className="py-5 border-b border-zil-divider">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-3 mb-2">
-                      {/* UI-007: Badge variant="result" + UI-011: resultado inferido */}
-                      {resultadoDisplay && (
+                      {/* UI-007: Badge variant="result" + aprovacao badge */}
+                      {aprovacaoLabel && (
                         <Badge
                           variant="result"
-                          color={resultadoColor(resultadoDisplay)}
+                          color={aprovacaoColor}
                           title={
-                            resultadoInferido
+                            aprovacaoInferido
                               ? "Resultado inferido dos votos registrados"
                               : undefined
                           }
                         >
-                          {resultadoDisplay}
+                          {aprovacaoLabel}
                         </Badge>
                       )}
                       {v.data && (

@@ -43,6 +43,56 @@ class ParlamentarRanking(BaseModel):
         from_attributes = True
 
 
+# ── Snippets (Feature 012) ──
+
+class ParlamentarSnippet(BaseModel):
+    id: UUID
+    nome: str
+    partido: Optional[str] = None
+    uf: Optional[str] = None
+    foto_url: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class CadeiaRead(BaseModel):
+    principal_fonte_id: Optional[str] = None
+    anterior_fonte_id: Optional[str] = None
+    posterior_fonte_id: Optional[str] = None
+
+
+class TemaRead(BaseModel):
+    cod: int
+    tema: str
+
+
+class AutorRead(BaseModel):
+    id: UUID
+    nome: str
+    tipo: str
+    ordem: int
+    proponente: bool
+    parlamentar: Optional[ParlamentarSnippet] = None
+
+    class Config:
+        from_attributes = True
+
+
+class RelacionadaRead(BaseModel):
+    id: UUID
+    tipo_relacao: str
+    sigla_tipo: Optional[str] = None
+    numero: Optional[int] = None
+    ano: Optional[int] = None
+    ementa: Optional[str] = None
+    relacionada_fonte_id: str
+    proposicao_id_zil: Optional[UUID] = None
+
+    class Config:
+        from_attributes = True
+
+
 # ── Proposição ──
 
 class ProposicaoRead(BaseModel):
@@ -62,6 +112,21 @@ class ProposicaoRead(BaseModel):
     contexto_status: Optional[str] = None
     resumo_simples: Optional[str] = None
     confianca: Optional[float] = None
+    # Detail fields (Feature 012 — Phase 1)
+    cod_situacao: Optional[int] = None
+    regime: Optional[str] = None
+    apreciacao: Optional[str] = None
+    keywords_camara: Optional[str] = None
+    urn_final: Optional[str] = None
+    url_lei: Optional[str] = None           # computed from urn_final
+    situacao_grupo: Optional[str] = None     # computed from cod_situacao
+    # Detail fields (Feature 012 — Phase 2)
+    temas_camara: Optional[list[dict]] = None
+    autor_principal: Optional[ParlamentarSnippet] = None
+    # Detail fields (Feature 012 — Phase 3)
+    orgao_situacao: Optional[str] = None
+    relator: Optional[ParlamentarSnippet] = None
+    cadeia: Optional[CadeiaRead] = None
 
     class Config:
         from_attributes = True
@@ -120,6 +185,10 @@ class VotacaoRead(BaseModel):
     direcao_esperada: Optional[str] = None
     peso: Optional[float] = None
     proposicao: Optional[ProposicaoSnippet] = None
+    # Detail fields (Feature 012)
+    aprovacao: Optional[int] = None       # 1=approved, 0=rejected, null=unknown
+    sigla_orgao: Optional[str] = None
+    proposicao_objeto: Optional[str] = None
 
     class Config:
         from_attributes = True

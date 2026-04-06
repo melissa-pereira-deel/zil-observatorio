@@ -61,6 +61,20 @@ def step1_discover(db: Session, ano_inicio: int, ano_fim: int | None, dry_run: b
     return result
 
 
+def step1_5_sync_detalhes(db: Session, dry_run: bool) -> dict:
+    """Step 1.5: Sync detail fields for proposicoes (Feature 012)."""
+    from scripts.sync_detalhes_proposicoes import sync_fase1
+
+    print("\n" + "=" * 60)
+    print("STEP 1.5: Sync de detalhes de proposicoes")
+    print("=" * 60)
+
+    from packages.camara_client import CamaraClient
+    with CamaraClient() as client:
+        result = sync_fase1(db, client, dry_run)
+    return result
+
+
 def step2_sync_votacoes(db: Session, dry_run: bool) -> dict:
     """Step 2: Sync votações for each proposição."""
     from scripts.sync_votacoes_proposicoes import sync_votacoes_por_proposicao
@@ -176,6 +190,11 @@ def main():
         help="Skip Step 1 (proposição discovery)",
     )
     parser.add_argument(
+        "--skip-detalhes",
+        action="store_true",
+        help="Skip Step 1.5 (detail fields sync)",
+    )
+    parser.add_argument(
         "--skip-votacoes",
         action="store_true",
         help="Skip Step 2 (votação sync)",
@@ -230,6 +249,17 @@ def main():
                 results["discovery"] = {"error": str(e)}
         else:
             print("\n⏭  Step 1: Discovery — PULADO")
+
+        # Step 1.5: Detail fields sync (Feature 012)
+        if not args.skip_detalhes:
+            try:
+                results["detalhes"] = step1_5_sync_detalhes(db, args.dry_run)
+            except Exception as e:
+                logger.error(f"Step 1.5 falhou: {e}")
+                traceback.print_exc()
+                results["detalhes"] = {"error": str(e)}
+        else:
+            print("\n⏭  Step 1.5: Detail sync — PULADO")
 
         # Step 2: Votação sync
         if not args.skip_votacoes:

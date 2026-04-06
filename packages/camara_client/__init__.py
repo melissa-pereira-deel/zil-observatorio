@@ -340,6 +340,45 @@ class CamaraClient:
         """Detalhes de uma proposição."""
         return self._get(f"/proposicoes/{proposicao_id}")
 
+    # ── Proposição: sub-resources (Feature 012) ──
+
+    def listar_autores_proposicao(self, proposicao_id: int) -> list[dict]:
+        """Lista autores de uma proposição.
+
+        GET /proposicoes/{id}/autores
+        Returns list of dicts with uri, nome, tipo, ordemAssinatura, proponente.
+        """
+        dados = self._get(f"/proposicoes/{proposicao_id}/autores")
+        if not isinstance(dados, list):
+            return []
+        time.sleep(0.3)
+        return dados
+
+    def listar_temas_proposicao(self, proposicao_id: int) -> list[dict]:
+        """Lista temas oficiais de uma proposição.
+
+        GET /proposicoes/{id}/temas
+        Returns list of dicts with codTema, tema.
+        """
+        dados = self._get(f"/proposicoes/{proposicao_id}/temas")
+        if not isinstance(dados, list):
+            return []
+        time.sleep(0.3)
+        return dados
+
+    def listar_relacionadas_proposicao(
+        self, proposicao_id: int, max_pages: int = 10
+    ) -> list[dict]:
+        """Lista proposições relacionadas (emendas, pareceres, substitutivos, etc.).
+
+        GET /proposicoes/{id}/relacionadas (paginated)
+        Fetches up to max_pages (cap at ~200 items per Decision 4).
+        """
+        return self._get_paginated(
+            f"/proposicoes/{proposicao_id}/relacionadas",
+            max_pages=max_pages,
+        )
+
     # ── Frentes ──
 
     def listar_frentes(self, legislatura: Optional[int] = None) -> list[dict]:
