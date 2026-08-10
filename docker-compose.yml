@@ -76,7 +76,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./apps/api:/app
-      - ./apps/workers:/workers
+      - ./apps/workers:/app/workers
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-zil}:${POSTGRES_PASSWORD:-zil}@db:5432/${POSTGRES_DB:-zil}
       REDIS_URL: redis://redis:6379/0
@@ -96,7 +96,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./apps/api:/app
-      - ./apps/workers:/workers
+      - ./apps/workers:/app/workers
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-zil}:${POSTGRES_PASSWORD:-zil}@db:5432/${POSTGRES_DB:-zil}
       REDIS_URL: redis://redis:6379/0

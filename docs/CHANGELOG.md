@@ -91,6 +91,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 - `apps/api/schemas/__init__.py`: novos schemas para campos de enriquecimento
 
 ### Fixed
+- **Celery worker e beat não iniciavam no Docker**: `docker-compose.yml` montava
+  `apps/workers` em `/workers`, fora do `WORKDIR` (`/app`) — `celery -A workers.tasks`
+  abortava com `ModuleNotFoundError: No module named 'workers'`, porque o diretório pai
+  do pacote não estava no `sys.path`. O bootstrap de `sys.path` em `apps/workers/tasks.py`
+  não cobre o caso: ele só executa depois que o módulo já foi localizado. Mount corrigido
+  para `/app/workers` em ambos os serviços — worker sobe com as 7 tasks registradas e
+  beat inicia o scheduler.
 - **Enrichment não executava**: `apps/workers/enrichment/__init__.py` usava `os.getenv()`
   para ler configurações — falha silenciosa quando variável de ambiente vazia sobrescreve
   o `.env` (Pydantic BaseSettings dá precedência a env vars). Corrigido para usar
