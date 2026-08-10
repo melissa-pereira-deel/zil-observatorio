@@ -83,6 +83,17 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 - `specs/ui-ux-credibility-polish/spec.md`: spec das 22 tasks UI/UX
 
 ### Changed
+- `README.md` e `CLAUDE.md`: sincronizados com o estado real do código, que ambos
+  subestimavam. Correções: ingestão do Senado, `/bussula`, `/metodologia` e CI/CD
+  estavam marcados como backlog mas já existem; contagem de testes de 98 para 151;
+  link quebrado para `docs/MANIFESTO.md` removido (o manifesto é a home da
+  plataforma); comando `uvicorn apps.api.main:app` do Quick Start corrigido para
+  `cd apps/api && uvicorn main:app`, já que a forma documentada falhava com
+  `ModuleNotFoundError` por causa dos imports curtos (ADR-002); as 22 tarefas de
+  design critique marcadas como concluídas. Adicionadas seções sobre o volume real
+  de curadoria editorial (7 votações com direção definida — o gargalo atual da v1)
+  e sobre as pendências conhecidas de infraestrutura (`make migrate`, `make seed`,
+  `make test`, `admin_token` em query string, código dormente).
 - `scripts/apply_direcoes.py`: agora chama `recalcular_todos_scores(db)` automaticamente
   após aplicar direções — elimina necessidade de recalcular scores manualmente
 - `apps/api/routers/legislativo.py`: endpoints de proposições e votações retornam campos

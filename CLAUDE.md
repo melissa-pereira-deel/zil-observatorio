@@ -1,8 +1,12 @@
 # ZIL Observatório — Development Guidelines
 
-**Última atualização:** 2026-04-02
+**Última atualização:** 2026-08-10
 **Fase atual:** v1 — Dashboard Público (sem login)
 **Roadmap:** [docs/ROADMAP.md](docs/ROADMAP.md)
+
+> **Estado em uma linha:** o software da v1 está essencialmente completo; o que
+> falta é volume de curadoria editorial (7 votações com direção definida) e o
+> deploy em produção.
 
 ---
 
@@ -13,27 +17,36 @@
 | Backend | Python 3.12, FastAPI 0.111, SQLAlchemy 2.0, Pydantic 2 |
 | Workers | Celery 5, Redis 7, httpx 0.27 |
 | Frontend | Next.js 14, TypeScript 5, Tailwind CSS, React 18 |
-| Testes | pytest 8 (98 testes, todos passando) |
-| Linting | ruff (Python), ESLint (TypeScript) |
+| Enriquecimento | Claude Haiku 4.5 via `ANTHROPIC_API_KEY` (opcional em dev) |
+| Testes | pytest 8 (151 testes, todos passando) |
+| Linting | ruff 0.8.6 (Python), ESLint + `next/core-web-vitals` (TypeScript) |
+| CI | GitHub Actions — 4 jobs, todos verdes |
 
 ---
 
 ## Estrutura do projeto
 
 ```
-apps/api/          FastAPI + SQLAlchemy models + Pydantic schemas + routers
-apps/workers/      Celery tasks + crawlers (camara.py ✅, senado.py backlog)
-                   + scoring engine + keyword classifier
-apps/web/          Next.js 14 (App Router) + componentes UI
-packages/          camara_client ✅ | senado_client (backlog)
-data/taxonomia/    categorias.yml — keywords das 9 categorias ZIL
-data/direcoes/     direcao_esperada por votação (backlog, workflow editorial)
-data/bussula/      indicadores estratégicos (backlog)
-scripts/           apply_direcoes.py | sync_votacoes_zil.py | discover_proposicoes.py | sync_votacoes_proposicoes.py | sync_pipeline.py | recalcular_scores.py (backlog)
-tests/             unit/ integration/ contract/
-specs/             Specify Kit specs por feature
-docs/              PRD, ARCHITECTURE, GOVERNANCE, ROADMAP, CHANGELOG
+apps/api/          FastAPI + SQLAlchemy models (8 tabelas) + schemas + routers (17 endpoints)
+apps/workers/      Celery tasks + crawlers (camara.py ✅, senado.py ✅)
+                   + scoring engine + keyword classifier + enrichment (Planalto + LLM)
+apps/web/          Next.js 14 (App Router) — 8 páginas + 11 componentes + 5 de UI base
+packages/          camara_client ✅ | senado_client ✅
+data/taxonomia/    categorias.yml — keywords das 9 categorias ZIL ✅
+data/direcoes/     direcao_esperada por votação — 2024.yml + 2025.yml, 7 entradas (em formação)
+data/bussula/      marcos.yml — 4 indicadores (em formação)
+scripts/           apply_direcoes.py | sync_votacoes_zil.py | discover_proposicoes.py | sync_votacoes_proposicoes.py | sync_pipeline.py | migrate_enrichment.py | recalcular_scores.py (backlog)
+tests/             unit/ (79) integration/ (46) contract/ (7) + 19 na raiz = 151
+specs/             001-camara-api-ingestao | 002-legislative-enrichment-pipeline
+                   011-resumo-simples-votos-historico | 012-enriquecimento-dados-proposicoes
+                   ui-ux-credibility-polish
+docs/              PRD, ARCHITECTURE, GOVERNANCE, ROADMAP, CHANGELOG, DISCOVERY-DADOS-PROPOSICOES
 ```
+
+> **Atenção à numeração:** `specs/` e `docs/ROADMAP.md` usam numerações
+> divergentes. No ROADMAP, `002` é "Ingestão do Senado"; em `specs/`, `002` é o
+> pipeline de enriquecimento. Ao referenciar uma feature por número, diga de qual
+> dos dois você está falando.
 
 ---
 
@@ -44,18 +57,27 @@ docs/              PRD, ARCHITECTURE, GOVERNANCE, ROADMAP, CHANGELOG
 python -m pytest tests/          # 151 testes
 ruff check apps/ packages/       # lint Python
 
+# API local — rodar de dentro de apps/api, não da raiz.
+# `uvicorn apps.api.main:app` falha com ModuleNotFoundError por causa dos
+# imports curtos (ADR-002).
+cd apps/api && uvicorn main:app --reload
+
 # Frontend
 cd apps/web
 npm run dev                      # dev server
 npm run build                    # build produção
+npm run lint                     # ESLint (config em .eslintrc.json)
 npx tsc --noEmit                 # type check
 
 # Workers (requer Redis)
+# Da raiz o módulo é apps.workers.tasks; dentro do container é workers.tasks,
+# porque o compose monta apps/workers em /app/workers e o WORKDIR é /app.
 celery -A apps.workers.tasks worker --loglevel=info
 celery -A apps.workers.tasks beat --loglevel=info
 
 # Docker (ambiente completo)
-docker-compose up
+docker compose up -d             # ou: make up
+# make setup NÃO funciona em clone limpo — ver "Pendências de infraestrutura"
 
 # Pipeline de dados editorial (rodar na ordem, da raiz)
 python3 scripts/migrate_enrichment.py       # migração: novos campos Feature 002 (idempotente)
@@ -130,18 +152,46 @@ with Session(engine) as db: print(recalcular_todos_scores(db), 'scores calculado
 
 ## Escopo v1 (o que construir agora)
 
+Numeração conforme `specs/`. Ver aviso sobre divergência com o ROADMAP acima.
+
 | # | Feature | Status |
 |---|---------|--------|
 | 001 | Ingestão Câmara + scoring + API | ✅ concluído |
 | 002 | Pipeline de enriquecimento legislativo (LLM + Planalto) | ✅ concluído |
-| 003 | Workflow editorial via código (YAML + scripts) | backlog |
+| — | Ingestão Senado (crawler + client + tasks agendadas) | ✅ concluído |
+| 003 | Workflow editorial via código (YAML + scripts) | ✅ mecanismo pronto · dados em formação |
 | 004 | Frontend: /ranking com dados reais | ✅ concluído |
 | 005 | Frontend: /parlamentar/[id] | ✅ concluído |
 | 006 | Frontend: /proposicoes | ✅ concluído |
-| 007 | Frontend: /bussula | backlog |
-| 008 | Frontend: /metodologia | backlog |
-| 009 | CI/CD (GitHub Actions) | backlog |
+| 007 | Frontend: /bussula | ✅ concluído |
+| 008 | Frontend: /metodologia | ✅ concluído |
+| 009 | CI/CD (GitHub Actions) | ✅ 4 jobs verdes |
 | 010 | Deploy produção | backlog |
+
+**O gargalo da v1 não é mais código, é curadoria.** O Score ZIL só conta votações
+com `direcao_esperada` preenchida em `data/direcoes/[ano].yml`, e hoje existem 7.
+Enquanto esse número não crescer, o ranking não tem base estatística para ser
+publicado com credibilidade.
+
+### Pendências de infraestrutura
+
+Conhecidas e não resolvidas — não bloqueiam desenvolvimento, mas bloqueiam produção:
+
+| Item | Problema |
+|------|----------|
+| `make migrate` | `alembic.ini` aponta para `data/migrations`, diretório nunca commitado. Em dev o schema vem de `Base.metadata.create_all` no lifespan; em produção não há caminho de migração. |
+| `make seed` | Chama `python -m scripts.seed`, e `scripts/seed.py` não existe. |
+| `make test` | Coleta 0 testes: o container `api` monta só `apps/api`, e `tests/` fica na raiz. Rodar do host. |
+| `POST /proposicoes/{id}/enriquecer` | Recebe `admin_token` por query string — vaza em log de servidor e histórico. Migrar para header `Authorization` antes do deploy. |
+| Código dormente | Tabela `Financiamento` e enums `TipoAlerta`, `CanalAlerta`, `TipoFinanciamento` declarados e sem uso — resquícios de v2/v3. |
+
+### Design critiques — UI-001 a UI-022 ✅ concluídas
+
+As quatro tabelas a seguir são **registro histórico**, não backlog. Todas as 22
+tarefas foram implementadas — artefatos verificados em `components/ui/Badge.tsx`,
+`components/DirecaoBadge.tsx`, `components/ParlamentarAvatar.tsx`,
+`lib/categorias.ts`, entre outros. Ficam aqui porque documentam o *porquê* de
+várias decisões de design que o código sozinho não explica.
 
 ### UI/UX — Melhorias de credibilidade e usabilidade (design critique 2026-04-02)
 
