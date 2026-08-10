@@ -91,6 +91,26 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 - `apps/api/schemas/__init__.py`: novos schemas para campos de enriquecimento
 
 ### Fixed
+- **CI vermelha desde 2026-04-04 — lint do backend**: `.github/workflows/ci.yml` instalava
+  `ruff` sem pin, então cada run pegava a versão mais recente e o conjunto de regras mudava
+  sozinho (267 erros na CI contra 5 no `ruff==0.8.6` pinado em `requirements.txt`). Passa a
+  instalar de `apps/api/requirements.txt`, alinhado ao job de testes e ao
+  `cache-dependency-path` que o próprio job já declarava. Os 5 erros reais foram corrigidos:
+  `routers/legislativo.py` tinha `import os` morto; os imports pós-`sys.path` em
+  `crawlers/camara.py` e `crawlers/senado.py` receberam `# noqa: E402`, seguindo a convenção
+  já usada em `tests/conftest.py`.
+- **CI vermelha desde 2026-04-04 — lint do frontend**: `apps/web` não tinha config de ESLint,
+  apesar de `eslint` e `eslint-config-next` estarem nas devDependencies. Sem config, `next lint`
+  abria o assistente interativo de setup e saía com código 1 na CI (sem TTY), o que também
+  deixava o job `Frontend — Build` permanentemente pulado por `needs:`. Adicionado
+  `apps/web/.eslintrc.json` com `next/core-web-vitals` — equivalente à opção "Strict
+  (recommended)" que o assistente sugeria.
+- **Pre-commit bloqueava todo commit**: `.pre-commit-config.yaml` passa
+  `--baseline .secrets.baseline` ao hook `detect-secrets`, mas o arquivo nunca foi
+  commitado — o hook abortava com `Invalid path: .secrets.baseline` em qualquer commit,
+  para quem tivesse rodado `pre-commit install`. Baseline gerado e adicionado; as 5
+  detecções são placeholders de desenvolvimento já documentados (`zil:zil` do Postgres
+  local, `zil-dev-key` do Typesense) — nenhum segredo real.
 - **Enrichment não executava**: `apps/workers/enrichment/__init__.py` usava `os.getenv()`
   para ler configurações — falha silenciosa quando variável de ambiente vazia sobrescreve
   o `.env` (Pydantic BaseSettings dá precedência a env vars). Corrigido para usar

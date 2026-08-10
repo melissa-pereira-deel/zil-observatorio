@@ -21,8 +21,8 @@ for _p in (_repo_root, _api_dir):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from packages.camara_client import CamaraClient
-from apps.workers.classifiers import classificar_votacao, classificar_proposicao, relevancia_score
+from packages.camara_client import CamaraClient  # noqa: E402
+from apps.workers.classifiers import classificar_votacao, classificar_proposicao, relevancia_score  # noqa: E402
 
 from models import (  # noqa: E402
     Parlamentar, Votacao, Voto, Proposicao, IngestionRun,

@@ -1,6 +1,5 @@
 """Endpoints for proposições and votações."""
 
-import os
 from typing import Optional
 from uuid import UUID
 
