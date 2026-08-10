@@ -18,6 +18,7 @@ node_modules/
 .next/
 out/
 .env*.local
+tsconfig.tsbuildinfo
 
 # IDE
 .vscode/
