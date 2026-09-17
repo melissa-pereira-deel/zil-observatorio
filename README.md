@@ -4,7 +4,9 @@
 
 O Brasil tem 94% do nióbio mundial e importa 87% dos fertilizantes. Exporta petróleo cru e importa gasolina. Vende soja a granel e compra ração processada. O ZIL Observatório torna visível quem no Congresso está trabalhando para mudar isso — e quem está trabalhando contra.
 
-[Manifesto](docs/MANIFESTO.md) · [PRD](docs/PRD.md) · [Arquitetura](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
+[PRD](docs/PRD.md) · [Arquitetura](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md) · [Governança](docs/GOVERNANCE.md) · [Changelog](docs/CHANGELOG.md)
+
+O manifesto é a própria home da plataforma (`/`), não um documento separado.
 
 [![CI](https://github.com/melissa-pereira-deel/manifesto-zil/actions/workflows/ci.yml/badge.svg)](https://github.com/melissa-pereira-deel/manifesto-zil/actions/workflows/ci.yml)
 
@@ -24,25 +26,50 @@ Todos os dados são públicos. Todo o código é aberto. Toda classificação é
 
 ## Status
 
-**v0 concluído · v1 em andamento**
+**v0 concluído · v1 em andamento** — código praticamente completo, dados editoriais ainda em formação.
 
-| Feature | Status |
-|---------|--------|
-| Modelos de dados (SQLAlchemy 2.0) | ✅ |
-| API FastAPI com endpoints públicos | ✅ |
+### Software
+
+| Componente | Status |
+|------------|--------|
+| Modelos de dados (SQLAlchemy 2.0, 8 tabelas) | ✅ |
+| API FastAPI — 17 endpoints públicos | ✅ |
 | Crawler Câmara dos Deputados | ✅ |
+| Crawler Senado Federal | ✅ |
+| Classificador por keywords (9 categorias) | ✅ |
 | Scoring engine ZIL | ✅ |
-| Agendamento Celery | ✅ |
-| 98 testes automatizados | ✅ |
-| Ingestão Senado Federal | backlog |
-| Frontend /ranking com dados reais | backlog |
-| Frontend /parlamentar/[id] | backlog |
-| Frontend /proposicoes | backlog |
+| Pipeline de enriquecimento (Planalto + LLM) | ✅ |
+| Agendamento Celery (6 tarefas) | ✅ |
+| Frontend — 8 páginas | ✅ |
+| 151 testes automatizados | ✅ |
+| CI (GitHub Actions, 4 jobs) | ✅ |
+| Deploy em produção | backlog |
+
+### Dados editoriais
+
+Este é o gargalo real do projeto. O motor está construído, mas o Score ZIL só
+considera votações que passaram por curadoria humana — e a curadoria ainda é fina:
+
+| Insumo | Volume atual |
+|--------|--------------|
+| Categorias ZIL com keywords | 9 |
+| Votações com `direcao_esperada` definida | 7 |
+| Indicadores da Bússola | 4 |
+
+Ampliar a curadoria em `data/direcoes/` é o que separa "o sistema funciona" de
+"o ranking é confiável o suficiente para ser publicado".
+
+### Páginas
+
+`/` (manifesto) · `/ranking` · `/parlamentar/[id]` · `/proposicoes` ·
+`/proposicoes/[id]` · `/votacoes/[id]` · `/bussula` · `/metodologia`
 
 ## Quick Start (desenvolvimento)
 
 ```bash
-# Pré-requisitos: Python 3.12, Node.js 20, Redis
+# Pré-requisitos: Python 3.12 e Node.js 20.
+# Redis só é necessário para os workers Celery; Docker, para o ambiente completo.
+# Os testes rodam sem nenhum dos dois.
 
 git clone https://github.com/melissa-pereira-deel/manifesto-zil.git
 cd manifesto-zil
@@ -50,11 +77,13 @@ cd manifesto-zil
 # Backend — instalar dependências
 pip install -r apps/api/requirements.txt
 
-# Rodar testes (SQLite in-memory, sem Docker)
+# Rodar testes (SQLite in-memory, sem Docker nem Redis)
 python -m pytest tests/
 
-# API local
-uvicorn apps.api.main:app --reload
+# API local — precisa rodar de dentro de apps/api:
+# o projeto usa imports curtos (`from core.config import ...`, ver ADR-002),
+# então `uvicorn apps.api.main:app` a partir da raiz falha com ModuleNotFoundError
+cd apps/api && uvicorn main:app --reload
 # → http://localhost:8000/docs
 
 # Frontend
@@ -64,18 +93,30 @@ npm run dev
 # → http://localhost:3000
 ```
 
-Para ambiente completo com PostgreSQL e Redis:
+Para ambiente completo com PostgreSQL, Redis e Typesense:
 
 ```bash
-docker-compose up
+docker compose up -d   # ou: make up
 ```
+
+O schema é criado automaticamente no startup da API em desenvolvimento
+(`Base.metadata.create_all`), então não é preciso rodar migrations para
+desenvolver. O banco sobe vazio — os dados vêm dos crawlers.
+
+**Limitações conhecidas do setup:** `make migrate` e `make seed` não funcionam a
+partir de um clone limpo — o diretório de migrations do Alembic nunca foi
+commitado e `scripts/seed.py` não existe. Isso não bloqueia desenvolvimento, mas
+bloqueia produção, onde o Alembic é o caminho previsto. `make test` também não
+funciona: o container da API monta apenas `apps/api`, e `tests/` fica na raiz —
+rode os testes a partir do host.
 
 ## Fontes de Dados
 
 | Fonte | Dados | Status |
 |-------|-------|--------|
 | [Câmara dos Deputados](https://dadosabertos.camara.leg.br) | Deputados, votações, proposições | ✅ |
-| [Senado Federal](https://legis.senado.leg.br/dadosabertos) | Senadores, matérias, votações | backlog |
+| [Senado Federal](https://legis.senado.leg.br/dadosabertos) | Senadores, matérias, votações | ✅ |
+| [Planalto](https://www.planalto.gov.br) | Texto de artigos de lei citados (cache com expiração) | ✅ |
 
 ## Stack
 
@@ -84,9 +125,12 @@ docker-compose up
 | Backend | Python 3.12, FastAPI 0.111, SQLAlchemy 2.0 |
 | Workers | Celery 5, Redis 7 |
 | Frontend | Next.js 14, TypeScript 5, Tailwind CSS |
+| Enriquecimento | Claude Haiku 4.5 (opcional — sem chave, o pipeline apenas não roda) |
+| Busca | Typesense 27 |
 | Banco (dev/testes) | SQLite in-memory |
 | Banco (produção) | PostgreSQL 16 |
-| Testes | pytest 8 (98 testes) |
+| Testes | pytest 8 (151 testes) |
+| CI | GitHub Actions — lint backend, testes, lint + type check frontend, build |
 
 ## Escopo v1
 
