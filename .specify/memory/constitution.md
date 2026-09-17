@@ -220,4 +220,44 @@ Em caso de conflito entre um PR e a constituição, a constituição prevalece.
 os princípios I–VII. PRs que violem qualquer princípio sem justificativa
 documentada na seção "Complexity Tracking" do plano DEVEM ser bloqueados.
 
-**Version**: 1.0.0 | **Ratified**: 2026-03-31 | **Last Amended**: 2026-04-01
+---
+
+### Nota de realidade operacional — 2026-09-17
+
+**Nota factual, não normativa. Nenhuma regra foi alterada, nenhuma permissão foi
+criada.** Registrada como PATCH ("clarificações", acima). Ela existe porque uma
+constituição que descreve órgãos inexistentes deixa de ser norma e passa a ser
+representação falsa.
+
+Fatos apurados no repositório em 2026-09-17:
+
+1. **O projeto tem um único maintainer desde a ratificação (2026-03-31).** A
+   identidade `ZIL Observatório <zil@zilobservatorio.org>` no histórico git é a
+   conta institucional da mesma pessoa, não um segundo membro.
+2. **Nenhum PR (#1–#13) teve aprovação formal registrada.** As regras de
+   aprovação em "Development Workflow" — 1 maintainer para features, comitê
+   editorial para dados e classificação — não foram cumpridas em nenhuma
+   ocasião. O "Comitê Editorial" previsto em **Papéis** nunca foi constituído.
+3. **Emendas MINOR e MAJOR são inexequíveis** enquanto durar essa condição:
+   exigem 2 e 3 maintainers, respectivamente. Isso está registrado, não
+   contornado — nenhuma tentativa foi feita de reduzir esses números, o que
+   exigiria justamente o quórum ausente.
+4. **Princípios descumpridos pela mesma causa** (documento à frente do mundo),
+   enquanto o repositório for privado e a plataforma não estiver no ar:
+   - **I. Dados Públicos, Acesso Livre** — não há acesso público a nada hoje
+   - **III. Transparência Radical e Auditabilidade** — o histórico é íntegro,
+     mas não é auditável por terceiros sem acesso de leitura
+   - **VI. API-First e Open Source** — a licença é AGPL-3.0, mas o código não
+     está publicado
+5. **O mandato de 12 meses** previsto em **Papéis** expira em 2027-03-31 sem
+   órgão capaz de renová-lo.
+
+Registrar apenas o item 2 seria confissão seletiva: a causa dos itens 2 a 5 é a
+mesma. Abrir o repositório sanaria os três descumprimentos do item 4 num único
+ato.
+
+Detalhamento e protocolo aplicável: [`docs/GOVERNANCE.md`](../../docs/GOVERNANCE.md),
+seção "Estado atual da governança".
+
+**Version**: 1.0.1 | **Ratified**: 2026-03-31 | **Last Amended**: 2026-09-17
+<!-- 1.0.1 (PATCH): nota de realidade operacional. Nenhuma regra alterada. -->

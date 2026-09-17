@@ -7,19 +7,27 @@
 #   peso: 0.5 | 1.0 | 2.0 | 3.0  (processual | padrão | comissão | plenário final)
 #   justificativa: explicação em português (obrigatória)
 #   categoria_principal: código ZIL principal desta votação
-#
-# Processo: discussão no Discord → PR com 2 aprovações de maintainers
-# Princípio: na dúvida, não classificar.
+#   validacao: estado da revisão editorial (ver abaixo)
 #
 # Aplique ao banco: python scripts/apply_direcoes.py
 #
 # ─────────────────────────────────────────────────────────────────────────
-# VERSÃO v0.1 — RASCUNHO EDITORIAL
+# ESTADO EDITORIAL: NÃO VALIDADO
 #
-# Gerado em 2026-04-02 a partir de pesquisa direta na API de Dados Abertos
-# da Câmara dos Deputados. Cobertura parcial: Q1-Q2 2025.
+# Todas as entradas deste arquivo foram criadas num único commit em
+# 2026-04-02, por uma única pessoa, a partir de busca na API de Dados
+# Abertos da Câmara. O método empregado em cada uma não é reconstituível
+# hoje: parte pode ter contado com assistência de LLM.
 #
-# ATENÇÃO: Rascunho para teste de pipeline. Revisar antes do lançamento.
+# Versões anteriores deste arquivo afirmavam "Consenso editorial inicial"
+# em cada justificativa. Não houve consenso — o projeto tinha, e tem, um
+# único maintainer. A afirmação foi removida em 2026-09-17 por ser falsa.
+# Ver docs/GOVERNANCE.md, seção "Estado atual da governança".
+#
+# CONSEQUÊNCIA: estas direções produzem 100% do Score ZIL atual. Enquanto
+# estiverem marcadas validacao: nao-validado, o ranking NÃO deve ser
+# publicado. Revalidar exige refazer a pesquisa de cada votação e registrar
+# o raciocínio — não é tarefa de edição de texto.
 # ─────────────────────────────────────────────────────────────────────────
 
 direcoes:
@@ -30,6 +38,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 2.0
+    validacao: nao-validado
     categoria_principal: ZIL-SEM
     justificativa: >
       PL 1264/2024 — Preferência nas compras públicas para empresas
@@ -44,7 +53,7 @@ direcoes:
       cria demanda doméstica garantida para fabricantes nacionais de
       chips e displays, reduzindo o risco de investimento. Peso 2.0 por
       ser votação de comissão (parecer); aguardar votação de plenário
-      para atualizar para 3.0. Consenso editorial inicial: 2026-04-02.
+      para atualizar para 3.0.
 
   # ── VOTAÇÕES PENDENTES DE IDENTIFICAÇÃO ───────────────────────────────
   #
