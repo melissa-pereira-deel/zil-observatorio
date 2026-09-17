@@ -4,8 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { rankingPublico } from "@/lib/flags";
+
 const NAV_LINKS = [
-  { href: "/ranking", label: "Ranking" },
+  // O ranking só aparece quando a curadoria o sustenta (ver lib/flags.ts)
+  ...(rankingPublico ? [{ href: "/ranking", label: "Ranking" }] : []),
   { href: "/proposicoes", label: "Proposições" },
   { href: "/", label: "Manifesto" },
   { href: "/sobre", label: "Sobre" },

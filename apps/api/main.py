@@ -31,7 +31,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-_cors_origins = ["https://zilobservatorio.org"]
+_cors_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
 _cors_origin_regex = r"http://localhost(:\d+)?" if settings.ENV == "development" else None
 
 app.add_middleware(

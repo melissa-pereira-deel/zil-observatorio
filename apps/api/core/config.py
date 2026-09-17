@@ -23,6 +23,13 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = ""
     ADMIN_TOKEN: str = ""
     ENRICHMENT_MODEL: str = "claude-haiku-4-5-20251001"
+    # O pipeline de enriquecimento só roda onde for explicitamente ligado.
+    # Num deploy público somente-leitura ele não roda, e exigir a chave da
+    # Anthropic ali seria manter um segredo sem uso em produção.
+    ENRICHMENT_ENABLED: bool = False
+    # Origens de CORS separadas por vírgula. Em produção precisa incluir o
+    # domínio do frontend — inclusive os domínios de preview, se usados.
+    CORS_ORIGINS: str = "https://zilobservatorio.org"
 
     # extra="ignore": o .env é compartilhado com o docker compose e carrega
     # variáveis que são só dele (POSTGRES_USER, POSTGRES_PORT, ...). Sem isso,
@@ -35,8 +42,8 @@ settings = Settings()
 # ── Production safety: require secrets to be set ──
 if settings.ENV == "production":
     _missing = []
-    if not settings.ANTHROPIC_API_KEY:
-        _missing.append("ANTHROPIC_API_KEY")
+    if settings.ENRICHMENT_ENABLED and not settings.ANTHROPIC_API_KEY:
+        _missing.append("ANTHROPIC_API_KEY (exigida porque ENRICHMENT_ENABLED=true)")
     if not settings.ADMIN_TOKEN:
         _missing.append("ADMIN_TOKEN")
     if settings.DATABASE_URL.startswith("sqlite"):

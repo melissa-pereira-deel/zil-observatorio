@@ -1,0 +1,49 @@
+# Blueprint de produção — Render (API + Postgres)
+#
+# O frontend NÃO está aqui: roda na Vercel, que é feita para Next.js.
+# Ver docs/DEPLOY.md para o passo a passo das duas metades.
+#
+# Não constam neste blueprint, deliberadamente:
+#   - Typesense: declarado no docker-compose mas não usado em linha nenhuma
+#     de código. Subir em produção seria pagar por um serviço morto.
+#   - Redis + workers Celery: só fazem sync agendado. Enquanto o volume for
+#     baixo, rodar o pipeline manualmente da máquina da maintainer é suficiente
+#     e evita dois serviços. Ver "Quando ligar os workers" em docs/DEPLOY.md.
+
+databases:
+  - name: zil-db
+    databaseName: zil
+    user: zil
+    plan: free
+    region: virginia
+
+services:
+  - type: web
+    name: zil-api
+    runtime: docker
+    # O contexto é a raiz do repo porque a imagem precisa de data/ (dados
+    # editoriais) além de apps/api. Ver o comentário no Dockerfile.
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    plan: free
+    region: virginia
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zil-db
+          property: connectionString
+      - key: ENV
+        value: production
+      # Gerado pelo Render e nunca exibido em log — protege o endpoint de
+      # enriquecimento manual. Para usá-lo, copie do painel.
+      - key: ADMIN_TOKEN
+        generateValue: true
+      # Domínios do frontend autorizados a chamar esta API, separados por
+      # vírgula. Preencher no painel depois que a Vercel estiver no ar.
+      - key: CORS_ORIGINS
+        sync: false
+      # O enriquecimento não roda neste serviço; sem isto ligado, a chave da
+      # Anthropic não é exigida e não precisa existir em produção.
+      - key: ENRICHMENT_ENABLED
+        value: "false"
