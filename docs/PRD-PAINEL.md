@@ -3,8 +3,18 @@
 
 > *"A máquina analisa. O humano decide. O git registra."*
 
-**Versão:** 0.2 (proposta — aguardando aprovação dos maintainers)
+**Versão:** 0.3 (proposta — aguardando aprovação dos maintainers)
 **Última atualização:** 2026-09-17
+
+> **Emenda 2 (v0.3) — correção factual.** A v0.2 continha um erro de fato que
+> invalidava o desenho da Fase 1: afirmava que as 7 votações em `data/direcoes/`
+> eram um "gabarito genuinamente cego", decidido em 2024–2025. Elas nasceram num
+> único commit em 2026-04-02, de origem não reconstituível, e desde o PR #16
+> estão marcadas `validacao: nao-validado`. **Não existe gabarito** — §12 foi
+> refeita. Esta versão também alinha o §3.2 à `docs/GOVERNANCE.md` v1.1: em
+> repositório privado não há público para objetar, então a janela de objeção é
+> separada entre a parte que funciona hoje e a que depende de condições ainda
+> inexistentes.
 
 > **Emenda 1 (v0.2) — quórum de um.** A v0.1 assumia a regra de governança de
 > "PR + 2 aprovações de maintainers" como fundação da decisão humana. Na prática
@@ -64,12 +74,13 @@ Três condições são inegociáveis:
 
 1. **Decisão de registro sempre humana** — o painel nunca mergeia, nunca
    classifica por conta própria; scores fluem apenas de YAML mergeado por humanos.
-   Com um único maintainer, essa decisão é reforçada por uma janela pública de
-   objeção antes de a classificação contar no score (§3.2).
+   Com um único maintainer, essa decisão é reforçada por uma carência antes de a
+   classificação contar no score (§3.2).
 2. **Dissenso é resultado válido** — desacordo entre agentes não é resolvido
    por maioria simples; vira "pauta contestada", com os argumentos publicados.
 3. **Calibração empírica antes de escalar** — o painel só entra em produção se
-   demonstrar concordância com o julgamento humano em um conjunto de teste cego.
+   passar nos testes que não dependem de gold standard — porque gold standard
+   não existe (§12).
 
 ---
 
@@ -153,15 +164,36 @@ cobrem as três funções acima — e, ao contrário do quórum de papel, são
 
 | # | Controle | Qual função cobre |
 |---|---|---|
-| C1 | **Janela pública de objeção** — a classificação aprovada fica visível mas **não conta no score** por 7 dias corridos. Qualquer pessoa pode objetar por issue pública nesse prazo. | Captura de erro + legitimidade: troca um par de olhos por todos os pares, de forma assíncrona |
+| C1a | **Carência de revisão (ativa)** — a classificação aprovada **não conta no score** por 7 dias corridos. Função declarada: releitura a frio e registro datado à prova de adulteração, verificável por quem auditar o repositório depois. | Captura de erro por distância temporal. **Não** é revisão independente |
+| C1b | **Janela pública de objeção (inativa)** — a mesma carência, aberta a terceiros. Ver as pré-condições abaixo. | Legitimidade — quando houver a quem se dirigir |
 | C2 | **Separação temporal do julgamento** — não aprovar no mesmo dia em que o painel gerou o parecer | Captura de erro: revisar com cabeça fria, não no embalo da geração |
 | C3 | **Proveniência declarada** — cada votação mostra quem decidiu e com base em qual parecer; a `/metodologia` publica a composição (quantas classificações tiveram 1 revisor, quantas tiveram 2) | Legitimidade: não esconde o déficit, declara |
 | C4 | **Canal público de contestação** — issue com template próprio para contestar classificação. Sem isso, C1 é decorativo | Captura de erro: dá à janela um mecanismo real |
 | C5 | **Taxa de alteração monitorada** — se o maintainer aceitar perto de 100% das propostas, é alarme de complacência, não sinal de qualidade (§11, R8) | Resistência a conluio: torna o rubber-stamping visível |
 
-**C1 e C2 caem quando houver 2+ maintainers ativos.** São compensação para uma
+**C1a e C2 caem quando houver 2+ maintainers ativos.** São compensação para uma
 condição temporária, não regra permanente — o caminho de volta ao quórum
 continua aberto e é o estado preferido.
+
+### C1b — por que está inativa, e o que a ativa
+
+A v0.2 descrevia a janela de objeção como se "qualquer pessoa pode objetar"
+fosse verdade. Não é: o repositório é **privado, com 0 watchers**, e a
+plataforma não está no ar. Não há público — logo, não há objeção possível, e
+prometê-la seria trocar uma regra de papel por outra. É o mesmo diagnóstico que
+`docs/GOVERNANCE.md` v1.1 registra em "Limitação enquanto o repositório for
+privado".
+
+C1b liga quando **as quatro condições abaixo forem verdadeiras ao mesmo tempo** —
+condições verificáveis, não prazo de calendário:
+
+1. Repositório público (ou os dados e pareceres publicados em outro canal aberto)
+2. Plataforma no ar, exibindo as classificações
+3. Canal de contestação com template próprio
+4. Link "contestar esta classificação" visível na página que exibe a classificação
+
+Sem as quatro, C1b permanece inativa e **nenhum documento do projeto deve
+descrevê-la como se estivesse valendo**.
 
 ### 3.3 Estados de uma classificação
 
@@ -171,7 +203,7 @@ C1 exige que "aprovada" e "contando no score" deixem de ser a mesma coisa:
 |---|---|---|
 | `proposta` | Painel gerou o parecer, PR aberto | Não |
 | `em_carencia` | Humano aprovou e mergeou; público, aguardando a janela de 7 dias | **Não** |
-| `vigente` | Janela vencida sem objeção | Sim |
+| `vigente` | Carência vencida (e, com C1b ativa, sem objeção) | Sim |
 | `contestada` | Objeção recebida na janela; volta para revisão | Não |
 
 Implementação: campo `vigente_a_partir_de` na entrada do YAML (§9.3).
@@ -224,7 +256,7 @@ verniz retórico distinto.
 | **Contraditor** | Cargo institucional de dissenso: construir o melhor argumento **contra** a leitura majoritária | Pareceres dos outros 4 | Adversarial por definição |
 
 Definições em `data/painel/agentes/*.yml`, sob a **mesma governança** dos dados
-editoriais (PR revisado, mais a janela de objeção de C1) — porque quem escreve as instruções dos agentes
+editoriais (PR revisado, mais a carência de C1a) — porque quem escreve as instruções dos agentes
 controla o resultado, as instruções são o novo centro de poder e devem ser
 tratadas como tal.
 
@@ -264,9 +296,9 @@ Rejeição ou alteração humana também é registrada — e alimenta a calibra�
 contínua (§14).
 
 Com um maintainer, **o merge deixa de ser a decisão final**: ele abre a janela
-de objeção de 7 dias (C1). A classificação só passa a contar no score quando a
-janela vence sem contestação — o que é imposto pelo campo `vigente_a_partir_de`,
-não por disciplina (§3.3). Com 2+ maintainers, o merge volta a ser a decisão.
+carência de 7 dias (C1a). A classificação só passa a contar no score quando a
+carência vence — o que é imposto pelo campo `vigente_a_partir_de`, não por
+disciplina (§3.3). Com 2+ maintainers, o merge volta a ser a decisão.
 
 ---
 
@@ -305,8 +337,12 @@ está errada por definição:
 3. **Scores fluem só de YAML mergeado por humanos.** O scoring engine não lê
    pareceres, não lê saída de agente — lê `data/direcoes/`, como hoje.
 8. **Enquanto houver um único maintainer, nenhuma classificação conta no score
-   antes de vencer a janela de objeção.** Merge não é vigência (§3.3). Reduzir
-   ou pular a janela exige um segundo maintainer ativo — nunca pressa de prazo.
+   antes de vencer a carência.** Merge não é vigência (§3.3). Reduzir ou pular a
+   carência exige um segundo maintainer ativo — nunca pressa de prazo.
+10. **Nenhuma promessa entra em documento antes de o mecanismo existir em
+    código.** `vigente_a_partir_de` está especificado aqui e **ainda não é lido
+    por `apply_direcoes.py`**; até que seja, nenhum documento normativo do
+    projeto pode afirmar que a carência está em vigor.
 9. **O déficit de quórum é declarado publicamente.** A `/metodologia` informa
    quantas classificações vigentes tiveram um único revisor. O projeto não
    apresenta decisão de uma pessoa como se fosse colegiada.
@@ -368,8 +404,9 @@ direcoes:
     parecer: data/pareceres/camara-2454704-53/
     placar_painel: "5-0"
     decidido_por: [handle1]           # quem aprovou o PR
-    vigente_a_partir_de: "2026-09-24" # fim da janela de objeção (C1);
-                                      # antes dessa data não entra no score
+    vigente_a_partir_de: "2026-09-24" # fim da carência (C1a); antes dessa data
+                                      # não entra no score. AINDA NÃO
+                                      # IMPLEMENTADO em apply_direcoes.py
 ```
 
 Compatibilidade: campos novos são opcionais; as 7 entradas existentes
@@ -392,7 +429,7 @@ O painel é uma extensão modesta, não uma reconstrução:
 | Pipeline de enriquecimento (Feature 002) | **É o briefing** — resumo, glossário, leis citadas já prontos |
 | Cache Planalto (`lei_artigos`) | Insumo do agente jurista |
 | `data/direcoes/` + `apply_direcoes.py` | Destino das propostas — muda só para respeitar `vigente_a_partir_de` (§3.3) |
-| Governança de PR | **É a mesa decisora** — com um maintainer, acrescida da janela de objeção (§3.2) |
+| Governança de PR | **É a mesa decisora** — com um maintainer, acrescida da carência de C1a (§3.2) |
 | Scoring engine | **Não muda uma linha** |
 | Celery workers | Novo módulo `apps/workers/panel/` ao lado de `enrichment/` |
 
@@ -406,14 +443,14 @@ geração de PR) e, na Fase 3, componentes de frontend para exibir pareceres.
 | # | Risco | Descrição | Mitigação |
 |---|---|---|---|
 | R1 | **Falsa diversidade** | 5 personas sobre o mesmo modelo compartilham os mesmos pontos cegos; dissenso vira teatro | Diversidade por **evidência e tarefa** (insumos distintos por agente); métrica de concordância inter-agentes monitorada — se > 90% num lote, o painel degenerou em "um modelo com cinco fantasias" e deve ser redesenhado (ou reduzido a um agente, mais barato) |
-| R2 | **Captura via instruções** | Quem escreve os prompts controla o resultado — e com um maintainer, quem escreve e quem aprova são a mesma pessoa | Definições de agente em `data/painel/`, versionadas e sob a mesma janela de objeção das classificações; toda mudança de instrução é diff público |
+| R2 | **Captura via instruções** | Quem escreve os prompts controla o resultado — e com um maintainer, quem escreve e quem aprova são a mesma pessoa | Definições de agente em `data/painel/`, versionadas e sob a mesma carência das classificações; toda mudança de instrução fica no diff |
 | R3 | **Prompt injection** | Ementas são escritas por gabinetes com interesse direto no score; o pipeline ingere texto de Câmara, Senado e Planalto | Texto de fonte tratado como dado não confiável (regra 6); suite de testes com instruções adversariais embutidas em ementas sintéticas |
 | R4 | **Ataque de legitimidade** | "Robôs dão nota a deputados" como manchete | Enquadramento de consultoria (§3); decisão humana registrada com nomes; disclosure destacado na `/metodologia`; pareceres 100% públicos |
 | R5 | **Deriva de modelo** | Atualizações de modelo mudam vereditos silenciosamente; quebra a promessa de auditabilidade | Modelo pinado por batch em `meta.yml`; transcrições no repo; re-runs comparáveis por hash |
 | R6 | **Anchoring entre agentes** | Se um agente vê os outros antes de formar posição, o painel vira cascata | Etapa 2 estritamente independente; confronto só na etapa 3, com posições iniciais já registradas |
 | R7 | **Custo descontrolado** | Deliberação multi-rodada explode tokens | Uma única rodada de confronto; batches mensais; orçamento por lote (§15) |
-| R8 | **Complacência humana** | Revisores passam a aprovar sem ler ("rubber stamping"). **Com um maintainer este é o risco dominante**, não mais um risco entre outros: não há segundo leitor para pegar o que passou, e a pessoa que revisa é a mesma que quer ver o gargalo resolvido | Taxa de alteração/rejeição monitorada e publicada (§14) — se tender a zero, é alerta, não sinal de qualidade; separação temporal obrigatória entre geração e aprovação (C2); janela pública de objeção como rede de segurança (C1) |
-| R9 | **Quórum de papel** | A `GOVERNANCE.md` promete 2 aprovações que não existem; manter a promessa no texto cria falsa garantia para quem lê o projeto de fora | §3.1 nomeia o déficit; C3 publica a proveniência real de cada classificação; a `GOVERNANCE.md` deve ser emendada junto com este PRD |
+| R8 | **Complacência humana** | Revisores passam a aprovar sem ler ("rubber stamping"). **Com um maintainer este é o risco dominante**, não mais um risco entre outros: não há segundo leitor para pegar o que passou, e a pessoa que revisa é a mesma que quer ver o gargalo resolvido | Taxa de alteração/rejeição monitorada e publicada (§14) — se tender a zero, é alerta, não sinal de qualidade; separação temporal obrigatória entre geração e aprovação (C2); carência de C1a como rede de segurança. **Sem C1b ativa, não há rede externa alguma** |
+| R9 | **Quórum de papel** | Promessa de 2 aprovações que não acontecem cria falsa garantia para quem lê o projeto de fora | **Endereçado**: `GOVERNANCE.md` v1.1 (PR #16) registra o não-cumprimento sem alterar a norma, e `/metodologia` passou a declarar quantas pessoas revisam |
 
 ---
 
@@ -427,46 +464,79 @@ O painel **não entra em produção por convicção — entra por evidência.**
 > inexistente não é rigor, é ficção. O protocolo abaixo extrai o máximo de
 > evidência **sem custar tempo de curadoria**, e declara o que perde.
 
-### O gabarito cego que já existe
+### Não existe gabarito
 
-As **7 votações já curadas** em `data/direcoes/` foram decididas em 2024–2025,
-antes de o painel existir. São, portanto, um gabarito genuinamente cego e
-**não contaminado por ancoragem** — pequeno (n=7), mas real, e de graça.
+> **Correção (v0.3).** A v0.2 afirmava que as 7 votações em `data/direcoes/`
+> foram *"decididas em 2024–2025, antes de o painel existir"* e seriam por isso
+> um *"gabarito genuinamente cego e não contaminado"*. **Isso era falso.**
+> Apurado no repositório: nasceram num único commit em **2026-04-02**, feitas
+> por uma pessoa, e o método de cada uma não é reconstituível — parte pode ter
+> tido assistência de LLM. Desde o PR #16 elas estão marcadas
+> `validacao: nao-validado` nos próprios arquivos.
 
-É pouco para significância estatística e serve bem para o que importa aqui:
-**pegar erro grosseiro**. Um painel que diverge do julgamento humano em votações
-que já foram consideradas claras o bastante para entrar no score é um painel que
-não deve curar nada.
+A consequência é severa e não deve ser suavizada: **o projeto não tem gold
+standard nenhum.** E se as 7 tiveram assistência de LLM, medir o painel contra
+elas seria **circular** — calibrar um modelo contra a saída de um modelo, e
+chamar a concordância de validação.
 
-Por isso as 7 **não devem ser reprocessadas** como produção (§18, Q5):
-reprocessá-las destruiria o único gabarito limpo disponível.
+Não adianta procurar um gabarito onde não há. Adianta trocar a pergunta.
+
+### A pergunta que se pode responder sem gold standard
+
+Em vez de *"o painel acerta?"* — que exige uma verdade de referência que não
+existe — as perguntas abaixo são respondíveis com o que há, e cada uma tem um
+falsificador claro:
+
+1. **O painel discorda de si mesmo onde deveria?** Cinco agentes com insumos
+   distintos devem divergir em pautas genuinamente controversas e convergir em
+   pautas triviais. Convergência uniforme denuncia painel decorativo.
+2. **O painel se abstém onde deve?** Casos-teste construídos com resposta
+   conhecida *por construção*: uma votação puramente procedimental deve produzir
+   abstenção; uma votação que contraria frontalmente a tese ZIL deve produzir
+   direção contrária. Isso não precisa de curadoria humana prévia — a resposta
+   certa vem do desenho do caso.
+3. **O painel resiste a instrução embutida?** Suite sintética de ementas com
+   prompt injection. É o teste mais barato e o único com resposta binária.
+4. **O raciocínio se sustenta na leitura?** Amostragem: a maintainer lê o parecer
+   completo de alguns casos e avalia se o argumento se sustenta — não se a
+   conclusão bate com uma referência.
 
 ### Protocolo revisado
 
-1. **Teste cego (n=7).** Painel roda sobre as 7 votações curadas. O maintainer
-   não vê a saída antes — a comparação é contra o YAML que já está no git.
-2. **Teste de injection.** Suite sintética de ementas com instruções embutidas.
-   Independe de gabarito humano e é o teste mais barato de todos.
-3. **Revisão post-hoc (n≈10).** Painel roda sobre ~10 votações novas; o
-   maintainer revisa a **saída** (minutos por caso) em vez de pesquisar do zero
-   (horas por caso), registrando aceite, alteração ou rejeição com o motivo.
+1. **Casos construídos** (~10, resposta conhecida por construção): procedimental
+   → abstenção; contrário à tese → direção contrária; ambíguo → contestada.
+2. **Suite de injection**: ementas sintéticas com instruções embutidas.
+3. **Segunda opinião sobre as 7** — e aqui a direção se inverte. Como elas estão
+   `nao-validado`, o painel **não é validado por elas**: ele produz um segundo
+   parecer *sobre* elas, e a maintainer adjudica. Divergência é insumo para
+   revisar o dado, não veredito sobre o painel. Isso converte um beco sem saída
+   na primeira tarefa útil do painel.
+4. **Revisão amostrada de raciocínio**: leitura integral de 3–5 pareceres.
 
 ### Métricas
 
 | # | Métrica | Meta (go) | Falsificador (no-go) |
 |---|---|---|---|
-| 1 | Concordância com as 7 curadas (cego) | ≥ 6 de 7 | Divergência em 3 ou mais |
+| 1 | Casos construídos | ≥ 8 de 10 corretos | Erro em caso procedimental ou frontalmente contrário |
 | 2 | Resistência a injection | 100% detectado/ignorado | Qualquer instrução embutida obedecida |
 | 3 | Concordância inter-agentes | 60–85% (dissenso saudável) | > 90% (painel decorativo) ou < 40% (ruído) |
-| 4 | Taxa de alteração humana no post-hoc | 5–40% | ~0% (ancoragem/complacência) ou > 60% (painel ruim) |
+| 4 | Raciocínio na amostra | Argumento se sustenta em todos | Qualquer parecer com erro factual sobre o texto da lei |
 | 5 | Pautas marcadas contestadas | 15–35% | ~0% (painel homogêneo demais) |
 
-### O que este protocolo perde — risco aceito
+Note que **nenhuma métrica mede concordância com julgamento humano prévio**.
+Não há com o que comparar, e fingir que há era o erro da v0.2.
 
-A métrica 4 é **post-hoc, não cega**: o maintainer avalia uma proposta pronta em
-vez de formar julgamento independente. Ancoragem infla concordância, e o número
-**não é comparável** ao de um teste cego. Ele serve para detectar painel ruim
-(alteração alta), não para provar painel bom (alteração baixa).
+### O que este protocolo não prova — risco aceito
+
+Ele detecta **painel ruim**: incoerente, crédulo a injection, homogêneo, ou que
+erra o texto da lei. Ele **não prova painel bom** — para isso seria preciso uma
+verdade de referência, e produzi-la exige exatamente as horas de pesquisa
+legislativa que não existem.
+
+Consequência a aceitar explicitamente: passar na Fase 1 autoriza o painel a
+**propor**, nunca a ter suas propostas presumidas corretas. Toda classificação
+de origem `painel` entra no dado com a mesma marca de proveniência que as 7
+têm hoje, até que alguém a revise de fato.
 
 Isso é uma perda real de rigor, aceita conscientemente porque a alternativa não
 é um teste melhor — é nenhum teste. Fica declarado aqui, e deve ser declarado na
@@ -489,7 +559,7 @@ antes de qualquer expansão de escopo.
 
 | Fase | Entrega | Critério de saída |
 |---|---|---|
-| **1 — Calibração** | Painel + teste cego nas 7 curadas + suite de injection + revisão post-hoc de ~10. Sem superfície pública. | Go/no-go da §12 |
+| **1 — Calibração** | Painel + casos construídos + suite de injection + segunda opinião sobre as 7 + revisão amostrada de raciocínio. Sem superfície pública. | Go/no-go da §12 |
 | **2 — Produção de curadoria** | Backlog de votações ZIL processado; PRs gerados; maintainer revisa; janela de objeção aplicada | 7 → 50–100 direções **vigentes** (não só mergeadas) |
 | **3 — Superfície de produto** | Pareceres linkados nas páginas de proposição/votação; página de pautas contestadas; canal de contestação (C4); seção na `/metodologia` com a proveniência real (C3) | Publicado com disclosure |
 | **4 — Assistência metodológica** | Revisões trimestrais de taxonomia/pesos propostas com evidência | Primeiro ciclo trimestral completo |
@@ -520,9 +590,9 @@ independente e pode correr em paralelo.
 - **Proveniência (C3):** proporção de classificações vigentes com um único
   revisor. Publicada na `/metodologia`. Enquanto for 100%, o projeto declara
   explicitamente que opera com quórum de um.
-- **Objeções recebidas na janela (C1):** quantas, e quantas viraram reversão.
-  Zero objeções em muitos meses pode significar tanto qualidade quanto ausência
-  de público auditando — não confundir as duas leituras.
+- **Objeções recebidas (C1b):** só faz sentido medir quando C1b estiver ativa.
+  Enquanto não estiver, o número é estruturalmente zero e **não deve ser
+  reportado como sinal de qualidade** — não há público auditando.
 
 ---
 
@@ -558,9 +628,9 @@ Leia-se:
 > O campo `direcao_esperada` é **decidido** exclusivamente por humanos — nunca
 > automaticamente. **Propostas** de direção podem ser geradas pelo painel de
 > curadoria multi-perspectiva ([PRD-PAINEL.md](PRD-PAINEL.md)); a decisão
-> registrada é humana, e o parecer que fundamentou a proposta é público.
+> registrada é humana, e o parecer que fundamentou a proposta fica registrado.
 > Enquanto o projeto tiver um único maintainer ativo, a classificação só passa
-> a contar no score após a janela pública de objeção (PRD-PAINEL §3.2).
+> a contar no score após a carência (PRD-PAINEL §3.2, C1a).
 
 O espírito da cláusula original — nenhuma classificação automática — é
 **preservado e reforçado**: o que muda é quem redige o rascunho, não quem decide.
@@ -569,20 +639,21 @@ O espírito da cláusula original — nenhuma classificação automática — é
 
 | Decisão | Arquivo | Processo |
 |---------|---------|---------|
-| Proposta de `direcao_esperada` via painel | `data/direcoes/[ano].yml` + `data/pareceres/` | PR gerado pelo painel → revisão humana → merge → **janela de objeção de 7 dias** antes de contar no score |
+| Proposta de `direcao_esperada` via painel | `data/direcoes/[ano].yml` + `data/pareceres/` | PR gerado pelo painel → revisão humana → merge → **carência de 7 dias** antes de contar no score |
 
-**GOVERNANCE.md — quórum.** O documento prevê 2–5 maintainers e exige 2
-aprovações para dados editoriais, mas o projeto opera com um. Manter a promessa
-sem cumpri-la cria falsa garantia para quem lê o projeto de fora (R9). Proposta:
+**GOVERNANCE.md — resolvido fora deste PRD (v1.1, PR #16).** A v0.2 propunha
+aqui que a regra de 2 aprovações fosse *"substituída por 1 aprovação + janela
+pública de objeção"*. **Essa proposta foi descartada**, e a palavra "substituída"
+é o motivo: rebaixar sozinha o quórum que existe para limitá-la é autonegócio.
 
-> Dados editoriais exigem 2 aprovações de maintainers. **Enquanto o projeto
-> tiver menos de dois maintainers ativos**, a regra é substituída por: 1
-> aprovação + janela pública de objeção de 7 dias antes de a classificação
-> entrar em vigor, com a proveniência declarada na `/metodologia`. A regra
-> original volta automaticamente quando houver dois maintainers ativos.
+O que foi adotado na `GOVERNANCE.md` v1.1 é diferente e mais estrito: **nenhum
+número de aprovação foi alterado**. A norma segue de pé; o que se acrescentou foi
+o registro factual de que ela não é cumprida, mais as obrigações P1–P4 que a
+maintainer única assume sobre si. O enquadramento é de *retificação de declaração
+falsa*, não de emenda — corrigir uma representação falsa sobre si mesma não exige
+quórum sob nenhuma teoria.
 
-Esta é a única emenda deste PRD que **não** deve esperar o go da Fase 1: ela
-descreve o que já é verdade hoje, e o documento atual descreve o que não é.
+Este PRD passa a **seguir** aquele documento, não a propor alterações a ele.
 
 ---
 
@@ -610,11 +681,11 @@ infraestrutura que ela precisaria.
 |---|---|---|
 | Q1 | Modelos: um só (pinado) para todos os agentes, ou modelos distintos por agente para reduzir correlação (R1)? | Começar com um (simplicidade na calibração); testar heterogeneidade na Fase 2 se concordância inter-agentes ficar alta |
 | Q2 | Os pareceres passam por revisão pública (Discord) antes do merge, como as direções manuais hoje? | Sim na Fase 2 (mantém o rito); reavaliar quando o volume crescer |
-| Q2b | **7 dias de janela de objeção é o prazo certo?** | Curto demais não dá tempo de alguém notar; longo demais trava a curadoria. 7 dias é chute informado — revisar após o primeiro lote da Fase 2, com dados de quando as objeções de fato chegam |
+| Q2b | **7 dias de carência é o prazo certo?** | Enquanto C1b estiver inativa, o prazo só serve para releitura a frio — e aí 7 dias é generoso. A pergunta volta a importar quando houver público |
 | Q2c | **Recrutar um segundo maintainer é prioridade?** | Sim. Todos os controles de §3.2 são paliativos; o remédio é quórum real. A pergunta operacional é se vale gastar tempo recrutando agora ou depois do painel destravar a curadoria |
 | Q3 | Peso sugerido pelo painel ou só direção? | Painel sugere peso com base na tabela do PRD v1 §10; mesa pode alterar |
 | Q4 | O contraditor participa do placar ou só provoca? | Participa (5 votos) — abstenção dele conta para "contestada", o que é coerente com o cargo |
-| Q5 | Retroatividade: reprocessar as 7 direções manuais pelo painel? | **Não, e agora é mais crítico que na v0.1** — sem o gabarito de 20 casos, essas 7 são o *único* teste cego não contaminado que existe (§12) |
+| Q5 | Retroatividade: reprocessar as 7 direções pelo painel? | **Sim — e a v0.3 inverte a resposta das versões anteriores.** Elas não são gabarito (não são cegas nem validadas); são dado `nao-validado` que precisa de revisão. O painel dá a segunda opinião, a maintainer adjudica (§12) |
 | Q6 | Nome público do sistema na `/metodologia` | "Painel de curadoria multi-perspectiva" — nunca "IA vota" ou variantes |
 
 ---
