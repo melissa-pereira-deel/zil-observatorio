@@ -102,8 +102,8 @@ export default function MetodologiaPage() {
             <strong className="text-zil-fg">-10 (contra) a +10 (a favor)</strong>.
           </p>
           <p>
-            Ele é calculado a partir dos votos do parlamentar em votações que o
-            comitê editorial classificou como relevantes para a soberania industrial.
+            Ele é calculado a partir dos votos do parlamentar em votações
+            classificadas como relevantes para a soberania industrial.
             Cada votação tem um <em>peso</em> e uma <em>direção esperada</em> (sim ou
             não), definidos editorialmente.
           </p>
@@ -230,19 +230,26 @@ export default function MetodologiaPage() {
         </h2>
         <div className="max-w-2xl space-y-4 text-sm text-zil-soft leading-relaxed">
           <p>
-            As classificações são gerenciadas por um comitê editorial de
-            voluntários via código aberto. Não há interface admin — todas as
-            mudanças passam por Pull Request no GitHub.
+            As classificações são gerenciadas via código, sem interface admin —
+            toda mudança passa por Pull Request e fica registrada no histórico
+            do repositório.
+          </p>
+          <p>
+            <strong>Quantas pessoas revisam:</strong> uma. O projeto tem hoje um
+            único maintainer, e não há revisão editorial independente. Nossos
+            documentos de governança descrevem um processo com duas aprovações
+            que nunca foi praticado; isso está registrado e corrigido em
+            docs/GOVERNANCE.md em vez de mantido como promessa.
           </p>
           <div className="space-y-3">
             {[
               {
                 titulo: "Classificação automática",
-                desc: "Keywords em data/taxonomia/categorias.yml determinam quais proposições são incluídas. Qualquer pessoa pode propor novas keywords via PR.",
+                desc: "Keywords em data/taxonomia/categorias.yml determinam quais proposições são incluídas. As keywords são versionadas em git, então toda inclusão e exclusão é rastreável.",
               },
               {
                 titulo: "Direção esperada",
-                desc: "Para cada votação relevante, o comitê define se votar SIM ou NÃO é pró-soberania industrial. Requer 2 aprovações de maintainers + discussão no Discord.",
+                desc: "Para cada votação relevante, define-se se votar SIM ou NÃO é pró-soberania industrial, com justificativa escrita. As 7 classificações existentes estão marcadas como não validadas nos próprios arquivos: foram criadas num único dia, por uma pessoa, e ainda não passaram por revisão.",
               },
               {
                 titulo: "Bússola ZIL",

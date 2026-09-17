@@ -7,22 +7,27 @@
 #   peso: 0.5 | 1.0 | 2.0 | 3.0  (processual | padrão | comissão | plenário final)
 #   justificativa: explicação em português (obrigatória)
 #   categoria_principal: código ZIL principal desta votação
-#
-# Processo: discussão no Discord → PR com 2 aprovações de maintainers
-# Princípio: na dúvida, não classificar.
+#   validacao: estado da revisão editorial (ver abaixo)
 #
 # Aplique ao banco: python scripts/apply_direcoes.py
 #
 # ─────────────────────────────────────────────────────────────────────────
-# VERSÃO v0.1 — RASCUNHO EDITORIAL
+# ESTADO EDITORIAL: NÃO VALIDADO
 #
-# Gerado em 2026-04-02 a partir de pesquisa direta na API de Dados Abertos
-# da Câmara dos Deputados. Votações identificadas por relevância ZIL nos
-# anos 2024.
+# Todas as entradas deste arquivo foram criadas num único commit em
+# 2026-04-02, por uma única pessoa, a partir de busca na API de Dados
+# Abertos da Câmara. O método empregado em cada uma não é reconstituível
+# hoje: parte pode ter contado com assistência de LLM.
 #
-# ATENÇÃO: Este arquivo é um rascunho para fins de teste de pipeline.
-# Deve ser revisado, validado e aprovado via PR antes do lançamento público.
-# Ver docs/EDITORIAL.md para o processo editorial completo.
+# Versões anteriores deste arquivo afirmavam "Consenso editorial inicial"
+# em cada justificativa. Não houve consenso — o projeto tinha, e tem, um
+# único maintainer. A afirmação foi removida em 2026-09-17 por ser falsa.
+# Ver docs/GOVERNANCE.md, seção "Estado atual da governança".
+#
+# CONSEQUÊNCIA: estas direções produzem 100% do Score ZIL atual. Enquanto
+# estiverem marcadas validacao: nao-validado, o ranking NÃO deve ser
+# publicado. Revalidar exige refazer a pesquisa de cada votação e registrar
+# o raciocínio — não é tarefa de edição de texto.
 # ─────────────────────────────────────────────────────────────────────────
 
 direcoes:
@@ -33,6 +38,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 3.0
+    validacao: nao-validado
     categoria_principal: ZIL-SEM
     justificativa: >
       PL 1847/2024 — Desoneração da folha de pagamento do setor de
@@ -44,7 +50,7 @@ direcoes:
       comparado ao modelo padrão. Votar SIM preserva a competitividade
       das empresas nacionais de tecnologia e mantém o incentivo à
       contratação de engenheiros, reduzindo a migração de talentos para
-      empresas estrangeiras. Consenso editorial inicial: 2026-04-02.
+      empresas estrangeiras.
 
   # ── ZIL-COM: Competitividade Industrial ───────────────────────────────
 
@@ -52,6 +58,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 3.0
+    validacao: nao-validado
     categoria_principal: ZIL-COM
     justificativa: >
       PL 2/2024 — Depreciação acelerada de bens de capital para empresas
@@ -62,8 +69,7 @@ direcoes:
       equipamentos modernos. Instrumento clássico de política industrial:
       reduz o custo de modernização produtiva e aumenta a produtividade
       do parque industrial brasileiro. Votar SIM favorece
-      reindustrialização e adoção de tecnologia avançada. Consenso
-      editorial inicial: 2026-04-02.
+      reindustrialização e adoção de tecnologia avançada.
 
   # ── ZIL-ENE: Energia e Recursos Estratégicos ──────────────────────────
 
@@ -71,6 +77,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 3.0
+    validacao: nao-validado
     categoria_principal: ZIL-ENE
     justificativa: >
       PL 327/2021 — PATEN (Programa de Aceleração da Transição
@@ -82,12 +89,13 @@ direcoes:
       Votar SIM posiciona o Brasil como ator relevante na corrida global
       por energia limpa, aproveitando vantagens comparativas em
       biomassa, solar e eólico para criar nova cadeia industrial
-      doméstica. Consenso editorial inicial: 2026-04-02.
+      doméstica.
 
   - fonte_id: "2269745-144"
     fonte: camara
     direcao: sim
     peso: 3.0
+    validacao: nao-validado
     categoria_principal: ZIL-ENE
     justificativa: >
       PL 327/2021 — PATEN. Aprovação das Emendas do Senado Federal em
@@ -96,12 +104,12 @@ direcoes:
       será ou não lei. Votar SIM em 2024-12 reafirma o compromisso com
       a transição energética nacional após ajustes técnicos do Senado.
       Peso máximo (3.0): é a votação de promulgação efetiva da política.
-      Consenso editorial inicial: 2026-04-02.
 
   - fonte_id: "2238434-80"
     fonte: camara
     direcao: sim
     peso: 3.0
+    validacao: nao-validado
     categoria_principal: ZIL-ENE
     justificativa: >
       PL 528/2020 — Lei de Mobilidade Sustentável. Aprovação da
@@ -113,12 +121,12 @@ direcoes:
       emissão zero. Votar SIM impulsiona a demanda interna por veículos
       elétricos e abre mercado para a cadeia produtiva nacional de
       baterias, sistemas de propulsão elétrica e bioenergia.
-      Consenso editorial inicial: 2026-04-02.
 
   - fonte_id: "2238434-154"
     fonte: camara
     direcao: sim
     peso: 3.0
+    validacao: nao-validado
     categoria_principal: ZIL-ENE
     justificativa: >
       PL 528/2020 — Lei de Mobilidade Sustentável. Aprovação das
@@ -127,8 +135,7 @@ direcoes:
       eletrificação do transporte público e incluíram dispositivos
       sobre infraestrutura de recarga. Votar SIM na votação final
       concretiza o mais abrangente instrumento de política industrial
-      verde do Brasil desde o ProCOP. Consenso editorial inicial:
-      2026-04-02.
+      verde do Brasil desde o ProCOP.
 
   # ── CATEGORIAS PENDENTES DE COBERTURA EDITORIAL ───────────────────────
   #
