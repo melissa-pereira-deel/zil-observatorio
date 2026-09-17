@@ -174,3 +174,72 @@ def test_ranking_partidos(client, db_session):
     pt = next(d for d in data if d["partido"] == "PT")
     assert pt["membros"] == 2
     assert pt["score_medio"] == 7.0
+
+
+# ── POST /proposicoes/{id}/enriquecer — autenticação por header ──
+#
+# O token trafega em `Authorization: Bearer <ADMIN_TOKEN>`, nunca em query
+# string: URLs vazam em log de servidor, histórico de browser e header Referer.
+
+@pytest.fixture
+def admin_token(monkeypatch):
+    """Configura um ADMIN_TOKEN conhecido para os testes de autenticação."""
+    from core.config import settings
+
+    monkeypatch.setattr(settings, "ADMIN_TOKEN", "token-de-teste-123")
+    return "token-de-teste-123"
+
+
+def test_enriquecer_sem_header_retorna_401(client, db_session, admin_token):
+    p = make_proposicao(db_session)
+    resp = client.post(f"/proposicoes/{p.id}/enriquecer")
+    assert resp.status_code == 401
+    assert resp.headers.get("WWW-Authenticate") == "Bearer"
+
+
+def test_enriquecer_com_token_errado_retorna_401(client, db_session, admin_token):
+    p = make_proposicao(db_session)
+    resp = client.post(
+        f"/proposicoes/{p.id}/enriquecer",
+        headers={"Authorization": "Bearer token-errado"},
+    )
+    assert resp.status_code == 401
+
+
+def test_enriquecer_com_esquema_errado_retorna_401(client, db_session, admin_token):
+    """Basic em vez de Bearer não passa, mesmo com o token correto."""
+    p = make_proposicao(db_session)
+    resp = client.post(
+        f"/proposicoes/{p.id}/enriquecer",
+        headers={"Authorization": f"Basic {admin_token}"},
+    )
+    assert resp.status_code == 401
+
+
+def test_enriquecer_por_query_string_nao_autentica(client, db_session, admin_token):
+    """O contrato antigo (token na URL) foi removido — não deve mais funcionar."""
+    p = make_proposicao(db_session)
+    resp = client.post(f"/proposicoes/{p.id}/enriquecer?admin_token={admin_token}")
+    assert resp.status_code == 401
+
+
+def test_enriquecer_sem_admin_token_configurado_retorna_503(client, db_session, monkeypatch):
+    """Servidor sem ADMIN_TOKEN não deve aceitar token vazio como válido."""
+    from core.config import settings
+
+    monkeypatch.setattr(settings, "ADMIN_TOKEN", "")
+    p = make_proposicao(db_session)
+    resp = client.post(
+        f"/proposicoes/{p.id}/enriquecer",
+        headers={"Authorization": "Bearer "},
+    )
+    assert resp.status_code == 503
+
+
+def test_enriquecer_com_token_valido_passa_da_autenticacao(client, db_session, admin_token):
+    """Token válido autentica; proposição inexistente responde 404, não 401."""
+    resp = client.post(
+        f"/proposicoes/{uuid.uuid4()}/enriquecer",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    assert resp.status_code == 404

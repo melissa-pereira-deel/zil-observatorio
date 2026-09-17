@@ -102,6 +102,42 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 - `apps/api/schemas/__init__.py`: novos schemas para campos de enriquecimento
 
 ### Fixed
+- **Taxonomia editorial ignorada em qualquer container (silenciosamente)**:
+  `routers/bussula.py` e `workers/classifiers` resolvem o caminho dos YAMLs
+  relativo ao próprio arquivo, o que dentro do container aponta para `/data/...`
+  — inexistente, já que só `apps/api` era montado. O classificador caía na
+  taxonomia embutida de fallback (57 das 131 keywords curadas, 44% de cobertura)
+  e `/bussula` respondia `[]`. Nenhum dos dois gerava erro, então o problema
+  passaria despercebido até produção. Adicionado mount `./data:/data:ro` em
+  `api`, `worker` e `beat`.
+- **`make migrate` não existia de fato**: `alembic.ini` apontava para
+  `data/migrations`, diretório nunca commitado. Criado o ambiente de migrations
+  (`env.py` lendo `DATABASE_URL` do ambiente em vez de credencial versionada) e
+  a migration inicial com as 8 tabelas, validada contra Postgres limpo —
+  `alembic check` reporta zero drift em relação aos modelos. Novo alvo
+  `make migrate-stamp` para bancos criados pelo `create_all` sem carimbo.
+- **`make setup` falhava mesmo com migrations**: subia a API antes de migrar, e
+  o `create_all` do lifespan criava as tabelas sem carimbo do Alembic. Reordenado
+  para migrar com apenas `db` e `redis` no ar, e só então subir o restante.
+- **`make seed` chamava script inexistente**: criado `scripts/seed.py`, que
+  sincroniza da API da Câmara as votações já curadas em `data/direcoes/`, aplica
+  as direções e recalcula scores. Dado real e rastreável, nunca fictício.
+- **`make test` coletava 0 testes**: o container `api` monta só `apps/api` e
+  `tests/` fica na raiz. Alvos passam a rodar no host (como a CI), com `PYTHON`
+  autodetectando `.venv`. `test-web` deixou de chamar `npm test`, que não existe
+  em `apps/web`, e passa a rodar lint + type check.
+- **Token de admin trafegava em query string**: `POST /proposicoes/{id}/enriquecer`
+  recebia `admin_token` na URL, que vaza em log de servidor, histórico de browser
+  e header `Referer`. Migrado para `Authorization: Bearer`, com comparação em
+  tempo constante (`secrets.compare_digest`) e 6 testes cobrindo ausência de
+  header, token errado, esquema errado, query string e servidor sem token.
+- **Variável do compose derrubava a aplicação**: `Settings` recusava qualquer
+  chave do `.env` não declarada, então `POSTGRES_USER` ou `POSTGRES_PORT` — que
+  são do docker compose — causavam `ValidationError` no import. Passa a usar
+  `extra="ignore"`.
+- **Postgres local sombreava o container**: a porta do host virou
+  `POSTGRES_PORT` (default 5432 inalterado), porque um Postgres local na 5432
+  faz o host falar com o banco errado sem nenhum aviso.
 - **CI vermelha desde 2026-04-04 — lint do backend**: `.github/workflows/ci.yml` instalava
   `ruff` sem pin, então cada run pegava a versão mais recente e o conjunto de regras mudava
   sozinho (267 erros na CI contra 5 no `ruff==0.8.6` pinado em `requirements.txt`). Passa a

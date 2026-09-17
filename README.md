@@ -103,12 +103,29 @@ O schema é criado automaticamente no startup da API em desenvolvimento
 (`Base.metadata.create_all`), então não é preciso rodar migrations para
 desenvolver. O banco sobe vazio — os dados vêm dos crawlers.
 
-**Limitações conhecidas do setup:** `make migrate` e `make seed` não funcionam a
-partir de um clone limpo — o diretório de migrations do Alembic nunca foi
-commitado e `scripts/seed.py` não existe. Isso não bloqueia desenvolvimento, mas
-bloqueia produção, onde o Alembic é o caminho previsto. `make test` também não
-funciona: o container da API monta apenas `apps/api`, e `tests/` fica na raiz —
-rode os testes a partir do host.
+Ou, de uma vez (build, migrations, serviços e dados iniciais):
+
+```bash
+make setup
+```
+
+O `make seed` popula o banco com as votações **já curadas** em `data/direcoes/` —
+dado real da API da Câmara, não fictício — e recalcula os scores.
+
+**Já tem um banco criado antes do Alembic?** Se o schema veio do `create_all` do
+startup, ele não tem o carimbo de versão e o `make migrate` falha. Rode uma vez:
+
+```bash
+make migrate-stamp
+```
+
+**Postgres local na 5432?** O mapeamento do container fica sombreado e o host
+acaba falando com o banco errado. Defina outra porta no `.env`:
+`POSTGRES_PORT=5433` e ajuste a `DATABASE_URL` para a mesma porta.
+
+Os testes do backend rodam no **host**, não no container: eles importam tanto
+`models`/`main` (imports curtos de `apps/api`) quanto `apps.*` e `packages.*` (da
+raiz), e o container achata `apps/api` em `/app`. É também como a CI roda.
 
 ## Fontes de Dados
 

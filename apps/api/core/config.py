@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
@@ -24,8 +24,10 @@ class Settings(BaseSettings):
     ADMIN_TOKEN: str = ""
     ENRICHMENT_MODEL: str = "claude-haiku-4-5-20251001"
 
-    class Config:
-        env_file = str(_ENV_FILE)
+    # extra="ignore": o .env é compartilhado com o docker compose e carrega
+    # variáveis que são só dele (POSTGRES_USER, POSTGRES_PORT, ...). Sem isso,
+    # qualquer variável não declarada aqui derruba a aplicação no import.
+    model_config = SettingsConfigDict(env_file=str(_ENV_FILE), extra="ignore")
 
 
 settings = Settings()
