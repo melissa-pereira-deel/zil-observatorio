@@ -1,21 +1,29 @@
-.PHONY: setup up down restart status logs test lint migrate seed clean help
+.PHONY: setup up down restart status logs test lint migrate migrate-stamp seed clean help
 
 # ── Variáveis ──
 DC = docker compose
+# Usa o .venv local se existir; senão, o python3 do sistema.
+# Sobrescrevível: make test-api PYTHON=/caminho/para/python
+PYTHON ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 
 # ── Setup ──
+# As migrations rodam ANTES da API subir: em desenvolvimento o lifespan do
+# main.py chama Base.metadata.create_all, e se as tabelas já existirem sem o
+# carimbo do Alembic o `upgrade head` falha. Migrando primeiro, o create_all
+# vira no-op e o Alembic segue como fonte da verdade do schema.
 setup: ## Setup completo do ambiente de desenvolvimento
 	$(DC) build
-	$(DC) up -d
-	@echo "⏳ Aguardando serviços..."
-	@sleep 5
+	$(DC) up -d db redis
+	@echo "⏳ Aguardando o banco..."
+	@until $(DC) exec -T db pg_isready -U $${POSTGRES_USER:-zil} >/dev/null 2>&1; do sleep 1; done
 	$(MAKE) migrate
+	$(DC) up -d
 	$(MAKE) seed
 	@echo ""
 	@echo "✅ ZIL Observatório rodando!"
 	@echo "   Frontend:  http://localhost:3000"
 	@echo "   API docs:  http://localhost:8000/docs"
-	@echo "   DB:        localhost:5432 (zil/zil)"
+	@echo "   DB:        localhost:$${POSTGRES_PORT:-5432} (zil/zil)"
 	@echo ""
 
 # ── Docker ──
@@ -44,31 +52,44 @@ logs-web: ## Logs apenas do frontend
 	$(DC) logs -f web
 
 # ── Banco de Dados ──
-migrate: ## Rodar migrations
-	$(DC) exec api alembic upgrade head
+migrate: ## Rodar migrations (Alembic)
+	$(DC) run --rm api alembic upgrade head
 
 migrate-new: ## Criar nova migration (uso: make migrate-new MSG="descrição")
-	$(DC) exec api alembic revision --autogenerate -m "$(MSG)"
+	$(DC) run --rm api alembic revision --autogenerate -m "$(MSG)"
 
-seed: ## Popular banco com dados iniciais
-	$(DC) exec api python -m scripts.seed
+migrate-stamp: ## Marcar banco existente como já migrado (criado por create_all, sem carimbo)
+	$(DC) run --rm api alembic stamp head
+
+# O seed roda no HOST, como os testes: os scripts assumem a raiz do repositório
+# no sys.path (`apps.workers.*`, `packages.*`), e o container achata apps/api em
+# /app. Requer que DATABASE_URL no .env aponte para a porta publicada do db.
+seed: ## Popular banco com as votações já curadas em data/direcoes/
+	$(PYTHON) scripts/seed.py
 
 db-shell: ## Acessar shell do PostgreSQL
 	$(DC) exec db psql -U zil -d zil
 
 # ── Testes ──
-test: ## Rodar todos os testes
-	$(DC) exec api pytest -v
-	$(DC) exec web npm test -- --watchAll=false
+# Os testes do backend rodam no HOST, não no container: eles importam tanto
+# `models`/`main` (imports curtos de apps/api) quanto `apps.*`, `packages.*` e
+# `scripts.*` (da raiz do repo). O container da API monta só apps/api em /app —
+# montar o repo inteiro quebraria o contrato de WORKDIR que faz os imports
+# curtos funcionarem (ADR-002). É também como a CI roda.
+# Use PYTHON=.venv/bin/python se suas dependências estiverem num virtualenv.
+test: ## Rodar todas as verificações (backend: testes; frontend: lint + tipos)
+	$(MAKE) test-api
+	$(MAKE) test-web
 
-test-api: ## Testes do backend
-	$(DC) exec api pytest -v
+test-api: ## Testes do backend (rodam no host — ver nota no Makefile)
+	$(PYTHON) -m pytest tests/ -v
 
-test-web: ## Testes do frontend
-	$(DC) exec web npm test -- --watchAll=false
+test-web: ## Frontend: lint + type check (apps/web não tem suíte de testes)
+	$(DC) exec web npm run lint
+	$(DC) exec web npx tsc --noEmit
 
-test-cov: ## Testes com cobertura
-	$(DC) exec api pytest --cov=. --cov-report=html -v
+test-cov: ## Testes do backend com cobertura (requer pytest-cov)
+	$(PYTHON) -m pytest tests/ --cov=apps --cov=packages --cov-report=html -v
 
 # ── Qualidade ──
 lint: ## Lint em todo o código

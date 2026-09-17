@@ -173,17 +173,25 @@ com `direcao_esperada` preenchida em `data/direcoes/[ano].yml`, e hoje existem 7
 Enquanto esse número não crescer, o ranking não tem base estatística para ser
 publicado com credibilidade.
 
-### Pendências de infraestrutura
+### Infraestrutura — armadilhas que já custaram caro
 
-Conhecidas e não resolvidas — não bloqueiam desenvolvimento, mas bloqueiam produção:
+Resolvidas, mas entender o porquê evita reintroduzi-las:
+
+| Item | O que aprender |
+|------|----------------|
+| Dados editoriais nos containers | `routers/bussula.py` e `workers/classifiers` resolvem o caminho **relativo ao próprio arquivo**, o que dentro do container dá `/data/...`. Sem o mount `./data:/data:ro`, o classificador cai numa taxonomia embutida com 44% das keywords e a Bússola responde `[]` — **silenciosamente**, sem erro. Ao criar novo loader de `data/`, confira que funciona no container. |
+| Ordem do `make setup` | Migrations rodam **antes** da API subir. O `create_all` do lifespan cria as tabelas sem carimbo do Alembic, e aí `upgrade head` falha. Banco antigo nessa situação: `make migrate-stamp` uma vez. |
+| Testes e seed rodam no host | Os scripts assumem a raiz do repo no `sys.path` (`apps.workers.*`, `packages.*`), e o container achata `apps/api` em `/app`. Não tente rodá-los via `docker compose exec api`. |
+| `.env` é compartilhado com o compose | `Settings` usa `extra="ignore"`: variáveis que são só do compose (`POSTGRES_*`) não podem derrubar a aplicação no import. |
+| Porta do Postgres | `POSTGRES_PORT` existe porque um Postgres local na 5432 sombreia o mapeamento do container — o host passa a falar com o banco errado, sem aviso. |
+
+### Pendências de infraestrutura
 
 | Item | Problema |
 |------|----------|
-| `make migrate` | `alembic.ini` aponta para `data/migrations`, diretório nunca commitado. Em dev o schema vem de `Base.metadata.create_all` no lifespan; em produção não há caminho de migração. |
-| `make seed` | Chama `python -m scripts.seed`, e `scripts/seed.py` não existe. |
-| `make test` | Coleta 0 testes: o container `api` monta só `apps/api`, e `tests/` fica na raiz. Rodar do host. |
-| `POST /proposicoes/{id}/enriquecer` | Recebe `admin_token` por query string — vaza em log de servidor e histórico. Migrar para header `Authorization` antes do deploy. |
+| Deploy em produção | Nunca iniciado. Não há `vercel.json`, `fly.toml` nem workflow de deploy. É o item mais atrasado do roadmap. |
 | Código dormente | Tabela `Financiamento` e enums `TipoAlerta`, `CanalAlerta`, `TipoFinanciamento` declarados e sem uso — resquícios de v2/v3. |
+| Lint em `tests/` | 57 erros de ruff em `tests/`, fora do escopo da CI (que cobre só `apps/` e `packages/`). |
 
 ### Design critiques — UI-001 a UI-022 ✅ concluídas
 

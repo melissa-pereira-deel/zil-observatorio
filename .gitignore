@@ -57,3 +57,7 @@ service-account*.json
 # Data downloads (large files)
 data/downloads/
 data/raw/
+
+# Celery beat state
+celerybeat-schedule
+celerybeat-schedule.*

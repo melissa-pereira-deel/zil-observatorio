@@ -1,9 +1,10 @@
 """Endpoints for proposições and votações."""
 
+import secrets
 from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Query, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query, HTTPException
 from sqlalchemy import select, func, cast, Text
 from sqlalchemy.orm import Session
 
@@ -123,17 +124,42 @@ def contexto_proposicao(proposicao_id: UUID, db: Session = Depends(get_db)):
     )
 
 
+def _exigir_admin(authorization: Optional[str]) -> None:
+    """Valida `Authorization: Bearer <ADMIN_TOKEN>` em tempo constante.
+
+    compare_digest evita que o tempo de resposta revele quantos caracteres do
+    token o atacante já acertou.
+    """
+    expected = settings.ADMIN_TOKEN
+    if not expected:
+        raise HTTPException(
+            status_code=503,
+            detail="ADMIN_TOKEN não configurado no servidor",
+        )
+
+    scheme, _, token = (authorization or "").partition(" ")
+    if scheme.lower() != "bearer" or not secrets.compare_digest(token.strip(), expected):
+        raise HTTPException(
+            status_code=401,
+            detail="Token de administração inválido ou ausente",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
 @router.post("/proposicoes/{proposicao_id}/enriquecer")
 def forcar_enriquecimento(
     proposicao_id: UUID,
     background_tasks: BackgroundTasks,
-    admin_token: str = Query(..., description="Token de administração"),
     db: Session = Depends(get_db),
+    authorization: Optional[str] = Header(None, description="Bearer <ADMIN_TOKEN>"),
 ):
-    """Força re-enriquecimento de uma proposição (admin only, Feature 002)."""
-    expected = settings.ADMIN_TOKEN
-    if not expected or admin_token != expected:
-        raise HTTPException(status_code=403, detail="Token inválido")
+    """Força re-enriquecimento de uma proposição (admin only, Feature 002).
+
+    Autentica por header `Authorization: Bearer <token>`. Nunca por query
+    string: URLs vazam em log de servidor, histórico de browser e header
+    Referer, então um token ali é um token comprometido.
+    """
+    _exigir_admin(authorization)
 
     p = db.get(Proposicao, proposicao_id)
     if not p:

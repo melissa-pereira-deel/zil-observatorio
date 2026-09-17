@@ -13,7 +13,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zil}
       POSTGRES_DB: ${POSTGRES_DB:-zil}
     ports:
-      - "5432:5432"
+      # Porta do HOST configurável: em máquinas que já rodam um Postgres local,
+      # a 5432 fica ocupada e o mapeamento é silenciosamente sombreado — o host
+      # acaba falando com o Postgres errado. Defina POSTGRES_PORT no .env.
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -53,6 +56,11 @@ services:
       - "8000:8000"
     volumes:
       - ./apps/api:/app
+      # Dados editoriais (taxonomia, direções, bússola). Os loaders resolvem
+      # o caminho relativo ao próprio arquivo, o que dentro do container dá
+      # /data/... — sem este mount o classificador cai numa taxonomia
+      # embutida com 44% das keywords e a Bússola responde vazia.
+      - ./data:/data:ro
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-zil}:${POSTGRES_PASSWORD:-zil}@db:5432/${POSTGRES_DB:-zil}
       REDIS_URL: redis://redis:6379/0
@@ -77,6 +85,11 @@ services:
     volumes:
       - ./apps/api:/app
       - ./apps/workers:/app/workers
+      # Dados editoriais (taxonomia, direções, bússola). Os loaders resolvem
+      # o caminho relativo ao próprio arquivo, o que dentro do container dá
+      # /data/... — sem este mount o classificador cai numa taxonomia
+      # embutida com 44% das keywords e a Bússola responde vazia.
+      - ./data:/data:ro
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-zil}:${POSTGRES_PASSWORD:-zil}@db:5432/${POSTGRES_DB:-zil}
       REDIS_URL: redis://redis:6379/0
@@ -97,6 +110,11 @@ services:
     volumes:
       - ./apps/api:/app
       - ./apps/workers:/app/workers
+      # Dados editoriais (taxonomia, direções, bússola). Os loaders resolvem
+      # o caminho relativo ao próprio arquivo, o que dentro do container dá
+      # /data/... — sem este mount o classificador cai numa taxonomia
+      # embutida com 44% das keywords e a Bússola responde vazia.
+      - ./data:/data:ro
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-zil}:${POSTGRES_PASSWORD:-zil}@db:5432/${POSTGRES_DB:-zil}
       REDIS_URL: redis://redis:6379/0
