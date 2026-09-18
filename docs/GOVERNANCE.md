@@ -1,8 +1,11 @@
 # ZIL Observatório — Governança v1
 
-**Versão:** 1.1
-**Última atualização:** 2026-09-17
-**Escopo:** governança para a fase v1 (plataforma pública de leitura, sem contas de usuário)
+**Versão:** 1.2
+**Última atualização:** 2026-09-18
+**Escopo:** governança para a fase v1 — plataforma pública de leitura, sem
+contas de usuário. Desde o [ADR-004](decisions/004-placar-focado.md), o produto
+da v1 é um **placar focado em ~10 votações**, não um índice de todos os
+parlamentares; as regras abaixo governam a curadoria desse placar.
 
 > **Retificação (v1.1).** Este documento descrevia um processo de governança
 > colegiada que nunca ocorreu. A v1.1 **não altera nenhuma regra** — mantém a
@@ -34,7 +37,7 @@ rebaixado.**
 |---|---|
 | Maintainers: 2–5 pessoas | **1 pessoa.** A identidade `ZIL Observatório <zil@zilobservatorio.org>` no histórico git é a conta institucional da mesma maintainer, não uma segunda pessoa |
 | Dados editoriais exigem 2 aprovações de maintainers distintos do proponente | **Nenhum PR do projeto (#1–#13) teve aprovação formal registrada.** Os commits que criaram `data/direcoes/` foram feitos direto em `main` |
-| Proposta e discussão prévias no Discord | **O Discord não existe.** O PRD registra "Link: a definir" desde 2026-04 |
+| Proposta e discussão prévias no Discord | **O Discord ainda não existe** — está previsto e será criado, mas nenhuma discussão prévia aconteceu nele até hoje |
 | "O histórico git de `data/` é o log de auditoria público" | O repositório é **privado**, com 0 watchers. O log existe e é íntegro, mas não é público |
 | Enforcement técnico do processo | **Nenhum.** Não há CODEOWNERS, template de PR nem branch protection — esta última é indisponível em repositório privado no plano gratuito |
 
@@ -68,8 +71,9 @@ declarado a quem lê a plataforma, não compensado com processo de aparência.
 Complexidade de governança cresce com a plataforma. Em v1, não há usuários, não há curadoria comunitária e não há deliberação formal — portanto, não há necessidade de sistemas elaborados para essas camadas.
 
 O que existe em v1, na prática: **código versionado + PRs + uma maintainer**.
-Não há Discord, e "rough consensus entre maintainers" pressupõe um plural que
-não existe (ver "Estado atual da governança").
+O Discord ainda não existe (está previsto), e "rough consensus entre
+maintainers" pressupõe um plural que não existe (ver "Estado atual da
+governança").
 
 ---
 
@@ -232,7 +236,7 @@ foi exatamente o problema que a v1.1 deste documento retificou.
 | GitHub Issues | Discussões editoriais e técnicas, propostas de classificação | Sim — mas privadas, enquanto o repositório for privado |
 | GitHub PRs | Revisão de código e dados | Sim |
 | `docs/decisions/` | Registro permanente de ADRs | Sim |
-| Discord | — | **Não.** Referido como canal obrigatório em versões anteriores deste documento; nunca foi criado |
+| Discord | Conversa em tempo real, dúvidas, coordenação | **Ainda não.** Será criado; o convite será publicado aqui e no `CONTRIBUTING.md` assim que existir. Versões anteriores deste documento o tratavam como canal obrigatório sem que ele existisse |
 
 ---
 
@@ -253,6 +257,30 @@ regra de papel. O teste é comportamental:
 **Não há prazo nem compromisso de recrutamento.** Esta seção descreve a
 condição, não promete cumpri-la — foi a promessa sem lastro que criou o
 problema que a v1.1 retifica.
+
+### Como participar, e o que muda quando houver gente
+
+Quem quiser contribuir hoje tem dois caminhos, ambos funcionando:
+
+- **GitHub Issues** — propostas de classificação, dúvidas, discussão técnica.
+  É onde fica o registro.
+- **Discord** — será o canal de conversa em tempo real. **Ainda não existe**;
+  o convite será publicado aqui e no [CONTRIBUTING.md](../CONTRIBUTING.md)
+  assim que for criado.
+
+**As regras deste documento não são definitivas.** Elas foram escritas por uma
+pessoa, para um projeto de uma pessoa — o que é uma limitação, não uma virtude.
+
+Quando houver um grupo de contribuidores ativos, **as diretrizes e regras
+passam a ser revistas em conjunto**: quórum para dados editoriais, formato e
+periodicidade de reuniões, critério de seleção das votações do placar, e a
+própria forma de decidir. Nada disso está fechado, e quem chegar cedo participa
+de defini-lo em vez de herdá-lo pronto.
+
+O que **não** muda por deliberação: os princípios da
+[constituição](../.specify/memory/constitution.md) — dados públicos,
+apartidarismo, transparência radical. Esses têm rito próprio de emenda, e
+existem justamente para não dependerem de quem está na sala.
 
 ### Limitação enquanto o repositório for privado
 

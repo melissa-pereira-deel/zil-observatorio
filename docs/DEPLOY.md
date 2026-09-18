@@ -43,7 +43,7 @@ Tenha em mãos:
 O arquivo [`render.yaml`](../render.yaml) na raiz descreve o serviço e o banco.
 
 1. No painel do Render: **New → Blueprint**
-2. Selecione o repositório `manifesto-zil`
+2. Selecione o repositório `zil-observatorio`
 3. O Render lê o `render.yaml` e propõe criar `zil-api` (web) e `zil-db` (Postgres)
 4. Confirme
 
@@ -87,7 +87,7 @@ repositório como contexto (`dockerContext: .`).
 O banco sobe vazio. O pipeline roda da sua máquina, apontando para produção:
 
 ```bash
-cd ~/manifesto-zil
+cd ~/zil-observatorio
 DATABASE_URL="<Internal Database URL do painel do Render>" .venv/bin/python scripts/seed.py
 ```
 
@@ -108,7 +108,7 @@ DATABASE_URL="<...>" .venv/bin/python scripts/sync_pipeline.py
 
 ### 3.1 Criar o projeto
 
-1. **Add New → Project**, selecione `manifesto-zil`
+1. **Add New → Project**, selecione `zil-observatorio`
 2. **Root Directory: `apps/web`** ← passo mais fácil de errar; o Next.js não
    está na raiz do repositório
 3. Framework: Next.js (detectado automaticamente)

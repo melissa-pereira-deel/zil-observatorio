@@ -6,7 +6,7 @@ import { NavBar } from "@/components/NavBar";
 export const metadata: Metadata = {
   title: "ZIL Observatório — Soberania Industrial do Brasil",
   description:
-    "Plataforma aberta que monitora como cada parlamentar brasileiro vota nas pautas de soberania industrial: fertilizantes, minerais, semicondutores, energia, defesa.",
+    "Plataforma aberta que mostra como parlamentares brasileiros votaram nas votações que mais importam para a soberania industrial: fertilizantes, minerais, semicondutores, energia, defesa.",
   openGraph: {
     title: "ZIL Observatório",
     description:

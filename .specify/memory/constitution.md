@@ -242,7 +242,13 @@ Fatos apurados no repositório em 2026-09-17:
    exigem 2 e 3 maintainers, respectivamente. Isso está registrado, não
    contornado — nenhuma tentativa foi feita de reduzir esses números, o que
    exigiria justamente o quórum ausente.
-4. **Princípios descumpridos pela mesma causa** (documento à frente do mundo),
+4. **"Parlamentares cobertos v1.0: 594"** (em *Key constraints*) descreve um
+   produto que o projeto deixou de perseguir. O
+   [ADR-004](../../docs/decisions/004-placar-focado.md) trocou abrangência por
+   profundidade: a v1 passa a ser um placar de ~10 votações. A restrição não é
+   alterada aqui — alterá-la é MINOR e exige quórum inexistente —, mas fica
+   registrado que **não é mais o alvo**.
+5. **Princípios descumpridos pela mesma causa** (documento à frente do mundo),
    enquanto o repositório for privado e a plataforma não estiver no ar:
    - **I. Dados Públicos, Acesso Livre** — não há acesso público a nada hoje
    - **III. Transparência Radical e Auditabilidade** — o histórico é íntegro,
@@ -259,5 +265,5 @@ ato.
 Detalhamento e protocolo aplicável: [`docs/GOVERNANCE.md`](../../docs/GOVERNANCE.md),
 seção "Estado atual da governança".
 
-**Version**: 1.0.1 | **Ratified**: 2026-03-31 | **Last Amended**: 2026-09-17
+**Version**: 1.0.2 | **Ratified**: 2026-03-31 | **Last Amended**: 2026-09-18
 <!-- 1.0.1 (PATCH): nota de realidade operacional. Nenhuma regra alterada. -->

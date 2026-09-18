@@ -97,15 +97,18 @@ export default function MetodologiaPage() {
         </h2>
         <div className="max-w-3xl space-y-4 text-sm text-zil-soft leading-relaxed">
           <p>
-            O Score ZIL mede o alinhamento de cada parlamentar com a agenda de
-            soberania industrial do Brasil, em uma escala de{" "}
-            <strong className="text-zil-fg">-10 (contra) a +10 (a favor)</strong>.
+            O Score ZIL mede como um parlamentar votou num{" "}
+            <strong className="text-zil-fg">conjunto selecionado de votações</strong>{" "}
+            decisivas para a soberania industrial, numa escala de{" "}
+            <strong className="text-zil-fg">−10 (contra) a +10 (a favor)</strong>.
           </p>
           <p>
-            Ele é calculado a partir dos votos do parlamentar em votações
-            classificadas como relevantes para a soberania industrial.
-            Cada votação tem um <em>peso</em> e uma <em>direção esperada</em> (sim ou
-            não), definidos editorialmente.
+            <strong className="text-zil-fg">Não é um índice de toda a atuação
+            parlamentar.</strong> É um placar de pautas escolhidas — o que
+            significa que a escolha das pautas importa tanto quanto a
+            aritmética. Cada votação tem um <em>peso</em> e uma{" "}
+            <em>direção esperada</em> (sim ou não), definidos editorialmente e
+            registrados em arquivo versionado.
           </p>
         </div>
 
@@ -199,6 +202,12 @@ export default function MetodologiaPage() {
         <h2 className="font-display text-lg uppercase tracking-wide mb-4">
           As 9 Categorias ZIL
         </h2>
+        <p className="text-sm text-zil-soft leading-relaxed max-w-2xl mb-6">
+          Os exemplos abaixo são <strong className="text-zil-fg">hipotéticos</strong>,
+          escritos para ilustrar o tipo de matéria que cada categoria abrange —
+          não são proposições reais em tramitação. As proposições de verdade
+          estão em <a href="/proposicoes" className="underline">Proposições</a>.
+        </p>
         <div className="space-y-6">
           {CATEGORIAS.map((cat) => (
             <div
@@ -216,7 +225,7 @@ export default function MetodologiaPage() {
                 {cat.descricao}
               </p>
               <p className="text-xs font-mono text-zil-muted">
-                Ex: {cat.exemplo}
+                Exemplo hipotético: {cat.exemplo}
               </p>
             </div>
           ))}
@@ -282,7 +291,7 @@ export default function MetodologiaPage() {
         </p>
         <div className="flex gap-4">
           <Link
-            href="https://github.com/melissa-pereira-deel/manifesto-zil"
+            href="https://github.com/melissa-pereira-deel/zil-observatorio"
             target="_blank"
             rel="noopener noreferrer"
             className="font-mono text-xs text-zil-green hover:underline"

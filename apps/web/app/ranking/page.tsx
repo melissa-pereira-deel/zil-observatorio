@@ -86,11 +86,14 @@ export default function RankingPage() {
     <div className="max-w-5xl mx-auto px-6 py-12">
       {/* Header — UI-006: sem letra decorativa */}
       <h1 className="font-display text-2xl uppercase tracking-wide mb-2">
-        Ranking ZIL
+        Placar ZIL
       </h1>
       <p className="text-sm text-zil-soft mb-10 max-w-lg">
         Score de alinhamento com a soberania industrial do Brasil, de −10
-        (contra) a +10 (a favor), calculado a partir dos votos em pautas ZIL.
+        (contra) a +10 (a favor), calculado a partir dos votos nas votações
+        selecionadas. Não é um índice de toda a atuação parlamentar — é um
+        placar de pautas escolhidas, e o critério de escolha está na{" "}
+        <a href="/metodologia" className="underline">metodologia</a>.
       </p>
 
       {/* Filters — UI-005: filtros numa linha, ordenação separada */}

@@ -5,6 +5,16 @@
 
 ---
 
+> **Mudança de rumo (2026-09-18).** Este roadmap foi escrito para um **índice
+> abrangente** — cobertura dos 594 parlamentares, "ranking completo", métrica de
+> "100% dos 513 deputados". O [ADR-004](decisions/004-placar-focado.md) trocou
+> isso por um **placar focado em ~10 votações** bem pesquisadas.
+>
+> As metas de cobertura abaixo **estão revogadas** como objetivo da v1. O texto
+> foi mantido como registro da ambição original — ela não foi abandonada, foi
+> reordenada: cobertura é consequência de capacidade editorial, não premissa de
+> produto. Leia o que segue com essa ressalva.
+
 ## Princípio de priorização
 
 > Entregar a ferramenta de observabilidade pública antes das eleições de outubro de 2026. Tudo que não serve a esse objetivo é v2 ou posterior.
@@ -36,7 +46,7 @@
 
 **Fora de escopo v1** (explicitamente): contas de usuário, login, deliberação por consenso, cobrar parlamentar, alertas, sistema de contestações, curadoria comunitária, financiamento de campanha, monitor eleitoral, gamificação.
 
-**Gestão editorial v1:** via código — YAML versionado em git + PRs + Discord.
+**Gestão editorial v1:** via código — YAML versionado em git + PRs + issues.
 
 ### Backlog v1
 
@@ -125,9 +135,9 @@ Página explicativa sobre o Score ZIL, categorias, processo editorial e limitaç
 
 - [ ] Como o score é calculado (fórmula, pesos, exemplos)
 - [ ] As 9 categorias ZIL com descrição e exemplos
-- [ ] Como a direção esperada é definida (processo editorial via código/Discord)
+- [ ] Como a direção esperada é definida (processo editorial via código e issues)
 - [ ] Limitações do classificador automático
-- [ ] Como contribuir (link para Discord + GitHub)
+- [ ] Como contribuir (GitHub; Discord quando existir)
 
 **Dependências:** nenhuma.
 
@@ -216,7 +226,7 @@ relevantes chegam via sync, a equipe editorial revisa e classifica.
 
 - [ ] Criar `docs/EDITORIAL.md` — guia para maintainers: como identificar votações
   relevantes, como escrever justificativas, critério de peso (processual vs.
-  plenário final), como abrir PR, processo de revisão no Discord.
+  plenário final), como abrir PR, processo de revisão em issue.
 
 - [ ] Adicionar validação em `scripts/apply_direcoes.py`: antes de aplicar,
   verificar se todos os `fonte_id` existem no banco. Imprimir aviso para os que
@@ -292,8 +302,8 @@ relevantes chegam via sync, a equipe editorial revisa e classifica.
 | O que | Onde | Como |
 |-------|------|------|
 | Keywords de classificação | `data/taxonomia/categorias.yml` | PR no GitHub |
-| Direção esperada de votações | `data/direcoes/*.yml` | PR + review + Discord |
-| Indicadores da Bússola | `data/bussula/marcos.yml` | PR + review + Discord |
+| Direção esperada de votações | `data/direcoes/*.yml` | PR + review em issue |
+| Indicadores da Bússola | `data/bussula/marcos.yml` | PR + review em issue |
 | Pesos de votações | Campo `peso` nas Votacoes | PR no banco via migration |
 | Decisões técnicas | `docs/decisions/` (ADRs) | Issue + PR |
 
@@ -303,7 +313,7 @@ relevantes chegam via sync, a equipe editorial revisa e classifica.
 
 | Métrica | Meta |
 |---------|------|
-| Parlamentares com score calculado | 100% dos 513 deputados; 80%+ dos 81 senadores |
+| Votações com justificativa pesquisada e revisada | ~10 (ver ADR-004) |
 | Votações ZIL classificadas com direção esperada | ≥ 50 votações-chave (2024-2026) — ver feature 012 |
 | Tempo de sync inicial (bootstrap) | < 10 min para 2 anos (modo ZIL-smart, feature 011) |
 | Latência dado → plataforma | < 24h |
