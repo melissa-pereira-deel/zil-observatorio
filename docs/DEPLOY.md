@@ -1,0 +1,197 @@
+# Deploy de produção
+
+**Arquitetura:** frontend na **Vercel**, API + Postgres no **Render**.
+Cada metade na ferramenta feita para ela, e ambas com free tier.
+
+```
+  zilobservatorio.org          api.zilobservatorio.org
+  ┌──────────────────┐         ┌──────────────────────┐
+  │  Next.js         │ ──────► │  FastAPI (Docker)    │
+  │  Vercel          │  HTTPS  │  Render              │
+  └──────────────────┘         │  └── Postgres        │
+                               └──────────────────────┘
+```
+
+**Não vão para produção, deliberadamente:**
+
+| Serviço | Por quê |
+|---|---|
+| Typesense | Declarado no `docker-compose.yml` e **não usado em linha nenhuma de código**. Subir seria pagar por serviço morto |
+| Redis + workers Celery | Só fazem sync agendado. Enquanto o volume for baixo, rodar o pipeline da sua máquina é suficiente — ver "Quando ligar os workers" |
+| `/ranking` e `/parlamentar/[id]` | As 7 classificações estão `validacao: nao-validado`; o ranking não tem base. Ver "A flag do ranking" |
+
+---
+
+## Antes de começar
+
+Tenha em mãos:
+
+- Conta na [Render](https://render.com) e na [Vercel](https://vercel.com) (ambas aceitam login pelo GitHub)
+- Acesso ao DNS de `zilobservatorio.org`
+- O repositório conectado às duas plataformas
+
+> **Repositório privado:** as duas plataformas conseguem acessar repositórios
+> privados depois que você autoriza o app delas no GitHub. Não é preciso tornar
+> o repo público para o deploy — só para destravar o GitHub Actions.
+
+---
+
+## Parte 1 — API + banco no Render
+
+### 1.1 Criar pelo blueprint
+
+O arquivo [`render.yaml`](../render.yaml) na raiz descreve o serviço e o banco.
+
+1. No painel do Render: **New → Blueprint**
+2. Selecione o repositório `manifesto-zil`
+3. O Render lê o `render.yaml` e propõe criar `zil-api` (web) e `zil-db` (Postgres)
+4. Confirme
+
+O `ADMIN_TOKEN` é gerado automaticamente pelo Render e nunca aparece em log.
+
+### 1.2 Preencher a variável que falta
+
+`CORS_ORIGINS` fica marcada como `sync: false` — ou seja, você preenche no
+painel. Como o frontend ainda não existe, deixe provisoriamente:
+
+```
+https://zilobservatorio.org
+```
+
+Você volta aqui na etapa 3.2 se precisar incluir domínios de preview.
+
+### 1.3 Conferir que subiu
+
+O primeiro deploy roda `alembic upgrade head` antes de servir (ver
+`apps/api/entrypoint.sh`), então o schema é criado sozinho.
+
+```bash
+curl https://zil-api.onrender.com/health
+curl https://zil-api.onrender.com/bussula
+```
+
+O segundo precisa retornar os 4 indicadores. **Se vier `[]`**, os dados
+editoriais não entraram na imagem — confira que o build usou a raiz do
+repositório como contexto (`dockerContext: .`).
+
+> **Free tier do Render:** o serviço hiberna após um período sem tráfego e o
+> primeiro acesso seguinte demora alguns segundos. O Postgres gratuito tem
+> prazo de validade — confira as condições vigentes no painel, porque elas
+> mudam, e programe a migração para um plano pago ou outro provedor antes do
+> vencimento. **Não descubra isso pelo banco sumindo.**
+
+---
+
+## Parte 2 — Popular o banco
+
+O banco sobe vazio. O pipeline roda da sua máquina, apontando para produção:
+
+```bash
+cd ~/manifesto-zil
+DATABASE_URL="<Internal Database URL do painel do Render>" .venv/bin/python scripts/seed.py
+```
+
+Isso sincroniza da API da Câmara as votações já curadas em `data/direcoes/`,
+aplica as direções e recalcula os scores.
+
+Para a base de proposições enriquecidas — que é o conteúdo publicável hoje:
+
+```bash
+DATABASE_URL="<...>" .venv/bin/python scripts/sync_pipeline.py
+```
+
+> Use a **External Database URL** se estiver rodando de fora do Render.
+
+---
+
+## Parte 3 — Frontend na Vercel
+
+### 3.1 Criar o projeto
+
+1. **Add New → Project**, selecione `manifesto-zil`
+2. **Root Directory: `apps/web`** ← passo mais fácil de errar; o Next.js não
+   está na raiz do repositório
+3. Framework: Next.js (detectado automaticamente)
+
+### 3.2 Variáveis de ambiente
+
+| Variável | Valor | Para quê |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | `https://api.zilobservatorio.org` | De onde o browser busca os dados |
+| `NEXT_PUBLIC_RANKING_PUBLICO` | não definir (ou `false`) | Mantém o ranking fora do ar |
+
+Se for usar os deploys de preview da Vercel, acrescente o domínio deles ao
+`CORS_ORIGINS` no Render — senão o preview carrega sem dado nenhum e parece
+bug de frontend.
+
+---
+
+## Parte 4 — DNS
+
+No provedor de DNS de `zilobservatorio.org`:
+
+| Tipo | Nome | Aponta para | De quem |
+|---|---|---|---|
+| `A` ou `CNAME` | `@` (raiz) | o valor que a Vercel mostrar | Vercel |
+| `CNAME` | `www` | o valor que a Vercel mostrar | Vercel |
+| `CNAME` | `api` | `zil-api.onrender.com` | Render |
+
+Adicione o domínio nos dois painéis (**Vercel → Settings → Domains**,
+**Render → Settings → Custom Domain**) — eles emitem o certificado HTTPS
+automaticamente depois que o DNS propaga.
+
+Depois que `api.zilobservatorio.org` estiver de pé, confirme que
+`CORS_ORIGINS` no Render contém exatamente a origem do frontend, **com
+`https://` e sem barra no final**.
+
+---
+
+## A flag do ranking
+
+`/ranking` e `/parlamentar/[id]` não são apenas escondidos da navegação: um
+middleware (`apps/web/middleware.ts`) fecha as rotas na borda e serve
+`/em-breve`, que explica por quê. Esconder link não é esconder página — sem o
+middleware, as rotas continuariam acessíveis por URL direta e por buscador.
+
+Para publicar o ranking quando a curadoria sustentar:
+
+1. Reveja as classificações e troque `validacao: nao-validado` nos arquivos de
+   `data/direcoes/`
+2. Defina `NEXT_PUBLIC_RANKING_PUBLICO=true` na Vercel
+3. Redeploy
+
+O critério não é técnico. Ver `docs/GOVERNANCE.md`, seção "Estado atual da
+governança".
+
+---
+
+## Quando ligar os workers
+
+Os workers Celery fazem sync automático (deputados semanal, votações a cada 6h,
+scores diário) e exigem Redis mais dois serviços sempre de pé. Enquanto o
+volume for baixo, rodar `scripts/sync_pipeline.py` da sua máquina entrega o
+mesmo resultado sem custo nem superfície de operação.
+
+Vale ligá-los quando: o sync manual passar a ser esquecido, ou o volume de
+proposições tornar a execução local inviável.
+
+Nesse momento, acrescentar ao `render.yaml`: um `type: redis`, um
+`type: worker` para o Celery worker e outro para o beat — os três com as mesmas
+variáveis da API. A imagem já os comporta: o Dockerfile copia `apps/workers` e
+`packages` para dentro dela.
+
+---
+
+## Checklist
+
+- [ ] Blueprint criado no Render; `zil-api` e `zil-db` no ar
+- [ ] `/health` responde 200
+- [ ] `/bussula` retorna 4 indicadores (se vier `[]`, o contexto do build está errado)
+- [ ] Banco populado com `scripts/seed.py`
+- [ ] Projeto na Vercel com **Root Directory `apps/web`**
+- [ ] `NEXT_PUBLIC_API_URL` apontando para a API
+- [ ] DNS propagado e HTTPS ativo nos dois
+- [ ] `CORS_ORIGINS` contém a origem exata do frontend
+- [ ] `/ranking` serve a página `/em-breve`
+- [ ] `/proposicoes` carrega dados reais
+- [ ] Anotado quando o Postgres gratuito vence

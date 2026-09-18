@@ -4,7 +4,7 @@
 
 O Brasil tem 94% do nióbio mundial e importa 87% dos fertilizantes. Exporta petróleo cru e importa gasolina. Vende soja a granel e compra ração processada. O ZIL Observatório torna visível quem no Congresso está trabalhando para mudar isso — e quem está trabalhando contra.
 
-[PRD](docs/PRD.md) · [Arquitetura](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md) · [Governança](docs/GOVERNANCE.md) · [Changelog](docs/CHANGELOG.md)
+[PRD](docs/PRD.md) · [Arquitetura](docs/ARCHITECTURE.md) · [Deploy](docs/DEPLOY.md) · [Roadmap](docs/ROADMAP.md) · [Governança](docs/GOVERNANCE.md) · [Changelog](docs/CHANGELOG.md)
 
 O manifesto é a própria home da plataforma (`/`), não um documento separado.
 
@@ -43,7 +43,7 @@ Todos os dados são públicos. Todo o código é aberto. Toda classificação é
 | Frontend — 8 páginas | ✅ |
 | 151 testes automatizados | ✅ |
 | CI (GitHub Actions, 4 jobs) | ✅ |
-| Deploy em produção | backlog |
+| Deploy em produção | config pronta — ver [DEPLOY.md](docs/DEPLOY.md) |
 
 ### Dados editoriais
 

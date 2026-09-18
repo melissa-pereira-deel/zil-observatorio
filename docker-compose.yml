@@ -50,8 +50,8 @@ services:
   # ── FastAPI Backend ──
   api:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/api/Dockerfile
     ports:
       - "8000:8000"
     volumes:
@@ -80,8 +80,8 @@ services:
   # ── Celery Worker ──
   worker:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/api/Dockerfile
     volumes:
       - ./apps/api:/app
       - ./apps/workers:/app/workers
@@ -105,8 +105,8 @@ services:
   # ── Celery Beat (scheduler) ──
   beat:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/api/Dockerfile
     volumes:
       - ./apps/api:/app
       - ./apps/workers:/app/workers

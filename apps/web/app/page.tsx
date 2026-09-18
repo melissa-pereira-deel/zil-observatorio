@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SectionHeader, Button, Card, Callout } from "@/components/ui";
 import { ScoreExplainer } from "@/components/ScoreExplainer";
 import { RankingPreview } from "@/components/RankingPreview";
+import { rankingPublico } from "@/lib/flags";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { ManifestoSignature } from "@/components/ManifestoSignature";
 
@@ -109,8 +110,8 @@ export default function HomePage() {
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-3 mt-10">
-          <Button href="/ranking" variant="primary">
-            Ver ranking de parlamentares
+          <Button href={rankingPublico ? "/ranking" : "/proposicoes"} variant="primary">
+            {rankingPublico ? "Ver ranking de parlamentares" : "Ver proposições monitoradas"}
           </Button>
           <Button href="#score" variant="secondary">
             Como funciona o score
@@ -270,16 +271,22 @@ export default function HomePage() {
       <div className="zil-container"><div className="zil-divider-line" /></div>
 
       {/* ═══════ 06 — RANKING PREVIEW (NEW) ═══════ */}
-      <section className="zil-container zil-section">
-        <SectionHeader
-          number="06"
-          title="Como votam os parlamentares do Brasil"
-          description="Score de alinhamento calculado a partir de votos reais em pautas de soberania industrial."
-        />
-        <RankingPreview />
-      </section>
+      {/* A seção inteira sai enquanto o ranking não for público: manter só o
+          cabeçalho anunciaria um conteúdo que não está lá. */}
+      {rankingPublico && (
+        <>
+          <section className="zil-container zil-section">
+            <SectionHeader
+              number="06"
+              title="Como votam os parlamentares do Brasil"
+              description="Score de alinhamento calculado a partir de votos reais em pautas de soberania industrial."
+            />
+            <RankingPreview />
+          </section>
 
-      <div className="zil-container"><div className="zil-divider-line" /></div>
+          <div className="zil-container"><div className="zil-divider-line" /></div>
+        </>
+      )}
 
       {/* ═══════ 07 — CATEGORIAS (NEW) ═══════ */}
       <section className="zil-container zil-section">
@@ -367,9 +374,11 @@ export default function HomePage() {
               ))}
             </ul>
             <div className="flex flex-wrap gap-2">
-              <Button href="/ranking" variant="primary" size="sm">
-                Ranking
-              </Button>
+              {rankingPublico && (
+                <Button href="/ranking" variant="primary" size="sm">
+                  Ranking
+                </Button>
+              )}
               <Button href="/proposicoes" variant="ghost" size="sm">
                 Proposições
               </Button>
