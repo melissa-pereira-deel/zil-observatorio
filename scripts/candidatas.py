@@ -55,15 +55,28 @@ _PISTAS_PLENARIO = (
 )
 _PISTAS_PROCESSUAL = ("requerimento", "adiamento", "urgência", "urgencia", "quebra de")
 
+# Voto sobre EMENDA ou DESTAQUE não é classificável a partir da ementa do projeto:
+# "sim" significa aprovar a emenda, e o que a emenda dizia não vem na API. Já o
+# voto sobre o texto inteiro tem direção inequívoca — "sim" = aprovar o projeto,
+# e a ementa explica o projeto. Esta distinção vale mais que a margem: uma
+# votação disputadíssima que não dá para classificar não serve ao placar.
+# Cuidado com a ordem: "Subemenda Substitutiva Global" contém "subemenda" mas é
+# o TEXTO INTEIRO — ela substitui o projeto todo. É por isso que a votação já
+# curada 2454704-53 tem peso 3.0. Por isso _VOTO_DO_TEXTO é avaliado primeiro.
+_VOTO_DO_TEXTO = ("aprovado o projeto", "aprovada a redação", "substitutiva global",
+                  "aprovado o substitutivo", "emendas do senado")
+_VOTO_DE_EMENDA = ("emenda", "destaque", "subemenda", "supressiv", "mantido o texto")
+
 
 @dataclass
 class Candidata:
     fonte_id: str
-    descricao: str
+    descricao: str              # ementa da proposição — é o que se lê
     data: str
     categorias: list[str]
     votos_sim: Optional[int] = None
     votos_nao: Optional[int] = None
+    descricao_votacao: str = ""  # "Aprovado o PL..." / "Rejeitada a Emenda..."
 
     @property
     def tem_placar(self) -> bool:
@@ -85,20 +98,36 @@ class Candidata:
         return self.tem_placar and self.votos_nao > self.votos_sim
 
     @property
-    def escore(self) -> float:
-        """Saliência: quanto mais disputada e mais decisiva, maior.
+    def classificavel(self) -> bool:
+        """Se dá para decidir a direção a partir da ementa do projeto.
 
-        Não mede mérito — mede o quanto a votação separa parlamentares. Votação
-        unânime não diferencia ninguém e não serve a um placar.
+        Voto sobre emenda ou destaque não dá: "sim" aprova a emenda, e o texto
+        da emenda não vem na API. Sem ele, a direção é indecidível.
+        """
+        d = self.descricao_votacao.lower()
+        if any(p in d for p in _VOTO_DO_TEXTO):
+            return True  # tem precedência: substitutivo global é o texto inteiro
+        return not any(p in d for p in _VOTO_DE_EMENDA)
+
+    @property
+    def escore(self) -> float:
+        """Saliência: quanto a votação separa parlamentares E dá para classificar.
+
+        Não mede mérito. E a classificabilidade pesa mais que a disputa: uma
+        votação disputadíssima cuja direção é indecidível não serve ao placar.
         """
         s = 0.0
         if self.margem is not None:
-            s += (1.0 - self.margem) * 10  # disputa é o critério dominante
-        d = self.descricao.lower()
+            s += (1.0 - self.margem) * 10  # disputa
+        d = self.descricao_votacao.lower()
+        if not self.classificavel:
+            s -= 8.0  # domina a nota: emenda sem texto é beco sem saída
+        if any(p in d for p in _VOTO_DO_TEXTO):
+            s += 4.0
         if any(p in d for p in _PISTAS_PLENARIO):
             s += 3.0
         if any(p in d for p in _PISTAS_PROCESSUAL):
-            s -= 4.0  # requerimento processual raramente revela posição de mérito
+            s -= 4.0
         s += min(len(self.categorias), 3) * 0.5
         return s
 
@@ -202,6 +231,7 @@ def buscar_candidatas(client: CamaraClient, ano: int, excluir: set[str]) -> list
                 categorias=categorias,
                 votos_sim=sim,
                 votos_nao=nao,
+                descricao_votacao=descricao,
             )
         )
 
@@ -239,10 +269,16 @@ def main() -> None:
     for c in candidatas[: args.limite]:
         placar = (f"{c.votos_sim}×{c.votos_nao} (margem {c.margem:.0%})"
                   if c.tem_placar else "placar não inline")
-        marca = "  ⚑ REJEITADA" if c.rejeitada else ""
+        marcas = []
+        if c.rejeitada:
+            marcas.append("⚑ REJEITADA")
+        if not c.classificavel:
+            marcas.append("⚠ voto de emenda/destaque — direção indecidível pela ementa")
+        marca = ("  " + " · ".join(marcas)) if marcas else ""
         print(f"  {c.fonte_id}  escore {c.escore:5.1f}  {placar}{marca}")
         print(f"    {', '.join(c.categorias)} · {c.data[:10]}")
-        print(f"    {c.descricao[:130]}")
+        print(f"    votação: {c.descricao_votacao[:110]}")
+        print(f"    projeto: {c.descricao[:110]}")
         print(f"    → python scripts/dossie.py --votacao {c.fonte_id}")
         print()
 

@@ -61,3 +61,6 @@ data/raw/
 # Celery beat state
 celerybeat-schedule
 celerybeat-schedule.*
+
+# Dossiês gerados por scripts/dossie.py — reproduzíveis a qualquer momento
+data/dossies/

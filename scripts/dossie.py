@@ -39,6 +39,7 @@ from apps.workers.enrichment import (  # noqa: E402
     Citacao,
     _extract_article_text,
     _fetch_planalto,
+    _strip_tags,
     build_planalto_url,
     extract_citacoes,
 )
@@ -202,10 +203,16 @@ def resolver_leis(textos: list[str], limite: int = 8) -> list[ArtigoResolvido]:
         # sobre o HTML inteiro, e leis grandes têm dezenas de artigos revogados
         # individualmente (a Lei 12.546/2011 tem 182 ocorrências de "REVOGAD").
         # Como marca do documento, é falso positivo quase sempre.
-        if html and c.artigo:
-            texto_artigo = _extract_article_text(html, c.artigo)
+        if html:
+            if c.artigo:
+                texto_artigo = _extract_article_text(html, c.artigo)
+            else:
+                # Ementa que cita a lei inteira, sem artigo — caso comum. Buscar
+                # o HTML e não mostrar nada seria desperdiçar a requisição: a
+                # abertura da lei já diz do que ela trata.
+                texto_artigo = _abertura_da_lei(html)
             # Extração curta demais é ruído, não informação: pior que nada,
-            # porque dá a impressão de que o artigo foi recuperado.
+            # porque dá a impressão de que o texto foi recuperado.
             if texto_artigo and len(texto_artigo.strip()) < 40:
                 texto_artigo = None
         resolvidos.append(
@@ -218,6 +225,25 @@ def resolver_leis(textos: list[str], limite: int = 8) -> list[ArtigoResolvido]:
             )
         )
     return resolvidos
+
+
+def _abertura_da_lei(html: str, max_chars: int = 900) -> Optional[str]:
+    """Primeiro trecho útil da lei — serve quando a citação não aponta artigo.
+
+    O HTML do Planalto começa com brasão, menus e o preâmbulo ("O PRESIDENTE DA
+    REPÚBLICA Faço saber..."). O que interessa vem logo depois, na ementa.
+    """
+    texto = _strip_tags(html)
+    # A ementa costuma vir logo após o número e a data da lei.
+    marcadores = ("Faço saber", "FAÇO SABER", "DECRETA", "Art. 1")
+    corte = 0
+    for m in marcadores:
+        pos = texto.find(m)
+        if pos > corte:
+            corte = pos
+            break
+    trecho = texto[corte:corte + max_chars].strip()
+    return trecho or None
 
 
 _SYSTEM_ANALISE = (
@@ -379,7 +405,10 @@ def renderizar(
     if not artigos:
         a("*Nenhuma citação de lei encontrada na ementa.*")
     for art in artigos:
-        a(f"### {art.lei_id} — art. {art.numero_artigo}")
+        titulo = (f"### {art.lei_id} — art. {art.numero_artigo}"
+                  if art.numero_artigo != "—"
+                  else f"### {art.lei_id} — lei citada por inteiro")
+        a(titulo)
         a("")
         a(f"- **Fonte:** {art.url}")
         if art.status == "nao_encontrada":
@@ -397,8 +426,8 @@ def renderizar(
             a(art.texto)
             a("```")
         else:
-            a("*Texto do artigo não recuperado — a extração do HTML do Planalto é "
-              "frágil. Abra a fonte acima e leia o artigo direto.*")
+            a("*Texto não recuperado — a extração do HTML do Planalto é frágil. "
+              "Abra a fonte acima e leia direto.*")
         a("")
 
     peso, motivo_peso = _peso_sugerido(dados.descricao)
