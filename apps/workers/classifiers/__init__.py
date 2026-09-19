@@ -46,15 +46,24 @@ def _fallback_taxonomia() -> list[dict]:
 
 # Compilar patterns uma vez
 _taxonomia = _load_taxonomia()
-_patterns: dict[str, list[re.Pattern]] = {}
+
+# Guarda a keyword ao lado do pattern: sem isso não dá para dizer *por que* um
+# texto caiu numa categoria, e a diferença entre casar por `minerais críticos` e
+# casar por `técnico` é o que separa uma candidata boa de ruído.
+_patterns_com_keyword: dict[str, list[tuple[str, re.Pattern]]] = {}
 
 for cat in _taxonomia:
     codigo = cat["codigo"]
     keywords = cat.get("keywords", [])
-    _patterns[codigo] = [
-        re.compile(rf"\b{re.escape(kw)}\b", re.IGNORECASE)
+    _patterns_com_keyword[codigo] = [
+        (kw, re.compile(rf"\b{re.escape(kw)}\b", re.IGNORECASE))
         for kw in keywords
     ]
+
+_patterns: dict[str, list[re.Pattern]] = {
+    codigo: [p for _kw, p in pares]
+    for codigo, pares in _patterns_com_keyword.items()
+}
 
 
 def classificar_texto(texto: str) -> list[str]:
@@ -76,6 +85,30 @@ def classificar_texto(texto: str) -> list[str]:
             categorias.append(codigo)
 
     return categorias
+
+
+def classificar_texto_com_evidencia(texto: str) -> dict[str, list[str]]:
+    """Como `classificar_texto`, mas diz quais keywords casaram em cada categoria.
+
+    Mesmas categorias, mesma regra de corte — só acrescenta a procedência. Existe
+    porque a seleção editorial precisa distinguir um casamento específico
+    (`minerais críticos`) de um casamento por palavra comum (`técnico`, que casa
+    com "Técnico Judiciário"). Sem a evidência, as duas são indistinguíveis.
+
+    Returns:
+        {"ZIL-MIN": ["nióbio", "minerais críticos"]} — categorias sem casamento
+        não aparecem.
+    """
+    if not texto:
+        return {}
+
+    encontradas: dict[str, list[str]] = {}
+    for codigo, pares in _patterns_com_keyword.items():
+        kws = [kw for kw, p in pares if p.search(texto)]
+        if kws:
+            encontradas[codigo] = kws
+
+    return encontradas
 
 
 def classificar_proposicao(

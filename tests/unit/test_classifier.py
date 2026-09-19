@@ -8,8 +8,9 @@ for _p in (str(REPO_ROOT), str(REPO_ROOT / "apps" / "api")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from apps.workers.classifiers import (
+from apps.workers.classifiers import (  # noqa: E402
     classificar_texto,
+    classificar_texto_com_evidencia,
     classificar_votacao,
     classificar_proposicao,
     relevancia_score,
@@ -93,3 +94,35 @@ def test_relevancia_score_com_termos():
 def test_relevancia_score_range():
     score = relevancia_score("lítio fertilizantes semicondutores energia renovável soberania industrial")
     assert 0.0 <= score <= 1.0
+
+
+# ── classificar_texto_com_evidencia ──
+#
+# Mesma classificação de `classificar_texto`, mais a procedência. Existe porque
+# a seleção editorial precisa distinguir "casou com `minerais críticos`" de
+# "casou com `técnico`", e a lista de códigos sozinha não diz isso.
+
+def test_evidencia_nomeia_a_keyword_que_casou():
+    ev = classificar_texto_com_evidencia(
+        "Institui a Política Nacional de Minerais Críticos e Estratégicos"
+    )
+    assert "ZIL-MIN" in ev
+    assert "minerais críticos" in ev["ZIL-MIN"]
+
+
+def test_evidencia_expoe_casamento_por_palavra_comum():
+    """O falso positivo real: cargos do Judiciário entrando em ZIL-EDU."""
+    ev = classificar_texto_com_evidencia(
+        "Transforma cargos vagos da carreira de Técnico Judiciário"
+    )
+    assert ev.get("ZIL-EDU") == ["técnico"]
+
+
+def test_evidencia_concorda_com_classificar_texto():
+    texto = "Projeto sobre semicondutores, nióbio e fertilizantes"
+    assert sorted(classificar_texto_com_evidencia(texto)) == sorted(classificar_texto(texto))
+
+
+def test_evidencia_de_texto_vazio_e_dicionario_vazio():
+    assert classificar_texto_com_evidencia("") == {}
+    assert classificar_texto_com_evidencia("Denomina rodovia estadual") == {}
