@@ -38,10 +38,16 @@ def test_descricao_sem_placar_devolve_none():
 
 # ── saliência: o que faz uma votação valer a pena ─────────────────────────────
 
-def _candidata(descricao="Projeto de Lei sobre nióbio", sim=100, nao=100, cats=None):
+def _candidata(votacao="Aprovado o Projeto de Lei nº 1", sim=100, nao=100, cats=None,
+               ementa="Projeto de Lei sobre processamento de nióbio"):
+    """`votacao` é a descrição do ato votado; `ementa` é o que o projeto faz.
+
+    A distinção importa: a classificabilidade sai da primeira, o tema da segunda.
+    """
     return Candidata(
-        fonte_id="1-1", descricao=descricao, data="2024-01-01",
+        fonte_id="1-1", descricao=ementa, data="2024-01-01",
         categorias=cats or ["ZIL-MIN"], votos_sim=sim, votos_nao=nao,
+        descricao_votacao=votacao,
     )
 
 
@@ -52,9 +58,28 @@ def test_votacao_disputada_pontua_mais_que_unanime():
 
 
 def test_requerimento_processual_e_penalizado():
-    requerimento = _candidata(descricao="Aprovado o Requerimento de urgência")
-    materia = _candidata(descricao="Projeto de Lei sobre processamento de nióbio")
+    requerimento = _candidata(votacao="Aprovado o Requerimento de urgência")
+    materia = _candidata(votacao="Aprovado o Projeto de Lei nº 1847")
     assert requerimento.escore < materia.escore
+
+
+def test_voto_de_emenda_perde_para_voto_do_texto_mesmo_sendo_mais_disputado():
+    """A classificabilidade domina: emenda sem texto é beco sem saída.
+
+    Sem o texto da emenda — que a API não devolve — "sim" pode significar
+    qualquer coisa, por mais apertado que tenha sido o placar.
+    """
+    emenda_apertada = _candidata(votacao="Rejeitada a Emenda de Plenário nº 1",
+                                 sim=195, nao=222)
+    texto_folgado = _candidata(votacao="Aprovado o Projeto de Lei nº 1847",
+                               sim=253, nao=67)
+    assert emenda_apertada.escore < texto_folgado.escore
+
+
+def test_classificavel_distingue_emenda_de_texto():
+    assert _candidata(votacao="Aprovado o Projeto de Lei nº 1847").classificavel is True
+    assert _candidata(votacao="Rejeitada a Emenda de Plenário nº 1").classificavel is False
+    assert _candidata(votacao="Mantido o texto").classificavel is False
 
 
 def test_margem_zero_em_empate_e_um_em_unanimidade():
@@ -235,3 +260,18 @@ def test_ja_curadas_le_os_ids_dos_yamls(tmp_path):
 
 def test_ja_curadas_em_diretorio_inexistente_devolve_vazio(tmp_path):
     assert ja_curadas(tmp_path / "nao-existe") == set()
+
+
+def test_subemenda_substitutiva_global_conta_como_texto_principal():
+    """Ela contém "subemenda" mas substitui o projeto inteiro.
+
+    É por isso que a votação já curada 2454704-53 tem peso 3.0. Tratá-la como
+    emenda a dispositivo descartaria justamente as votações mais úteis.
+    """
+    global_ = _candidata(
+        votacao="Aprovada a Subemenda Substitutiva Global ao Projeto de Lei nº 9.543"
+    )
+    emenda = _candidata(votacao="Rejeitada a Emenda de Plenário nº 1")
+    assert global_.classificavel is True
+    assert emenda.classificavel is False
+    assert global_.escore > emenda.escore
