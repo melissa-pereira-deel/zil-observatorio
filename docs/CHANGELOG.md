@@ -154,6 +154,17 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 - `apps/api/schemas/__init__.py`: novos schemas para campos de enriquecimento
 
 ### Fixed
+- **Texto de lei voltava ilegível do Planalto**: o servidor devolve
+  `Content-Type: text/html` **sem charset**, então o httpx assumia utf-8 num
+  conteúdo windows-1252 — "dispõe" virava "disp?e". Pior que não voltar: parecia
+  dado bom. `_fetch_planalto` passa a fixar o encoding quando o servidor não
+  declara. Junto: `_strip_tags` agora resolve entidades HTML (`&nbsp;`, `&amp;`),
+  que antes sobreviviam até o banco e até o prompt do LLM.
+- **`anthropic` não estava nas dependências**: o pacote era importado com
+  `try/except` em `apps/workers/enrichment` e nunca declarado em
+  `requirements.txt`. O passo de LLM do pipeline de enriquecimento não podia
+  rodar em ambiente nenhum, mesmo com a chave configurada.
+
 - **Busca de leis no Planalto nunca funcionou**: `_fetch_planalto` enviava
   `User-Agent: ZIL-Observatorio/1.0`, e o Planalto derruba a conexão para
   agentes que não pareçam navegador. Toda resolução de lei falhava em silêncio e

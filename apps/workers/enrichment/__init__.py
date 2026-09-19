@@ -13,6 +13,7 @@ ADR-002: adds apps/api to sys.path explicitly
 """
 
 import hashlib
+import html as _html
 import json
 import logging
 import re
@@ -147,9 +148,15 @@ def build_planalto_url(tipo: str, numero: str, ano: int) -> str:
 
 
 def _strip_tags(html: str) -> str:
-    """Remove HTML tags and normalise whitespace."""
+    """Remove HTML tags, resolve entidades e normaliza espaços.
+
+    Sem o unescape, `&nbsp;` e `&amp;` sobrevivem no texto que vai para o banco
+    e para o LLM — ruído que atrapalha tanto a leitura humana quanto o prompt.
+    """
     text = re.sub(r"<[^>]+>", " ", html)
-    return re.sub(r"\s+", " ", text).strip()
+    text = _html.unescape(text)
+    # \xa0 é o espaço não-separável que o &nbsp; vira depois do unescape
+    return re.sub(r"\s+", " ", text.replace("\xa0", " ")).strip()
 
 
 def _extract_article_text(html: str, numero_artigo: str) -> Optional[str]:
@@ -203,6 +210,13 @@ def _fetch_planalto(url: str) -> tuple[str, str]:
 
         if resp.status_code == 404:
             return "", "nao_encontrada"
+
+        # O Planalto serve Content-Type sem charset, então o httpx assume utf-8 —
+        # e o conteúdo é windows-1252. Sem isto o texto da lei volta ilegível
+        # ("dispõe" vira "disp?e"), o que é pior que não voltar: parece dado
+        # bom e não é.
+        if "charset=" not in ct.lower():
+            resp.encoding = "windows-1252"
 
         html = resp.text
 

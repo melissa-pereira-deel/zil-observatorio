@@ -8,6 +8,10 @@ pydantic-settings==2.7.1
 celery[redis]==5.4.0
 redis==5.2.1
 httpx==0.28.1
+# Usada pelo pipeline de enriquecimento e por scripts/dossie.py. Era
+# importada com try/except e nunca declarada — o passo de LLM não podia
+# rodar em ambiente nenhum.
+anthropic==0.40.0
 python-dotenv==1.0.1
 pyyaml==6.0.2
 pytest==8.3.4
