@@ -2,8 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { NavBar } from "@/components/NavBar";
+import { indexacaoPublica } from "@/lib/flags";
 
 export const metadata: Metadata = {
+  // Segunda camada do noindex: o robots.txt pede para não rastrear, esta meta
+  // tag impede indexar uma URL que o buscador chegou por link de fora.
+  // Ver o comentário de `indexacaoPublica` em lib/flags.ts.
+  ...(indexacaoPublica ? {} : { robots: { index: false, follow: false } }),
   title: "ZIL Observatório — Soberania Industrial do Brasil",
   description:
     "Plataforma aberta que mostra como parlamentares brasileiros votaram nas votações que mais importam para a soberania industrial: fertilizantes, minerais, semicondutores, energia, defesa.",

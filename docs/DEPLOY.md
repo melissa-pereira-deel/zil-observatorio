@@ -12,6 +12,10 @@ Cada metade na ferramenta feita para ela, e ambas com free tier.
                                └──────────────────────┘
 ```
 
+**Dá para subir sem domínio próprio.** Nesse caso a API fica em
+`zil-api.onrender.com` e o site no domínio `.vercel.app` que a Vercel atribuir;
+o DNS entra depois, sem refazer nada. A Parte 4 é a única que fica de lado.
+
 **Não vão para produção, deliberadamente:**
 
 | Serviço | Por quê |
@@ -19,6 +23,7 @@ Cada metade na ferramenta feita para ela, e ambas com free tier.
 | Typesense | Declarado no `docker-compose.yml` e **não usado em linha nenhuma de código**. Subir seria pagar por serviço morto |
 | Redis + workers Celery | Só fazem sync agendado. Enquanto o volume for baixo, rodar o pipeline da sua máquina é suficiente — ver "Quando ligar os workers" |
 | `/ranking` e `/parlamentar/[id]` | As 7 classificações estão `validacao: nao-validado`; o ranking não tem base. Ver "A flag do ranking" |
+| Indexação por buscadores | Estar no ar e estar no Google são coisas diferentes, e só a primeira é reversível. Ver "A flag da indexação" |
 
 ---
 
@@ -52,13 +57,11 @@ O `ADMIN_TOKEN` é gerado automaticamente pelo Render e nunca aparece em log.
 ### 1.2 Preencher a variável que falta
 
 `CORS_ORIGINS` fica marcada como `sync: false` — ou seja, você preenche no
-painel. Como o frontend ainda não existe, deixe provisoriamente:
+painel. **O frontend ainda não existe**, então deixe vazia por enquanto e volte
+aqui depois da Parte 3, quando souber o domínio exato que a Vercel atribuiu.
 
-```
-https://zilobservatorio.org
-```
-
-Você volta aqui na etapa 3.2 se precisar incluir domínios de preview.
+Se já tiver domínio próprio, pode preencher de uma vez com
+`https://zilobservatorio.org`.
 
 ### 1.3 Conferir que subiu
 
@@ -117,16 +120,38 @@ DATABASE_URL="<...>" .venv/bin/python scripts/sync_pipeline.py
 
 | Variável | Valor | Para quê |
 |---|---|---|
-| `NEXT_PUBLIC_API_URL` | `https://api.zilobservatorio.org` | De onde o browser busca os dados |
+| `NEXT_PUBLIC_API_URL` | a URL da API, com `https://` e **sem barra no final** | De onde o browser busca os dados |
 | `NEXT_PUBLIC_RANKING_PUBLICO` | não definir (ou `false`) | Mantém o ranking fora do ar |
+| `NEXT_PUBLIC_INDEXACAO_PUBLICA` | não definir (ou `false`) | Mantém o site fora dos buscadores |
+
+Sem domínio próprio, `NEXT_PUBLIC_API_URL` é `https://zil-api.onrender.com` —
+confira a URL real no painel, porque o Render muda o nome se `zil-api` já
+estiver tomado.
+
+> **`NEXT_PUBLIC_*` é gravada no bundle durante o build.** Trocar o valor no
+> painel não muda o site: é preciso **redeploy**. Isso vale para as três.
 
 Se for usar os deploys de preview da Vercel, acrescente o domínio deles ao
 `CORS_ORIGINS` no Render — senão o preview carrega sem dado nenhum e parece
 bug de frontend.
 
+### 3.3 Fechar o círculo do CORS
+
+Com o domínio da Vercel em mãos, volte ao Render e preencha `CORS_ORIGINS` com
+a origem exata — **com `https://`, sem barra no final**. É só variável de
+ambiente: o serviço reinicia, não reconstrói.
+
+Sem isso o site sobe bonito e **vazio**, porque as páginas buscam os dados pelo
+browser. Parece bug de frontend e não é.
+
 ---
 
-## Parte 4 — DNS
+## Parte 4 — DNS (só quando houver domínio próprio)
+
+Pule esta parte se estiver subindo nos domínios das plataformas. Voltar aqui
+depois não exige refazer nada — só acrescentar o domínio nos dois painéis,
+atualizar `NEXT_PUBLIC_API_URL` e `CORS_ORIGINS`, e redeploy do frontend.
+
 
 No provedor de DNS de `zilobservatorio.org`:
 
@@ -165,6 +190,36 @@ governança".
 
 ---
 
+## A flag da indexação
+
+Estar no ar e estar no Google são coisas diferentes, e **só a primeira é
+reversível**. Uma URL indexada pode continuar aparecendo em buscas, em cache e
+em prints muito depois de você mudar a página. Enquanto as 7 classificações
+estiverem `nao-validado`, um resultado de busca levaria alguém direto a um
+número que o próprio projeto não sustenta.
+
+Por isso o padrão é **não indexar**, em duas camadas — porque uma não substitui
+a outra:
+
+| Camada | Arquivo | O que faz |
+|---|---|---|
+| `robots.txt` | `apps/web/app/robots.ts` | pede ao buscador que **não rastreie** |
+| `<meta name="robots">` | `apps/web/app/layout.tsx` | impede **indexar** uma URL descoberta por link de fora |
+
+Para abrir aos buscadores quando a curadoria sustentar:
+
+1. `NEXT_PUBLIC_INDEXACAO_PUBLICA=true` na Vercel
+2. **Redeploy** — o valor é gravado no bundle durante o build
+
+Conferir depois:
+
+```bash
+curl https://<seu-dominio>/robots.txt          # deve dizer Allow: /
+curl -s https://<seu-dominio>/ | grep robots   # não deve haver meta noindex
+```
+
+---
+
 ## Quando ligar os workers
 
 Os workers Celery fazem sync automático (deputados semanal, votações a cada 6h,
@@ -189,9 +244,15 @@ variáveis da API. A imagem já os comporta: o Dockerfile copia `apps/workers` e
 - [ ] `/bussula` retorna 4 indicadores (se vier `[]`, o contexto do build está errado)
 - [ ] Banco populado com `scripts/seed.py`
 - [ ] Projeto na Vercel com **Root Directory `apps/web`**
-- [ ] `NEXT_PUBLIC_API_URL` apontando para a API
-- [ ] DNS propagado e HTTPS ativo nos dois
+- [ ] `NEXT_PUBLIC_API_URL` apontando para a API, sem barra no final
 - [ ] `CORS_ORIGINS` contém a origem exata do frontend
-- [ ] `/ranking` serve a página `/em-breve`
-- [ ] `/proposicoes` carrega dados reais
+- [ ] `/ranking` e `/parlamentar/<id>` servem a página `/em-breve`
+- [ ] `/robots.txt` diz `Disallow: /` e a home traz `<meta name="robots" content="noindex">`
+- [ ] Home e `/bussula` carregam dados reais
+- [ ] Anotada a URL real da API (o Render muda o nome se já estiver tomado)
 - [ ] Anotado quando o Postgres gratuito vence
+- [ ] *(com domínio próprio)* DNS propagado e HTTPS ativo nos dois
+
+> `/proposicoes` fica **vazia** enquanto `scripts/sync_pipeline.py` não rodar.
+> É o esperado: o `seed.py` só traz as votações curadas. A página tem empty
+> state explicando.
