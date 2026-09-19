@@ -1,0 +1,36 @@
+# Contexto de build: a raiz do repositório (ver apps/api/Dockerfile).
+# Sem este arquivo o contexto carrega ~150 MB de .venv para o daemon a cada
+# build — lento local, e desnecessário no Render, que compila a partir do
+# checkout do git.
+
+.git
+.github
+.venv
+venv
+node_modules
+**/node_modules
+**/__pycache__
+**/*.py[cod]
+.mypy_cache
+.ruff_cache
+.pytest_cache
+htmlcov
+.coverage
+
+# Nunca devem entrar no contexto: mesmo sem COPY, ficam ao alcance de um
+# `docker build` futuro e aparecem em cache de camadas.
+.env
+.env.*
+!.env.example
+
+# Só existem para o frontend, que roda na Vercel
+apps/web
+.next
+
+# Não fazem parte da imagem da API
+tests
+docs
+specs
+data/dossies
+data/downloads
+data/raw
