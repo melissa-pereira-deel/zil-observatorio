@@ -9,6 +9,20 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Fixed
+- **O domínio do projeto é `zilmanifesto.org`, não `zilobservatorio.org`.** O
+  segundo **nunca foi registrado** — não tem NS, não resolve — e mesmo assim
+  aparecia em quatro lugares funcionais: o canal de denúncia do
+  `CODE_OF_CONDUCT.md` (`conduta@`, para onde relatos não chegavam), o
+  `User-Agent` enviado ao Planalto (`+url` é justamente o contato de quem está
+  rastreando), o padrão de `CORS_ORIGINS` em `core/config.py` e um link
+  devolvido por `GET /` em `main.py`. Corrigidos os quatro, mais
+  `.env.example` e `docs/DEPLOY.md`.
+  As menções em `GOVERNANCE.md` e `constitution.md` **não** mudam: elas
+  descrevem a identidade `ZIL Observatório <zil@zilobservatorio.org>` que
+  consta como autora de commits no histórico git, o que é um fato do
+  repositório — ainda que o endereço nunca tenha sido entregável.
+
 ### Added
 - **Ferramentas de apoio à curadoria editorial** — atacam o gargalo real do
   projeto, que é tempo de pesquisa por classificação:

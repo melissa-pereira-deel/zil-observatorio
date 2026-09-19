@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     ENRICHMENT_ENABLED: bool = False
     # Origens de CORS separadas por vírgula. Em produção precisa incluir o
     # domínio do frontend — inclusive os domínios de preview, se usados.
-    CORS_ORIGINS: str = "https://zilobservatorio.org"
+    CORS_ORIGINS: str = "https://zilmanifesto.org"
 
     # extra="ignore": o .env é compartilhado com o docker compose e carrega
     # variáveis que são só dele (POSTGRES_USER, POSTGRES_PORT, ...). Sem isso,
