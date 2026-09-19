@@ -10,6 +10,25 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Ferramentas de apoio à curadoria editorial** — atacam o gargalo real do
+  projeto, que é tempo de pesquisa por classificação:
+  - `scripts/dossie.py`: dado o ID de uma votação, reúne ementa, ementa
+    detalhada, palavras-chave, situação, placar contado dos votos individuais,
+    orientações de bancada e as leis citadas com link para o Planalto — e emite
+    o YAML pronto para colar, **sem o campo `direcao`**, que é a decisão humana.
+    Funciona sem banco e sem `ANTHROPIC_API_KEY`. O bloco de análise assistida
+    vem **por último e rotulado**, para não ancorar o julgamento antes da
+    leitura das fontes primárias (risco registrado em `PRD-PAINEL.md` §12).
+  - `scripts/candidatas.py`: varre um ano na API da Câmara e ranqueia votações
+    por saliência — margem disputada, pistas de plenário, penalidade para
+    requerimento processual. Destaca votações **rejeitadas**, que são a via mais
+    natural para o corpus deixar de ter só direções `sim`.
+  - `scripts/validar_direcoes.py`: valida os YAMLs de direções, que hoje não têm
+    validação alguma. Pega `direcao: Sim` com maiúscula, `peso` fora da tabela,
+    `fonte_id` duplicado e justificativa ausente ou curta demais — e reporta a
+    distribuição de direções, expondo a variância zero do corpus atual.
+  - `tests/unit/test_ferramentas_curadoria.py`: 25 testes das funções puras.
+
 
 #### Pipeline de dados — discovery, sync e orquestração
 - `scripts/discover_proposicoes.py`: descoberta de proposições via API da Câmara —
@@ -135,6 +154,15 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 - `apps/api/schemas/__init__.py`: novos schemas para campos de enriquecimento
 
 ### Fixed
+- **Busca de leis no Planalto nunca funcionou**: `_fetch_planalto` enviava
+  `User-Agent: ZIL-Observatorio/1.0`, e o Planalto derruba a conexão para
+  agentes que não pareçam navegador. Toda resolução de lei falhava em silêncio e
+  virava `nao_encontrada` — ou seja, o pipeline de enriquecimento vinha rodando
+  sem o texto legal que é a razão de ele existir. Trocado para
+  `Mozilla/5.0 (compatible; ZIL-Observatorio/1.0; +https://zilobservatorio.org)`,
+  a convenção de crawler bem-comportado: passa no filtro e continua
+  identificando quem chama, com endereço de contato.
+
 - **Taxonomia editorial ignorada em qualquer container (silenciosamente)**:
   `routers/bussula.py` e `workers/classifiers` resolvem o caminho dos YAMLs
   relativo ao próprio arquivo, o que dentro do container aponta para `/data/...`

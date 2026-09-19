@@ -182,7 +182,18 @@ def _fetch_planalto(url: str) -> tuple[str, str]:
         with httpx.Client(
             timeout=PLANALTO_TIMEOUT,
             follow_redirects=True,
-            headers={"User-Agent": "ZIL-Observatorio/1.0 (https://zilobservatorio.org)"},
+            # O Planalto derruba a conexão para User-Agents que não pareçam
+            # navegador: com "ZIL-Observatorio/1.0" puro, toda busca de lei
+            # falhava em silêncio e virava status nao_encontrada. O formato
+            # "Mozilla/5.0 (compatible; <bot>; +<url>)" é a convenção de crawler
+            # bem-comportado — passa no filtro e continua identificando quem
+            # está chamando, com endereço de contato.
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (compatible; ZIL-Observatorio/1.0; "
+                    "+https://zilobservatorio.org)"
+                )
+            },
         ) as client:
             resp = client.get(url)
 
