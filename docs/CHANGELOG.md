@@ -20,14 +20,53 @@ Versions map to git tags (not yet created — pending deploy pipeline).
     vem **por último e rotulado**, para não ancorar o julgamento antes da
     leitura das fontes primárias (risco registrado em `PRD-PAINEL.md` §12).
   - `scripts/candidatas.py`: varre um ano na API da Câmara e ranqueia votações
-    por saliência — margem disputada, pistas de plenário, penalidade para
-    requerimento processual. Destaca votações **rejeitadas**, que são a via mais
-    natural para o corpus deixar de ter só direções `sim`.
+    por saliência — precisão do casamento temático, classificabilidade da
+    direção, margem disputada e pistas de plenário. Destaca votações
+    **rejeitadas** e diz **por qual keyword** cada candidata entrou na lista.
   - `scripts/validar_direcoes.py`: valida os YAMLs de direções, que hoje não têm
     validação alguma. Pega `direcao: Sim` com maiúscula, `peso` fora da tabela,
     `fonte_id` duplicado e justificativa ausente ou curta demais — e reporta a
     distribuição de direções, expondo a variância zero do corpus atual.
   - `tests/unit/test_ferramentas_curadoria.py`: 25 testes das funções puras.
+- `apps/workers/classifiers/__init__.py`: `classificar_texto_com_evidencia()` —
+  mesma classificação de `classificar_texto()`, mas devolve **quais keywords
+  casaram** em cada categoria. Sem a procedência não dá para distinguir uma
+  votação sobre `minerais críticos` de uma que casou com `técnico`.
+
+### Changed
+- `scripts/candidatas.py`: **o tema passa a dominar a disputa no ranqueamento.**
+  A nota anterior media só o formato da votação — margem, plenário, se era
+  requerimento — e o tema entrava como meio ponto por categoria. O resultado
+  medido na varredura de 2024 e 2025: a Política Nacional de Minerais Críticos
+  e Estratégicos, a tese do projeto em forma de lei, ficou em **último lugar**
+  entre 12 por ter sido quase unânime, enquanto a Tarifa Social de Água e
+  Esgoto liderava por ter casado com a palavra `tarifa`. Com placar focado
+  (ADR-004), o topo da lista precisa ser o que mais importa.
+- `scripts/candidatas.py`: requerimento de **urgência** deixa de ser penalizado
+  como manobra processual. Diferente de `"Rejeitado o Requerimento"`, a urgência
+  nomeia o objeto: quem votou sim quis pautar aquele projeto. Entra com o peso
+  mínimo (0,5), porque mede intenção de pautar, não posição sobre o mérito.
+- `scripts/dossie.py`: `_peso_sugerido()` distingue urgência de requerimento
+  genérico, e a justificativa impressa registra a diferença.
+
+### Fixed
+- `scripts/candidatas.py`: keyword que casa **dentro do nome de uma lei citada**
+  não conta mais como tema. O PL 996/2015 — homicídio qualificado contra membros
+  do MP e da Magistratura — liderava a lista de 2024 por casar `dados pessoais`
+  e `proteção de dados` dentro de "(Lei Geral de Proteção de Dados Pessoais)",
+  uma das leis que ele altera. Citar uma lei não é ser sobre o tema dela.
+- `scripts/candidatas.py`: keywords que casam com o português comum
+  (`técnico`, `engenharia`, `tarifa`, `pesquisa`, `bolsa`, `importação`…) não
+  sustentam sozinhas a inclusão de uma votação, e a candidata recebe aviso
+  visível. Cada uma da lista produziu um falso positivo real nas varreduras:
+  `técnico` casou com "Técnico Judiciário", `engenharia` com obras do Exército,
+  `tarifa` com "Tarifa Social de Água e Esgoto".
+- `scripts/candidatas.py`: o aviso sobre votações rejeitadas afirmava que eram
+  "a via mais natural" para quebrar a variância zero do corpus. **Não são.** Das
+  14 rejeitadas de 2024 e 2025, 10 são `"Rejeitado o Requerimento"` sem dizer
+  qual, e a API não desambigua — `objetosPossiveis` devolve dezenas de
+  candidatos (81 numa votação da PONTE). Sem saber o que foi rejeitado, a
+  direção é chute. O texto agora diz isso.
 
 
 #### Pipeline de dados — discovery, sync e orquestração

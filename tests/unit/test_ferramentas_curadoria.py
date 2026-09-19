@@ -15,7 +15,12 @@ for _p in (str(REPO_ROOT), str(REPO_ROOT / "apps" / "api")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from scripts.candidatas import Candidata, extrair_placar, ja_curadas  # noqa: E402
+from scripts.candidatas import (  # noqa: E402
+    Candidata,
+    extrair_placar,
+    ja_curadas,
+    sem_citacoes_de_lei,
+)
 from scripts.dossie import DadosVotacao, _peso_sugerido  # noqa: E402
 from scripts.validar_direcoes import resumir, validar_arquivo  # noqa: E402
 
@@ -39,15 +44,20 @@ def test_descricao_sem_placar_devolve_none():
 # ── saliência: o que faz uma votação valer a pena ─────────────────────────────
 
 def _candidata(votacao="Aprovado o Projeto de Lei nº 1", sim=100, nao=100, cats=None,
-               ementa="Projeto de Lei sobre processamento de nióbio"):
+               ementa="Projeto de Lei sobre processamento de nióbio",
+               keywords=None):
     """`votacao` é a descrição do ato votado; `ementa` é o que o projeto faz.
 
-    A distinção importa: a classificabilidade sai da primeira, o tema da segunda.
+    A distinção importa: a classificabilidade sai da primeira, o tema da
+    segunda. `keywords` é a procedência da classificação — o que separa tema de
+    coincidência de vocabulário.
     """
+    cats = cats or ["ZIL-MIN"]
     return Candidata(
         fonte_id="1-1", descricao=ementa, data="2024-01-01",
-        categorias=cats or ["ZIL-MIN"], votos_sim=sim, votos_nao=nao,
+        categorias=cats, votos_sim=sim, votos_nao=nao,
         descricao_votacao=votacao,
+        keywords=keywords if keywords is not None else {cats[0]: ["nióbio"]},
     )
 
 
@@ -58,9 +68,22 @@ def test_votacao_disputada_pontua_mais_que_unanime():
 
 
 def test_requerimento_processual_e_penalizado():
-    requerimento = _candidata(votacao="Aprovado o Requerimento de urgência")
+    requerimento = _candidata(votacao="Aprovado o Requerimento, a pedido do Relator")
     materia = _candidata(votacao="Aprovado o Projeto de Lei nº 1847")
     assert requerimento.escore < materia.escore
+
+
+def test_urgencia_e_menos_penalizada_que_requerimento_generico():
+    """Urgência nomeia o objeto; "Rejeitado o Requerimento" não.
+
+    Quem votou sim na urgência da PNMCE quis pautar minerais críticos — isso é
+    preferência revelada. Já num requerimento genérico não se sabe o que foi
+    votado: `objetosPossiveis` devolve dezenas de candidatos sem apontar o
+    votado, e sem isso a direção é chute.
+    """
+    urgencia = _candidata(votacao="Aprovado o Requerimento de Urgência (Art. 155 do RICD)")
+    generico = _candidata(votacao="Rejeitado o Requerimento")
+    assert urgencia.escore > generico.escore
 
 
 def test_voto_de_emenda_perde_para_voto_do_texto_mesmo_sendo_mais_disputado():
@@ -94,9 +117,64 @@ def test_sem_placar_nao_tem_margem():
 
 
 def test_rejeitada_quando_nao_supera_sim():
-    """A via mais natural para o corpus deixar de ter só direções `sim`."""
+    """Sinal a exibir, não atalho para direção `nao`.
+
+    Em votação rejeitada a posição pró-soberania PODE ser votar `não` — mas só
+    quando se sabe o que foi rejeitado. Em "Rejeitado o Requerimento", sem
+    dizer qual, não se sabe: `objetosPossiveis` devolve dezenas de candidatos.
+    """
     assert _candidata(sim=100, nao=200).rejeitada is True
     assert _candidata(sim=200, nao=100).rejeitada is False
+
+
+# ── precisão temática: tema domina disputa ────────────────────────────────────
+
+def test_casamento_forte_vence_casamento_fraco_mesmo_sendo_menos_disputado():
+    """O caso real que motivou a mudança.
+
+    A PNMCE (minerais críticos) foi aprovada 369×38 e ficava em último lugar;
+    a Tarifa Social de Água e Esgoto liderava com 325×97 por ter casado com a
+    palavra `tarifa`. Com placar focado, o topo tem que ser o que mais importa.
+    """
+    pnmce = _candidata(
+        votacao="Aprovado o Requerimento de Urgência (Art. 155 do RICD)",
+        sim=369, nao=38, cats=["ZIL-MIN"],
+        keywords={"ZIL-MIN": ["minerais críticos"]},
+    )
+    tarifa_social = _candidata(
+        votacao="Aprovada a Subemenda Substitutiva Global ao Projeto de Lei nº 9.543",
+        sim=325, nao=97, cats=["ZIL-COM"],
+        keywords={"ZIL-COM": ["tarifa"]},
+    )
+    assert pnmce.escore > tarifa_social.escore
+
+
+def test_so_casamento_fraco_e_sinalizado():
+    fraca = _candidata(cats=["ZIL-EDU"], keywords={"ZIL-EDU": ["técnico"]})
+    forte = _candidata(cats=["ZIL-SEM"], keywords={"ZIL-SEM": ["semicondutor"]})
+    assert fraca.so_casamento_fraco is True
+    assert forte.so_casamento_fraco is False
+    assert fraca.escore < forte.escore
+
+
+def test_keyword_fraca_acompanhada_de_forte_nao_desqualifica():
+    """Uma palavra comum não é inútil — ela só não basta sozinha."""
+    c = _candidata(cats=["ZIL-EDU"], keywords={"ZIL-EDU": ["técnico", "semicondutor"]})
+    assert c.so_casamento_fraco is False
+    assert c.keywords_fortes == ["semicondutor"]
+
+
+def test_indecidibilidade_supera_o_tema():
+    """Votação sobre nióbio cuja direção não dá para decidir segue sem serventia."""
+    emenda_sobre_tema = _candidata(
+        votacao="Rejeitada a Emenda de Plenário nº 1", sim=195, nao=222,
+        keywords={"ZIL-MIN": ["nióbio", "minerais críticos"]},
+    )
+    texto_sobre_tema = _candidata(
+        votacao="Aprovado o Projeto de Lei nº 1847", sim=253, nao=67,
+        keywords={"ZIL-MIN": ["nióbio"]},
+    )
+    assert emenda_sobre_tema.escore < texto_sobre_tema.escore
 
 
 # ── peso sugerido a partir da descrição ───────────────────────────────────────
@@ -275,3 +353,46 @@ def test_subemenda_substitutiva_global_conta_como_texto_principal():
     assert global_.classificavel is True
     assert emenda.classificavel is False
     assert global_.escore > emenda.escore
+
+
+# ── citação de lei não é tema ─────────────────────────────────────────────────
+
+def test_keyword_dentro_de_lei_citada_nao_conta_como_tema():
+    """O PL 996/2015 liderou 2024 por um motivo errado.
+
+    Ele trata de homicídio qualificado contra membros do MP e da Magistratura,
+    e altera várias leis — entre elas a LGPD. As keywords `dados pessoais` e
+    `proteção de dados` casaram dentro de "(Lei Geral de Proteção de Dados
+    Pessoais)", que é o nome da lei alterada, não o assunto do projeto.
+    """
+    c = _candidata(
+        votacao="Rejeitadas as Emendas do Senado Federal ao Projeto de Lei nº 996",
+        sim=23, nao=404, cats=["ZIL-DIG"],
+        keywords={"ZIL-DIG": ["dados pessoais", "proteção de dados"]},
+    )
+    c.keywords_substantivas = set()  # nenhuma sobreviveu fora dos parênteses
+    assert c.keywords_citadas == ["dados pessoais", "proteção de dados"]
+    assert c.keywords_fortes == []
+    assert c.so_casamento_fraco is True
+
+
+def test_keyword_fora_de_parenteses_continua_sendo_tema():
+    c = _candidata(cats=["ZIL-DIG"], keywords={"ZIL-DIG": ["dados pessoais"]})
+    c.keywords_substantivas = {"dados pessoais"}
+    assert c.keywords_citadas == []
+    assert c.keywords_fortes == ["dados pessoais"]
+
+
+def test_sem_citacoes_de_lei_remove_so_o_parentese():
+    texto = ("Altera o Decreto-Lei nº 2.848 (Código Penal) e a Lei nº 13.709 "
+             "(Lei Geral de Proteção de Dados Pessoais), para prever homicídio")
+    limpo = sem_citacoes_de_lei(texto)
+    assert "proteção de dados" not in limpo.lower()
+    assert "Código Penal" not in limpo
+    assert "homicídio" in limpo
+    assert "Altera o Decreto-Lei nº 2.848" in limpo
+
+
+def test_sem_citacoes_preserva_parenteses_que_nao_sao_lei():
+    texto = "Institui a Política Nacional de Minerais Críticos (PNMCE)"
+    assert "PNMCE" in sem_citacoes_de_lei(texto)

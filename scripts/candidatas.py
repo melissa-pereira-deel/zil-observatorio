@@ -23,7 +23,7 @@ import argparse
 import logging
 import re
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
@@ -35,7 +35,7 @@ for _p in (_repo_root, _api_dir):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from apps.workers.classifiers import classificar_texto  # noqa: E402
+from apps.workers.classifiers import classificar_texto_com_evidencia  # noqa: E402
 from packages.camara_client import CamaraClient  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -53,7 +53,63 @@ _PISTAS_PLENARIO = (
     "subemenda", "substitutivo", "redação final", "redacao final",
     "emendas do senado", "em globo", "projeto de lei",
 )
-_PISTAS_PROCESSUAL = ("requerimento", "adiamento", "urgência", "urgencia", "quebra de")
+# Urgência x requerimento genérico: a diferença é se dá para saber o que foi
+# votado. "Aprovado o Requerimento de Urgência" nomeia o objeto — quem votou sim
+# quis pautar AQUELE projeto, e isso é preferência revelada. Já "Rejeitado o
+# Requerimento" não diz qual: o campo `objetosPossiveis` da API devolve dezenas
+# de candidatos (81 numa votação da PONTE), sem apontar o votado. Sem saber o
+# que se rejeitou, a direção é chute.
+# A ordem importa: urgência é avaliada primeiro, porque a descrição dela também
+# contém "requerimento".
+_PISTAS_URGENCIA = ("urgência", "urgencia")
+_PISTAS_PROCESSUAL = ("requerimento", "adiamento", "quebra de")
+
+# Keywords da taxonomia que casam com o português comum e por isso não
+# sustentam sozinhas a inclusão de uma votação. Não é uma lista teórica: cada
+# uma destas produziu um falso positivo nas varreduras de 2024 e 2025.
+#
+#   técnico      → "Técnico Judiciário"  (cargos do Judiciário, ZIL-EDU)
+#   engenharia   → "obras e serviços de engenharia" (Exército, ZIL-EDU)
+#   tarifa       → "Tarifa Social de Água e Esgoto" (saneamento, ZIL-COM)
+#   LGPD         → ementa que apenas CITA a LGPD entre as leis alteradas
+#
+# As demais entram por serem do mesmo tipo — palavra corrente que aparece em
+# projeto de qualquer assunto. `bolsa` é a mais perigosa: bolsa de valores,
+# Bolsa Família.
+#
+# Uma keyword fraca não é inútil: acompanhada de uma forte, continua somando.
+# O que ela não faz é bastar.
+KEYWORDS_FRACAS = frozenset({
+    "técnico", "tecnico", "engenharia", "pesquisa", "bolsa", "universidade",
+    "cientista", "tarifa", "tarifas", "importação", "importacao",
+    "exportação", "exportacao", "privatização", "privatizacao", "LGPD",
+})
+
+
+_FRACAS_LOWER = frozenset(k.lower() for k in KEYWORDS_FRACAS)
+
+
+def _e_fraca(keyword: str) -> bool:
+    return keyword.lower() in _FRACAS_LOWER
+
+
+# Nome oficial de lei entre parênteses — "(Lei Geral de Proteção de Dados
+# Pessoais)", "(Código Penal)". A ementa cita essas leis para dizer QUAIS ela
+# altera; o tema do projeto está fora dos parênteses.
+#
+# Sem isto, o PL 996/2015 — homicídio qualificado contra membros do MP e da
+# Magistratura — liderava a lista de 2024 com escore 16,6, por casar
+# `dados pessoais` e `proteção de dados` dentro de
+# "(Lei Geral de Proteção de Dados Pessoais)", uma das leis que ele altera.
+_CITACAO_DE_LEI = re.compile(
+    r"\(\s*(?:lei|código|codigo|decreto|estatuto|marco)\b[^)]*\)",
+    re.IGNORECASE,
+)
+
+
+def sem_citacoes_de_lei(texto: str) -> str:
+    """Remove os nomes de lei entre parênteses, preservando o resto."""
+    return _CITACAO_DE_LEI.sub(" ", texto or "")
 
 # Voto sobre EMENDA ou DESTAQUE não é classificável a partir da ementa do projeto:
 # "sim" significa aprovar a emenda, e o que a emenda dizia não vem na API. Já o
@@ -77,6 +133,44 @@ class Candidata:
     votos_sim: Optional[int] = None
     votos_nao: Optional[int] = None
     descricao_votacao: str = ""  # "Aprovado o PL..." / "Rejeitada a Emenda..."
+    # {"ZIL-MIN": ["minerais críticos"]} — a procedência da classificação.
+    # Sem ela não dá para separar tema de coincidência de vocabulário.
+    keywords: dict[str, list[str]] = field(default_factory=dict)
+    # Keywords que sobrevivem depois de remover os nomes de lei entre
+    # parênteses. `None` = não foi calculado; então nada é tratado como citação.
+    keywords_substantivas: Optional[set[str]] = None
+
+    def _e_citacao(self, keyword: str) -> bool:
+        """A keyword só apareceu dentro do nome de uma lei que o projeto altera."""
+        if self.keywords_substantivas is None:
+            return False
+        return keyword not in self.keywords_substantivas
+
+    @property
+    def keywords_citadas(self) -> list[str]:
+        return sorted({kw for kws in self.keywords.values()
+                       for kw in kws if self._e_citacao(kw)})
+
+    @property
+    def keywords_fortes(self) -> list[str]:
+        """Keywords específicas o bastante para sustentar a inclusão sozinhas.
+
+        Fora: as palavras comuns do português e as que só aparecem no nome de
+        uma lei citada — nos dois casos o casamento é de vocabulário, não de
+        tema.
+        """
+        return sorted({kw for kws in self.keywords.values()
+                       for kw in kws
+                       if not _e_fraca(kw) and not self._e_citacao(kw)})
+
+    @property
+    def keywords_casadas(self) -> list[str]:
+        return sorted({kw for kws in self.keywords.values() for kw in kws})
+
+    @property
+    def so_casamento_fraco(self) -> bool:
+        """Entrou na lista sem nenhum casamento que sustente o tema."""
+        return bool(self.keywords_casadas) and not self.keywords_fortes
 
     @property
     def tem_placar(self) -> bool:
@@ -111,24 +205,44 @@ class Candidata:
 
     @property
     def escore(self) -> float:
-        """Saliência: quanto a votação separa parlamentares E dá para classificar.
+        """Saliência: o quanto vale gastar curadoria nesta votação.
 
-        Não mede mérito. E a classificabilidade pesa mais que a disputa: uma
-        votação disputadíssima cuja direção é indecidível não serve ao placar.
+        Não mede mérito — mede se a votação é sobre pauta ZIL de verdade, se dá
+        para decidir a direção, e se separa parlamentares. **Nessa ordem.**
+
+        A ordem já foi outra. Até a varredura de 2024/2025, a nota somava só
+        disputa e formato da votação, e o tema entrava como meio ponto por
+        categoria. O resultado foi a Política Nacional de Minerais Críticos —
+        a tese do projeto em forma de lei — em último lugar entre 12, porque
+        foi quase unânime, enquanto a Tarifa Social de Água e Esgoto liderava
+        por ter casado com a palavra `tarifa`. Com placar focado, o topo da
+        lista precisa ser o que mais importa, não o que foi mais apertado.
         """
         s = 0.0
         if self.margem is not None:
             s += (1.0 - self.margem) * 10  # disputa
+
+        # Tema, o termo dominante. Casar por palavra comum não é sinal fraco:
+        # é sinal contrário, porque as evidências que temos de casamento fraco
+        # isolado são todas falso positivo.
+        if self.keywords_fortes:
+            s += 8.0 + min(len(self.keywords_fortes) - 1, 3) * 0.5
+        elif self.keywords_casadas:
+            s -= 6.0
+
         d = self.descricao_votacao.lower()
+        # Precisa superar o termo do tema: uma votação sobre nióbio cuja
+        # direção é indecidível continua sendo beco sem saída.
         if not self.classificavel:
-            s -= 8.0  # domina a nota: emenda sem texto é beco sem saída
+            s -= 12.0
         if any(p in d for p in _VOTO_DO_TEXTO):
             s += 4.0
         if any(p in d for p in _PISTAS_PLENARIO):
             s += 3.0
-        if any(p in d for p in _PISTAS_PROCESSUAL):
-            s -= 4.0
-        s += min(len(self.categorias), 3) * 0.5
+        if any(p in d for p in _PISTAS_URGENCIA):
+            s -= 1.0   # mede intenção de pautar, não posição sobre o mérito
+        elif any(p in d for p in _PISTAS_PROCESSUAL):
+            s -= 4.0   # objeto indeterminável — ver o comentário nas pistas
         return s
 
 
@@ -219,19 +333,32 @@ def buscar_candidatas(client: CamaraClient, ano: int, excluir: set[str]) -> list
             prop = afetadas[0] if afetadas else None
         ementa = (prop or {}).get("ementa") or (prop or {}).get("titulo") or ""
 
-        categorias = classificar_texto(f"{ementa} {descricao}")
-        if not categorias:
+        texto = f"{ementa} {descricao}"
+        evidencia = classificar_texto_com_evidencia(texto)
+        if not evidencia:
             continue
+
+        # Segunda passada sem os nomes de lei citados: o que some aqui casou
+        # com a lista de leis alteradas, não com o assunto do projeto.
+        substantivas = {
+            kw
+            for kws in classificar_texto_com_evidencia(
+                sem_citacoes_de_lei(texto)
+            ).values()
+            for kw in kws
+        }
 
         candidatas.append(
             Candidata(
                 fonte_id=fonte_id,
                 descricao=(ementa or descricao),
                 data=data,
-                categorias=categorias,
+                categorias=list(evidencia),
                 votos_sim=sim,
                 votos_nao=nao,
                 descricao_votacao=descricao,
+                keywords=evidencia,
+                keywords_substantivas=substantivas,
             )
         )
 
@@ -274,20 +401,34 @@ def main() -> None:
             marcas.append("⚑ REJEITADA")
         if not c.classificavel:
             marcas.append("⚠ voto de emenda/destaque — direção indecidível pela ementa")
+        if c.so_casamento_fraco:
+            motivo = ("só casou dentro do nome de uma lei citada"
+                      if c.keywords_citadas else "só casou por palavra comum")
+            marcas.append(f"⚠ {motivo} — provável falso positivo")
         marca = ("  " + " · ".join(marcas)) if marcas else ""
         print(f"  {c.fonte_id}  escore {c.escore:5.1f}  {placar}{marca}")
         print(f"    {', '.join(c.categorias)} · {c.data[:10]}")
+        casou = ", ".join(c.keywords_casadas) or "—"
+        if c.keywords_citadas:
+            casou += f"  (só em lei citada: {', '.join(c.keywords_citadas)})"
+        print(f"    casou por: {casou}")
         print(f"    votação: {c.descricao_votacao[:110]}")
         print(f"    projeto: {c.descricao[:110]}")
         print(f"    → python scripts/dossie.py --votacao {c.fonte_id}")
         print()
 
     rejeitadas = sum(1 for c in candidatas if c.rejeitada)
-    print(f"Das {len(candidatas)} candidatas, {rejeitadas} foram rejeitadas.")
+    fracas = sum(1 for c in candidatas if c.so_casamento_fraco)
+    print(f"Das {len(candidatas)} candidatas, {rejeitadas} foram rejeitadas "
+          f"e {fracas} casaram só por palavra comum.")
     if rejeitadas:
-        print("Votações rejeitadas merecem atenção: são a via mais natural para\n"
-              "o corpus deixar de ter só direções `sim` e o placar voltar a\n"
-              "discriminar. Use --so-rejeitadas para vê-las isoladas.")
+        # Este aviso já disse que rejeitada era "a via mais natural" para
+        # quebrar a variância zero. Não é: das 14 rejeitadas de 2024 e 2025,
+        # 10 são "Rejeitado o Requerimento" sem dizer qual requerimento, e a
+        # API não desambigua (`objetosPossiveis` devolve dezenas de candidatos).
+        print("Votação rejeitada PODE gerar direção `nao` — mas só quando a\n"
+              "descrição diz o que foi rejeitado. Em `Rejeitado o Requerimento`,\n"
+              "sem qual, a direção é chute. Use --so-rejeitadas para separá-las.")
 
 
 if __name__ == "__main__":

@@ -318,6 +318,12 @@ def analisar(dados: DadosVotacao, artigos: list[ArtigoResolvido], modelo: str) -
 def _peso_sugerido(descricao: str) -> tuple[float, str]:
     """Sugere peso a partir da descrição, seguindo a tabela do PRD §10."""
     d = descricao.lower()
+    if "urgência" in d or "urgencia" in d:
+        # Urgência não é manobra vazia: nomeia o projeto e revela quem quis
+        # pautá-lo. Mas mede intenção de pautar, não posição sobre o mérito —
+        # e é por isso que entra com o peso mínimo, e não fora do placar.
+        return 0.5, ("requerimento de urgência — mede intenção de pautar, "
+                     "não posição sobre o mérito")
     if "requerimento" in d:
         return 0.5, "requerimento processual"
     if "comissão" in d or "comissao" in d:
