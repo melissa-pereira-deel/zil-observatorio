@@ -15,3 +15,17 @@ export const rankingPublico = process.env.NEXT_PUBLIC_RANKING_PUBLICO === "true"
 
 /** Rotas que dependem do Score ZIL e ficam fora do ar enquanto o ranking não for público. */
 export const ROTAS_DEPENDENTES_DE_SCORE = ["/ranking", "/parlamentar"];
+
+/**
+ * Indexação por buscadores — desligada por padrão.
+ *
+ * Estar no ar e estar no Google são coisas diferentes, e só a primeira é
+ * reversível. Enquanto as 7 classificações estiverem `nao-validado`, um
+ * resultado de busca levaria alguém direto a um número que o próprio projeto
+ * não sustenta — e o ativo do ZIL é ser confiável sobre fatos.
+ *
+ * Ligue com NEXT_PUBLIC_INDEXACAO_PUBLICA=true. Como toda `NEXT_PUBLIC_*`, o
+ * valor é gravado no bundle durante o build: mudar exige redeploy.
+ */
+export const indexacaoPublica =
+  process.env.NEXT_PUBLIC_INDEXACAO_PUBLICA === "true";

@@ -33,7 +33,24 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   casaram** em cada categoria. Sem a procedência não dá para distinguir uma
   votação sobre `minerais críticos` de uma que casou com `técnico`.
 
+- **Indexação por buscadores atrás de flag, desligada por padrão**
+  ([apps/web/lib/flags.ts](../apps/web/lib/flags.ts),
+  `apps/web/app/robots.ts`, `apps/web/app/layout.tsx`). Estar no ar e estar no
+  Google são coisas diferentes, e só a primeira é reversível: uma URL indexada
+  continua aparecendo em busca e em cache muito depois de a página mudar. Com
+  as 7 classificações ainda `nao-validado`, um resultado de busca levaria
+  alguém direto a um número que o projeto não sustenta. Duas camadas, porque
+  uma não substitui a outra — `robots.txt` pede para não rastrear, a meta tag
+  impede indexar URL descoberta por link. Liga com
+  `NEXT_PUBLIC_INDEXACAO_PUBLICA=true` + redeploy, no mesmo padrão de
+  `NEXT_PUBLIC_RANKING_PUBLICO`.
+
 ### Changed
+- `docs/DEPLOY.md`: documenta o deploy **sem domínio próprio** (domínios do
+  Render e da Vercel), a ordem correta de preencher `CORS_ORIGINS` — que só é
+  possível depois que a Vercel atribui o domínio — e a flag de indexação.
+  Registra que toda `NEXT_PUBLIC_*` é gravada no bundle durante o build e que
+  mudá-la exige redeploy, não só salvar no painel.
 - `scripts/candidatas.py`: **o tema passa a dominar a disputa no ranqueamento.**
   A nota anterior media só o formato da votação — margem, plenário, se era
   requerimento — e o tema entrava como meio ponto por categoria. O resultado
