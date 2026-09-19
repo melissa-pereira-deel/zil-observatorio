@@ -11,7 +11,7 @@ const NAV_LINKS = [
   ...(rankingPublico ? [{ href: "/ranking", label: "Ranking" }] : []),
   { href: "/proposicoes", label: "Proposições" },
   { href: "/", label: "Manifesto" },
-  { href: "/sobre", label: "Sobre" },
+  { href: "/metodologia", label: "Metodologia" },
 ];
 
 export function NavBar() {

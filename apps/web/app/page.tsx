@@ -37,9 +37,9 @@ const PRINCIPLES = [
 
 const MECHANISMS = [
   ["Deliberação por consenso", "Inspirado no Polis/vTaiwan — que gerou legislação real para 23 milhões de taiwaneses. Ninguém responde a ninguém: apenas propõe, concorda ou discorda. O algoritmo identifica declarações-ponte entre grupos opostos."],
-  ["A bússola", "Marcos estratégicos definidos pela comunidade, com métricas verificáveis. Monitorados trimestralmente, independente de quem governa. Quando um governo muda, os marcos não mudam."],
+  ["A bússola", "Marcos estratégicos com métricas verificáveis, definidos em arquivo versionado e auditável. Monitorados trimestralmente, independente de quem governa. Quando um governo muda, os marcos não mudam."],
   ["Compromisso rastreável", "Parlamentares registram metas específicas. O sistema cruza cada compromisso com dados reais de votação e execução orçamentária."],
-  ["Score de alinhamento", "Cada parlamentar tem score calculado por fórmula transparente. Qualquer cidadão pode ver, auditar e contestar."],
+  ["Score de alinhamento", "Score calculado por fórmula transparente sobre as votações selecionadas. A fórmula, os dados e cada classificação estão no repositório."],
   ["Continuidade mensurável", "Índice público que mostra quanto cada governo manteve, expandiu ou desmontou dos programas estratégicos anteriores."],
 ];
 
@@ -278,7 +278,7 @@ export default function HomePage() {
           <section className="zil-container zil-section">
             <SectionHeader
               number="06"
-              title="Como votam os parlamentares do Brasil"
+              title="Como votaram nas pautas que mais importam"
               description="Score de alinhamento calculado a partir de votos reais em pautas de soberania industrial."
             />
             <RankingPreview />
@@ -293,7 +293,7 @@ export default function HomePage() {
         <SectionHeader
           number="07"
           title="9 áreas estratégicas"
-          description="O ZIL monitora votações, proposições e posicionamentos em nove eixos da soberania industrial brasileira."
+          description="O ZIL acompanha proposições e votações do Congresso nos eixos da soberania industrial brasileira."
         />
         <CategoryGrid />
       </section>
@@ -359,7 +359,7 @@ export default function HomePage() {
             </p>
             <ul className="space-y-2 mb-5">
               {[
-                "Ranking completo de parlamentares",
+                "Placar das votações monitoradas",
                 "Histórico de votações por pauta",
                 "Proposições classificadas por categoria",
                 "API aberta para jornalistas e pesquisadores",
@@ -394,15 +394,16 @@ export default function HomePage() {
               </h3>
             </div>
             <p className="text-sm text-zil-soft leading-relaxed mb-4">
-              Para votar em deliberações, cobrar parlamentares e receber
-              alertas, crie uma conta gratuita.
+              Não há contas de usuário nem deliberação na plataforma — isto é
+              visão de longo prazo, não o que existe hoje. Quem quiser
+              participar agora contribui pelo repositório: a curadoria das
+              classificações é o trabalho de maior impacto no momento.
             </p>
             <ul className="space-y-2 mb-5">
               {[
-                "Votar em deliberações por consenso",
-                "Cobrar parlamentares diretamente",
-                "Alertas sobre votações e mudanças de score",
-                "Propor e contestar classificações",
+                "Propor classificações de votações (via Pull Request)",
+                "Revisar as classificações já existentes",
+                "Planejado: contas, alertas e deliberação por consenso",
               ].map((item) => (
                 <li
                   key={item}

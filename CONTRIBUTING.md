@@ -1,6 +1,17 @@
 # Guia de Contribuição — ZIL Observatório
 
-Obrigado por considerar contribuir com o ZIL Observatório. Este projeto é construído pela comunidade, para a comunidade. Cada contribuição — código, dados, design, documentação ou análise — nos aproxima de um Brasil com mais soberania industrial.
+Obrigado por considerar contribuir com o ZIL Observatório.
+
+**Antes de tudo, o estado real do projeto**, porque você merece saber onde está
+entrando: hoje há **uma pessoa** mantendo isto. Não há comunidade formada, não
+há comitê editorial constituído e não há agenda de reuniões. O que existe é o
+repositório, o código funcionando e a disposição de construir o resto com quem
+aparecer.
+
+Cada contribuição — código, dados, design, documentação ou análise — nos
+aproxima de um Brasil com mais soberania industrial. E as primeiras
+contribuições têm um peso extra: são elas que transformam "um projeto" em "um
+projeto com gente".
 
 ## Sumário
 
@@ -314,13 +325,14 @@ Se aplicável.
 
 ## Propondo Features
 
-Para features maiores, abra uma Discussion antes de uma issue:
+Para features maiores, abra uma issue de proposta antes de começar a
+implementar (Discussions está desabilitado):
 
 1. Descreva o problema que a feature resolve
 2. Explique a solução proposta
 3. Liste alternativas consideradas
-4. Discuta com a comunidade
-5. Se aprovada, um maintainer cria a issue correspondente
+4. Aguarde resposta antes de investir tempo — hoje quem responde é a
+   maintainer, então pode não ser imediato
 
 Para features menores, abra diretamente uma issue com o template de feature request.
 
@@ -336,11 +348,23 @@ Classificar proposições do Congresso nas pautas ZIL e definir a "direção esp
 
 ### Como funciona
 
-1. Acesse a lista de proposições pendentes de classificação na plataforma
+Não existe interface de curadoria na plataforma — toda a gestão editorial é
+feita via arquivos YAML no repositório. O fluxo hoje é:
+
+1. Escolha uma votação relevante (a API de Dados Abertos da Câmara é a fonte)
 2. Leia a ementa e, se necessário, o inteiro teor
 3. Classifique em uma ou mais categorias ZIL (ZIL-FER, ZIL-MIN etc.)
-4. Para votações, defina se o voto "sim" seria a favor ou contra a soberania industrial, com justificativa
-5. Sua classificação entra como proposta e é revisada pelo comitê editorial
+4. Para votações, defina se o voto "sim" seria a favor ou contra a soberania
+   industrial — **com justificativa escrita**, que é obrigatória
+5. Abra um PR em `data/direcoes/[ano].yml` seguindo o formato do arquivo
+
+A revisão é feita pela maintainer. Não há comitê editorial: ele está previsto na
+governança para quando houver gente suficiente, e ainda não foi constituído.
+
+**O que o projeto mais precisa hoje:** o Score ZIL se apoia em 7 classificações,
+todas marcadas `validacao: nao-validado`. Revisar essas 7, ou propor novas com
+pesquisa densa, é a contribuição de maior impacto que existe no momento — mais
+do que qualquer código. Ver [ADR-004](docs/decisions/004-placar-focado.md).
 
 ### Princípios de curadoria
 
@@ -353,10 +377,26 @@ Classificar proposições do Congresso nas pautas ZIL e definir a "direção esp
 
 ## Comunicação
 
-- **Issues e PRs**: discussões técnicas e decisões que precisam de registro
-- **GitHub Discussions**: ideias, perguntas, RFCs, apresentações
-- **Discord/Telegram**: comunicação em tempo real, pareamento, dúvidas rápidas
-- **Weekly sync**: reunião aberta semanal (dia/hora definidos pela comunidade), gravada e publicada
+**Hoje, o canal é um só: as issues do GitHub.** Elas funcionam, são
+rastreáveis e deixam registro — o que combina com um projeto cujo ativo é ser
+auditável.
+
+| Canal | Situação |
+|---|---|
+| **GitHub Issues e PRs** | **Ativo.** Discussões técnicas, propostas de classificação, dúvidas |
+| **Discord** | **Será criado.** Vai ser o canal de tempo real; o convite é publicado aqui assim que existir |
+| GitHub Discussions | Desabilitado no repositório por ora |
+
+### Reuniões
+
+**Ainda não há agenda de reuniões**, e não faria sentido ter: reunião com uma
+pessoa é uma pessoa pensando em voz alta.
+
+Quando houver um grupo de contribuidores ativos, formato e periodicidade serão
+definidos **em conjunto com quem estiver participando** — não decididos
+antecipadamente e anunciados como se já acontecessem. Versões anteriores deste
+guia prometiam uma "reunião aberta semanal, gravada e publicada" que nunca
+existiu; a promessa foi removida em 2026-09-18.
 
 ### Idioma
 
@@ -370,12 +410,21 @@ Classificar proposições do Congresso nas pautas ZIL e definir a "direção esp
 
 ## Reconhecimento
 
-Todo contribuidor com PR mergeado ou contribuição reconhecida (curadoria, design, análise) é adicionado ao arquivo CONTRIBUTORS.md e ao README.
+Todo contribuidor com PR mergeado ou contribuição reconhecida (curadoria,
+design, análise) entra no `CONTRIBUTORS.md` — arquivo que será criado com a
+primeira contribuição externa, porque criá-lo vazio seria estranho.
 
-Contribuidores ativos nos últimos 6 meses têm direito a voto em decisões comunitárias.
+**Sobre voto em decisões:** não há mecanismo de votação hoje, e prometê-lo sem
+tê-lo seria mais uma regra de papel. O que a governança já registra é a
+condição de saída: quando houver contribuidores ativos o bastante para formar
+quórum, **as diretrizes e regras do projeto passam a ser revistas em conjunto**
+— inclusive a forma de decidir. Ver
+[docs/GOVERNANCE.md](docs/GOVERNANCE.md), "Condições para a norma voltar a ser
+cumprida".
 
 ---
 
-*Dúvidas? Abra uma [Discussion](../../discussions) ou mande email para contato@zilobservatorio.org.*
+*Dúvidas? Abra uma [issue](../../issues). É o canal que funciona hoje, e
+todas as respostas ficam registradas para quem chegar depois.*
 
 *Obrigado por ajudar a construir soberania. 🇧🇷*

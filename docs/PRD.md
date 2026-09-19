@@ -3,8 +3,15 @@
 
 > *"Um país que já venceu a hiperinflação, inventou o PIX, transformou cerrado em celeiro do mundo e construiu a terceira maior fabricante de aviões do planeta pode fazer qualquer coisa — se decidir."*
 
-**Versão:** 1.0 (escopo v1)
-**Última atualização:** 2026-04-02
+**Versão:** 1.1 (escopo v1)
+**Última atualização:** 2026-09-18
+
+> **Redefinição (v1.1).** A v1.0 especificava um **índice abrangente** — Score
+> ZIL para os 594 parlamentares, métrica de sucesso "100% dos 513 deputados".
+> O [ADR-004](decisions/004-placar-focado.md) trocou abrangência por
+> profundidade: a v1 passa a ser um **placar focado em ~10 votações** bem
+> pesquisadas. As passagens que descreviam o índice foram corrigidas; as que
+> descrevem visão de longo prazo continuam, marcadas como tal.
 **Roadmap completo:** [docs/ROADMAP.md](ROADMAP.md)
 
 ---
@@ -87,7 +94,7 @@ As eleições brasileiras de outubro de 2026 são o momento de maior alavancagem
 
 | Objetivo | Métrica | Meta v1 |
 |----------|---------|---------|
-| Cobertura de parlamentares | % com score calculado | 100% dos 513 deputados; 80%+ dos 81 senadores |
+| Profundidade editorial | Votações com justificativa pesquisada e revisada | ~10, todas `validacao` preenchida |
 | Latência de dados | Tempo votação → plataforma | < 24 horas |
 | Acesso público | Nenhum endpoint exige login | 100% das funcionalidades de leitura |
 | Visibilidade | Veículos que citam dados ZIL | ≥ 5 antes das eleições |
@@ -117,7 +124,7 @@ As eleições brasileiras de outubro de 2026 são o momento de maior alavancagem
 
 **Especialista setorial**
 - Economista, engenheiro, acadêmico que entende as pautas em profundidade
-- Quer contribuir com curadoria e análise (em v1: via código/Discord)
+- Quer contribuir com curadoria e análise (em v1: via código e issues)
 - Ação principal: propor melhorias via PR no GitHub
 
 **Desenvolvedor civic tech**
@@ -160,14 +167,14 @@ A v1 é uma **plataforma pública de leitura**. Sem contas de usuário. Sem inte
 
 | Área | O que inclui |
 |------|-------------|
-| **Ranking** | Todos os parlamentares com score, filtros por UF/partido/categoria/casa |
+| **Placar** | Parlamentares com voto registrado nas votações selecionadas, filtros por UF/partido/casa |
 | **Perfil** | Score, histórico de votos ZIL, breakdown por categoria |
 | **Proposições** | Catálogo filtrável de proposições e votações classificadas |
 | **Bússola ZIL** | Indicadores estratégicos do estado atual da soberania industrial |
 | **Metodologia** | Explicação completa do score, categorias, processo editorial, limitações |
 | **API pública** | REST API sem autenticação para leitura de todos os dados |
 | **Ingestão** | Câmara dos Deputados (✅ concluído) + Senado Federal |
-| **Editorial** | Via código: YAML versionado no git + Discord + PRs |
+| **Editorial** | Via código: YAML versionado no git + issues + PRs |
 
 ---
 
@@ -196,7 +203,7 @@ As features abaixo são **explicitamente excluídas** da v1. Estão planejadas p
 
 ### F1 — Ranking de Parlamentares (`/ranking`)
 
-Lista completa de todos os parlamentares (deputados + senadores) ordenada por Score ZIL.
+Lista de parlamentares com voto registrado nas votações selecionadas, ordenada por Score ZIL. Não é um censo do Congresso — quem não votou nas pautas selecionadas não aparece com score.
 
 - Filtros: casa (Câmara/Senado), UF, partido, categoria ZIL, ordenação (score ↑↓, nome)
 - Card por parlamentar: foto, nome, partido, UF, score gauge (-10 a +10)
@@ -239,9 +246,9 @@ Transparência total sobre como o sistema funciona.
 
 - Fórmula do Score ZIL com exemplo calculado passo a passo
 - As 9 categorias ZIL: descrição, palavras-chave, exemplos de votações pró e contra
-- Como a direção esperada é definida: processo editorial, Discord, PRs
+- Como a direção esperada é definida: processo editorial, issues, PRs
 - Limitações explícitas do score (o que ele não mede)
-- Como contribuir: Discord, GitHub, issues abertas
+- Como contribuir: GitHub, issues abertas (Discord quando existir)
 
 ### F6 — API Pública
 
@@ -285,7 +292,7 @@ Regex `\bkeyword\b` contra ementa + descrição de votação. Gerenciado em `dat
 
 **Camada 3 — Curadoria humana** (v2+): contestações por usuários, revisadas pelo comitê editorial.
 
-Em v1: a classificação é automática. Correções via PR no `categorias.yml`, discutidas no Discord.
+Em v1: a classificação é automática. Correções via PR no `categorias.yml`, discutidas em issue.
 
 ---
 
@@ -371,13 +378,13 @@ Atualização: trimestral ou quando dado oficial é publicado. Via PR + revisão
 
 ## 12. Workflow Editorial v1
 
-Toda decisão editorial em v1 é feita **via código**: YAML versionado no git, revisado via PR, discutido no Discord. Sem interface admin.
+Toda decisão editorial em v1 é feita **via código**: YAML versionado no git, revisado via PR, discutido em issue. Sem interface admin.
 
 | Decisão | Arquivo | Processo |
 |---------|---------|---------|
 | Adicionar/remover keyword de categoria | `data/taxonomia/categorias.yml` | PR + 1 aprovação |
-| Definir `direcao_esperada` de votação | `data/direcoes/[ano].yml` | Discord → PR + 2 aprovações |
-| Definir peso de votação | `data/direcoes/[ano].yml` | Discord → PR + 2 aprovações |
+| Definir `direcao_esperada` de votação | `data/direcoes/[ano].yml` | Issue → PR + revisão |
+| Definir peso de votação | `data/direcoes/[ano].yml` | Issue → PR + revisão |
 | Atualizar indicador da Bússola | `data/bussula/marcos.yml` | PR + 1 aprovação + link de fonte |
 | Adicionar nova categoria ZIL | `data/taxonomia/categorias.yml` | RFC pública ≥ 7 dias + 3 aprovações |
 
@@ -385,7 +392,7 @@ Toda decisão editorial em v1 é feita **via código**: YAML versionado no git, 
 
 **Transparência:** todo PR de dados editoriais deve incluir justificativa em português. O histórico git é o log de auditoria.
 
-**Discord:** todas as discussões sobre direção esperada ocorrem no Discord antes do PR. Link: a definir.
+**Canais:** as discussões sobre direção esperada acontecem em issues do GitHub. O Discord está previsto e **ainda não foi criado**; o convite será publicado no README e no CONTRIBUTING quando existir.
 
 ---
 
@@ -448,7 +455,7 @@ O modelo de dados v1 está implementado em `apps/api/models/__init__.py`. Tabela
 |-------|--------------|-----------|
 | API da Câmara/Senado instável | Médio | Backoff exponencial + dados cacheados |
 | Classificação errada gera controvérsia política | Alto | Direção esperada só por comitê, limitações exibidas, histórico auditável |
-| Falta de maintainers para curadoria editorial | Médio | Processo leve (YAML + PR), Discord assíncrono |
+| Falta de maintainers para curadoria editorial | Médio | Processo leve (YAML + PR), discussão assíncrona em issues |
 | Aparência de partidarismo | Alto | Princípio II (apartidário por design), paleta nacional, linguagem neutra |
 | Plataforma fora do ar antes das eleições | Baixo | CI/CD, deploy automático, backup |
 | Score controverso por votação específica | Médio | "Na dúvida, não classificar" como norma operacional |

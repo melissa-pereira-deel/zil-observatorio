@@ -83,6 +83,39 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 - `specs/ui-ux-credibility-polish/spec.md`: spec das 22 tasks UI/UX
 
 ### Changed
+- **Redefinição de produto: placar focado no lugar de índice abrangente**
+  ([ADR-004](decisions/004-placar-focado.md)). A v1 deixa de perseguir Score ZIL
+  para os 594 parlamentares e passa a ser um placar de ~10 votações bem
+  pesquisadas. O Score ZIL permanece (−10 a +10) e o motor não muda; muda o
+  universo sobre o qual ele opera. Revogadas as metas de cobertura em `PRD.md` e
+  `ROADMAP.md`; `constitution.md` registra o fato sem alterar a norma (1.0.1 →
+  1.0.2, PATCH).
+- **Afirmações falsas removidas da plataforma e dos documentos.** A home
+  convidava a *"crie uma conta gratuita"* para votar em deliberações e cobrar
+  parlamentares — não existe autenticação no projeto, era CTA para fluxo
+  impossível. O `metadata.description` (que vai para buscadores) prometia
+  monitorar "cada parlamentar brasileiro". O `ScoreExplainer` dizia "não é
+  opinião — é matemática", quando a aritmética opera sobre 7 classificações
+  não validadas e a escolha das votações é juízo editorial. Os nove "exemplos"
+  de proposições na página de metodologia são hipotéticos e agora estão
+  rotulados como tal. `NavBar` apontava para `/sobre`, rota inexistente.
+- **`CONTRIBUTING.md` e `GOVERNANCE.md` (v1.1 → v1.2): canais e reuniões.**
+  Removida a promessa de "reunião aberta semanal, gravada e publicada", que
+  nunca existiu; registrado que **não há agenda de reuniões** e que formato e
+  periodicidade serão definidos em conjunto quando houver quórum de
+  contribuidores — assim como as próprias diretrizes do projeto. O Discord passa
+  a ser descrito como **canal previsto**, com o convite a ser publicado quando
+  existir; o canal ativo hoje são as issues do GitHub. Também corrigidos: "voto
+  em decisões comunitárias" (sem mecanismo), "revisada pelo comitê editorial"
+  (nunca constituído), "lista de proposições pendentes na plataforma" (não há
+  fluxo na UI) e GitHub Discussions (desabilitado).
+- **Renomeação do repositório** `manifesto-zil` → `zil-observatorio` propagada
+  para badge de CI, comando de clone, link público no frontend, CHANGELOG,
+  ARCHITECTURE, DEPLOY e `launch.json`.
+- **Senado: capacidade ≠ dado.** O README marcava "Crawler Senado Federal ✅"
+  enquanto a página de metodologia dizia que o Senado não está na v1. Não era
+  contradição: o crawler existe, mas nenhum dado do Senado foi ingerido e as 7
+  direções são todas da Câmara. O README passa a dizer as duas coisas.
 - `README.md` e `CLAUDE.md`: sincronizados com o estado real do código, que ambos
   subestimavam. Correções: ingestão do Senado, `/bussula`, `/metodologia` e CI/CD
   estavam marcados como backlog mas já existem; contagem de testes de 98 para 151;
@@ -314,8 +347,8 @@ Initial scaffold.
 
 ---
 
-[Unreleased]: https://github.com/melissa-pereira-deel/manifesto-zil/compare/v0.4.0...HEAD
-[0.4.0]: https://github.com/melissa-pereira-deel/manifesto-zil/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/melissa-pereira-deel/manifesto-zil/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/melissa-pereira-deel/manifesto-zil/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/melissa-pereira-deel/manifesto-zil/releases/tag/v0.1.0
+[Unreleased]: https://github.com/melissa-pereira-deel/zil-observatorio/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/melissa-pereira-deel/zil-observatorio/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/melissa-pereira-deel/zil-observatorio/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/melissa-pereira-deel/zil-observatorio/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/melissa-pereira-deel/zil-observatorio/releases/tag/v0.1.0

@@ -11,7 +11,7 @@
     },
     {
       "name": "API (FastAPI)",
-      "runtimeExecutable": "/Users/melissadebritto/Downloads/manifesto-zil/.venv/bin/python3",
+      "runtimeExecutable": "/Users/melissadebritto/Downloads/zil-observatorio/.venv/bin/python3",
       "runtimeArgs": ["-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
       "port": 8000,
       "cwd": "apps/api"

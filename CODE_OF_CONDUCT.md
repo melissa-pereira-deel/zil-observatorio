@@ -28,17 +28,32 @@ Exemplos de comportamento inaceitável:
 
 ## Responsabilidades de Aplicação
 
-Os líderes da comunidade são responsáveis por esclarecer e aplicar nossos padrões de comportamento aceitável e tomarão ação corretiva apropriada e justa em resposta a qualquer comportamento que considerem inadequado, ameaçador, ofensivo ou prejudicial.
+A manutenção do projeto é responsável por esclarecer e aplicar estes padrões, e
+tomará ação corretiva apropriada e justa em resposta a comportamento
+inadequado, ameaçador, ofensivo ou prejudicial.
+
+*Nota de transparência:* hoje isso significa **uma pessoa**. Não há um conselho
+nem um grupo de moderação — quando houver contribuidores suficientes, a
+aplicação deste código passa a ser definida em conjunto com eles, como o resto
+das regras do projeto (ver [GOVERNANCE.md](docs/GOVERNANCE.md)).
 
 ## Escopo
 
-Este Código de Conduta se aplica a todos os espaços da comunidade, incluindo repositório GitHub, Discord/Telegram, redes sociais do projeto e eventos.
+Este Código de Conduta se aplica a todos os espaços do projeto. Hoje isso é o
+**repositório no GitHub** — issues, pull requests e revisões. Ele passa a valer
+automaticamente para o Discord e quaisquer outros canais ou eventos, à medida
+que forem criados.
 
 ## Aplicação
 
-Casos de comportamento abusivo, de assédio ou de outra forma inaceitável podem ser reportados aos líderes da comunidade em **conduta@zilobservatorio.org**.
+Casos de comportamento abusivo, de assédio ou de outra forma inaceitável podem
+ser reportados em **conduta@zilobservatorio.org**.
 
-Todas as reclamações serão revisadas e investigadas de forma rápida e justa. Os líderes da comunidade são obrigados a respeitar a privacidade e a segurança de quem reportar qualquer incidente.
+Todas as reclamações serão revisadas e investigadas de forma rápida e justa, com
+respeito à privacidade e à segurança de quem reportar. Com uma única pessoa
+mantendo o projeto, um relato **sobre ela** não teria a quem se dirigir — a
+limitação é declarada aqui em vez de escondida, e é mais um motivo para o
+projeto buscar um segundo maintainer.
 
 ## Atribuição
 

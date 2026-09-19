@@ -90,7 +90,7 @@ O ZIL Observatório responde essas três perguntas com dados verificáveis.
 ## 4. Estrutura do Repositório
 
 ```
-manifesto-zil/
+zil-observatorio/
 ├── apps/
 │   ├── web/                    # Next.js 14 + TypeScript
 │   │   ├── app/                # Rotas (App Router)
@@ -312,7 +312,7 @@ Implementado em `apps/web/` com Next.js 14 (App Router) + TypeScript + Tailwind 
 | Rota | Status | Descrição |
 |------|--------|-----------|
 | `/` | ✅ | Homepage (manifesto + score explainer + ranking preview) |
-| `/ranking` | 🔧 backlog 004 | Ranking completo com filtros e dados reais |
+| `/ranking` | ✅ implementado, fora do ar | Placar das votações selecionadas. Escondido por flag até a curadoria sustentar (ADR-004) |
 | `/parlamentar/[id]` | 🔧 backlog 005 | Perfil com histórico de votos ZIL |
 | `/proposicoes` | 🔧 backlog 006 | Catálogo de proposições e votações |
 | `/bussula` | 🔧 backlog 007 | Indicadores estratégicos |

@@ -62,7 +62,7 @@ export function RankingPreview() {
           está disponível.
         </p>
         <Button href="/ranking" variant="ghost" size="sm">
-          Ir para o ranking completo
+          Ver o placar completo
         </Button>
       </div>
     );
@@ -122,7 +122,7 @@ export function RankingPreview() {
       {/* CTAs */}
       <div className="flex flex-col sm:flex-row gap-3">
         <Button href="/ranking" variant="primary" className="flex-1">
-          Ver ranking completo
+          Ver o placar completo
         </Button>
         <Button href="/proposicoes" variant="secondary" className="flex-1">
           Ver proposições

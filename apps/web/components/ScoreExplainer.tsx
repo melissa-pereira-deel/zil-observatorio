@@ -25,9 +25,11 @@ export function ScoreExplainer() {
       {/* Scale visual */}
       <div>
         <p className="text-sm md:text-base text-zil-soft leading-relaxed max-w-3xl mb-6">
-          O Score mede como cada parlamentar vota nas pautas que determinam a
-          soberania industrial do Brasil. Não é opinião — é matemática aplicada a
-          dados públicos.
+          O Score mede como um parlamentar votou nas votações selecionadas como
+          decisivas para a soberania industrial. A aritmética é pública e
+          verificável; a escolha de quais votações entram, e de qual direção é
+          pró-soberania, é um juízo editorial — assinado e auditável no
+          repositório.
         </p>
 
         <div className="max-w-2xl">
