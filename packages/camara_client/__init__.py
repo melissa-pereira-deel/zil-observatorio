@@ -29,11 +29,40 @@ class DeputadoAPI:
     nomeCivil: Optional[str] = None
 
 
+def _como_bool(valor: Any) -> Optional[bool]:
+    """Normaliza o `aprovacao` da API da Câmara, que vem como inteiro 1/0.
+
+    O campo era anotado como `Optional[bool]` e guardado sem conversão. Como
+    `VotacaoAPI` é um dataclass simples, nada coagia o valor — a anotação era
+    falsa, e quem lesse o campo confiando nela escrevia comparações de
+    identidade que falham em silêncio:
+
+        1 is True   → False        0 is False  → False
+
+    Foi o que aconteceu em dois lugares: `sync_votacoes_zil.py` nunca gravava
+    `resultado`, e `sync_votacoes_proposicoes.py` perdia toda rejeição. Na
+    página pública, votação sem placar aparecia como "Rejeitado".
+    """
+    if valor is None or isinstance(valor, bool):
+        return valor
+    if isinstance(valor, (int, float)):
+        return bool(valor)
+    if isinstance(valor, str):
+        v = valor.strip().lower()
+        if v in {"1", "true", "sim"}:
+            return True
+        if v in {"0", "false", "nao", "não"}:
+            return False
+    return None
+
+
 @dataclass
 class VotacaoAPI:
     id: str
     data: Optional[str] = None
     descricao: Optional[str] = None
+    # Sempre bool ou None: normalizado por `_como_bool` na borda. Ver o
+    # comentário lá para o motivo.
     aprovacao: Optional[bool] = None
     votos_sim: Optional[int] = None
     votos_nao: Optional[int] = None
@@ -182,7 +211,7 @@ class CamaraClient:
                 id=v.get("id", ""),
                 data=v.get("dataHoraRegistro") or v.get("data"),
                 descricao=v.get("descricao", ""),
-                aprovacao=v.get("aprovacao"),
+                aprovacao=_como_bool(v.get("aprovacao")),
             )
             for v in todos
         ]
@@ -236,7 +265,7 @@ class CamaraClient:
                 id=v.get("id", ""),
                 data=v.get("dataHoraRegistro") or v.get("data"),
                 descricao=v.get("descricao", ""),
-                aprovacao=v.get("aprovacao"),
+                aprovacao=_como_bool(v.get("aprovacao")),
             )
             for v in dados
         ]

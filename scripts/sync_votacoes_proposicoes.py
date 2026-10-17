@@ -168,10 +168,13 @@ def sync_votacoes_por_proposicao(
                     proposicao_id=prop.id,
                     data=datetime.fromisoformat(vot.data) if vot.data else None,
                     descricao=vot.descricao,
+                    # `vot.aprovacao is False` nunca era verdade: a API manda
+                    # inteiro, e `0 is False` é falso. Toda rejeição virava
+                    # nulo. Ver `_como_bool` em packages/camara_client.
                     resultado=(
-                        "aprovado" if vot.aprovacao
-                        else "rejeitado" if vot.aprovacao is False
-                        else None
+                        None if vot.aprovacao is None
+                        else "aprovado" if vot.aprovacao
+                        else "rejeitado"
                     ),
                     categorias_zil=categorias if categorias else None,
                     direcao_esperada=None,  # set only by apply_direcoes.py

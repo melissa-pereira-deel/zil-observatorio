@@ -9,6 +9,29 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Fixed
+- **`aprovacao` da API da Câmara é inteiro, não booleano — e o `resultado` das
+  votações nunca era gravado.** `VotacaoAPI.aprovacao` era anotado
+  `Optional[bool]` num dataclass simples, que não coage nada: a anotação era
+  falsa e dois call sites confiaram nela.
+  `sync_votacoes_zil.py` testava `aprovacao is True`, e como `1 is True` é
+  falso, **toda votação era gravada sem resultado**.
+  `sync_votacoes_proposicoes.py` testava `aprovacao is False` para rejeição, e
+  como `0 is False` também é falso, **toda rejeição virava nulo**.
+  Corrigido na borda, com `_como_bool()` em `packages/camara_client`, mais os
+  dois call sites. Depois da correção, a varredura de 2023+ gravou 197
+  aprovações e **30 rejeições** — as 30 que antes se perdiam.
+- **A página de proposição afirmava "Rejeitado" em votação sem placar.** Com
+  `resultado` nulo, `proposicoes/[id]/page.tsx` inferia o resultado do placar;
+  com `0 > 0` falso, uma votação **simbólica** — que não tem voto nominal —
+  aparecia como rejeitada, contradizendo a própria descrição. Três das sete
+  votações curadas são simbólicas, então isso estava no ar. A inferência agora
+  exige placar; sem ele, nenhum selo é exibido.
+- `scripts/sync_votacoes_zil.py`: votação já existente no banco agora tem o
+  `resultado` preenchido se estiver nulo. Corrigir o bug não consertava o dado
+  já gravado, e rodar o seed de novo não ajudava — havia um retorno antecipado
+  antes. Só preenche o que está nulo; nunca sobrescreve.
+
 ### Changed
 - **O classificador passa a exigir uma keyword forte**
   (`data/taxonomia/categorias.yml`, `apps/workers/classifiers/__init__.py`).
