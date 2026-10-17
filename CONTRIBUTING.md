@@ -74,12 +74,14 @@ make test
 ### Sem Docker
 
 ```bash
-# Backend
+# Backend — o venv é gerenciado pelo uv, e ele não instala `pip` dentro
+# do ambiente. `pip install` falha com "no such file or directory".
+uv venv
+uv pip install -r apps/api/requirements.txt
+
+# A API roda de dentro de apps/api por causa dos imports curtos (ADR-002)
 cd apps/api
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn main:app --reload
+../../.venv/bin/uvicorn main:app --reload
 
 # Frontend
 cd apps/web
