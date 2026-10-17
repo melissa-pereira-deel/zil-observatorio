@@ -88,8 +88,11 @@ ver [ADR-004](docs/decisions/004-placar-focado.md) e
 git clone https://github.com/melissa-pereira-deel/zil-observatorio.git
 cd zil-observatorio
 
-# Backend — instalar dependências
-pip install -r apps/api/requirements.txt
+# Backend — instalar dependências.
+# O venv do projeto é gerenciado pelo uv, que não instala `pip` dentro dele:
+# `.venv/bin/pip` não existe, e `pip install` falha. Use `uv pip`.
+uv venv                                          # cria .venv, se ainda não houver
+uv pip install -r apps/api/requirements.txt
 
 # Rodar testes (SQLite in-memory, sem Docker nem Redis)
 python -m pytest tests/
