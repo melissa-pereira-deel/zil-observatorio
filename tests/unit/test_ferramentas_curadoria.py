@@ -377,10 +377,16 @@ def test_keyword_dentro_de_lei_citada_nao_conta_como_tema():
 
 
 def test_keyword_fora_de_parenteses_continua_sendo_tema():
-    c = _candidata(cats=["ZIL-DIG"], keywords={"ZIL-DIG": ["dados pessoais"]})
-    c.keywords_substantivas = {"dados pessoais"}
+    """O exemplo aqui era `dados pessoais`, e não serve mais.
+
+    Ele virou keyword fraca de ZIL-DIG na taxonomia: proteção de dados é
+    privacidade, não soberania industrial. `fibra óptica` continua forte,
+    porque é infraestrutura — que é o que ZIL-DIG mede.
+    """
+    c = _candidata(cats=["ZIL-DIG"], keywords={"ZIL-DIG": ["fibra óptica"]})
+    c.keywords_substantivas = {"fibra óptica"}
     assert c.keywords_citadas == []
-    assert c.keywords_fortes == ["dados pessoais"]
+    assert c.keywords_fortes == ["fibra óptica"]
 
 
 def test_sem_citacoes_de_lei_remove_so_o_parentese():

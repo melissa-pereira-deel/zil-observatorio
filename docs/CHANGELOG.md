@@ -9,6 +9,35 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Changed
+- **O classificador passa a exigir uma keyword forte**
+  (`data/taxonomia/categorias.yml`, `apps/workers/classifiers/__init__.py`).
+  A regra antiga era "uma keyword qualquer basta". Numa varredura real de 2024
+  a 2026 isso produziu 298 proposições em que ZIL-EDU (88) e ZIL-DIG (87) —
+  as duas categorias de vocabulário mais genérico — eram as maiores, enquanto
+  **ZIL-SEM, semicondutores, ficava com cinco**. A distribuição estava
+  invertida em relação à tese do projeto.
+  - Novo campo `keywords_fracas` por categoria: subconjunto de `keywords` que
+    não basta sozinho. Acompanhada de uma forte, a fraca continua valendo.
+  - A lista é toda baseada em falso positivo **medido**: `técnico` casava com
+    "Técnico Judiciário", `tarifa` com "Tarifa Social de Água e Esgoto",
+    `Mercosul` com atletas do Mercosul no futebol, `pesquisa` com pesquisa
+    clínica, `plataforma digital` com regulação de rede social. As demais
+    entraram por polissemia inequívoca (`bolsa`, `renovável`, `satélite`).
+  - Keyword que casa **dentro do nome de uma lei citada** entre parênteses não
+    classifica mais — a ementa cita leis para dizer quais altera, não para
+    dizer do que trata.
+  - `energia renovável` e `energias renováveis` entram como **fortes**: o termo
+    isolado `renovável` é ambíguo ("prazo renovável"), a expressão não é.
+  - `classificar_texto_com_evidencia()` ganha `apenas_fortes`; o padrão segue
+    devolvendo todos os casamentos, que é o que permite à ferramenta de
+    curadoria explicar por que uma candidata entrou na lista.
+  - `scripts/candidatas.py` deixa de manter a própria cópia da lista e da regra
+    de citação, e passa a importá-las do classificador.
+  - **As 7 votações curadas não são afetadas:** a categoria delas vem de
+    `categoria_principal` nos YAMLs de direções, não do classificador
+    (`scripts/sync_votacoes_zil.py:140`).
+
 ### Added
 - **Ferramentas de apoio à curadoria editorial** — atacam o gargalo real do
   projeto, que é tempo de pesquisa por classificação:

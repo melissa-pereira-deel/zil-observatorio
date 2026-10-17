@@ -35,7 +35,11 @@ for _p in (_repo_root, _api_dir):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from apps.workers.classifiers import classificar_texto_com_evidencia  # noqa: E402
+from apps.workers.classifiers import (  # noqa: E402
+    KEYWORDS_FRACAS,
+    classificar_texto_com_evidencia,
+    sem_citacoes_de_lei,
+)
 from packages.camara_client import CamaraClient  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -64,52 +68,14 @@ _PISTAS_PLENARIO = (
 _PISTAS_URGENCIA = ("urgência", "urgencia")
 _PISTAS_PROCESSUAL = ("requerimento", "adiamento", "quebra de")
 
-# Keywords da taxonomia que casam com o português comum e por isso não
-# sustentam sozinhas a inclusão de uma votação. Não é uma lista teórica: cada
-# uma destas produziu um falso positivo nas varreduras de 2024 e 2025.
-#
-#   técnico      → "Técnico Judiciário"  (cargos do Judiciário, ZIL-EDU)
-#   engenharia   → "obras e serviços de engenharia" (Exército, ZIL-EDU)
-#   tarifa       → "Tarifa Social de Água e Esgoto" (saneamento, ZIL-COM)
-#   LGPD         → ementa que apenas CITA a LGPD entre as leis alteradas
-#
-# As demais entram por serem do mesmo tipo — palavra corrente que aparece em
-# projeto de qualquer assunto. `bolsa` é a mais perigosa: bolsa de valores,
-# Bolsa Família.
-#
-# Uma keyword fraca não é inútil: acompanhada de uma forte, continua somando.
-# O que ela não faz é bastar.
-KEYWORDS_FRACAS = frozenset({
-    "técnico", "tecnico", "engenharia", "pesquisa", "bolsa", "universidade",
-    "cientista", "tarifa", "tarifas", "importação", "importacao",
-    "exportação", "exportacao", "privatização", "privatizacao", "LGPD",
-})
+# A lista de keywords fracas e a regra da lei citada moram na taxonomia e no
+# classificador — ver o cabeçalho de data/taxonomia/categorias.yml. Aqui elas
+# são apenas consumidas: manter uma segunda cópia garantiria que as duas
+# divergissem na primeira vez que uma fosse corrigida sozinha.
 
 
-_FRACAS_LOWER = frozenset(k.lower() for k in KEYWORDS_FRACAS)
-
-
-def _e_fraca(keyword: str) -> bool:
-    return keyword.lower() in _FRACAS_LOWER
-
-
-# Nome oficial de lei entre parênteses — "(Lei Geral de Proteção de Dados
-# Pessoais)", "(Código Penal)". A ementa cita essas leis para dizer QUAIS ela
-# altera; o tema do projeto está fora dos parênteses.
-#
-# Sem isto, o PL 996/2015 — homicídio qualificado contra membros do MP e da
-# Magistratura — liderava a lista de 2024 com escore 16,6, por casar
-# `dados pessoais` e `proteção de dados` dentro de
-# "(Lei Geral de Proteção de Dados Pessoais)", uma das leis que ele altera.
-_CITACAO_DE_LEI = re.compile(
-    r"\(\s*(?:lei|código|codigo|decreto|estatuto|marco)\b[^)]*\)",
-    re.IGNORECASE,
-)
-
-
-def sem_citacoes_de_lei(texto: str) -> str:
-    """Remove os nomes de lei entre parênteses, preservando o resto."""
-    return _CITACAO_DE_LEI.sub(" ", texto or "")
+def _e_fraca(codigo: str, keyword: str) -> bool:
+    return keyword.lower() in KEYWORDS_FRACAS.get(codigo, frozenset())
 
 # Voto sobre EMENDA ou DESTAQUE não é classificável a partir da ementa do projeto:
 # "sim" significa aprovar a emenda, e o que a emenda dizia não vem na API. Já o
@@ -159,9 +125,9 @@ class Candidata:
         uma lei citada — nos dois casos o casamento é de vocabulário, não de
         tema.
         """
-        return sorted({kw for kws in self.keywords.values()
+        return sorted({kw for codigo, kws in self.keywords.items()
                        for kw in kws
-                       if not _e_fraca(kw) and not self._e_citacao(kw)})
+                       if not _e_fraca(codigo, kw) and not self._e_citacao(kw)})
 
     @property
     def keywords_casadas(self) -> list[str]:

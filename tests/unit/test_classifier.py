@@ -126,3 +126,56 @@ def test_evidencia_concorda_com_classificar_texto():
 def test_evidencia_de_texto_vazio_e_dicionario_vazio():
     assert classificar_texto_com_evidencia("") == {}
     assert classificar_texto_com_evidencia("Denomina rodovia estadual") == {}
+
+
+# ── keywords fracas: palavra comum não basta ──
+#
+# Antes desta regra, uma keyword qualquer bastava. Numa varredura de 2024 a
+# 2026 isso enchia ZIL-EDU e ZIL-DIG de projetos sem relação com soberania
+# industrial, enquanto ZIL-SEM ficava com cinco proposições.
+
+def test_palavra_comum_sozinha_nao_classifica():
+    """Cada um destes é um falso positivo medido na API da Câmara."""
+    assert classificar_texto("Transforma cargos vagos da carreira de Técnico Judiciário") == []
+    assert classificar_texto("Cria a Tarifa Social de Água e Esgoto") == []
+    assert classificar_texto("Dispõe sobre a pesquisa clínica com seres humanos") == []
+    assert classificar_texto("Contrato com prazo renovável por igual período") == []
+
+
+def test_atletas_do_mercosul_nao_sao_comercio_exterior():
+    """PL 5513/2026 — regra de escalação de time, classificada como ZIL-COM."""
+    assert classificar_texto(
+        "estabelecer que atletas nascidos em países integrantes do Mercosul não "
+        "sejam considerados estrangeiros para fins esportivos"
+    ) == []
+
+
+def test_keyword_fraca_acompanhada_de_forte_classifica():
+    """Fraca não é inútil — ela só não basta sozinha."""
+    r = classificar_texto("Formação técnica em engenharia para a indústria de semicondutores")
+    assert "ZIL-SEM" in r
+    assert "ZIL-EDU" in r
+
+
+def test_lei_citada_entre_parenteses_nao_classifica():
+    """PL 996/2015: altera a LGPD, mas trata de homicídio qualificado."""
+    assert classificar_texto(
+        "Altera o Decreto-Lei nº 2.848 (Código Penal) e a Lei nº 13.709 "
+        "(Lei Geral de Proteção de Dados Pessoais) para prever homicídio qualificado"
+    ) == []
+
+
+def test_tema_central_segue_classificando():
+    assert classificar_texto("Institui a Política Nacional de Minerais Críticos") == ["ZIL-MIN"]
+    assert classificar_texto("Prorroga os incentivos do Padis para semicondutores") == ["ZIL-SEM"]
+    assert classificar_texto("Institui o Plano Nacional de Fertilizantes") == ["ZIL-FER"]
+
+
+def test_evidencia_crua_ainda_mostra_casamento_fraco():
+    """`apenas_fortes=False` é o que deixa a ferramenta de curadoria explicar
+    por que uma candidata entrou na lista."""
+    ev = classificar_texto_com_evidencia("Transforma cargos de Técnico Judiciário")
+    assert ev.get("ZIL-EDU") == ["técnico"]
+    assert classificar_texto_com_evidencia(
+        "Transforma cargos de Técnico Judiciário", apenas_fortes=True
+    ) == {}

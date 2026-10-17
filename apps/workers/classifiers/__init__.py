@@ -35,13 +35,31 @@ def _fallback_taxonomia() -> list[dict]:
         {"codigo": "ZIL-FER", "keywords": ["fertilizante", "fertilizantes", "potássio", "fosfato", "NPK", "Embrapa", "PNF", "Autazes"]},
         {"codigo": "ZIL-MIN", "keywords": ["nióbio", "terras raras", "lítio", "grafite", "mineral crítico", "minerais estratégicos", "CBMM"]},
         {"codigo": "ZIL-SEM", "keywords": ["semicondutor", "semicondutores", "chip", "chips", "microeletrônica", "Padis", "Brasil Semicon"]},
-        {"codigo": "ZIL-ENE", "keywords": ["pré-sal", "hidrogênio verde", "bateria", "Petrobras", "etanol", "fundo soberano", "renovável"]},
-        {"codigo": "ZIL-DIG", "keywords": ["Starlink", "dados pessoais", "LGPD", "satélite", "fibra óptica", "soberania digital"]},
-        {"codigo": "ZIL-DEF", "keywords": ["Embraer", "defesa cibernética", "ativo estratégico", "privatização", "segurança nacional"]},
-        {"codigo": "ZIL-EDU", "keywords": ["engenharia", "STEM", "ITA", "Ceitec", "repatriação", "formação técnica", "pesquisa"]},
+        {"codigo": "ZIL-ENE", "keywords": ["pré-sal", "hidrogênio verde", "bateria", "Petrobras", "etanol", "fundo soberano", "renovável"], "keywords_fracas": ["bateria", "renovável"]},
+        {"codigo": "ZIL-DIG", "keywords": ["Starlink", "dados pessoais", "LGPD", "satélite", "fibra óptica", "soberania digital"], "keywords_fracas": ["dados pessoais", "LGPD", "satélite"]},
+        {"codigo": "ZIL-DEF", "keywords": ["Embraer", "defesa cibernética", "ativo estratégico", "privatização", "segurança nacional"], "keywords_fracas": ["privatização", "segurança nacional"]},
+        {"codigo": "ZIL-EDU", "keywords": ["engenharia", "STEM", "ITA", "Ceitec", "repatriação", "formação técnica", "pesquisa"], "keywords_fracas": ["engenharia", "pesquisa"]},
         {"codigo": "ZIL-AGR", "keywords": ["agroindústria", "valor agregado", "agro processamento", "industrialização rural"]},
-        {"codigo": "ZIL-COM", "keywords": ["tarifa", "OMC", "Mercosul", "BRICS", "acordo bilateral", "reciprocidade"]},
+        {"codigo": "ZIL-COM", "keywords": ["tarifa", "OMC", "Mercosul", "BRICS", "acordo bilateral", "reciprocidade"], "keywords_fracas": ["tarifa", "Mercosul"]},
     ]
+
+
+# Nome oficial de lei entre parênteses — "(Lei Geral de Proteção de Dados
+# Pessoais)", "(Código Penal)". A ementa cita essas leis para dizer QUAIS ela
+# altera; o tema do projeto está fora dos parênteses.
+#
+# Sem isto, o PL 996/2015 — homicídio qualificado contra membros do MP e da
+# Magistratura — era classificado como soberania digital, porque casava
+# `dados pessoais` dentro do nome de uma das leis que ele altera.
+_CITACAO_DE_LEI = re.compile(
+    r"\(\s*(?:lei|código|codigo|decreto|estatuto|marco)\b[^)]*\)",
+    re.IGNORECASE,
+)
+
+
+def sem_citacoes_de_lei(texto: str) -> str:
+    """Remove os nomes de lei entre parênteses, preservando o resto."""
+    return _CITACAO_DE_LEI.sub(" ", texto or "")
 
 
 # Compilar patterns uma vez
@@ -65,9 +83,30 @@ _patterns: dict[str, list[re.Pattern]] = {
     for codigo, pares in _patterns_com_keyword.items()
 }
 
+# Keywords que não sustentam sozinhas a categoria. Ver o cabeçalho de
+# data/taxonomia/categorias.yml para a evidência por trás de cada uma.
+KEYWORDS_FRACAS: dict[str, frozenset[str]] = {
+    cat["codigo"]: frozenset(k.lower() for k in (cat.get("keywords_fracas") or []))
+    for cat in _taxonomia
+}
+
+
+def _e_fraca(codigo: str, keyword: str) -> bool:
+    return keyword.lower() in KEYWORDS_FRACAS.get(codigo, frozenset())
+
 
 def classificar_texto(texto: str) -> list[str]:
     """Classifica um texto nas categorias ZIL.
+
+    Exige **pelo menos uma keyword forte**: uma que não esteja em
+    `keywords_fracas` e que não apareça apenas dentro do nome de uma lei citada.
+    Palavra comum sozinha não classifica — `técnico` casa com "Técnico
+    Judiciário", `tarifa` com "Tarifa Social de Água e Esgoto".
+
+    A regra antiga era "1 keyword qualquer basta". Numa varredura de 2024 a 2026
+    isso enchia ZIL-EDU e ZIL-DIG de projetos sem relação com soberania
+    industrial, enquanto ZIL-SEM — semicondutores, das pautas mais centrais —
+    ficava com cinco.
 
     Args:
         texto: Texto a classificar (ementa, descrição de votação, etc.)
@@ -75,38 +114,50 @@ def classificar_texto(texto: str) -> list[str]:
     Returns:
         Lista de códigos ZIL encontrados (ex: ["ZIL-FER", "ZIL-MIN"])
     """
-    if not texto:
-        return []
-
-    categorias = []
-    for codigo, patterns in _patterns.items():
-        matches = sum(1 for p in patterns if p.search(texto))
-        if matches >= 1:  # pelo menos 1 keyword encontrada
-            categorias.append(codigo)
-
-    return categorias
+    return list(classificar_texto_com_evidencia(texto, apenas_fortes=True))
 
 
-def classificar_texto_com_evidencia(texto: str) -> dict[str, list[str]]:
+def classificar_texto_com_evidencia(
+    texto: str, *, apenas_fortes: bool = False
+) -> dict[str, list[str]]:
     """Como `classificar_texto`, mas diz quais keywords casaram em cada categoria.
 
-    Mesmas categorias, mesma regra de corte — só acrescenta a procedência. Existe
-    porque a seleção editorial precisa distinguir um casamento específico
+    Existe porque a seleção editorial precisa distinguir um casamento específico
     (`minerais críticos`) de um casamento por palavra comum (`técnico`, que casa
     com "Técnico Judiciário"). Sem a evidência, as duas são indistinguíveis.
 
+    Args:
+        texto: o que classificar.
+        apenas_fortes: quando True, devolve só as categorias que têm ao menos
+            uma keyword forte — é a regra que `classificar_texto` aplica. O
+            padrão False devolve **todos** os casamentos, inclusive os fracos,
+            para quem precisa exibir o motivo de uma candidata estar na lista.
+
     Returns:
-        {"ZIL-MIN": ["nióbio", "minerais críticos"]} — categorias sem casamento
-        não aparecem.
+        {"ZIL-MIN": ["nióbio", "minerais críticos"]} — a lista traz as keywords
+        como casaram no texto original, mesmo com `apenas_fortes=True`.
     """
     if not texto:
         return {}
 
+    # Segunda passada sem os nomes de lei citados: o que só casa lá casou com a
+    # lista de leis alteradas, não com o assunto do projeto.
+    texto_limpo = sem_citacoes_de_lei(texto)
+
     encontradas: dict[str, list[str]] = {}
     for codigo, pares in _patterns_com_keyword.items():
         kws = [kw for kw, p in pares if p.search(texto)]
-        if kws:
-            encontradas[codigo] = kws
+        if not kws:
+            continue
+        if apenas_fortes:
+            fortes = [
+                kw
+                for kw, p in pares
+                if kw in kws and not _e_fraca(codigo, kw) and p.search(texto_limpo)
+            ]
+            if not fortes:
+                continue
+        encontradas[codigo] = kws
 
     return encontradas
 
