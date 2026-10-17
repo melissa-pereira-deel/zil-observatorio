@@ -317,14 +317,20 @@ export default function ProposicaoDetailPage() {
       ) : (
         <div className="border-t border-zil-divider">
           {votacoes.map((v) => {
-            // UI-011: resultado inferido quando null
+            // UI-011: resultado inferido quando null — mas só quando existe
+            // placar para inferir.
+            //
+            // Votação simbólica não tem voto nominal: a Câmara registra 0 e 0.
+            // Com `0 > 0` falso, a regra anterior exibia "Rejeitado*" numa
+            // votação aprovada. Três das sete votações curadas são simbólicas,
+            // então isso estava no ar. Sem placar, não há o que inferir.
+            const temPlacar =
+              v.votos_sim !== null &&
+              v.votos_nao !== null &&
+              v.votos_sim + v.votos_nao > 0;
             const resultadoDisplay =
               v.resultado ??
-              (v.votos_sim !== null && v.votos_nao !== null
-                ? v.votos_sim > v.votos_nao
-                  ? "Aprovado*"
-                  : "Rejeitado*"
-                : null);
+              (temPlacar ? (v.votos_sim! > v.votos_nao! ? "Aprovado*" : "Rejeitado*") : null);
             const resultadoInferido = !v.resultado && resultadoDisplay !== null;
 
             return (

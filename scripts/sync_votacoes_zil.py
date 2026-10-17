@@ -87,6 +87,23 @@ def sync_single_votacao(db: Session, client: CamaraClient, fonte_id: str,
     ).scalar_one_or_none()
 
     if existing:
+        # Preencher `resultado` se estiver faltando. Enquanto este script
+        # comparava `aprovacao is True` — que é falso para o inteiro 1 que a
+        # API manda —, toda votação era gravada sem resultado. Corrigir o bug
+        # não conserta o que já está no banco, e rodar o seed de novo não
+        # ajudava: este retorno vinha antes. Só preenche o que está nulo;
+        # nunca sobrescreve.
+        if existing.resultado is None and not dry_run:
+            detalhes = client.obter_votacao_detalhes(fonte_id)
+            aprov = (detalhes or {}).get("aprovacao")
+            if aprov is not None:
+                existing.resultado = "aprovado" if aprov else "rejeitado"
+                db.commit()
+                logger.info(
+                    f"  ✓ Votação {fonte_id} já existe — resultado preenchido: "
+                    f"{existing.resultado}"
+                )
+                return False
         logger.info(f"  ✓ Votação {fonte_id} já existe (id={existing.id})")
         return False
 
@@ -139,11 +156,13 @@ def sync_single_votacao(db: Session, client: CamaraClient, fonte_id: str,
     # Build categorias_zil from the hint (for targeted sync, we know the category)
     categorias_zil = [categoria_hint] if categoria_hint else None
 
+    # Não usar `is True` / `is False`: a API da Câmara manda inteiro 1/0, e
+    # `1 is True` é falso. Enquanto este bloco usava identidade, `resultado`
+    # ficava sempre nulo e a página pública inferia o resultado do placar —
+    # exibindo "Rejeitado" em votação simbólica, que não tem placar nenhum.
     resultado = None
-    if aprovacao is True:
-        resultado = "aprovado"
-    elif aprovacao is False:
-        resultado = "rejeitado"
+    if aprovacao is not None:
+        resultado = "aprovado" if aprovacao else "rejeitado"
 
     if dry_run:
         logger.info(f"  [DRY RUN] Would create votação {fonte_id}: {descricao[:60]}")
