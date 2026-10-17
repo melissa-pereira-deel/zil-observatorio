@@ -7,8 +7,52 @@
 #   - nome: nome legível
 #   - descricao: o que a categoria cobre
 #   - keywords: palavras-chave para classificação automática (baseline)
+#   - keywords_fracas: subconjunto de `keywords` que NÃO basta sozinho
 #   - exemplos_positivos: votações que seriam "pró-soberania"
 #   - exemplos_negativos: votações que seriam "contra soberania"
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# SOBRE `keywords_fracas`
+#
+# Uma keyword fraca continua valendo: se vier acompanhada de uma keyword forte
+# da mesma categoria, a classificação acontece normalmente. O que ela não faz é
+# bastar. Sozinha, ela não classifica nada.
+#
+# Esta lista não é teórica. Cada entrada abaixo produziu um falso positivo
+# medido numa varredura real da API da Câmara:
+#
+#   técnico        → "Técnico Judiciário" (cargos do Judiciário, em ZIL-EDU)
+#   engenharia     → "obras e serviços de engenharia" do Exército
+#   pesquisa       → "pesquisa clínica com seres humanos"
+#   tarifa         → "Tarifa Social de Água e Esgoto" (saneamento, em ZIL-COM)
+#   Mercosul       → atletas do Mercosul não serem estrangeiros no futebol
+#   LGPD,          → projetos que apenas ALTERAM a LGPD: proteção de dados é
+#   dados pessoais   privacidade, não soberania industrial.
+#   plataforma     → na indexação da Câmara isso marca regulação de rede social
+#   digital          e moderação de conteúdo. Era o que sustentava sozinho 5 dos
+#                    projetos de LGPD mais bem ranqueados.
+#
+#                  A infraestrutura digital — Starlink, fibra óptica, 5G,
+#                  telecomunicação, soberania digital — segue forte. É ela que
+#                  ZIL-DIG mede.
+#
+# As demais entraram por polissemia inequívoca: `bolsa` casa com bolsa de
+# valores e Bolsa Família; `renovável` com "prazo renovável" de contrato;
+# `satélite` com "cidade satélite"; `valor agregado` e `cadeia produtiva` são
+# vocabulário corrente de qualquer projeto econômico.
+#
+# Categorias sem `keywords_fracas` (ZIL-FER, ZIL-MIN, ZIL-SEM) têm vocabulário
+# que só aparece no próprio tema. `nióbio` e `semicondutor` são específicos por
+# natureza — o tamanho da palavra não tem nada a ver com isso.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# CITAÇÃO DE LEI NÃO É TEMA
+#
+# O classificador ignora o que casa dentro do nome de uma lei entre parênteses
+# — "(Lei Geral de Proteção de Dados Pessoais)", "(Código Penal)". A ementa cita
+# essas leis para dizer QUAIS ela altera; o assunto do projeto está fora dos
+# parênteses. Isso é aplicado em código, não aqui.
+# ─────────────────────────────────────────────────────────────────────────────
 
 categorias:
   - codigo: ZIL-FER
@@ -128,6 +172,14 @@ categorias:
       - energia eólica
       - energia eolica
       - transição energética
+      - energia renovável
+      - energias renováveis
+    # Keywords que, sozinhas, NÃO sustentam esta categoria. Ver o cabeçalho.
+    keywords_fracas:
+      - bateria
+      - baterias
+      - renovável
+      - renovavel
     exemplos_positivos:
       - Criação de fundo soberano com receita do pré-sal
       - Investimento em cadeia de baterias nacional
@@ -155,6 +207,15 @@ categorias:
       - proteção de dados
       - telecomunicação
       - telecomunicacao
+      - plataforma digital
+      - regulação digital
+    # Keywords que, sozinhas, NÃO sustentam esta categoria. Ver o cabeçalho.
+    keywords_fracas:
+      - dados pessoais
+      - LGPD
+      - proteção de dados
+      - satélite
+      - satelite
       - plataforma digital
       - regulação digital
     exemplos_positivos:
@@ -186,6 +247,12 @@ categorias:
       - indústria de defesa
       - KC-390
       - Gripen
+    # Keywords que, sozinhas, NÃO sustentam esta categoria. Ver o cabeçalho.
+    keywords_fracas:
+      - privatização
+      - privatizacao
+      - planejamento estratégico
+      - segurança nacional
     exemplos_positivos:
       - Criação de comitê de proteção de ativos estratégicos
       - Investimento em capacidade cibernética
@@ -216,6 +283,14 @@ categorias:
       - bolsa
       - cientista
       - técnico
+    # Keywords que, sozinhas, NÃO sustentam esta categoria. Ver o cabeçalho.
+    keywords_fracas:
+      - engenharia
+      - pesquisa
+      - universidade
+      - bolsa
+      - cientista
+      - técnico
     exemplos_positivos:
       - Aumento de vagas em engenharia de áreas estratégicas
       - Programas de repatriação de pesquisadores brasileiros
@@ -238,6 +313,10 @@ categorias:
       - cadeia produtiva
       - agro processamento
       - exportação processada
+    # Keywords que, sozinhas, NÃO sustentam esta categoria. Ver o cabeçalho.
+    keywords_fracas:
+      - valor agregado
+      - cadeia produtiva
     exemplos_positivos:
       - Incentivos para processamento de soja/milho/carne no Brasil
       - Investimento em agroindústria para exportação de produtos acabados
@@ -266,6 +345,13 @@ categorias:
       - livre comércio
       - dumping
       - anti-dumping
+    # Keywords que, sozinhas, NÃO sustentam esta categoria. Ver o cabeçalho.
+    keywords_fracas:
+      - tarifa
+      - tarifas
+      - exportação
+      - importação
+      - Mercosul
     exemplos_positivos:
       - Acordos comerciais com cláusulas de transferência tecnológica
       - Tarifas de proteção para indústria nascente estratégica
