@@ -10,6 +10,18 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Fixed
+- **`validar_direcoes.py --verificar-api` falhava na `main`:** três das sete
+  entradas curadas são votações simbólicas e nenhuma declarava `processo`, então
+  o validador marcava `2269745-73`, `2238434-154` e `2426923-22` com `✗`. As três
+  passam a declarar `processo: simbolica` — registro de fato apurado na API, não
+  mudança de julgamento: pelo art. 185 do RICD a votação simbólica não registra
+  voto individual, e essas três somam **zero** no Score apesar de pesos 3.0, 3.0
+  e 2.0.
+  As outras quatro passam a declarar `processo: nominal` pelo mesmo motivo, para
+  que o resumo offline do validador diga `{'nominal': 4, 'simbolica': 3}` em vez
+  de `nao-verificado: 4` — e para que o dataset não fique com entradas novas
+  declarando processo e antigas não.
+  Depois da mudança: `✓ Todas as entradas batem com a API`, sem nenhum `✗`.
 - **O peso sugerido pelo dossiê estava subestimado nas duas votações mais
   salientes da legislatura.** `_peso_sugerido` em `scripts/dossie.py` testava
   `"comissão"` **antes** de `"substitutivo"`, e inferia o local da votação pela
@@ -59,6 +71,17 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   domínios, e verificação de MX, porque nenhum dos três recebe e-mail hoje.
 
 ### Added
+- **A `/metodologia` passa a declarar que o placar só tem matérias em que a
+  posição pró-soberania é votar `sim`.** Novo item na seção `Limitações`: não
+  existe, entre as votações com voto nominal de 2023–2026, uma matéria decidível
+  em que a posição ZIL seja votar `não` — varredura feita nas 6 rejeitadas sem
+  suspeita de falso positivo, todas requerimento ou emenda, nenhuma decidível.
+  Enquanto for assim, o score mede alinhamento onde votar sim é o alinhamento, e
+  nessa medida reflete também presença e disciplina partidária.
+  É a contraparte pública de um aviso que o `validar_direcoes.py` já emitia para
+  quem cura: *"Todas as 7 direções são `sim`. O Score ZIL não discrimina nesse
+  corpus: quem vota sempre nessa direção tira nota máxima."* O validador avisava
+  o curador; agora a página avisa quem lê o placar.
 - **Fase 1 do painel de curadoria multi-perspectiva** — a calibração que decide
   se as Fases 2–4 acontecem ([PRD-PAINEL §12](PRD-PAINEL.md)). O painel **não
   entra em produção**: não há superfície pública, não há geração de PR, e nada

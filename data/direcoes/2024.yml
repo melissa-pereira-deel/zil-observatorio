@@ -38,6 +38,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 3.0
+    processo: nominal
     validacao: nao-validado
     categoria_principal: ZIL-SEM
     justificativa: >
@@ -58,6 +59,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 3.0
+    processo: nominal
     validacao: nao-validado
     categoria_principal: ZIL-COM
     justificativa: >
@@ -77,6 +79,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 3.0
+    processo: simbolica
     validacao: nao-validado
     categoria_principal: ZIL-ENE
     justificativa: >
@@ -95,6 +98,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 3.0
+    processo: nominal
     validacao: nao-validado
     categoria_principal: ZIL-ENE
     justificativa: >
@@ -109,6 +113,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 3.0
+    processo: nominal
     validacao: nao-validado
     categoria_principal: ZIL-ENE
     justificativa: >
@@ -126,6 +131,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 3.0
+    processo: simbolica
     validacao: nao-validado
     categoria_principal: ZIL-ENE
     justificativa: >

@@ -188,6 +188,7 @@ export default function MetodologiaPage() {
             "O classificador automático de proposições usa palavras-chave, podendo incluir ou excluir proposições relevantes. A lista é revisada manualmente.",
             "Ausências e obstruções são contabilizadas como alinhamento 0 (neutro), não como voto contra.",
             "Dados do Senado Federal ainda não estão incluídos na v1.",
+            "Todas as votações classificadas são matérias em que a posição pró-soberania é votar SIM. Não há, entre as votações com voto nominal de 2023–2026, uma matéria decidível em que ela seja votar NÃO — então o score mede alinhamento onde votar sim é o alinhamento, e nessa medida reflete também presença e disciplina partidária.",
           ].map((item) => (
             <li key={item} className="flex gap-3">
               <span className="text-zil-divider mt-0.5">—</span>
