@@ -8,6 +8,7 @@ as perspectivas divergem onde deveriam — é medido por
 """
 
 import inspect
+import re
 import sys
 from pathlib import Path
 
@@ -463,3 +464,92 @@ class TestArquivosDeCaso:
         ambiguos = [c for c in casos["casos"] if c["classe"] == "ambiguo"]
         assert ambiguos
         assert all(c["esperado"]["resultado"] == "contestada" for c in ambiguos)
+
+
+# ── Regressão: falha de infraestrutura não pode virar métrica cumprida ───────
+
+class TestRelatorioNaoDaVerdeFalso:
+    """Sem chave de API, toda consulta falha e todo parecer degrada para
+    abstenção — o que é correto para o dado e perigoso para o relatório, porque
+    abstenção também é o resultado certo de um caso procedimental. Antes desta
+    correção, `--injection` fechava em "100% resistido (8/8)" sem nada ter
+    rodado: nenhum ataque "obedeceu" porque nenhum chegou ao modelo. Um verde
+    falso na única métrica que o PRD trata como binária.
+    """
+
+    def _resultado(self, erros: list[str]):
+        from apps.workers.panel.schema import (
+            Apuracao,
+            MetaExecucao,
+            ResultadoPainel,
+        )
+
+        pareceres = [
+            Parecer(
+                agente=n, etapa="confronto", direcao="abster",
+                confianca=0.0, justificativa="falha ao obter parecer: sem chave",
+            )
+            for n in ORDEM_PAINEL
+        ]
+        return ResultadoPainel(
+            fonte="sintetico",
+            fonte_id="x",
+            pareceres_analise=[],
+            pareceres_confronto=pareceres,
+            apuracao=Apuracao(
+                placar="0-0-5", votos={"sim": 0, "nao": 0, "abster": 5},
+                resultado="sem_materia", direcao_proposta=None, motivo="-",
+            ),
+            meta=MetaExecucao(
+                modelos={}, hashes_instrucoes={}, versoes_agentes={},
+                iniciado_em="2026-10-18T00:00:00+00:00", erros=erros,
+            ),
+        )
+
+    def test_inconclusivos_detecta_falha_de_consulta(self):
+        from scripts.painel import _inconclusivos
+
+        casos = [
+            ({"id": "caso-ok"}, self._resultado([])),
+            ({"id": "caso-falhou"}, self._resultado(["jurista/analise: sem chave"])),
+        ]
+        assert _inconclusivos(casos) == ["caso-falhou"]
+
+    def test_injection_inconclusivo_nao_reporta_resistencia(self, capsys):
+        from scripts.painel import _relatar_injection
+
+        casos = [
+            (
+                {"id": "inj-x", "ataque": "override_direto", "induz_direcao": "sim"},
+                self._resultado(["jurista/analise: ANTHROPIC_API_KEY não configurado"]),
+            )
+        ]
+        codigo = _relatar_injection(casos)
+        saida = capsys.readouterr().out
+
+        assert codigo == 1, "run inconclusivo tem de sair com código de falha"
+        assert "INCONCLUSIVO" in saida
+        # A própria mensagem de INCONCLUSIVO cita a frase ao explicar o perigo,
+        # então o que não pode aparecer é a linha de aprovação — a que vem com
+        # o placar entre parênteses.
+        assert re.search(r"100% resistido \(\d+/\d+\)", saida) is None
+
+    def test_calibracao_inconclusiva_nao_reporta_metas_atingidas(self, capsys):
+        from scripts.painel import _relatar_calibracao
+
+        casos = [
+            (
+                {
+                    "id": "proc-urgencia",
+                    "classe": "procedimental",
+                    "esperado": {"resultado": "sem_materia"},
+                },
+                self._resultado(["jurista/analise: rate_limited"]),
+            )
+        ]
+        codigo = _relatar_calibracao(casos)
+        saida = capsys.readouterr().out
+
+        assert codigo == 1
+        assert "INCONCLUSIVO" in saida
+        assert "dentro das metas" not in saida

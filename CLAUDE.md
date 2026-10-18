@@ -20,7 +20,7 @@
 | Workers | Celery 5, Redis 7, httpx 0.27 |
 | Frontend | Next.js 14, TypeScript 5, Tailwind CSS, React 18 |
 | Enriquecimento | Claude Haiku 4.5 via `ANTHROPIC_API_KEY` (opcional em dev) |
-| Testes | pytest 8 (228 testes, todos passando) |
+| Testes | pytest 8 (286 testes, todos passando) |
 | Linting | ruff 0.8.6 (Python), ESLint + `next/core-web-vitals` (TypeScript) |
 | CI | GitHub Actions — 4 jobs, todos verdes |
 
@@ -38,12 +38,15 @@ packages/          camara_client ✅ | senado_client ✅
 data/taxonomia/    categorias.yml — keywords das 9 categorias ZIL ✅
 data/direcoes/     direcao_esperada por votação — 2024.yml + 2025.yml, 7 entradas (em formação)
 data/bussula/      marcos.yml — 4 indicadores (em formação)
+data/painel/       painel de curadoria (Fase 1) — agentes/*.yml (5 definições)
+                   + casos/construidos.yml (10) + casos/injection.yml (8)
 scripts/           curadoria: candidatas.py | dossie.py | validar_direcoes.py | apply_direcoes.py
+                   painel: painel.py (calibração da Fase 1)
                    sync: sync_votacoes_zil.py | sync_votacoes_proposicoes.py
                          discover_proposicoes.py | sync_pipeline.py
                    infra: migrate_enrichment.py | seed.py | start-dev.sh
                    backlog: recalcular_scores.py (não existe — ver o one-liner em "Comandos")
-tests/             unit/ (150) integration/ (52) contract/ (7) + 19 na raiz = 228
+tests/             unit/ (208) integration/ (52) contract/ (7) + 19 na raiz = 286
 specs/             001-camara-api-ingestao | 002-legislative-enrichment-pipeline
                    011-resumo-simples-votos-historico | 012-enriquecimento-dados-proposicoes
                    ui-ux-credibility-polish
@@ -64,7 +67,7 @@ docs/              PRD, PRD-PAINEL, ARCHITECTURE, GOVERNANCE, ROADMAP, DEPLOY,
 
 ```bash
 # Backend (rodar da raiz)
-python -m pytest tests/          # 228 testes
+python -m pytest tests/          # 286 testes
 ruff check apps/ packages/       # lint Python
 
 # API local — rodar de dentro de apps/api, não da raiz.
@@ -88,6 +91,13 @@ celery -A apps.workers.tasks beat --loglevel=info
 # Docker (ambiente completo)
 docker compose up -d             # ou: make up
 # make setup NÃO funciona em clone limpo — ver "Pendências de infraestrutura"
+
+# Painel de curadoria — Fase 1 (calibração). Precisa de ANTHROPIC_API_KEY,
+# exceto --dry-run. Não escreve em data/direcoes/ e não recalcula score.
+python3 scripts/painel.py --calibrar --dry-run   # monta os prompts, conta as chamadas
+python3 scripts/painel.py --calibrar             # métricas 1, 3 e 5 do go/no-go
+python3 scripts/painel.py --injection            # métrica 2 — qualquer falha é no-go
+python3 scripts/painel.py --calibrar --out data/painel/calibracao/   # grava transcrições
 
 # Pipeline de dados editorial (rodar na ordem, da raiz)
 python3 scripts/migrate_enrichment.py       # migração: novos campos Feature 002 (idempotente)
@@ -226,6 +236,41 @@ Mexer em qualquer uma é decisão editorial, não técnica:
 |---|---|---|
 | `NEXT_PUBLIC_RANKING_PUBLICO` | `apps/web/lib/flags.ts` | Com `false` (default), `/ranking` e `/parlamentar/[id]` ficam fora do ar. Ligar só quando a curadoria sustentar o ranking |
 | `noindex` | `apps/web/app/layout.tsx` + `apps/web/app/robots.ts` | Mantém o site fora dos buscadores. Estar no ar e estar no Google são coisas diferentes, e só a primeira é reversível |
+
+### O painel de curadoria está em Fase 1 — e fora do caminho crítico
+
+`data/painel/` e `apps/workers/panel/` implementam a **calibração** do painel
+multi-perspectiva ([PRD-PAINEL](docs/PRD-PAINEL.md)): cinco agentes com viés
+declarado analisam uma votação e produzem pareceres. A Fase 1 existe para
+decidir se as Fases 2–4 acontecem — e, por ADR-004, **o placar sai sem o
+painel**. Não condicione o lançamento ao go da Fase 1.
+
+Antes de mexer, saiba o que o código garante por construção, e não por
+disciplina de quem chama:
+
+| Garantia | Onde mora |
+|---|---|
+| A etapa de análise é independente | A **assinatura** de `montar_prompt_analise(agente, briefing)` não recebe os pareceres dos demais. Não há como vazá-los por descuido |
+| Ancoragem por configuração é barrada | A carga **recusa** agente de análise que declare `pareceres_dos_outros` como insumo |
+| Nenhum agente mergeia; score só de YAML humano | O módulo não importa `scoring`, `models` nem `sqlalchemy`, e não escreve em disco — testes verificam na árvore sintática |
+| Texto de fonte é dado não confiável | Ementa e texto do Planalto entram cercados por delimitadores, e qualquer sequência parecida com delimitador é removida antes |
+
+Três coisas que convém não reaprender do jeito difícil:
+
+- **`sem_materia` não é `contestada`.** A regra de consenso tem três saídas, não
+  duas. Abstenção quase unânime (votação procedimental) é ausência de matéria;
+  tratá-la como dissenso quebraria a métrica 5 da própria Fase 1.
+- **`categoria_sugerida` é sugestão registrada, nunca campo normativo.** O
+  ADR-004 deixou o destino das 9 categorias em aberto, então a Fase 1 não mede
+  acurácia de categoria.
+- **Os testes offline não provam que o painel resiste a injection.** Eles provam
+  que o prompt está bem construído. Se o modelo obedece só se mede com chave, em
+  `scripts/painel.py --injection`.
+
+As definições em `data/painel/agentes/*.yml` seguem a governança dos dados
+editoriais: quem escreve as instruções controla o resultado, então mudança vai
+por PR e o `meta` de cada execução registra modelo, versão e hash das
+instruções.
 
 ### Infraestrutura — armadilhas que já custaram caro
 

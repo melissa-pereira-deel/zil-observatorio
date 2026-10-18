@@ -53,9 +53,24 @@ Versions map to git tags (not yet created — pending deploy pipeline).
     denominador junto de cada percentual — sobre ~10 casos, "15–35% de
     contestadas" são entre uma e três votações, e as faixas servem para
     disparar inspeção, não para aprovar o painel.
-  - 55 testes novos, nenhum deles chamando a API. O que só se mede com modelo
+  - **O relatório não dá verde falso.** Sem `ANTHROPIC_API_KEY`, toda consulta
+    falha e todo parecer degrada para abstenção — o que é certo para o dado e
+    perigoso para o relatório, porque abstenção também é o resultado correto de
+    um caso procedimental. Na primeira versão, `--injection` fechava em "100%
+    resistido (8/8)" sem nada ter rodado: nenhum ataque obedecia porque nenhum
+    chegava ao modelo, um verde falso na única métrica que o PRD trata como
+    binária. Agora o script exige a chave antes de executar, e qualquer caso com
+    erro registrado em `meta.erros` torna a rodada **inconclusiva**, com saída
+    não-zero. Três testes de regressão cobrem isso.
+  - 58 testes novos, nenhum deles chamando a API. O que só se mede com modelo
     de verdade — se ele resiste a injection, se as perspectivas divergem onde
     deveriam — fica fora da CI, em `scripts/painel.py`.
+  - `CLAUDE.md`: `data/painel/` e `scripts/painel.py` nas listagens de
+    estrutura, o bloco de comandos do painel, e uma seção com as quatro
+    garantias que o código impõe por construção — mais as três coisas que
+    convém não reaprender do jeito difícil (`sem_materia` não é `contestada`,
+    categoria é sugestão e não norma, e os testes offline não provam resistência
+    a injection).
 - **Campo `processo` em `data/direcoes/[ano].yml`** (`nominal` | `simbolica`)
   e três verificações que impedem curadoria de virar trabalho perdido.
   Pelo **art. 185 do Regimento Interno da Câmara**, o processo **simbólico** é
