@@ -21,6 +21,7 @@ nas fontes primárias, apenas sem o bloco de análise assistida.
 
 import argparse
 import logging
+import re
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -44,6 +45,15 @@ from apps.workers.enrichment import (  # noqa: E402
     extract_citacoes,
 )
 from packages.camara_client import CamaraClient  # noqa: E402
+
+# Fonte única para o que conta como voto sobre o texto e o que conta como
+# destaque/emenda. Duplicar essas listas aqui foi exatamente o bug que este
+# módulo tinha: o `candidatas.py` corrigiu a precedência ("subemenda" antes de
+# "comissão") e a cópia local do `_peso_sugerido` não acompanhou. O próprio
+# `candidatas.py` enuncia o princípio sobre as keywords da taxonomia — "manter
+# uma segunda cópia garantiria que as duas divergissem na primeira vez que uma
+# fosse corrigida sozinha".
+from scripts.candidatas import _VOTO_DE_EMENDA, _VOTO_DO_TEXTO  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -315,9 +325,32 @@ def analisar(dados: DadosVotacao, artigos: list[ArtigoResolvido], modelo: str) -
         return None
 
 
-def _peso_sugerido(descricao: str) -> tuple[float, str]:
-    """Sugere peso a partir da descrição, seguindo a tabela do PRD §10."""
+# Uma comissão da Câmara tem algumas dezenas de membros; o plenário tem 513.
+# Qualquer corte entre os dois extremos serve, e 100 está longe de ambos.
+LIMIAR_PLENARIO = 100
+
+
+def _peso_sugerido(
+    descricao: str,
+    total_votos: Optional[int] = None,
+) -> tuple[Optional[float], str]:
+    """Sugere peso a partir da descrição, seguindo a tabela do PRD §10.
+
+    Devolve `(None, motivo)` quando a direção do voto não é decidível pela
+    ementa — destaque, emenda e "mantido o texto". Sugerir 1.0 nesses casos era
+    pior que não sugerir: 1.0 é o peso de uma votação normal, então o dossiê
+    convidava a classificar com peso cheio uma votação que a regra do projeto
+    considera inclassificável (ver `_VOTO_DE_EMENDA` em `candidatas.py`).
+
+    `total_votos` distingue plenário de comissão por **evidência**, não pela
+    palavra na descrição. A palavra não serve: "Aprovado o Substitutivo ...
+    adotado pelo relator da Comissão de Ciência" é votação de plenário, e
+    contém "Comissão" porque o substitutivo *veio* de uma comissão. As duas
+    votações mais salientes da legislatura (PL 4133/2023 com 439 votos e
+    PL 2583/2020 com 416) recebiam 2.0 "votação em comissão" por causa disso.
+    """
     d = descricao.lower()
+
     if "urgência" in d or "urgencia" in d:
         # Urgência não é manobra vazia: nomeia o projeto e revela quem quis
         # pautá-lo. Mas mede intenção de pautar, não posição sobre o mérito —
@@ -326,10 +359,28 @@ def _peso_sugerido(descricao: str) -> tuple[float, str]:
                      "não posição sobre o mérito")
     if "requerimento" in d:
         return 0.5, "requerimento processual"
+
+    # Voto sobre o texto inteiro vem ANTES de qualquer pista de local. A ordem
+    # é o bug que esta função tinha, e é a mesma precedência que o
+    # `candidatas.py` já documenta: "Subemenda Substitutiva Global" contém
+    # "subemenda" mas é o texto inteiro.
+    if any(p in d for p in _VOTO_DO_TEXTO) or "substitutivo" in d or "subemenda" in d:
+        if total_votos is not None and 0 < total_votos < LIMIAR_PLENARIO:
+            return 2.0, f"voto sobre o texto, em comissão ({total_votos} votos)"
+        if total_votos:
+            return 3.0, f"votação final em plenário ({total_votos} votos)"
+        return 3.0, "voto sobre o texto — confira se foi plenário ou comissão"
+
+    # Destaque, emenda e "mantido o texto": o que se vota é a supressão ou a
+    # alteração, cujo conteúdo a API não devolve. Sem ele, "sim" não tem direção.
+    if any(p in d for p in _VOTO_DE_EMENDA):
+        return None, ("direção indecidível pela ementa — vota-se o destaque ou a "
+                      "emenda, e o texto dela não vem na API. Provavelmente fora "
+                      "do placar; incluir exige pesquisar o destaque na Câmara")
+
     if "comissão" in d or "comissao" in d:
         return 2.0, "votação em comissão"
-    if any(t in d for t in ("subemenda", "substitutivo", "redação final", "emendas do senado")):
-        return 3.0, "votação final em plenário"
+
     return 1.0, "não foi possível inferir — confira e ajuste"
 
 
@@ -460,7 +511,10 @@ def renderizar(
               "Abra a fonte acima e leia direto.*")
         a("")
 
-    peso, motivo_peso = _peso_sugerido(dados.descricao)
+    total_votos = (
+        dados.votos_sim + dados.votos_nao + dados.abstencoes + dados.outros
+    ) or None
+    peso, motivo_peso = _peso_sugerido(dados.descricao, total_votos)
 
     a("## 5. Sua decisão")
     a("")
@@ -469,8 +523,19 @@ def renderizar(
     a("1. Esta matéria afeta a soberania industrial? Se não, **não classifique** — "
       "o princípio do projeto é *na dúvida, não classificar*.")
     a("2. Votar **SIM** aqui favorece ou prejudica a soberania industrial?")
-    a("3. Qual o peso? Sugestão: **{:.1f}** ({}).".format(peso, motivo_peso))
+    if peso is None:
+        a(f"3. Qual o peso? **Sem sugestão** — {motivo_peso}.")
+    else:
+        a("3. Qual o peso? Sugestão: **{:.1f}** ({}).".format(peso, motivo_peso))
     a("")
+    if peso is None:
+        a("> ⚠️ **A direção desta votação não é decidível pela ementa.** O que se "
+          "vota é um destaque ou uma emenda, e o conteúdo dela não vem na API: "
+          "sem saber o que se queria suprimir, votar \"sim\" não tem direção "
+          "definida. Classificar assim mede presença, não alinhamento. Para "
+          "incluí-la é preciso pesquisar o destaque no site da Câmara — e, pelo "
+          "princípio do projeto, na dúvida não classificar.")
+        a("")
     if dados.resultado == "rejeitada":
         a("> ⚠️ **Esta votação foi rejeitada.** Vale atenção: as 7 classificações "
           "existentes são todas `direcao: sim`, o que faz o placar medir mais "
@@ -486,11 +551,19 @@ def renderizar(
     a(f'  - fonte_id: "{dados.fonte_id}"')
     a("    fonte: camara")
     a("    direcao:            # sim | nao  ← preencher")
-    a(f"    peso: {peso}")
+    if peso is None:
+        a("    peso:                # ← sem sugestão: ver o aviso acima")
+    else:
+        a(f"    peso: {peso}")
     a("    validacao: nao-validado")
     a("    categoria_principal: ZIL-???   # ← preencher")
     a("    justificativa: >")
-    a(f"      {dados.proposicao_rotulo or 'Proposição'} — {(dados.ementa or '')[:110]}...")
+    # A ementa precisa entrar numa linha só. Várias proposições têm "NOVA
+    # EMENTA:" depois de uma quebra de linha, e a quebra crua rompia o bloco
+    # escalar: o YAML que o dossiê manda colar não parseava, com um
+    # "mapping values are not allowed here" na linha seguinte.
+    ementa_1linha = re.sub(r"\s+", " ", dados.ementa or "").strip()
+    a(f"      {dados.proposicao_rotulo or 'Proposição'} — {ementa_1linha[:110]}...")
     a("      [Por que votar SIM é pró ou contra soberania: escreva aqui.]")
     a("```")
     a("")

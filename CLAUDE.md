@@ -20,7 +20,7 @@
 | Workers | Celery 5, Redis 7, httpx 0.27 |
 | Frontend | Next.js 14, TypeScript 5, Tailwind CSS, React 18 |
 | Enriquecimento | Claude Haiku 4.5 via `ANTHROPIC_API_KEY` (opcional em dev) |
-| Testes | pytest 8 (286 testes, todos passando) |
+| Testes | pytest 8 (297 testes, todos passando) |
 | Linting | ruff 0.8.6 (Python), ESLint + `next/core-web-vitals` (TypeScript) |
 | CI | GitHub Actions — 4 jobs, todos verdes |
 
@@ -46,7 +46,7 @@ scripts/           curadoria: candidatas.py | dossie.py | validar_direcoes.py | 
                          discover_proposicoes.py | sync_pipeline.py
                    infra: migrate_enrichment.py | seed.py | start-dev.sh
                    backlog: recalcular_scores.py (não existe — ver o one-liner em "Comandos")
-tests/             unit/ (208) integration/ (52) contract/ (7) + 19 na raiz = 286
+tests/             unit/ (219) integration/ (52) contract/ (7) + 19 na raiz = 297
 specs/             001-camara-api-ingestao | 002-legislative-enrichment-pipeline
                    011-resumo-simples-votos-historico | 012-enriquecimento-dados-proposicoes
                    ui-ux-credibility-polish
@@ -67,7 +67,7 @@ docs/              PRD, PRD-PAINEL, ARCHITECTURE, GOVERNANCE, ROADMAP, DEPLOY,
 
 ```bash
 # Backend (rodar da raiz)
-python -m pytest tests/          # 286 testes
+python -m pytest tests/          # 297 testes
 ruff check apps/ packages/       # lint Python
 
 # API local — rodar de dentro de apps/api, não da raiz.
