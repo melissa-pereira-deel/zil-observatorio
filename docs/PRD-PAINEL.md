@@ -3,8 +3,23 @@
 
 > *"A máquina analisa. O humano decide. O git registra."*
 
-**Versão:** 0.3 (proposta — aguardando aprovação dos maintainers)
-**Última atualização:** 2026-09-17
+**Versão:** 0.4 (proposta — aguardando aprovação dos maintainers)
+**Última atualização:** 2026-10-18
+
+> **Emenda 3 (v0.4) — o placar focado.** A v0.3 foi escrita um dia antes de
+> [ADR-004](decisions/004-placar-focado.md) ser aceito, e este documento ficou
+> sendo o único do projeto que não o citava. O ADR troca o produto da v1 — de
+> índice dos 594 parlamentares para um **placar focado em ~10 votações** bem
+> pesquisadas — e com isso revoga a meta de volume sobre a qual o §1, o §2.1 e o
+> objetivo O1 desta proposta se apoiavam. O ADR também diz, com mais franqueza
+> do que este PRD dizia de si mesmo, que o painel "volta a ser ferramenta de
+> escala para quando houver escala — não pré-requisito para existir". Esta
+> versão aceita o rebaixamento de prioridade e troca a justificativa do painel:
+> de **fábrica de curadoria** para **instrumento de escrutínio adversarial**
+> sobre um conjunto pequeno e de alto risco (§2.3). Dois resíduos das versões
+> anteriores também caem aqui: a afirmação de que a validação "repousa sobre 7
+> casos cegos" (§12) e a contagem de 27 votações na Fase 1 (§15) — ambas já
+> eram falsas depois da Emenda 2, que removeu o gabarito que as sustentava.
 
 > **Emenda 2 (v0.3) — correção factual.** A v0.2 continha um erro de fato que
 > invalidava o desenho da Fase 1: afirmava que as 7 votações em `data/direcoes/`
@@ -25,6 +40,8 @@
 > do texto.
 **PRD base:** [PRD.md](PRD.md) (v1) — este documento **emenda** as seções 10 e 12
 **Governança:** [GOVERNANCE.md](GOVERNANCE.md)
+**Alvo de produto:** [ADR-004](decisions/004-placar-focado.md) — placar focado em
+~10 votações; este documento **segue** aquela decisão (§2.3)
 
 ---
 
@@ -53,9 +70,21 @@
 
 ## 1. Sumário Executivo
 
-O gargalo da v1 não é código — é curadoria. O Score ZIL só considera votações
-com `direcao_esperada` definida por humanos em `data/direcoes/`, e existem **7**.
-Com essa base, o ranking não tem sustentação estatística para ser publicado.
+O gargalo da v1 não é código — é julgamento editorial. O Score ZIL só considera
+votações com `direcao_esperada` definida por humanos em `data/direcoes/`, e
+existem **7**, todas marcadas `validacao: nao-validado`.
+
+**O que esse gargalo exige mudou.** Até setembro de 2026 a resposta era volume:
+50–100 classificações para sustentar um índice dos 594 parlamentares.
+[ADR-004](decisions/004-placar-focado.md) revogou essa meta e trocou o produto
+por um placar de **~10 votações** bem pesquisadas, pelo raciocínio de que
+abrangência é consequência de capacidade editorial, não premissa de produto.
+
+Disso decorre o que esta versão precisa admitir: **o painel não está no caminho
+crítico do produto.** O placar focado é entregável por uma pessoa sem painel
+algum, e a distância entre as 7 classificações de hoje e o alvo é de três, não
+de noventa e três. O que o painel ainda oferece não é vazão — é escrutínio
+(§2.3).
 
 A visão original de resolver isso com participação comunitária (votação de
 usuários reais) foi reavaliada por três razões: **cold start** (a plataforma
@@ -88,17 +117,23 @@ Três condições são inegociáveis:
 
 ### 2.1 O gargalo quantificado
 
-| Insumo editorial | Volume atual | Necessário para credibilidade |
-|---|---|---|
-| Votações com `direcao_esperada` | 7 | 50–100+ |
-| Indicadores da Bússola | 4 | 15–20 |
-| Categorias com keywords | 9 | ✅ suficiente |
+| Insumo editorial | Volume atual | Alvo sob ADR-004 | Meta revogada (índice) |
+|---|---|---|---|
+| Votações com `direcao_esperada` | 7 (todas `nao-validado`) | ~10, bem pesquisadas | 50–100+ |
+| Indicadores da Bússola | 4 | 15–20 | 15–20 |
+| Categorias com keywords | 9 | em aberto (ADR-004) | ✅ suficiente |
+
+A coluna da direita fica como registro histórico: era a meta do índice
+abrangente, e [ADR-004](decisions/004-placar-focado.md) a revogou. Sob o placar
+focado, a distância entre 7 e o alvo não é de uma ordem de magnitude — são três
+classificações.
 
 O processo atual — Discord → PR → revisão — funciona, mas exige que um
 humano **pesquise e redija** cada classificação do zero. Pesquisar uma votação
 (entender a matéria, ler o texto legal, avaliar o impacto na soberania) custa
 horas; revisar uma análise pronta custa minutos. A proposta desloca o humano
-de **autor** para **editor**.
+de **autor** para **editor** — ganho que continua real, mas que sobre três
+classificações não justifica, sozinho, construir um painel.
 
 ### 2.2 Por que não a participação comunitária (agora)
 
@@ -109,6 +144,50 @@ de **autor** para **editor**.
 | Governança | Moderação, identidade, disputas — overhead que o projeto não tem estrutura para assumir em v1. |
 
 A visão de participação **não é abandonada** — ver §17.
+
+### 2.3 O que o ADR-004 muda neste PRD
+
+O ADR-004 desmonta o argumento central das versões 0.1 a 0.3, e não há como
+dizer isso com elegância: **o painel foi proposto para resolver um problema de
+volume que o projeto decidiu não ter mais.** Se o alvo é ~10 votações, nenhuma
+fábrica de pareceres é necessária — e o próprio ADR observa que o recurso
+escasso é a validação humana, que o painel não alivia.
+
+Três consequências, em ordem de severidade:
+
+**1. O painel sai do caminho crítico.** O placar focado não depende dele. As
+Fases 2–4 deste documento deixam de ser o plano de produção da v1 e passam a ser
+trabalho de melhoria, executável quando houver folga. Qualquer cronograma que
+condicione o lançamento do placar ao go da Fase 1 está errado, e este documento
+não deve ser citado para sustentar essa condição.
+
+**2. A justificativa que sobrevive é qualidade, não vazão.** O ADR-004 afirma
+que a seleção das ~10 votações "passa a ser a decisão editorial mais carregada
+do projeto", que cada classificação precisa de justificativa densa para resistir
+a escrutínio, e que o critério de seleção precisa ser publicado junto com o
+resultado. Um painel adversarial — cujo contraditor tem o cargo institucional de
+construir o melhor argumento **contra** a leitura majoritária — é instrumento
+direto para isso. Dez classificações que já enfrentaram o contra-argumento mais
+forte antes de serem publicadas são mais defensáveis que dez escritas por uma
+pessoa que concorda consigo mesma, e o déficit de quórum (§3.1) torna essa
+assimetria pior do que seria com dois revisores. É o caso que resta de pé, e ele
+é mais modesto que o original.
+
+**3. A economia se inverte a favor de profundidade.** O §15 orçava R$ 0,50–2,00
+por votação porque 100–500 votações exigiam disciplina de custo — daí a rodada
+única de confronto (R7). Com ~10 votações, o painel inteiro cabe em dezenas de
+reais e a restrição deixa de morder: múltiplas rodadas, modelos heterogêneos por
+agente (Q1) e re-runs para medir estabilidade de veredito passam a ser
+acessíveis. **A escassez mudou de lado** — o que limita não é mais o token, é a
+atenção humana disponível para ler o que o painel produz.
+
+Há ainda um efeito que não é consequência, mas condição. O ADR-004 deixou
+**deliberadamente em aberto** o destino das 9 categorias ZIL: com ~10 votações,
+"nove categorias viram nove baldes quase vazios". O veredito do painel inclui
+`categoria_principal` (§9.3), campo que depende dessa taxonomia. Até a decisão
+ser tomada, o painel emite a categoria como **sugestão registrada, nunca como
+campo normativo**, e a Fase 1 não mede acurácia de categoria — medir acurácia
+contra uma taxonomia que pode deixar de existir seria desperdício de calibração.
 
 ---
 
@@ -219,7 +298,7 @@ que leia o repositório, e não uma promessa de processo.
 
 | # | Objetivo | Métrica |
 |---|---|---|
-| O1 | Destravar o gargalo de curadoria | 7 → 50–100 direções definidas em 2 ciclos de produção |
+| O1 | Elevar a resistência a escrutínio de cada classificação do placar | As ~10 votações do placar com parecer publicado e o contra-argumento mais forte endereçado por escrito |
 | O2 | Reduzir o custo humano por classificação | Revisão de parecer ≤ 15 min vs. horas de pesquisa |
 | O3 | Aumentar a transparência da metodologia | 100% dos pareceres publicados, incluindo dissensos |
 | O4 | Detectar pautas genuinamente contestadas | Página pública de pautas contestadas com argumentos |
@@ -233,6 +312,8 @@ que leia o repositório, e não uma promessa de processo.
 - **Não** alterar a fórmula do Score ZIL — o scoring engine não muda.
 - **Não** simular participação popular — o painel não fala "em nome de cidadãos"
   e a plataforma nunca o descreve assim.
+- **Não** ser pré-requisito do placar focado — o produto da v1 sai sem o painel,
+  e condicioná-lo ao go da Fase 1 contraria o ADR-004 (§2.3).
 
 ---
 
@@ -448,7 +529,7 @@ geração de PR) e, na Fase 3, componentes de frontend para exibir pareceres.
 | R4 | **Ataque de legitimidade** | "Robôs dão nota a deputados" como manchete | Enquadramento de consultoria (§3); decisão humana registrada com nomes; disclosure destacado na `/metodologia`; pareceres 100% públicos |
 | R5 | **Deriva de modelo** | Atualizações de modelo mudam vereditos silenciosamente; quebra a promessa de auditabilidade | Modelo pinado por batch em `meta.yml`; transcrições no repo; re-runs comparáveis por hash |
 | R6 | **Anchoring entre agentes** | Se um agente vê os outros antes de formar posição, o painel vira cascata | Etapa 2 estritamente independente; confronto só na etapa 3, com posições iniciais já registradas |
-| R7 | **Custo descontrolado** | Deliberação multi-rodada explode tokens | Uma única rodada de confronto; batches mensais; orçamento por lote (§15) |
+| R7 | **Custo descontrolado** | Deliberação multi-rodada explode tokens | Uma única rodada de confronto; batches mensais; orçamento por lote (§15). **Rebaixado na v0.4:** com ~10 votações o teto de custo é de dezenas de reais, e a rodada única deixa de ser necessária como controle — se for mantida, que seja por evitar ancoragem (R6), não por orçamento |
 | R8 | **Complacência humana** | Revisores passam a aprovar sem ler ("rubber stamping"). **Com um maintainer este é o risco dominante**, não mais um risco entre outros: não há segundo leitor para pegar o que passou, e a pessoa que revisa é a mesma que quer ver o gargalo resolvido | Taxa de alteração/rejeição monitorada e publicada (§14) — se tender a zero, é alerta, não sinal de qualidade; separação temporal obrigatória entre geração e aprovação (C2); carência de C1a como rede de segurança. **Sem C1b ativa, não há rede externa alguma** |
 | R9 | **Quórum de papel** | Promessa de 2 aprovações que não acontecem cria falsa garantia para quem lê o projeto de fora | **Endereçado**: `GOVERNANCE.md` v1.1 (PR #16) registra o não-cumprimento sem alterar a norma, e `/metodologia` passou a declarar quantas pessoas revisam |
 
@@ -513,6 +594,13 @@ falsificador claro:
    na primeira tarefa útil do painel.
 4. **Revisão amostrada de raciocínio**: leitura integral de 3–5 pareceres.
 
+**Sob o ADR-004, o item 3 deixa de ser consolo e passa a ser o trabalho
+principal.** Num placar de ~10 votações, as 7 entradas `nao-validado` são a
+maior parte do produto, não um canto do dataset. Dar segunda opinião sobre elas
+não é a tarefa que sobrou porque não havia gabarito — é o maior valor que o
+painel tem a entregar na v1, e a Fase 1 deveria ser julgada principalmente por
+como se sai nela.
+
 ### Métricas
 
 | # | Métrica | Meta (go) | Falsificador (no-go) |
@@ -525,6 +613,12 @@ falsificador claro:
 
 Note que **nenhuma métrica mede concordância com julgamento humano prévio**.
 Não há com o que comparar, e fingir que há era o erro da v0.2.
+
+As métricas 3 e 5 são faixas percentuais sobre um n de ~17 execuções, e o
+[aviso de n pequeno](#aviso-de-n-pequeno-v04) da §14 vale aqui com mais força,
+porque aqui elas são portão de decisão: usá-las para **disparar inspeção** é
+legítimo, tratar a faixa como aprovação automática não é. O go da métrica 3
+depende de alguém olhar *onde* os agentes divergiram, não só de quanto.
 
 ### O que este protocolo não prova — risco aceito
 
@@ -540,9 +634,15 @@ têm hoje, até que alguém a revise de fato.
 
 Isso é uma perda real de rigor, aceita conscientemente porque a alternativa não
 é um teste melhor — é nenhum teste. Fica declarado aqui, e deve ser declarado na
-`/metodologia`: **a validação do painel repousa sobre 7 casos cegos**, não sobre
-27. Quem surgir como segundo maintainer deve produzir gabarito cego adicional
-antes de qualquer expansão de escopo.
+`/metodologia`: **a validação do painel não repousa sobre gabarito algum** —
+repousa sobre casos construídos, resistência a injection e leitura humana de
+raciocínio. Nenhum dos três mede acerto. Quem surgir como segundo maintainer
+deve produzir gabarito cego antes de qualquer expansão de escopo.
+
+> **Correção (v0.4).** Até a v0.3 esta passagem afirmava que a validação
+> "repousa sobre 7 casos cegos, não sobre 27". Era resíduo da v0.2: a Emenda 2
+> estabeleceu, nesta mesma seção, que as 7 **não são cegas nem validadas** — o
+> que esvazia a frase. Não são 7 nem 27: é zero.
 
 ### Decisão
 
@@ -560,13 +660,20 @@ antes de qualquer expansão de escopo.
 | Fase | Entrega | Critério de saída |
 |---|---|---|
 | **1 — Calibração** | Painel + casos construídos + suite de injection + segunda opinião sobre as 7 + revisão amostrada de raciocínio. Sem superfície pública. | Go/no-go da §12 |
-| **2 — Produção de curadoria** | Backlog de votações ZIL processado; PRs gerados; maintainer revisa; janela de objeção aplicada | 7 → 50–100 direções **vigentes** (não só mergeadas) |
+| **2 — Escrutínio do placar** | As ~10 votações do placar focado passam pelo painel; PRs gerados; maintainer revisa; carência aplicada | As votações do placar **vigentes** (não só mergeadas), cada uma com parecer publicado |
 | **3 — Superfície de produto** | Pareceres linkados nas páginas de proposição/votação; página de pautas contestadas; canal de contestação (C4); seção na `/metodologia` com a proveniência real (C3) | Publicado com disclosure |
 | **4 — Assistência metodológica** | Revisões trimestrais de taxonomia/pesos propostas com evidência | Primeiro ciclo trimestral completo |
 
 Dependências: Fase 1 não depende de nada externo (enrichment já existe).
 Fases 2–4 dependem do go da Fase 1. Deploy em produção (feature 010) é
 independente e pode correr em paralelo.
+
+**A curadoria do placar também é independente** e não deve esperar por nenhuma
+destas fases (§2.3). Se as ~10 votações forem curadas à mão antes de o painel
+existir, a Fase 2 muda de natureza — vira revisão adversarial de classificações
+já vigentes, em vez de proposta inicial. Isso é melhor, não pior: o painel passa
+a ser testado contra julgamento humano registrado, que é justamente o que a
+§12 não tem hoje.
 
 ---
 
@@ -575,7 +682,7 @@ independente e pode correr em paralelo.
 ### De sucesso (por fase)
 
 - **F1:** métricas da §12.
-- **F2:** direções **vigentes**/mês (mergeadas não bastam — §3.3); tempo médio
+- **F2:** direções **vigentes** (mergeadas não bastam — §3.3); tempo médio
   de revisão humana por PR; taxa de alteração humana sobre propostas (saudável:
   5–25%; ~0% = alerta R8; > 50% = painel ruim); intervalo mediano entre geração
   e aprovação (C2 exige que não seja no mesmo dia).
@@ -594,6 +701,20 @@ independente e pode correr em paralelo.
   Enquanto não estiver, o número é estruturalmente zero e **não deve ser
   reportado como sinal de qualidade** — não há público auditando.
 
+### Aviso de n pequeno (v0.4)
+
+As faixas acima foram calibradas para lotes de dezenas a centenas de votações.
+Sob o ADR-004 o universo é ~10, e nesse tamanho **nenhuma delas é uma
+estatística** — "15–35% de pautas contestadas" são entre uma e três votações, e
+uma única mudança de veredito atravessa a faixa inteira. Elas continuam úteis
+como ordem de grandeza e inúteis como teste de hipótese.
+
+Consequência prática: as faixas servem para **disparar inspeção**, não para
+aprovar ou reprovar o painel. Zero contestadas em 10 votações merece que alguém
+leia os pareceres; não prova painel homogêneo. Quem reportar esses números —
+inclusive na `/metodologia` — reporta junto o denominador, porque percentual sem
+n sobre uma base de 10 é enganoso por construção.
+
 ---
 
 ## 15. Custos
@@ -603,12 +724,21 @@ saída ~1–2k tokens) com modelo classe Sonnet ≈ **R$ 0,50–2,00 por votaç�
 
 | Fase | Volume | Custo estimado |
 |---|---|---|
-| 1 — Calibração | ~30 votações (27 + re-runs) | < R$ 100 |
-| 2 — Produção | 100–500 votações | R$ 100–1.000 |
-| Regime (mensal) | votações novas do mês | < R$ 100/mês |
+| 1 — Calibração | ~10 casos construídos + as 7 + re-runs ≈ 25 execuções | < R$ 100 |
+| 2 — Escrutínio do placar | ~10 votações | < R$ 50 |
+| Regime (mensal) | votações novas que entram no placar | desprezível |
+
+> **Correção (v0.4).** A v0.3 orçava a Fase 1 em "~30 votações (27 + re-runs)".
+> O 27 vinha das 20 curadorias cegas que a Emenda 2 eliminou somadas às 7 — ou
+> seja, contava um insumo que o documento já havia descartado. O volume real da
+> Fase 1 é o da linha acima.
 
 Irrelevante frente ao custo da alternativa (horas de pesquisa humana por
-votação). A Fase 1 custa menos que um almoço e produz o go/no-go.
+votação). Mas a conclusão muda com o ADR-004: o custo nunca foi o fator
+limitante, e sob o placar focado ele é ainda menos. **Barato não é argumento
+para construir** — o §2.3 trata do que de fato justifica o painel. O que o preço
+baixo autoriza é gastar mais compute por votação (mais rodadas, modelos
+distintos, re-runs), não processar mais votações.
 
 ---
 
@@ -679,7 +809,7 @@ infraestrutura que ela precisaria.
 
 | # | Questão | Recomendação inicial |
 |---|---|---|
-| Q1 | Modelos: um só (pinado) para todos os agentes, ou modelos distintos por agente para reduzir correlação (R1)? | Começar com um (simplicidade na calibração); testar heterogeneidade na Fase 2 se concordância inter-agentes ficar alta |
+| Q1 | Modelos: um só (pinado) para todos os agentes, ou modelos distintos por agente para reduzir correlação (R1)? | **Revisto na v0.4:** começar com um ainda vale pela simplicidade de calibração, mas o motivo de custo caiu (§15). Com ~10 votações, testar heterogeneidade já na Fase 1 é acessível — e é o teste mais direto de R1 |
 | Q2 | Os pareceres passam por revisão pública (Discord) antes do merge, como as direções manuais hoje? | Sim na Fase 2 (mantém o rito); reavaliar quando o volume crescer |
 | Q2b | **7 dias de carência é o prazo certo?** | Enquanto C1b estiver inativa, o prazo só serve para releitura a frio — e aí 7 dias é generoso. A pergunta volta a importar quando houver público |
 | Q2c | **Recrutar um segundo maintainer é prioridade?** | Sim. Todos os controles de §3.2 são paliativos; o remédio é quórum real. A pergunta operacional é se vale gastar tempo recrutando agora ou depois do painel destravar a curadoria |
@@ -687,6 +817,8 @@ infraestrutura que ela precisaria.
 | Q4 | O contraditor participa do placar ou só provoca? | Participa (5 votos) — abstenção dele conta para "contestada", o que é coerente com o cargo |
 | Q5 | Retroatividade: reprocessar as 7 direções pelo painel? | **Sim — e a v0.3 inverte a resposta das versões anteriores.** Elas não são gabarito (não são cegas nem validadas); são dado `nao-validado` que precisa de revisão. O painel dá a segunda opinião, a maintainer adjudica (§12) |
 | Q6 | Nome público do sistema na `/metodologia` | "Painel de curadoria multi-perspectiva" — nunca "IA vota" ou variantes |
+| Q7 | **As 9 categorias sobrevivem ao placar focado?** O veredito do painel emite `categoria_principal`, e o ADR-004 deixou o destino da taxonomia em aberto | Fora do alcance deste PRD — é decisão de produto e exige RFC. Até lá, categoria é sugestão registrada e não entra nas métricas da Fase 1 (§2.3) |
+| Q8 | **Construir o painel agora, dado que ele saiu do caminho crítico?** | A pergunta é legítima e este documento não a decide. O caso mais forte é o da §2.3-2: escrutínio adversarial sobre as ~10 classificações que vão sustentar o placar publicamente, com um único revisor humano. Se a resposta for "depois", a Fase 1 continua válida como está — só não bloqueia nada |
 
 ---
 

@@ -57,6 +57,39 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   antes. Só preenche o que está nulo; nunca sobrescreve.
 
 ### Changed
+- **`docs/PRD-PAINEL.md` v0.4 — o painel sai do caminho crítico.** O PRD do
+  painel de curadoria foi escrito em 2026-09-17, um dia antes de o
+  [ADR-004](decisions/004-placar-focado.md) ser aceito, e era o **único
+  documento do projeto que não o citava** — enquanto `PRD.md`, `ROADMAP.md`,
+  `GOVERNANCE.md`, `ARCHITECTURE.md` e o `README.md` já haviam migrado.
+  O ADR-004 troca o produto da v1 por um placar focado em ~10 votações e revoga
+  a meta de 50–100 classificações, que era exatamente a justificativa do painel:
+  §1, §2.1 e o objetivo O1 se apoiavam nela, e o critério de saída da Fase 2 era
+  "7 → 50–100 direções vigentes".
+  - Nova **§2.3** encara a consequência sem suavizar: o painel foi proposto para
+    um problema de volume que o projeto decidiu não ter mais. O placar é
+    entregável sem painel algum, e a distância entre as 7 classificações de hoje
+    e o alvo é de três, não de noventa e três.
+  - A justificativa que sobra é **qualidade, não vazão** — escrutínio
+    adversarial sobre as ~10 classificações que vão sustentar o placar
+    publicamente, com um único revisor humano (§3.1).
+  - A economia se inverte: com ~10 votações o custo deixa de ser restrição, e o
+    que o preço baixo autoriza é mais compute **por votação** (rodadas, modelos
+    distintos, re-runs), não mais votações. R7 rebaixado, Q1 revisto.
+  - Dois resíduos que a Emenda 2 já havia tornado falsos e que sobreviveram na
+    v0.3: a §12 afirmava que a validação "repousa sobre 7 casos cegos, não sobre
+    27" — mas a própria §12 estabelece que as 7 **não são cegas nem validadas**,
+    então não são 7 nem 27, é zero; e a §15 orçava a Fase 1 em "~30 votações
+    (27 + re-runs)", contando as 20 curadorias cegas que a Emenda 2 eliminou.
+  - Novo **aviso de n pequeno** na §14: as faixas de concordância inter-agentes
+    (60–85%) e de pautas contestadas (15–35%) foram calibradas para lotes de
+    dezenas a centenas. Sobre ~10 votações não são estatísticas — "15–35%" é
+    entre uma e três votações. Servem para disparar inspeção, não para aprovar
+    o painel, e quem reportar o percentual reporta o denominador.
+  - Novas questões em aberto: **Q7** — o veredito emite `categoria_principal`, e
+    o ADR-004 deixou o destino das 9 categorias em aberto, então a categoria é
+    sugestão registrada e fica fora das métricas da Fase 1; **Q8** — se vale
+    construir o painel agora que ele não bloqueia nada.
 - **O classificador passa a exigir uma keyword forte**
   (`data/taxonomia/categorias.yml`, `apps/workers/classifiers/__init__.py`).
   A regra antiga era "uma keyword qualquer basta". Numa varredura real de 2024
