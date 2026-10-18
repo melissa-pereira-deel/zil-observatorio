@@ -59,6 +59,12 @@ a criar código novo, ou a enfiar vocabulário num balde que não é dele.
 Separar as duas chaves abre uma saída que o ADR-004 não considerou: **poucos
 eixos de exibição com a rede ampliada.** É a opção (e) da seção 5.
 
+> **Mas "ampliar a rede" é hipótese, não premissa.** A seção 4 a mediu, e o
+> resultado é misto: ampliar para saúde não pescou quase nada, enquanto a
+> cegueira em matéria de instrumento fiscal se mostrou real e já presente no
+> dado curado. Leia a seção 2 como o enquadramento certo da pergunta, não como
+> resposta a ela.
+
 ---
 
 ## 3. Evidência
@@ -148,9 +154,10 @@ ZIL-DIG   87     ← LGPD, dados pessoais, plataforma digital
 ZIL-SEM    5     ← semicondutores, das pautas mais centrais do manifesto
 ```
 
-Nas varreduras de 2023-2026 feitas para o placar, o padrão persiste depois do
-conserto: das 64 candidatas, 43 são marcadas como provável falso positivo pela
-própria ferramenta, e a concentração continua em `ZIL-EDU` e `ZIL-DIG`.
+Na varredura de 2023-2026 (seção 4.1: 72 candidatas em 1.140 votações com voto
+nominal), o padrão persiste depois do conserto — a maioria das candidatas é
+marcada como provável falso positivo pela própria ferramenta, e a concentração
+continua em `ZIL-EDU` e `ZIL-DIG`.
 
 A leitura relevante para este RFC: **o problema de precisão da taxonomia não é
 distribuído — é de duas categorias cujo vocabulário é genérico.** Qualquer
@@ -175,7 +182,148 @@ casamento fraco vêm por import de `scripts/candidatas.py` e
 repositório inalterada, ele tem de reproduzir as varreduras já guardadas. Se não
 reproduzir, o harness está errado e todo número que produzir depois também está.
 
-<!-- MEDICAO -->
+### 4.1 Corpus e portão
+
+| | |
+|---|---|
+| Varredura | 2023-2026, **42.066 votações** listadas na API da Câmara |
+| Com voto nominal | **1.140** (2,7%) — as únicas que podem alimentar o Score ZIL |
+| Candidatas sob a taxonomia atual | **72** (20 em 2023, 28 em 2024, 12 em 2025, 12 em 2026) |
+| Portão | o harness reproduz as quatro varreduras guardadas com **IDs e escores idênticos**, em ordem (`diff` vazio) |
+| Regressão | as **9** afirmações de "não classifica" seguem vazias nas três configurações: taxonomia atual, +`ZIL-SAU`, +`ZIL-INS` |
+
+O portão já pagou por si. A primeira versão da checagem de regressão usava
+`classificar_texto_com_evidencia` (casamento cru) onde a suíte afirma sobre
+`classificar_texto` (que aplica a regra de keyword forte), e por isso acusou 6
+regressões inexistentes na taxonomia **inalterada**. Erro do medidor, não do
+medido — e é exatamente o que um portão existe para pegar.
+
+### 4.2 Vocabulário de saúde: 2 candidatas novas em 4 anos, e a ferramenta ordenou errado
+
+| Ano | Candidatas | Novas | Por keyword forte |
+|---|---|---|---|
+| 2023 | 20 → 20 | 0 | 0 |
+| 2024 | 28 → 28 | 0 | 0 |
+| 2025 | 12 → 12 | 0 | 0 |
+| 2026 | 12 → 14 | **2** | 1 |
+
+O zero de 2023-2025 é real, não artefato: em 306 votações nominais de 2023,
+`medicamento` aparece 0 vezes, `insumo` 0, `Fiocruz` 0. As quatro matérias que
+mencionam saúde são de **serviço** — Mais Médicos, violência contra a mulher,
+campanha de vacinação, SUS/fibromialgia — e o vocabulário acertou em não casar
+nenhuma.
+
+As duas de 2026 invertem o sinal da ferramenta:
+
+| Votação | O que a ferramenta disse | O que a matéria é |
+|---|---|---|
+| `2572994-8` PL 2158/2023 | ✓ keyword **forte**, escore 9,2 | **Falso positivo.** O assunto é *venda de medicamentos em farmácia dentro de supermercado*. Casou `insumos farmacêuticos` e `medicamentos` **dentro do título citado** da Lei 5.991/1973 |
+| `2601223-8` PL 68/2026 | ⚠ "só casou por palavra comum — provável falso positivo" | **Provavelmente a genuína.** Declara de interesse público os medicamentos Mounjaro e Zepbound *para fins do art. 71 da Lei 9.279/1996* — licenciamento compulsório, o mecanismo que permite produção nacional de medicamento patenteado |
+
+A que a ferramenta promoveu é lixo; a que ela rebaixou é a relevante. Para um
+placar focado, essa inversão importa mais que a contagem.
+
+### 4.3 Bug encontrado na regra de precisão existente
+
+O falso positivo acima não é do vocabulário novo — é da regra que deveria
+barrá-lo. `apps/workers/classifiers/__init__.py:54`:
+
+```python
+_CITACAO_DE_LEI = re.compile(
+    r"\(\s*(?:lei|código|codigo|decreto|estatuto|marco)\b[^)]*\)",
+    re.IGNORECASE,
+)
+```
+
+A regra só remove título de lei entre **parênteses**. A ementa do PL 2158/2023
+cita assim:
+
+> Altera a Lei nº 5.991, de 17 de dezembro de 1973, que **“dispõe sobre o
+> Controle Sanitário do Comércio de Drogas, Medicamentos, Insumos Farmacêuticos
+> e Correlatos...”**, para dispor sobre a comercialização de medicamentos em
+> farmácia ou drogaria instalada na área de venda de supermercados.
+
+Título entre **aspas**, não entre parênteses — passa inteiro. É a mesma família
+do falso positivo que a regra foi criada para parar (o homicídio qualificado que
+virava soberania digital por citar a LGPD). **Vale consertar independentemente
+desta decisão**, e afeta hoje `ZIL-DIG` e `ZIL-COM`, não só um eixo hipotético
+de saúde.
+
+### 4.4 Vocabulário de instrumentos: 4 candidatas novas, zero matérias novas
+
+| Ano | Candidatas | Novas | Por keyword forte |
+|---|---|---|---|
+| 2023 | 20 → 20 | 0 | 0 |
+| 2024 | 28 → 31 | **3** | 3 |
+| 2025 | 12 → 13 | 1 | 0 |
+| 2026 | 12 → 12 | 0 | 0 |
+
+As três fortes de 2024 são `2416804-54`, `2416804-48` e `2416804-51` — outras
+votações **da mesma proposição** que já está no placar (PL 2/2024, depreciação
+acelerada), e **todas as três são voto de emenda ou destaque**, logo indecidíveis
+pela regra do próprio projeto. A de 2025 (`2557801-10`, FGO para crédito a
+pequena empresa) casou só por palavra comum.
+
+Matéria nova descoberta: **zero**.
+
+### 4.5 O achado que vale mais que as contagens: duas das votações curadas são invisíveis à própria rede
+
+Medindo as seis votações curadas contra a taxonomia atual, com a regra forte:
+
+| Votação | Proposição | Rótulo no YAML | A rede enxerga? |
+|---|---|---|---|
+| `2418020-7` | PL 3149/2020 | `ZIL-ENE` | ✓ `ZIL-ENE` por `biocombustível` |
+| `2558692-10` | PL 2780/2024 | `ZIL-MIN` | ✓ `ZIL-MIN` por `minerais críticos` |
+| `2252295-120` | PL 2583/2020 | `ZIL-EDU` | ✓ `ZIL-EDU` por `pesquisa e desenvolvimento` |
+| `2382675-97` | PL 4133/2023 | `ZIL-COM` | ✓ `ZIL-COM` por `comércio exterior` |
+| `2416804-43` | PL 2/2024 | `ZIL-COM` | **✗ INVISÍVEL** |
+| `2454704-53` | PL 1847/2024 | `ZIL-SEM` | **✗ INVISÍVEL** |
+
+Duas das seis estão no repositório **sem que a ferramenta de descoberta pudesse
+tê-las encontrado**. Existem ali porque alguém atribuiu `categoria_principal` à
+mão. As duas são matéria de instrumento fiscal — a mesma forma dos erros de
+rótulo da seção 3.2.
+
+E as duas têm causas **diferentes**, o que é o ponto:
+
+- **`2416804-43`** (depreciação acelerada) fica visível com o vocabulário de
+  instrumentos: `classificar_texto` passa a devolver `ZIL-INS`. É uma lacuna de
+  vocabulário, e tem conserto.
+- **`2454704-53`** (desoneração da folha do setor de TIC) **continua invisível
+  com qualquer um dos dois vocabulários** — e vai continuar com qualquer
+  taxonomia de keyword, porque a ementa **não nomeia o próprio assunto**. Ela é,
+  na íntegra, uma lista de leis alteradas e revogadas em torno de "contribuição
+  substitutiva" e "Cofins-Importação". As palavras `desoneração`, `tecnologia`,
+  `software`, `TIC` e `semicondutor` não aparecem nenhuma vez.
+
+Ou seja: **existe uma classe de matéria que descoberta por keyword não alcança,
+e o projeto já tem uma no conjunto curado.** Nenhuma das cinco opções da seção 5
+resolve isso; é limite do método, não da taxonomia.
+
+> Nota de qualidade de dado, fora do escopo desta decisão: a justificativa de
+> `2454704-53` em `data/direcoes/2024.yml` descreve o projeto como desoneração
+> de "TI, software, hardware e semicondutores". Nada disso está na ementa. É
+> coerente com o aviso no cabeçalho do próprio arquivo — as 7 entradas são
+> `nao-validado` e o método de cada uma não é reconstituível —, mas vale
+> registrar que o rótulo `ZIL-SEM` dessa entrada veio de fora da fonte.
+
+### 4.6 Síntese da medição
+
+1. **A hipótese que motivou este RFC não se confirmou.** Um eixo de saúde não
+   amplia a rede de forma mensurável: 2 candidatas em 4 anos, e a ordenação
+   invertida. O argumento que resta a favor dele é fidelidade de rótulo.
+2. **A lacuna de instrumentos é real e está provada pelo dado existente** — não
+   pela contagem de candidatas novas, que é zero, mas pelas duas votações
+   curadas invisíveis à própria ferramenta.
+3. **O problema mais barato de consertar não é a taxonomia: é a regra de
+   citação de lei**, que deixa passar título entre aspas e já polui categorias
+   em produção.
+4. **Há um limite que nenhuma taxonomia vence:** ementa que não nomeia o próprio
+   assunto (`2454704-53`) é inalcançável por keyword, e o projeto já tem uma
+   dessas curada.
+
+Nenhum desses quatro pontos era conhecido quando a pergunta foi feita. Três
+deles apontam para fora da decisão de taxonomia.
 
 ### O que NÃO foi medido, e por quê
 
@@ -239,11 +387,17 @@ uma descrição própria do que está em jogo.
 - **Custo:** as 5 listas + `SEARCH_GROUPS` + prosa pública na `/metodologia`
   (descrição e exemplo) + backfill. Sem migration, sem mudança de tipo, sem
   teste a reescrever (nenhum teste assina o número 9).
-- **Resolve:** a rede, para saúde. E dá casa à `2252295-120`.
+- **Resolve:** dá casa à `2252295-120`, que hoje está em *Capital Humano*.
 - **Não resolve:** a exibição — **piora**, de nove baldes quase vazios para dez.
   E não resolve o `2416804-43`, que continua em *Comércio e Tarifas*.
-- **Risco:** keyword genérica contamina as outras categorias e pode reacender um
-  dos 9 falsos positivos que a suíte guarda. Em saúde o risco tem endereço: o
+- **A medição não sustenta a promessa de rede** (seção 4.2): em 4 anos e 1.140
+  votações nominais, o vocabulário de saúde traz **2 candidatas**, ambas em 2026
+  — e a que ele promove é falso positivo, enquanto a provavelmente genuína ele
+  rebaixa. O argumento a favor de (d) é de **fidelidade de rótulo**, não de
+  descoberta. Dito sem rodeio: a hipótese que motivou este RFC foi medida e
+  não se confirmou.
+- **Risco:** keyword genérica contamina as outras categorias. As 9 afirmações da
+  suíte seguiram vazias com este vocabulário, mas o risco tem endereço — o
   assert de `pesquisa clínica com seres humanos` existe porque esse exato texto
   já poluiu `ZIL-EDU`.
 
@@ -261,6 +415,32 @@ instrumentos. Exibição e descoberta deixam de ser a mesma lista.
 - **Não resolve:** a dependência de backfill, que é comum a (b), (c), (d) e (e).
 - **Risco:** é a opção com mais código novo, e código novo em cima de uma
   taxonomia cujo destino de produto ainda está sendo decidido.
+
+### (f) Consertar a precisão e a cegueira medida, sem decidir a exibição agora
+
+Esta opção não existia quando a seção 5 foi escrita — **a medição a produziu**.
+Nada de categoria nova para exibição; só os dois consertos que os números
+apontam, deixando a pergunta dos eixos para quando o placar estiver publicado e
+houver uso real para observar:
+
+1. **A regra de citação de lei passa a cobrir título entre aspas** (seção 4.3).
+   É bug de precisão na regra existente, afeta `ZIL-DIG` e `ZIL-COM` hoje, e não
+   depende de nenhuma decisão de taxonomia.
+2. **O vocabulário de instrumentos entra onde resolve cegueira comprovada**
+   (seção 4.5): com ele, `2416804-43` deixa de ser invisível à própria
+   ferramenta de descoberta. Se entra como categoria `ZIL-INS` ou como keywords
+   acrescentadas a `ZIL-COM` é detalhe de forma — e é justamente o que a decisão
+   da seção 8 precisa dizer.
+
+- **Custo:** o menor de todas as opções que mexem em algo. O conserto da regex é
+  local e tem teste óbvio a escrever; o vocabulário de instrumentos é uma entrada
+  de YAML mais o fallback do classificador.
+- **Resolve:** a precisão (medida) e uma das duas cegueiras (medida).
+- **Não resolve:** a exibição — os nove baldes quase vazios continuam, e é o
+  problema que o ADR-004 de fato nomeou. Também não resolve a `2252295-120`, que
+  segue rotulada *Capital Humano*.
+- **A favor:** é a única opção cujo benefício está medido em vez de argumentado,
+  e a única que não gasta decisão de produto antes de haver produto no ar.
 
 ---
 
@@ -312,7 +492,7 @@ Duas coisas ditas sem rodeio, porque o contrário seria teatro:
 
 Quando preenchida, esta seção deve dizer:
 
-1. Qual opção da seção 5, e por quê
+1. Qual opção da seção 5, e por quê — incluindo a (f), que a medição produziu
 2. O que acontece com `ZIL-EDU` e `ZIL-DIG`, cujo vocabulário genérico concentra
    os falsos positivos (seção 3.5)
 3. Qual dos três quóruns da seção 7 vale, e qual é a redação correta do passo
