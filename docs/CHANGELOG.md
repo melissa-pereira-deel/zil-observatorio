@@ -118,6 +118,28 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   antes. Só preenche o que está nulo; nunca sobrescreve.
 
 ### Changed
+- **`docs/PRD-PAINEL.md`: aprovação registrada.** O header marcava "0.4
+  (proposta — aguardando aprovação dos maintainers)" enquanto a Fase 1 já estava
+  na `main`. O registro foi escrito dentro dos limites que o próprio documento
+  impõe, e os três importam:
+  - **Plural removido.** Não havia maintainers a invocar: a `GOVERNANCE.md` v1.1
+    registra uma pessoa e anota que a identidade institucional no git é a mesma
+    maintainer. O registro diz "maintainer única" — o projeto não apresenta
+    decisão individual como colegiada.
+  - **A aprovação não autoriza as Fases 2–4.** A condição inegociável 3 exige o
+    go/no-go da §12, e ele **não foi executado**: não existe `data/pareceres/`,
+    não há transcrição nem métrica no repositório. Aprovar o documento não
+    produz o teste, e o registro diz isso explicitamente para que ninguém leia
+    "aprovado" como "calibrado".
+  - **A carência de C1a continua fora de vigor**, porque `apply_direcoes.py`
+    ainda não lê `vigente_a_partir_de` — regra inviolável 10.
+  - §13 passa a distinguir **entrega** de **critério de saída** na linha da Fase
+    1: ela existir na `main` não libera a Fase 2. Q8 fica registrada como
+    respondida, sem apagar a pergunta, porque a razão dela segue valendo — o
+    painel não está no caminho crítico.
+  - A versão segue 0.4: neste documento as versões são reservadas a emendas de
+    conteúdo, e a substância da proposta não mudou. Precedente: o `Status:
+    Aceito` do ADR-004.
 - **`docs/PRD-PAINEL.md` v0.4 — o painel sai do caminho crítico.** O PRD do
   painel de curadoria foi escrito em 2026-09-17, um dia antes de o
   [ADR-004](decisions/004-placar-focado.md) ser aceito, e era o **único
