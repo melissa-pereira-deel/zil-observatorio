@@ -191,6 +191,122 @@ def test_peso_sugerido(descricao, esperado):
     assert peso == esperado
 
 
+# ── precedência: voto sobre o texto vence pista de local ──────────────────────
+#
+# "Aprovado o Substitutivo ... adotado pelo relator da Comissão de Ciência" é
+# votação de PLENÁRIO: contém "Comissão" porque o substitutivo veio de uma, não
+# porque foi votado lá. A função testava "comissão" primeiro e devolvia 2.0 —
+# nas duas votações mais salientes de 2023–2026, justamente.
+
+_SUBSTITUTIVO_DE_COMISSAO = (
+    "Aprovado o Substitutivo ao Projeto de Lei nº 4.133, de 2023, adotado pelo "
+    "relator da Comissão de Ciência, Tecnologia e Inovação. Sim: 308; Não: 129."
+)
+
+
+def test_substitutivo_votado_em_plenario_tem_peso_de_plenario():
+    peso, motivo = _peso_sugerido(_SUBSTITUTIVO_DE_COMISSAO, total_votos=439)
+    assert peso == 3.0
+    assert "plenário" in motivo
+
+
+def test_substitutivo_votado_em_comissao_de_fato_tem_peso_de_comissao():
+    # Mesmo texto, placar de comissão: aí 2.0 é o certo. A distinção vem da
+    # contagem de votos, não da palavra na descrição.
+    peso, motivo = _peso_sugerido(_SUBSTITUTIVO_DE_COMISSAO, total_votos=27)
+    assert peso == 2.0
+    assert "comissão" in motivo
+
+
+def test_sem_contagem_de_votos_assume_plenario_e_pede_conferencia():
+    peso, motivo = _peso_sugerido(_SUBSTITUTIVO_DE_COMISSAO)
+    assert peso == 3.0
+    assert "confira" in motivo
+
+
+def test_comissao_sem_voto_sobre_texto_continua_valendo_2():
+    peso, _ = _peso_sugerido("Votação em Comissão de Finanças", total_votos=30)
+    assert peso == 2.0
+
+
+# ── destaque e emenda: sem sugestão, não 1.0 ──────────────────────────────────
+
+@pytest.mark.parametrize("descricao", [
+    "Mantido o texto. Sim: 225; não: 187; total: 412.",
+    "Rejeitada a Emenda de Plenário nº 1. Sim: 195; não: 222.",
+    "Aprovada a Emenda de Plenário nº 20. Sim: 306; não: 121.",
+    "Rejeitado o Destaque. Sim: 100; não: 200.",
+])
+def test_destaque_e_emenda_nao_recebem_sugestao_de_peso(descricao):
+    # Sugerir 1.0 aqui era pior que não sugerir: 1.0 é o peso de uma votação
+    # normal, então o dossiê convidava a classificar com peso cheio uma votação
+    # que a regra do projeto considera inclassificável.
+    peso, motivo = _peso_sugerido(descricao, total_votos=412)
+    assert peso is None
+    assert "indecidível" in motivo
+
+
+def test_urgencia_vence_qualquer_outra_pista():
+    # A descrição da urgência também contém "Requerimento"; a ordem importa,
+    # porque o motivo registrado é diferente.
+    peso, motivo = _peso_sugerido(
+        "Aprovado o Requerimento de Urgência (Art. 155 do RICD). Sim: 369; Não: 38.",
+        total_votos=407,
+    )
+    assert peso == 0.5
+    assert "intenção de pautar" in motivo
+
+
+# ── o YAML do dossiê tem de parsear ──────────────────────────────────────────
+
+def test_yaml_do_dossie_parseia_com_ementa_de_varias_linhas():
+    """O dossiê manda "colar em data/direcoes" — então o bloco tem de ser YAML.
+
+    Várias proposições trazem "NOVA EMENTA:" depois de uma quebra de linha (o
+    PL 327/2021, a PONTE, é uma). A quebra crua rompia o bloco escalar e o YAML
+    emitido falhava com "mapping values are not allowed here".
+    """
+    import re as _re
+
+    import yaml as _yaml
+
+    from scripts.dossie import renderizar
+
+    dados = DadosVotacao(
+        fonte_id="2269745-84",
+        descricao="Mantido o texto. Sim: 225; não: 187; total: 412.",
+        proposicao_rotulo="PL 327/2021",
+        ementa=(
+            "Dispõe sobre a Política Nacional da Transição Energética - PONTE.\n\n"
+            "NOVA EMENTA: Institui o Programa de Aceleração da Transição "
+            "Energética (Paten); e altera as Leis nºs 13.988, de 2020."
+        ),
+        votos_sim=225,
+        votos_nao=187,
+    )
+    md = renderizar(dados, [], None)
+    bloco = _re.search(r"```yaml\n(.*?)```", md, _re.DOTALL).group(1)
+
+    entradas = _yaml.safe_load("direcoes:\n" + bloco)["direcoes"]
+    assert len(entradas) == 1
+    e = entradas[0]
+    assert e["fonte_id"] == "2269745-84"
+    # `direcao` e `peso` saem vazios de propósito: a decisão é humana, e esta
+    # votação é um destaque, cuja direção não é decidível pela ementa.
+    assert e["direcao"] is None
+    assert e["peso"] is None
+    assert "PONTE" in e["justificativa"]
+
+
+def test_listas_de_tipo_de_voto_sao_as_do_candidatas():
+    # Fonte única: se alguém recriar as listas aqui, este teste cai.
+    from scripts.candidatas import _VOTO_DE_EMENDA, _VOTO_DO_TEXTO
+    from scripts import dossie
+
+    assert dossie._VOTO_DO_TEXTO is _VOTO_DO_TEXTO
+    assert dossie._VOTO_DE_EMENDA is _VOTO_DE_EMENDA
+
+
 # ── dados da votação ──────────────────────────────────────────────────────────
 
 def test_resultado_deriva_da_aprovacao():

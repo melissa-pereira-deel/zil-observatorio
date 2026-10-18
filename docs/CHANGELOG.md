@@ -10,6 +10,35 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Fixed
+- **O peso sugerido pelo dossiê estava subestimado nas duas votações mais
+  salientes da legislatura.** `_peso_sugerido` em `scripts/dossie.py` testava
+  `"comissão"` **antes** de `"substitutivo"`, e inferia o local da votação pela
+  palavra na descrição. Só que "Aprovado o Substitutivo ao PL 4.133 … adotado
+  pelo relator da **Comissão** de Ciência" é votação de **plenário** — contém
+  "Comissão" porque o substitutivo *veio* de uma. Resultado: o PL 4133/2023
+  (439 votos) e o PL 2583/2020 (416 votos) recebiam `2.0, "votação em comissão"`
+  em vez de 3.0.
+  - A função passa a receber `total_votos` e distinguir plenário de comissão por
+    **evidência**, não pela palavra: uma comissão tem dezenas de membros, o
+    plenário tem 513.
+  - A precedência foi corrigida para a mesma que o `candidatas.py` já
+    documentava — e as listas `_VOTO_DO_TEXTO` e `_VOTO_DE_EMENDA` passam a ser
+    **importadas** dele, em vez de duplicadas. A duplicação era a causa: o
+    `candidatas.py` corrigiu a ordem e a cópia local não acompanhou, exatamente
+    o risco que o comentário dele enuncia sobre as keywords da taxonomia.
+- **Destaque e emenda deixam de receber sugestão de peso.** Caíam no default
+  `1.0, "não foi possível inferir"`, que é o peso de uma votação normal — então
+  o dossiê convidava a classificar com peso cheio uma votação que a regra do
+  projeto considera inclassificável. Agora a sugestão é `None`, com o motivo
+  explícito: vota-se o destaque, cujo texto a API não devolve, e sem ele "sim"
+  não tem direção. Na varredura de 2023–2026, **11 das 15 candidatas** com
+  dossiê caíam nesse caso.
+- **O YAML que o dossiê manda colar em `data/direcoes/` não parseava.** Ementas
+  com `NOVA EMENTA:` depois de uma quebra de linha — a PONTE (PL 327/2021) é uma
+  — injetavam a quebra crua no bloco escalar, e o `yaml.safe_load` falhava com
+  "mapping values are not allowed here". A ementa passa a entrar numa linha só,
+  e um teste carrega o bloco emitido com `yaml.safe_load` para que a regressão
+  não volte em silêncio.
 - **O domínio do projeto é `zilobservatorio.com.br`.** O código apontava para
   `zilobservatorio.org`, que **nunca foi registrado** — sem NS, não resolve — e
   ainda assim aparecia em quatro lugares funcionais: o canal de denúncia do
