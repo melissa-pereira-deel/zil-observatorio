@@ -338,6 +338,44 @@ python scripts/apply_direcoes.py                   # aplica e recalcula scores
 O `dossie.py` **não decide**: o YAML sai sem `direcao` de propósito. É a decisão
 que o projeto existe para manter humana.
 
+### Como as ~10 votações do placar são escolhidas
+
+O [ADR-004](docs/decisions/004-placar-focado.md) exige que **o critério de
+seleção seja publicado junto com o resultado**, porque num placar focado a
+escolha das votações passa a ser a decisão editorial mais carregada do projeto.
+O critério está implementado na propriedade `escore` de `scripts/candidatas.py`,
+e é este:
+
+| Termo | Peso | O que mede |
+|---|---|---|
+| Keyword **forte** da taxonomia | **+8,0** (+0,5 por extra, até 3) | A votação é sobre pauta ZIL de verdade |
+| Só keyword **fraca** | **−6,0** | Sinal contrário, não sinal fraco — ver abaixo |
+| Direção indecidível | **−12,0** | Voto sobre emenda ou destaque: "sim" aprova a emenda, e o texto dela não vem na API |
+| Disputa | até **+10,0** | `(1 − margem) × 10` — quanto mais apertado, mais separa parlamentares |
+| Voto sobre o texto | +4,0 | Substitutivo global ou o projeto inteiro |
+| Pistas de plenário | +3,0 | Não há campo que distinga plenário de comissão; só o texto da descrição |
+| Requerimento de **urgência** | −1,0 | Nomeia o objeto, então é preferência revelada — mas mede intenção de pautar, não posição sobre o mérito |
+| Outro **processual** | −4,0 | "Rejeitado o Requerimento" não diz qual: `objetosPossiveis` devolve dezenas (81 numa votação da PONTE). Sem saber o que se rejeitou, a direção é chute |
+
+**A ordem dos termos importa, e já esteve errada.** Até a varredura de 2024/2025
+a nota somava apenas disputa e formato, e o tema entrava como meio ponto por
+categoria. O resultado: a **Política Nacional de Minerais Críticos** — a tese do
+projeto em forma de lei — ficou em **último lugar entre 12**, porque foi quase
+unânime; e a **Tarifa Social de Água e Esgoto** liderou, por ter casado com a
+palavra `tarifa`. Com placar focado, o topo da lista tem de ser o que mais
+importa, não o que foi mais apertado. Hoje o tema é o termo dominante, e a
+disputa só desempata entre votações que já passaram pelo tema.
+
+**Casamento só por keyword fraca é sinal contrário.** Daí o −6,0 em vez de um
+bônus menor: todas as evidências de casamento fraco isolado que o projeto
+acumulou são falso positivo. Foi assim que homicídio qualificado virou soberania
+digital, por citar a LGPD entre as leis que alterava.
+
+**O escore mede saliência, nunca mérito.** Ele diz onde vale gastar curadoria;
+não diz a direção, e não deve ser lido como se dissesse. A seleção final das ~10
+é decisão humana — o `escore` apenas ordena as candidatas, e o `dossie.py`
+reúne o que a decisão exige ler.
+
 **Campos de uma entrada em `data/direcoes/[ano].yml`:**
 
 | Campo | Obrigatório | Valores |
