@@ -368,7 +368,31 @@ def renderizar(
           f"(total {dados.total_votos})")
         a(f"- **Margem:** {margem} — 0% seria empate, 100% unanimidade")
     else:
-        a("- **Placar:** votos individuais não retornados pela API")
+        # Não é falha da API: é propriedade da deliberação. Pelo art. 185 do
+        # RICD o processo simbólico é a REGRA — os favoráveis permanecem como
+        # estão, os contrários se manifestam, e só o resultado é proclamado.
+        # Não existe registro individual porque nenhum foi tomado.
+        #
+        # O aviso vem aqui, antes de tudo, porque é o momento mais barato: sem
+        # voto individual a votação não contribui para o Score ZIL, e não vale
+        # gastar pesquisa editorial nela. Três das sete votações já curadas são
+        # assim, e isso só foi descoberto depois.
+        a("- **Placar:** não há — **votação simbólica**")
+        a("")
+        a("> ⚠️ **Esta votação não entra no Score ZIL.**")
+        a(">")
+        a("> Pelo art. 185 do Regimento Interno, o processo simbólico é a regra:")
+        a("> os favoráveis permanecem como estão, os contrários se manifestam, e")
+        a("> o Presidente proclama apenas o resultado. **Não se registra quem**")
+        a("> **votou o quê** — logo não há voto individual a pontuar, por mais")
+        a("> bem classificada que a votação esteja.")
+        a(">")
+        a("> Voto individual só existe em votação **nominal** (art. 186), exigida")
+        a("> em quórum qualificado ou após pedido de verificação. Na varredura de")
+        a("> 2023–2026, 86% das votações foram simbólicas.")
+        a(">")
+        a("> Se ainda assim quiser registrá-la, marque `processo: simbolica` no")
+        a("> YAML para deixar explícito que ela não alimenta o placar.")
     a("")
 
     a("## 2. A proposição")

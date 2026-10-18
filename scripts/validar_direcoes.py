@@ -18,7 +18,9 @@ import argparse
 import sys
 from collections import Counter
 from pathlib import Path
+from typing import Optional
 
+import httpx
 import yaml
 
 DIRECOES_VALIDAS = {"sim", "nao"}
@@ -26,6 +28,22 @@ PESOS_VALIDOS = {0.5, 1.0, 2.0, 3.0}
 VALIDACOES_VALIDAS = {"nao-validado", "revisado"}
 FONTES_VALIDAS = {"camara", "senado"}
 OBRIGATORIOS = ("fonte_id", "fonte", "direcao")
+
+# Art. 185 do Regimento Interno da Câmara: o processo simbólico é a REGRA —
+# os favoráveis permanecem como estão, os contrários se manifestam, e o
+# Presidente proclama só o resultado. Ninguém registra quem votou o quê.
+#
+# Consequência para o Score ZIL: uma votação simbólica não produz voto
+# individual, logo não contribui com nada, por mais bem curada que esteja.
+# Três das sete entradas curadas eram simbólicas e ninguém percebeu — elas
+# tinham peso 3.0, 3.0 e 2.0 e somavam zero. Nada no fluxo contava isso.
+#
+# A votação nominal (Art. 186) é a exceção: quórum qualificado, decisão do
+# Presidente, deliberação do Plenário ou pedido de verificação. Só nela o
+# painel eletrônico registra cada deputado.
+#
+# Medido na varredura de 2023–2026: 211 de 246 votações são simbólicas (86%).
+PROCESSOS_VALIDOS = {"nominal", "simbolica"}
 
 
 def validar_arquivo(caminho: Path) -> list[str]:
@@ -80,6 +98,13 @@ def validar_arquivo(caminho: Path) -> list[str]:
             except (TypeError, ValueError):
                 problemas.append(f"{onde}: `peso: {d['peso']}` não é numérico")
 
+        processo = d.get("processo")
+        if processo and processo not in PROCESSOS_VALIDOS:
+            problemas.append(
+                f"{onde}: `processo: {processo}` — esperado um de "
+                f"{sorted(PROCESSOS_VALIDOS)}"
+            )
+
         validacao = d.get("validacao")
         if validacao and validacao not in VALIDACOES_VALIDAS:
             problemas.append(
@@ -115,6 +140,7 @@ def resumir(diretorio: Path) -> dict:
     """Conta direções e validações — expõe o desequilíbrio do corpus."""
     contagem = Counter()
     validacoes = Counter()
+    processos = Counter()
     total = 0
     for arquivo in sorted(diretorio.glob("*.yml")):
         conteudo = yaml.safe_load(arquivo.read_text(encoding="utf-8")) or {}
@@ -123,13 +149,75 @@ def resumir(diretorio: Path) -> dict:
                 total += 1
                 contagem[d.get("direcao", "?")] += 1
                 validacoes[d.get("validacao", "—")] += 1
-    return {"total": total, "direcoes": dict(contagem), "validacoes": dict(validacoes)}
+                processos[d.get("processo", "nao-verificado")] += 1
+    return {
+        "total": total,
+        "direcoes": dict(contagem),
+        "validacoes": dict(validacoes),
+        "processos": dict(processos),
+    }
+
+
+def entradas(diretorio: Path) -> list[dict]:
+    """Todas as entradas de todos os arquivos, na ordem."""
+    saida: list[dict] = []
+    for arquivo in sorted(diretorio.glob("*.yml")):
+        conteudo = yaml.safe_load(arquivo.read_text(encoding="utf-8")) or {}
+        for d in conteudo.get("direcoes") or []:
+            if isinstance(d, dict):
+                saida.append(d)
+    return saida
+
+
+def verificar_processo_na_api(entrada: dict) -> tuple[Optional[str], Optional[str]]:
+    """Descobre na API da Câmara se a votação teve voto individual.
+
+    Devolve `(processo_observado, problema)`. `processo_observado` é
+    "nominal" ou "simbolica"; `problema` só vem preenchido quando o que está
+    declarado no YAML contradiz o que a API mostra, ou quando não deu para
+    verificar.
+
+    Uma requisição por entrada. É por isso que fica atrás de uma flag: o
+    validador roda offline em segundos, e essa é uma qualidade a preservar.
+    """
+    fonte_id = str(entrada.get("fonte_id") or "")
+    declarado = entrada.get("processo")
+
+    if entrada.get("fonte") != "camara":
+        return None, None  # só a Câmara tem esse endpoint
+
+    url = f"https://dadosabertos.camara.leg.br/api/v2/votacoes/{fonte_id}/votos"
+    try:
+        resp = httpx.get(url, timeout=30)
+        resp.raise_for_status()
+        votos = resp.json().get("dados") or []
+    except Exception as e:  # noqa: BLE001 — rede fora não é erro de dado
+        return None, f"{fonte_id}: não foi possível verificar na API — {type(e).__name__}"
+
+    observado = "nominal" if votos else "simbolica"
+
+    if declarado and declarado != observado:
+        return observado, (
+            f"{fonte_id}: declarado `processo: {declarado}`, mas a API mostra "
+            f"{len(votos)} voto(s) individual(is) — é {observado}"
+        )
+    if not declarado and observado == "simbolica":
+        return observado, (
+            f"{fonte_id}: votação **simbólica** sem `processo` declarado. Ela não "
+            "produz voto individual (RICD art. 185) e não contribui para o Score "
+            "ZIL. Marque com `processo: simbolica` para deixar isso explícito."
+        )
+    return observado, None
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--dir", type=Path, default=Path("data/direcoes"),
                         help="diretório dos YAMLs (padrão: data/direcoes)")
+    parser.add_argument("--verificar-api", action="store_true",
+                        help="consulta a API da Câmara para conferir se cada "
+                             "votação teve voto individual (uma requisição por "
+                             "entrada; sem isto o validador roda offline)")
     args = parser.parse_args()
 
     if not args.dir.exists():
@@ -158,6 +246,20 @@ def main() -> None:
 
     print(f"Direções: {resumo['direcoes']}")
     print(f"Validação: {resumo['validacoes']}")
+    print(f"Processo: {resumo['processos']}")
+
+    # O número que a documentação deveria citar. Uma votação simbólica não
+    # produz voto individual (RICD art. 185), então não alimenta o Score ZIL
+    # por mais bem curada que esteja.
+    simbolicas = resumo["processos"].get("simbolica", 0)
+    if simbolicas:
+        alimentam = resumo["total"] - simbolicas
+        print(
+            f"\n⚠ {simbolicas} das {resumo['total']} votações curadas são "
+            f"simbólicas e não produzem voto individual. O Score ZIL se apoia "
+            f"em {alimentam}, não em {resumo['total']} — é esse o número a citar "
+            "na documentação."
+        )
 
     # Variância zero não é erro de formato, mas é um defeito real do corpus: com
     # todas as direções iguais, o score premia quem vota "sim" em tudo — ou seja,
@@ -169,6 +271,27 @@ def main() -> None:
             "não discrimina nesse corpus: quem vota sempre nessa direção tira nota "
             "máxima. Priorize votações em que a posição pró-soberania seja a oposta."
         )
+
+    if args.verificar_api:
+        print("\n── Conferindo na API da Câmara ──")
+        observados = Counter()
+        problemas_api: list[str] = []
+        for entrada in entradas(args.dir):
+            observado, problema = verificar_processo_na_api(entrada)
+            if observado:
+                observados[observado] += 1
+            if problema:
+                problemas_api.append(problema)
+                print(f"  ✗ {problema}")
+        todos.extend(problemas_api)
+        print(f"  Observado na API: {dict(observados)}")
+        if not problemas_api:
+            print("  ✓ Todas as entradas batem com a API.")
+        if observados.get("simbolica"):
+            print(
+                f"  → O Score ZIL se apoia em {observados.get('nominal', 0)} "
+                f"votação(ões), não em {sum(observados.values())}."
+            )
 
     sys.exit(1 if todos else 0)
 

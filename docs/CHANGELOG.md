@@ -9,6 +9,30 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Added
+- **Campo `processo` em `data/direcoes/[ano].yml`** (`nominal` | `simbolica`)
+  e três verificações que impedem curadoria de virar trabalho perdido.
+  Pelo **art. 185 do Regimento Interno da Câmara**, o processo **simbólico** é
+  a regra: os favoráveis permanecem como estão, os contrários se manifestam, e
+  o Presidente proclama apenas o resultado — **ninguém registra quem votou o
+  quê**. Uma votação assim não produz voto individual, logo não contribui para
+  o Score ZIL por mais bem classificada que esteja.
+  Três das sete votações curadas eram simbólicas, com peso 3.0, 3.0 e 2.0, e
+  somavam zero: **o Score ZIL se apoiava em 4, não em 7**. Nada no fluxo
+  verificava isso — `validar_direcoes.py` validava schema, `apply_direcoes.py`
+  aplicava direção e peso sem olhar se havia voto.
+  - `scripts/dossie.py`: quando não há voto individual, o dossiê deixa de dizer
+    "votos individuais não retornados pela API" — que soa como falha técnica
+    passageira — e passa a explicar o art. 185 e que a votação **não entra no
+    Score ZIL**. É o aviso mais barato: chega antes da pesquisa editorial.
+  - `scripts/validar_direcoes.py`: valida o campo offline e ganha
+    `--verificar-api`, que consulta a Câmara e falha se uma entrada declarar
+    `nominal` sem ter voto, ou se uma entrada sem o campo for simbólica.
+  - `scripts/apply_direcoes.py`: avisa ao aplicar direção a votação sem voto
+    individual, e o resumo informa quantas das curadas alimentam o score.
+  - Medido na varredura de 2023–2026: **211 de 246 votações (86%) são
+    simbólicas**. É a regra, não a exceção.
+
 ### Fixed
 - **`aprovacao` da API da Câmara é inteiro, não booleano — e o `resultado` das
   votações nunca era gravado.** `VotacaoAPI.aprovacao` era anotado
