@@ -38,6 +38,7 @@ direcoes:
     fonte: camara
     direcao: sim
     peso: 2.0
+    processo: simbolica
     validacao: nao-validado
     categoria_principal: ZIL-SEM
     justificativa: >
