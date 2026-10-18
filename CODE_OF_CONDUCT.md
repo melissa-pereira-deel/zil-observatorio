@@ -47,7 +47,7 @@ que forem criados.
 ## Aplicação
 
 Casos de comportamento abusivo, de assédio ou de outra forma inaceitável podem
-ser reportados em **conduta@zilobservatorio.org**.
+ser reportados em **conduta@zilobservatorio.com.br**.
 
 Todas as reclamações serão revisadas e investigadas de forma rápida e justa, com
 respeito à privacidade e à segurança de quem reportar. Com uma única pessoa

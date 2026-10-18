@@ -198,7 +198,7 @@ def _fetch_planalto(url: str) -> tuple[str, str]:
             headers={
                 "User-Agent": (
                     "Mozilla/5.0 (compatible; ZIL-Observatorio/1.0; "
-                    "+https://zilobservatorio.org)"
+                    "+https://zilobservatorio.com.br)"
                 )
             },
         ) as client:
