@@ -3,8 +3,41 @@
 
 > *"A máquina analisa. O humano decide. O git registra."*
 
-**Versão:** 0.4 (proposta — aguardando aprovação dos maintainers)
+**Versão:** 0.4
+**Status:** **Aprovado** em 2026-10-18 — ver "Registro de aprovação" abaixo
 **Última atualização:** 2026-10-18
+
+> **REGISTRO DE APROVAÇÃO**
+>
+> **Aprovado em 2026-10-18 pela maintainer única do projeto.**
+>
+> O header dizia "aguardando aprovação dos maintainers", no plural. Não havia
+> plural a invocar: a `GOVERNANCE.md` v1.1 registra **uma pessoa**, e anota que a
+> identidade institucional `ZIL Observatório <zil@zilobservatorio.org>` no git é a
+> mesma maintainer, não uma segunda. Esta é a decisão de uma pessoa, registrada
+> como tal — o projeto não apresenta decisão individual como se fosse colegiada.
+>
+> **O que está aprovado:** o desenho do painel (§§3–11) e a **Fase 1**, que
+> deixou de ser proposta e está implementada na `main` desde o PR #34 — cinco
+> agentes em `data/painel/agentes/`, orquestração em `apps/workers/panel/`, dez
+> casos construídos, oito ataques de injection e 58 testes.
+>
+> **O que esta aprovação NÃO autoriza: as Fases 2–4.** A condição inegociável 3
+> (§1) segue de pé, e o go/no-go da §12 **não foi executado**: não existe
+> `data/pareceres/`, não há transcrição e não há métrica registrada no
+> repositório. Aprovar o documento não produz o teste — e o teste é o que
+> autoriza o painel a propor classificação. Quem ler este PRD depois não deve
+> tomar "aprovado" por "calibrado".
+>
+> **O que continua fora de vigor:** a carência de C1a. `apply_direcoes.py` não lê
+> `vigente_a_partir_de`, e pela regra inviolável 10 nenhum documento do projeto
+> pode afirmar que a carência está valendo enquanto o código não a impuser. A
+> ressalva do §9.3 permanece válida palavra por palavra.
+>
+> **O caminho até o go/no-go:** rodar `python scripts/painel.py --calibrar` e
+> `--injection` com `ANTHROPIC_API_KEY` configurada, e registrar o resultado aqui.
+> O §15 orça a Fase 1 em menos de R$ 100, e o `--dry-run` do repositório
+> confirma a ordem de grandeza: 90 chamadas para os 10 casos construídos.
 
 > **Emenda 3 (v0.4) — o placar focado.** A v0.3 foi escrita um dia antes de
 > [ADR-004](decisions/004-placar-focado.md) ser aceito, e este documento ficou
@@ -659,7 +692,7 @@ deve produzir gabarito cego antes de qualquer expansão de escopo.
 
 | Fase | Entrega | Critério de saída |
 |---|---|---|
-| **1 — Calibração** | Painel + casos construídos + suite de injection + segunda opinião sobre as 7 + revisão amostrada de raciocínio. Sem superfície pública. | Go/no-go da §12 |
+| **1 — Calibração** | ✅ **Entregue** (PR #34): painel, casos construídos e suite de injection na `main`. Faltam a segunda opinião sobre as 7 e a revisão amostrada de raciocínio, que exigem execução com modelo. Sem superfície pública. | ⏳ Go/no-go da §12 — **não executado**. Entrega e critério de saída são coisas distintas: a Fase 1 existir não libera a Fase 2 |
 | **2 — Escrutínio do placar** | As ~10 votações do placar focado passam pelo painel; PRs gerados; maintainer revisa; carência aplicada | As votações do placar **vigentes** (não só mergeadas), cada uma com parecer publicado |
 | **3 — Superfície de produto** | Pareceres linkados nas páginas de proposição/votação; página de pautas contestadas; canal de contestação (C4); seção na `/metodologia` com a proveniência real (C3) | Publicado com disclosure |
 | **4 — Assistência metodológica** | Revisões trimestrais de taxonomia/pesos propostas com evidência | Primeiro ciclo trimestral completo |
@@ -818,7 +851,7 @@ infraestrutura que ela precisaria.
 | Q5 | Retroatividade: reprocessar as 7 direções pelo painel? | **Sim — e a v0.3 inverte a resposta das versões anteriores.** Elas não são gabarito (não são cegas nem validadas); são dado `nao-validado` que precisa de revisão. O painel dá a segunda opinião, a maintainer adjudica (§12) |
 | Q6 | Nome público do sistema na `/metodologia` | "Painel de curadoria multi-perspectiva" — nunca "IA vota" ou variantes |
 | Q7 | **As 9 categorias sobrevivem ao placar focado?** O veredito do painel emite `categoria_principal`, e o ADR-004 deixou o destino da taxonomia em aberto | Fora do alcance deste PRD — é decisão de produto e exige RFC. Até lá, categoria é sugestão registrada e não entra nas métricas da Fase 1 (§2.3) |
-| Q8 | **Construir o painel agora, dado que ele saiu do caminho crítico?** | A pergunta é legítima e este documento não a decide. O caso mais forte é o da §2.3-2: escrutínio adversarial sobre as ~10 classificações que vão sustentar o placar publicamente, com um único revisor humano. Se a resposta for "depois", a Fase 1 continua válida como está — só não bloqueia nada |
+| Q8 | ~~**Construir o painel agora, dado que ele saiu do caminho crítico?**~~ **Respondida em 2026-10-18: sim.** | A Fase 1 foi construída e mergeada no PR #34. A pergunta fica registrada porque a razão dela continua valendo: o painel **não** está no caminho crítico, e o placar sai sem ele. O que a resposta decidiu foi construir, não priorizar — e ela não antecipa o go/no-go, que segue pendente (ver "Registro de aprovação") |
 
 ---
 
