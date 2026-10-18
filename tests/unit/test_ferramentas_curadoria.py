@@ -402,3 +402,124 @@ def test_sem_citacoes_de_lei_remove_so_o_parentese():
 def test_sem_citacoes_preserva_parenteses_que_nao_sao_lei():
     texto = "Institui a Política Nacional de Minerais Críticos (PNMCE)"
     assert "PNMCE" in sem_citacoes_de_lei(texto)
+
+
+# ── votação simbólica não alimenta o Score ZIL ────────────────────────────────
+#
+# Pelo art. 185 do RICD o processo simbólico é a REGRA: os favoráveis
+# permanecem como estão, os contrários se manifestam, e só o resultado é
+# proclamado. Não se registra quem votou o quê. Três das sete votações curadas
+# eram assim — com peso 3.0, 3.0 e 2.0 — e somavam zero, porque nada no fluxo
+# verificava isso.
+
+def test_processo_aceita_nominal_e_simbolica(tmp_path):
+    arquivo = _escrever(tmp_path, f"""
+  - fonte_id: "123-4"
+    fonte: camara
+    direcao: sim
+    processo: simbolica
+    justificativa: >
+      {_JUSTIFICATIVA_OK}
+  - fonte_id: "123-5"
+    fonte: camara
+    direcao: sim
+    processo: nominal
+    justificativa: >
+      {_JUSTIFICATIVA_OK}
+""")
+    assert validar_arquivo(arquivo) == []
+
+
+def test_processo_invalido_e_pego(tmp_path):
+    arquivo = _escrever(tmp_path, f"""
+  - fonte_id: "123-4"
+    fonte: camara
+    direcao: sim
+    processo: aclamacao
+    justificativa: >
+      {_JUSTIFICATIVA_OK}
+""")
+    assert any("processo: aclamacao" in p for p in validar_arquivo(arquivo))
+
+
+def test_processo_ausente_nao_e_erro_de_formato(tmp_path):
+    """O campo é opcional offline — quem descobre a verdade é --verificar-api."""
+    arquivo = _escrever(tmp_path, f"""
+  - fonte_id: "123-4"
+    fonte: camara
+    direcao: sim
+    justificativa: >
+      {_JUSTIFICATIVA_OK}
+""")
+    assert validar_arquivo(arquivo) == []
+
+
+def test_resumir_conta_processo(tmp_path):
+    _escrever(tmp_path, f"""
+  - fonte_id: "1-1"
+    fonte: camara
+    direcao: sim
+    processo: simbolica
+    justificativa: >
+      {_JUSTIFICATIVA_OK}
+  - fonte_id: "2-2"
+    fonte: camara
+    direcao: sim
+    justificativa: >
+      {_JUSTIFICATIVA_OK}
+""")
+    resumo = resumir(tmp_path)
+    assert resumo["processos"] == {"simbolica": 1, "nao-verificado": 1}
+
+
+# ── conferência contra a API ──
+
+def _resposta(votos: int):
+    class R:
+        status_code = 200
+        def raise_for_status(self): pass
+        def json(self): return {"dados": [{"x": i} for i in range(votos)]}
+    return R()
+
+
+def test_api_acusa_simbolica_sem_declaracao(monkeypatch):
+    import scripts.validar_direcoes as mod
+    monkeypatch.setattr(mod.httpx, "get", lambda *a, **k: _resposta(0))
+    observado, problema = mod.verificar_processo_na_api(
+        {"fonte_id": "2426923-22", "fonte": "camara"}
+    )
+    assert observado == "simbolica"
+    assert problema is not None and "simbólica" in problema
+
+
+def test_api_nao_reclama_de_simbolica_ja_declarada(monkeypatch):
+    import scripts.validar_direcoes as mod
+    monkeypatch.setattr(mod.httpx, "get", lambda *a, **k: _resposta(0))
+    observado, problema = mod.verificar_processo_na_api(
+        {"fonte_id": "2426923-22", "fonte": "camara", "processo": "simbolica"}
+    )
+    assert observado == "simbolica"
+    assert problema is None
+
+
+def test_api_acusa_declaracao_que_contradiz_o_dado(monkeypatch):
+    """Declarar `simbolica` numa votação que teve 400 votos também é erro."""
+    import scripts.validar_direcoes as mod
+    monkeypatch.setattr(mod.httpx, "get", lambda *a, **k: _resposta(400))
+    observado, problema = mod.verificar_processo_na_api(
+        {"fonte_id": "2454704-53", "fonte": "camara", "processo": "simbolica"}
+    )
+    assert observado == "nominal"
+    assert problema is not None and "400 voto" in problema
+
+
+def test_rede_fora_nao_vira_erro_de_dado(monkeypatch):
+    import scripts.validar_direcoes as mod
+    def explode(*a, **k):
+        raise RuntimeError("sem rede")
+    monkeypatch.setattr(mod.httpx, "get", explode)
+    observado, problema = mod.verificar_processo_na_api(
+        {"fonte_id": "1-1", "fonte": "camara"}
+    )
+    assert observado is None
+    assert "não foi possível verificar" in problema

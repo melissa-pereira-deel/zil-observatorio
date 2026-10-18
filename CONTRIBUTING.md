@@ -363,10 +363,14 @@ feita via arquivos YAML no repositório. O fluxo hoje é:
 A revisão é feita pela maintainer. Não há comitê editorial: ele está previsto na
 governança para quando houver gente suficiente, e ainda não foi constituído.
 
-**O que o projeto mais precisa hoje:** o Score ZIL se apoia em 7 classificações,
-todas marcadas `validacao: nao-validado`. Revisar essas 7, ou propor novas com
-pesquisa densa, é a contribuição de maior impacto que existe no momento — mais
-do que qualquer código. Ver [ADR-004](docs/decisions/004-placar-focado.md).
+**O que o projeto mais precisa hoje:** existem 7 classificações, todas marcadas
+`validacao: nao-validado` — mas o Score ZIL se apoia em **4** delas. As outras
+três são **votações simbólicas**: pelo art. 185 do Regimento Interno da Câmara,
+nesse processo só se proclama o resultado, sem registrar quem votou o quê, então
+não há voto individual a pontuar. Revisar as classificações, ou propor novas com
+pesquisa densa — **verificando que a votação foi nominal** —, é a contribuição de
+maior impacto que existe no momento, mais do que qualquer código.
+Ver [ADR-004](docs/decisions/004-placar-focado.md).
 
 ### Princípios de curadoria
 

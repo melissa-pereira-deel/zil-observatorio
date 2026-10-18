@@ -24,11 +24,11 @@ for _p in (_repo_root, _api_dir):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
 from core.config import settings
-from models import Votacao
+from models import Votacao, Voto
 from apps.workers.scoring import recalcular_todos_scores
 
 
@@ -51,7 +51,8 @@ def load_direcoes(data_dir: Path, ano: int | None = None) -> list[dict]:
 
 
 def apply_direcoes(direcoes: list[dict], db: Session, dry_run: bool = False) -> dict:
-    stats = {"matched": 0, "not_found": 0, "updated": 0, "skipped": 0}
+    stats = {"matched": 0, "not_found": 0, "updated": 0, "skipped": 0,
+             "simbolicas": 0}
 
     for d in direcoes:
         fonte_id = str(d["fonte_id"])
@@ -72,6 +73,23 @@ def apply_direcoes(direcoes: list[dict], db: Session, dry_run: bool = False) -> 
             continue
 
         stats["matched"] += 1
+
+        # Este é o último ponto antes de a curadoria virar Score ZIL, e é onde
+        # dá para notar que ela não vai virar nada: votação simbólica (RICD
+        # art. 185) não registra voto individual, então direção e peso não têm
+        # sobre o que incidir. Três das sete entradas curadas eram assim, com
+        # peso 3.0, 3.0 e 2.0, e ninguém percebeu.
+        n_votos = db.execute(
+            select(func.count()).select_from(Voto).where(Voto.votacao_id == votacao.id)
+        ).scalar_one()
+        if n_votos == 0:
+            stats["simbolicas"] += 1
+            declarado = (d.get("processo") or "não declarado")
+            print(
+                f"  ⚠ {fonte}:{fonte_id} não tem voto individual — votação "
+                f"simbólica, não contribui para o Score ZIL "
+                f"(processo: {declarado})"
+            )
 
         if votacao.direcao_esperada == direcao and votacao.peso == peso:
             stats["skipped"] += 1
@@ -130,6 +148,14 @@ def main():
         f"\nDone. matched={stats['matched']} updated={stats['updated']} "
         f"skipped={stats['skipped']} not_found={stats['not_found']}"
     )
+
+    if stats["simbolicas"]:
+        alimentam = stats["matched"] - stats["simbolicas"]
+        print(
+            f"\n⚠ {stats['simbolicas']} das {stats['matched']} votações curadas "
+            f"são simbólicas e não produzem voto individual. O Score ZIL se "
+            f"apoia em {alimentam}, não em {stats['matched']}."
+        )
 
 
 if __name__ == "__main__":

@@ -258,7 +258,7 @@ export default function MetodologiaPage() {
               },
               {
                 titulo: "Direção esperada",
-                desc: "Para cada votação relevante, define-se se votar SIM ou NÃO é pró-soberania industrial, com justificativa escrita. As 7 classificações existentes estão marcadas como não validadas nos próprios arquivos: foram criadas num único dia, por uma pessoa, e ainda não passaram por revisão.",
+                desc: "Para cada votação relevante, define-se se votar SIM ou NÃO é pró-soberania industrial, com justificativa escrita. As 7 classificações existentes estão marcadas como não validadas nos próprios arquivos: foram criadas num único dia, por uma pessoa, e ainda não passaram por revisão. Dessas 7, só 4 alimentam o score — as outras três foram decididas por votação simbólica, em que a Câmara proclama apenas o resultado e não registra o voto individual de cada deputado.",
               },
               {
                 titulo: "Bússola ZIL",

@@ -20,9 +20,11 @@ export default function EmBrevePage() {
 
         <Callout>
           Existem hoje <strong>7 votações classificadas</strong>, e todas estão
-          marcadas como não validadas nos arquivos do projeto. Com essa base, o
-          ranking não discrimina: a maior parte dos parlamentares empataria na
-          mesma nota.
+          marcadas como não validadas nos arquivos do projeto. Dessas, apenas{" "}
+          <strong>4 alimentam o score</strong>: as outras três foram decididas
+          por votação simbólica, em que a Câmara proclama só o resultado e não
+          registra o voto de cada deputado. Com essa base, o ranking não
+          discrimina: a maior parte dos parlamentares empataria na mesma nota.
         </Callout>
 
         <p>

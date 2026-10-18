@@ -169,7 +169,16 @@ Numeração conforme `specs/`. Ver aviso sobre divergência com o ROADMAP acima.
 | 010 | Deploy produção | backlog |
 
 **O gargalo da v1 não é mais código, é curadoria.** O Score ZIL só conta votações
-com `direcao_esperada` preenchida em `data/direcoes/[ano].yml`, e hoje existem 7.
+com `direcao_esperada` preenchida em `data/direcoes/[ano].yml` **e que tenham voto
+individual registrado**. Hoje são 7 classificações, das quais **4 alimentam o
+score**: as outras três são votações simbólicas (RICD art. 185), em que só o
+resultado é proclamado e ninguém registra quem votou o quê.
+
+Na varredura de 2023–2026, **86% das votações da Câmara foram simbólicas** — é a
+regra, não a exceção. Qualquer seleção que não filtre por voto nominal desperdiça
+a maior parte do esforço. `scripts/candidatas.py` já filtra; o validador confere
+com `--verificar-api`.
+
 Enquanto esse número não crescer, o ranking não tem base estatística para ser
 publicado com credibilidade.
 
@@ -264,6 +273,25 @@ Toda gestão editorial é via código — sem interface admin:
 - Direção esperada de votações: `data/direcoes/[ano].yml` (PR + 2 aprovações + Discord)
 - Indicadores Bússola: `data/bussula/marcos.yml` (PR + link para fonte oficial)
 - Aplicar ao banco: `python scripts/apply_direcoes.py`
+- Validar os YAMLs: `python scripts/validar_direcoes.py`
+  (`--verificar-api` confere na Câmara se cada votação teve voto nominal)
+
+**Campos de uma entrada em `data/direcoes/[ano].yml`:**
+
+| Campo | Obrigatório | Valores |
+|---|---|---|
+| `fonte_id`, `fonte`, `direcao` | sim | `direcao`: `sim` ou `nao` |
+| `justificativa` | sim | texto; o validador exige ≥ 40 caracteres |
+| `peso` | não | `0.5`, `1.0`, `2.0`, `3.0` |
+| `validacao` | não | `nao-validado`, `revisado` |
+| `processo` | não | `nominal`, `simbolica` |
+
+**`processo` é o campo que evita trabalho perdido.** Votação simbólica
+(RICD art. 185) não registra o voto de cada deputado — só o resultado é
+proclamado —, então ela **não contribui para o Score ZIL**, com ou sem
+classificação. Na varredura de 2023–2026, 86% das votações foram simbólicas.
+O `dossie.py` avisa antes da pesquisa, o `validar_direcoes.py --verificar-api`
+confere contra a API, e o `apply_direcoes.py` avisa ao aplicar.
 
 **Princípio operacional:** na dúvida sobre direção esperada, não classificar.
 
