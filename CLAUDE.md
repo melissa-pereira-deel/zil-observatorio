@@ -1,12 +1,14 @@
 # ZIL Observatório — Development Guidelines
 
-**Última atualização:** 2026-08-10
-**Fase atual:** v1 — Dashboard Público (sem login)
+**Última atualização:** 2026-10-18
+**Fase atual:** v1 — Placar focado ([ADR-004](docs/decisions/004-placar-focado.md)), sem login
 **Roadmap:** [docs/ROADMAP.md](docs/ROADMAP.md)
 
-> **Estado em uma linha:** o software da v1 está essencialmente completo; o que
-> falta é volume de curadoria editorial (7 votações com direção definida) e o
-> deploy em produção.
+> **Estado em uma linha:** o software da v1 está essencialmente completo. O que
+> falta é curadoria editorial — e o alvo mudou: o ADR-004 trocou o índice dos 594
+> parlamentares por um **placar focado em ~10 votações** bem pesquisadas. Hoje
+> são 7 classificações, todas `nao-validado`, das quais 4 alimentam o score. O
+> deploy está **preparado** (`render.yaml` + runbook) e não executado.
 
 ---
 
@@ -18,7 +20,7 @@
 | Workers | Celery 5, Redis 7, httpx 0.27 |
 | Frontend | Next.js 14, TypeScript 5, Tailwind CSS, React 18 |
 | Enriquecimento | Claude Haiku 4.5 via `ANTHROPIC_API_KEY` (opcional em dev) |
-| Testes | pytest 8 (151 testes, todos passando) |
+| Testes | pytest 8 (228 testes, todos passando) |
 | Linting | ruff 0.8.6 (Python), ESLint + `next/core-web-vitals` (TypeScript) |
 | CI | GitHub Actions — 4 jobs, todos verdes |
 
@@ -27,20 +29,28 @@
 ## Estrutura do projeto
 
 ```
-apps/api/          FastAPI + SQLAlchemy models (8 tabelas) + schemas + routers (17 endpoints)
+apps/api/          FastAPI + SQLAlchemy models (8 tabelas) + schemas
+                   + routers (15 endpoints) + / e /health em main.py
 apps/workers/      Celery tasks + crawlers (camara.py ✅, senado.py ✅)
                    + scoring engine + keyword classifier + enrichment (Planalto + LLM)
-apps/web/          Next.js 14 (App Router) — 8 páginas + 11 componentes + 5 de UI base
+apps/web/          Next.js 14 (App Router) — 10 páginas + 11 componentes + 5 de UI base
 packages/          camara_client ✅ | senado_client ✅
 data/taxonomia/    categorias.yml — keywords das 9 categorias ZIL ✅
 data/direcoes/     direcao_esperada por votação — 2024.yml + 2025.yml, 7 entradas (em formação)
 data/bussula/      marcos.yml — 4 indicadores (em formação)
-scripts/           apply_direcoes.py | sync_votacoes_zil.py | discover_proposicoes.py | sync_votacoes_proposicoes.py | sync_pipeline.py | migrate_enrichment.py | recalcular_scores.py (backlog)
-tests/             unit/ (79) integration/ (46) contract/ (7) + 19 na raiz = 151
+scripts/           curadoria: candidatas.py | dossie.py | validar_direcoes.py | apply_direcoes.py
+                   sync: sync_votacoes_zil.py | sync_votacoes_proposicoes.py
+                         discover_proposicoes.py | sync_pipeline.py
+                   infra: migrate_enrichment.py | seed.py | start-dev.sh
+                   backlog: recalcular_scores.py (não existe — ver o one-liner em "Comandos")
+tests/             unit/ (150) integration/ (52) contract/ (7) + 19 na raiz = 228
 specs/             001-camara-api-ingestao | 002-legislative-enrichment-pipeline
                    011-resumo-simples-votos-historico | 012-enriquecimento-dados-proposicoes
                    ui-ux-credibility-polish
-docs/              PRD, ARCHITECTURE, GOVERNANCE, ROADMAP, CHANGELOG, DISCOVERY-DADOS-PROPOSICOES
+docs/              PRD, PRD-PAINEL, ARCHITECTURE, GOVERNANCE, ROADMAP, DEPLOY,
+                   CHANGELOG, DISCOVERY-DADOS-PROPOSICOES
+                   decisions/  ADR-001 cross-db types | ADR-002 import path
+                               ADR-003 json null | ADR-004 placar focado
 ```
 
 > **Atenção à numeração:** `specs/` e `docs/ROADMAP.md` usam numerações
@@ -54,7 +64,7 @@ docs/              PRD, ARCHITECTURE, GOVERNANCE, ROADMAP, CHANGELOG, DISCOVERY-
 
 ```bash
 # Backend (rodar da raiz)
-python -m pytest tests/          # 151 testes
+python -m pytest tests/          # 228 testes
 ruff check apps/ packages/       # lint Python
 
 # API local — rodar de dentro de apps/api, não da raiz.
@@ -146,7 +156,11 @@ with Session(engine) as db: print(recalcular_todos_scores(db), 'scores calculado
 
 - Não adicionar features além do solicitado
 - Não mockar banco em testes de integração — usar SQLite in-memory via conftest.py
-- PRs de dados editoriais (`data/`) requerem 2 aprovações de maintainers
+- PRs de dados editoriais (`data/`) requerem 2 aprovações de maintainers — norma
+  de pé, **não cumprida**: há um maintainer ativo, e nenhum PR do projeto teve
+  aprovação formal registrada. A [GOVERNANCE.md](docs/GOVERNANCE.md) v1.1
+  registra o não-cumprimento sem alterar a norma; não apresentar decisão de uma
+  pessoa como se fosse colegiada
 
 ---
 
@@ -166,7 +180,7 @@ Numeração conforme `specs/`. Ver aviso sobre divergência com o ROADMAP acima.
 | 007 | Frontend: /bussula | ✅ concluído |
 | 008 | Frontend: /metodologia | ✅ concluído |
 | 009 | CI/CD (GitHub Actions) | ✅ 4 jobs verdes |
-| 010 | Deploy produção | backlog |
+| 010 | Deploy produção | 🟡 preparado, não executado — `render.yaml` + [docs/DEPLOY.md](docs/DEPLOY.md) |
 
 **O gargalo da v1 não é mais código, é curadoria.** O Score ZIL só conta votações
 com `direcao_esperada` preenchida em `data/direcoes/[ano].yml` **e que tenham voto
@@ -179,8 +193,39 @@ regra, não a exceção. Qualquer seleção que não filtre por voto nominal des
 a maior parte do esforço. `scripts/candidatas.py` já filtra; o validador confere
 com `--verificar-api`.
 
-Enquanto esse número não crescer, o ranking não tem base estatística para ser
-publicado com credibilidade.
+> **O alvo mudou — [ADR-004](docs/decisions/004-placar-focado.md), aceito em
+> 2026-09-18.** A v1 deixou de ser um índice dos 594 parlamentares e passou a ser
+> um **placar focado**: como cada parlamentar votou nas ~10 votações que mais
+> importaram para a soberania industrial. **Não há mais meta de cobertura.** O
+> motor do Score e a fórmula não mudam — muda o universo sobre o qual ele opera.
+>
+> O que isso implica para quem trabalha no repositório:
+>
+> - **Quantidade deixou de ser critério de qualidade.** Dez classificações com
+>   justificativa densa valem mais que centenas rasas. A unidade de trabalho é
+>   pesquisar uma votação por vez, não classificar em lote.
+> - **A seleção das ~10 é a decisão editorial mais carregada do projeto** — o
+>   juízo que antes ficava diluído no volume. O critério de seleção tem de ser
+>   publicado junto com o resultado.
+> - **O destino das 9 categorias ZIL está em aberto.** Com ~10 votações, nove
+>   categorias viram nove baldes quase vazios. É a próxima decisão de produto, e
+>   ainda não foi tomada: não alterar a taxonomia sem RFC.
+> - **O painel de agentes ([docs/PRD-PAINEL.md](docs/PRD-PAINEL.md)) não está no
+>   caminho crítico.** O placar sai sem ele; a justificativa que resta ao painel
+>   é escrutínio adversarial, não vazão (PRD-PAINEL §2.3).
+
+Enquanto o placar não estiver curado, o ranking continua fora do ar — é o que as
+flags abaixo garantem.
+
+### Flags que mantêm o produto honesto
+
+Duas chaves impedem o projeto de prometer mais do que a curadoria sustenta.
+Mexer em qualquer uma é decisão editorial, não técnica:
+
+| Flag | Onde | O que faz |
+|---|---|---|
+| `NEXT_PUBLIC_RANKING_PUBLICO` | `apps/web/lib/flags.ts` | Com `false` (default), `/ranking` e `/parlamentar/[id]` ficam fora do ar. Ligar só quando a curadoria sustentar o ranking |
+| `noindex` | `apps/web/app/layout.tsx` + `apps/web/app/robots.ts` | Mantém o site fora dos buscadores. Estar no ar e estar no Google são coisas diferentes, e só a primeira é reversível |
 
 ### Infraestrutura — armadilhas que já custaram caro
 
@@ -198,9 +243,9 @@ Resolvidas, mas entender o porquê evita reintroduzi-las:
 
 | Item | Problema |
 |------|----------|
-| Deploy em produção | Nunca iniciado. Não há `vercel.json`, `fly.toml` nem workflow de deploy. É o item mais atrasado do roadmap. |
-| Código dormente | Tabela `Financiamento` e enums `TipoAlerta`, `CanalAlerta`, `TipoFinanciamento` declarados e sem uso — resquícios de v2/v3. |
-| Lint em `tests/` | 57 erros de ruff em `tests/`, fora do escopo da CI (que cobre só `apps/` e `packages/`). |
+| Deploy em produção | **Preparado, não executado.** `render.yaml` (API + Postgres) e o runbook em [docs/DEPLOY.md](docs/DEPLOY.md) existem; o que falta é rodar o blueprint no Render e conectar o frontend na Vercel. Não há `vercel.json` (a Vercel detecta Next.js sozinha) nem workflow de deploy — as duas plataformas fazem build no push. Typesense e os workers Celery ficam deliberadamente fora de produção; o porquê está no `render.yaml`. |
+| Código dormente | Tabela `Financiamento` e enums `TipoAlerta`, `CanalAlerta`, `TipoFinanciamento` declarados e sem uso — resquícios de v2/v3. Conferido: nenhum uso fora de `apps/api/models/`. |
+| Lint em `tests/` | 56 erros de ruff em `tests/`, fora do escopo da CI (que cobre só `apps/` e `packages/`, e passa limpo). |
 
 ### Design critiques — UI-001 a UI-022 ✅ concluídas
 
@@ -270,11 +315,28 @@ várias decisões de design que o código sozinho não explica.
 
 Toda gestão editorial é via código — sem interface admin:
 - Classificação automática: `data/taxonomia/categorias.yml` (PR)
-- Direção esperada de votações: `data/direcoes/[ano].yml` (PR + 2 aprovações + Discord)
+- Direção esperada de votações: `data/direcoes/[ano].yml` (PR + Discord; a norma
+  pede 2 aprovações e o projeto tem um maintainer — ver "Regras de código")
 - Indicadores Bússola: `data/bussula/marcos.yml` (PR + link para fonte oficial)
 - Aplicar ao banco: `python scripts/apply_direcoes.py`
 - Validar os YAMLs: `python scripts/validar_direcoes.py`
   (`--verificar-api` confere na Câmara se cada votação teve voto nominal)
+
+**O ciclo de curadoria, na ordem** — as duas primeiras ferramentas rodam sem
+banco e sem `ANTHROPIC_API_KEY`, direto contra a API da Câmara:
+
+```bash
+python scripts/candidatas.py --ano 2025            # ranqueia votações por saliência,
+                                                   # já filtrando simbólicas
+python scripts/dossie.py --votacao 2454704-53      # reúne o que a pesquisa exigiria ler
+                                                   # (emite YAML SEM o campo direcao)
+# → decisão humana: preencher direcao + justificativa em data/direcoes/[ano].yml
+python scripts/validar_direcoes.py --verificar-api  # confere schema e voto nominal
+python scripts/apply_direcoes.py                   # aplica e recalcula scores
+```
+
+O `dossie.py` **não decide**: o YAML sai sem `direcao` de propósito. É a decisão
+que o projeto existe para manter humana.
 
 **Campos de uma entrada em `data/direcoes/[ano].yml`:**
 
