@@ -55,7 +55,7 @@ def root():
         "versao": "0.1.0",
         "descricao": "Observability política para a soberania industrial do Brasil",
         "docs": "/docs",
-        "manifesto": "https://zilobservatorio.org/manifesto",
+        "manifesto": "https://zilobservatorio.com.br/manifesto",
     }
 
 

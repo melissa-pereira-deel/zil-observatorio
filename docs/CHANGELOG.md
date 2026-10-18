@@ -9,6 +9,26 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Fixed
+- **O domínio do projeto é `zilobservatorio.com.br`.** O código apontava para
+  `zilobservatorio.org`, que **nunca foi registrado** — sem NS, não resolve — e
+  ainda assim aparecia em quatro lugares funcionais: o canal de denúncia do
+  `CODE_OF_CONDUCT.md`, para onde relatos não chegavam; o `User-Agent` enviado
+  ao Planalto, cujo `+url` é justamente o contato de quem está rastreando; o
+  padrão de `CORS_ORIGINS` em `core/config.py`; e um link devolvido por
+  `GET /` em `main.py`. Mais `.env.example` e `docs/DEPLOY.md`.
+  O domínio registrado é o `.com.br`, e ele alinha marca e endereço: o projeto
+  se chama ZIL Observatório em todo lugar. `zilmanifesto.org` e
+  `zilmanifesto.com.br`, também do projeto, encaminham para ele.
+  As menções em `GOVERNANCE.md` e `constitution.md` **não** mudam: descrevem a
+  identidade `ZIL Observatório <zil@zilobservatorio.org>` que consta como
+  autora de commits no histórico git — fato do repositório, ainda que o
+  endereço nunca tenha sido entregável.
+- `docs/DEPLOY.md`: Parte 4 reescrita para a GoDaddy — registro `A` na raiz
+  (o DNS não permite CNAME no apex), aviso para apagar os registros de
+  estacionamento antes de criar os novos, encaminhamento dos outros dois
+  domínios, e verificação de MX, porque nenhum dos três recebe e-mail hoje.
+
 ### Added
 - **Campo `processo` em `data/direcoes/[ano].yml`** (`nominal` | `simbolica`)
   e três verificações que impedem curadoria de virar trabalho perdido.

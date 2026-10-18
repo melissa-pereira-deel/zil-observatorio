@@ -4,7 +4,7 @@
 Cada metade na ferramenta feita para ela, e ambas com free tier.
 
 ```
-  zilobservatorio.org          api.zilobservatorio.org
+  zilobservatorio.com.br       api.zilobservatorio.com.br
   ┌──────────────────┐         ┌──────────────────────┐
   │  Next.js         │ ──────► │  FastAPI (Docker)    │
   │  Vercel          │  HTTPS  │  Render              │
@@ -32,7 +32,7 @@ o DNS entra depois, sem refazer nada. A Parte 4 é a única que fica de lado.
 Tenha em mãos:
 
 - Conta na [Render](https://render.com) e na [Vercel](https://vercel.com) (ambas aceitam login pelo GitHub)
-- Acesso ao DNS de `zilobservatorio.org`
+- Acesso ao painel de DNS da **GoDaddy** para `zilobservatorio.com.br`
 - O repositório conectado às duas plataformas
 
 > **Repositório privado:** as duas plataformas conseguem acessar repositórios
@@ -60,8 +60,8 @@ O `ADMIN_TOKEN` é gerado automaticamente pelo Render e nunca aparece em log.
 painel. **O frontend ainda não existe**, então deixe vazia por enquanto e volte
 aqui depois da Parte 3, quando souber o domínio exato que a Vercel atribuiu.
 
-Se já tiver domínio próprio, pode preencher de uma vez com
-`https://zilobservatorio.org`.
+Com o domínio próprio já apontado, o valor final é
+`https://zilobservatorio.com.br`.
 
 ### 1.3 Conferir que subiu
 
@@ -146,28 +146,67 @@ browser. Parece bug de frontend e não é.
 
 ---
 
-## Parte 4 — DNS (só quando houver domínio próprio)
+## Parte 4 — DNS na GoDaddy
 
 Pule esta parte se estiver subindo nos domínios das plataformas. Voltar aqui
 depois não exige refazer nada — só acrescentar o domínio nos dois painéis,
 atualizar `NEXT_PUBLIC_API_URL` e `CORS_ORIGINS`, e redeploy do frontend.
 
+**Adicione o domínio nos dois painéis primeiro** (**Vercel → Settings →
+Domains**, **Render → Settings → Custom Domain**). Cada uma mostra o valor
+exato a apontar — use o que aparecer lá, não o que estiver escrito aqui,
+porque esses valores mudam. As duas só servem o domínio e só emitem o
+certificado depois que ele está reivindicado no painel delas.
 
-No provedor de DNS de `zilobservatorio.org`:
+Depois, em **GoDaddy → My Products → zilobservatorio.com.br → DNS**:
 
 | Tipo | Nome | Aponta para | De quem |
 |---|---|---|---|
-| `A` ou `CNAME` | `@` (raiz) | o valor que a Vercel mostrar | Vercel |
-| `CNAME` | `www` | o valor que a Vercel mostrar | Vercel |
-| `CNAME` | `api` | `zil-api.onrender.com` | Render |
+| `A` | `@` (raiz) | o IP que a Vercel mostrar | Vercel |
+| `CNAME` | `www` | o alvo que a Vercel mostrar | Vercel |
+| `CNAME` | `api` | o alvo que o Render mostrar (`zil-api.onrender.com`) | Render |
 
-Adicione o domínio nos dois painéis (**Vercel → Settings → Domains**,
-**Render → Settings → Custom Domain**) — eles emitem o certificado HTTPS
-automaticamente depois que o DNS propaga.
+> **Por que `A` na raiz e não `CNAME`:** o DNS não permite CNAME no apex de um
+> domínio, e a GoDaddy segue essa regra. Para `@` só existe registro `A`.
 
-Depois que `api.zilobservatorio.org` estiver de pé, confirme que
+**Antes de criar, apague o que a GoDaddy já deixou lá.** Domínio estacionado
+vem com um `A` em `@` apontando para a página de venda e um `CNAME www`. Se o
+registro antigo ficar, o site alterna entre a Vercel e o estacionamento, de
+forma intermitente e difícil de diagnosticar.
+
+Os certificados HTTPS saem sozinhos depois que o DNS propaga. A GoDaddy
+costuma levar de minutos a algumas horas.
+
+```bash
+dig +short zilobservatorio.com.br A
+dig +short api.zilobservatorio.com.br CNAME
+```
+
+Depois que `api.zilobservatorio.com.br` estiver de pé, confirme que
 `CORS_ORIGINS` no Render contém exatamente a origem do frontend, **com
 `https://` e sem barra no final**.
+
+> **`www` e a raiz são origens diferentes para o CORS.** Se a Vercel estiver
+> redirecionando `www` para a raiz, basta `https://zilobservatorio.com.br`. Se
+> as duas servirem o site, as duas precisam estar em `CORS_ORIGINS`.
+
+### Os outros dois domínios
+
+`zilmanifesto.org` e `zilmanifesto.com.br` também são do projeto e encaminham
+para o canônico. Isso é **Forwarding** na GoDaddy (*My Products → o domínio →
+Forwarding*), não registro de DNS: um 301 para `https://zilobservatorio.com.br`.
+Buscadores consolidam os três num endereço só.
+
+### E-mail no domínio
+
+O `CODE_OF_CONDUCT.md` manda reportar violações para
+**conduta@zilobservatorio.com.br**. Esse endereço precisa **existir** — hoje o
+domínio não tem registro MX nenhum, ou seja, não recebe e-mail. Um
+encaminhamento da própria GoDaddy para a sua caixa pessoal resolve.
+
+```bash
+dig +short zilobservatorio.com.br MX    # vazio = o canal de conduta não funciona
+```
 
 ---
 
@@ -251,7 +290,10 @@ variáveis da API. A imagem já os comporta: o Dockerfile copia `apps/workers` e
 - [ ] Home e `/bussula` carregam dados reais
 - [ ] Anotada a URL real da API (o Render muda o nome se já estiver tomado)
 - [ ] Anotado quando o Postgres gratuito vence
-- [ ] *(com domínio próprio)* DNS propagado e HTTPS ativo nos dois
+- [ ] Registros de estacionamento da GoDaddy apagados antes de criar os novos
+- [ ] DNS propagado e HTTPS ativo nos dois
+- [ ] `zilmanifesto.org` e `zilmanifesto.com.br` encaminhando para o canônico
+- [ ] `dig +short zilobservatorio.com.br MX` devolve algo — senão o canal de conduta não recebe
 
 > `/proposicoes` fica **vazia** enquanto `scripts/sync_pipeline.py` não rodar.
 > É o esperado: o `seed.py` só traz as votações curadas. A página tem empty
