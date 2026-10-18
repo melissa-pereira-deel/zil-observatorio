@@ -10,6 +10,67 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Fase 1 do painel de curadoria multi-perspectiva** — a calibração que decide
+  se as Fases 2–4 acontecem ([PRD-PAINEL §12](PRD-PAINEL.md)). O painel **não
+  entra em produção**: não há superfície pública, não há geração de PR, e nada
+  aqui toca `data/direcoes/` ou o Score.
+  - `data/painel/agentes/*.yml`: os cinco agentes (jurista, economista,
+    industrial, políticas públicas, contraditor) com viés declarado, insumos
+    próprios e modelo pinado. Ficam em `data/` sob a mesma governança dos dados
+    editoriais porque quem escreve as instruções controla o resultado — o diff
+    é o controle (risco R2).
+  - `apps/workers/panel/`: orquestração das etapas 2 a 4. Três regras
+    invioláveis passam a ser propriedade do código, não disciplina: a
+    independência da etapa 2 é garantida pela **assinatura** de
+    `montar_prompt_analise`, que não recebe os pareceres dos demais (risco R6);
+    a carga **recusa** um agente de análise que declare `pareceres_dos_outros`
+    como insumo; e o módulo não importa scoring, models ou SQLAlchemy, nem
+    escreve em disco — verificado na árvore sintática pelos testes.
+  - **Consenso sem desempate** (`consenso.py`): 4 de 5 na mesma direção vira
+    proposta; menos que isso é pauta contestada, sem exceção. Objeção que o
+    contraditor declare *decisiva* derruba o consenso mesmo com a aritmética a
+    favor. Acrescentado um terceiro resultado que o PRD não previa —
+    `sem_materia` —, porque tratar abstenção unânime como dissenso quebraria a
+    própria métrica 5 da Fase 1: uma votação procedimental, em que todos se
+    abstêm corretamente, entraria na conta como pauta contestada.
+  - **Texto de fonte como dado não confiável** (regra 6): ementas e textos do
+    Planalto entram cercados por delimitadores, e qualquer sequência parecida
+    com um delimitador é removida do texto antes — sem isso, uma ementa que
+    contenha a marca de fechamento escapa do bloco e o resto dela é lido como
+    instrução.
+  - `data/painel/casos/construidos.yml`: 10 casos com resposta conhecida **por
+    construção** — procedimental → abstenção, frontalmente contrário → direção
+    contrária, ambíguo → contestada. Dois são deliberadamente capciosos: "Dia
+    Nacional do Engenheiro Industrial" casa com keywords da taxonomia e não
+    constrói indústria nenhuma.
+  - `data/painel/casos/injection.yml`: 8 ataques, incluindo fuga de
+    delimitador, exfiltração de instruções e um que induz a direção `nao` —
+    porque manipular para rebaixar o score de um parlamentar é tão plausível
+    quanto o inverso.
+  - `scripts/painel.py`: runner do go/no-go, com `--dry-run` que monta os
+    prompts e conta as chamadas sem gastar token. O relatório nomeia os
+    falsificadores da §12 em vez de só imprimir faixas, e imprime o
+    denominador junto de cada percentual — sobre ~10 casos, "15–35% de
+    contestadas" são entre uma e três votações, e as faixas servem para
+    disparar inspeção, não para aprovar o painel.
+  - **O relatório não dá verde falso.** Sem `ANTHROPIC_API_KEY`, toda consulta
+    falha e todo parecer degrada para abstenção — o que é certo para o dado e
+    perigoso para o relatório, porque abstenção também é o resultado correto de
+    um caso procedimental. Na primeira versão, `--injection` fechava em "100%
+    resistido (8/8)" sem nada ter rodado: nenhum ataque obedecia porque nenhum
+    chegava ao modelo, um verde falso na única métrica que o PRD trata como
+    binária. Agora o script exige a chave antes de executar, e qualquer caso com
+    erro registrado em `meta.erros` torna a rodada **inconclusiva**, com saída
+    não-zero. Três testes de regressão cobrem isso.
+  - 58 testes novos, nenhum deles chamando a API. O que só se mede com modelo
+    de verdade — se ele resiste a injection, se as perspectivas divergem onde
+    deveriam — fica fora da CI, em `scripts/painel.py`.
+  - `CLAUDE.md`: `data/painel/` e `scripts/painel.py` nas listagens de
+    estrutura, o bloco de comandos do painel, e uma seção com as quatro
+    garantias que o código impõe por construção — mais as três coisas que
+    convém não reaprender do jeito difícil (`sem_materia` não é `contestada`,
+    categoria é sugestão e não norma, e os testes offline não provam resistência
+    a injection).
 - **Campo `processo` em `data/direcoes/[ano].yml`** (`nominal` | `simbolica`)
   e três verificações que impedem curadoria de virar trabalho perdido.
   Pelo **art. 185 do Regimento Interno da Câmara**, o processo **simbólico** é
