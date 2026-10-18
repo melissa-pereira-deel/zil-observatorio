@@ -1,0 +1,180 @@
+# Casos construídos para a Fase 1 — docs/PRD-PAINEL.md §12.
+#
+# POR QUE ESTES CASOS, E NÃO VOTAÇÕES REAIS CURADAS
+#
+# O projeto não tem gold standard. As 7 entradas de `data/direcoes/` nasceram num
+# único commit, de origem não reconstituível, e estão marcadas `nao-validado` —
+# medir o painel contra elas seria circular se tiveram assistência de LLM.
+#
+# A saída é trocar a pergunta. Cada caso abaixo tem resposta conhecida **por
+# construção**: a resposta certa decorre do desenho do caso, não do julgamento
+# de um curador. Um requerimento de urgência não tem direção de mérito porque
+# requerimento de urgência não trata de mérito — isso é verdade por definição,
+# não por opinião.
+#
+# O que estes casos detectam: painel incoerente, que não se abstém onde deve, ou
+# que inventa relevância ZIL onde não há. O que eles NÃO detectam: se o painel
+# acerta em pautas genuinamente difíceis. Isso exigiria verdade de referência, e
+# o protocolo da §12 aceita explicitamente essa perda.
+#
+# Ementas são SINTÉTICAS. Não citam votação real e não devem ser usadas como
+# base para entrada em `data/direcoes/`.
+
+casos:
+  # ── Procedimentais: não há mérito a avaliar ────────────────────────────────
+  - id: proc-urgencia
+    classe: procedimental
+    descricao_votacao: >
+      Requerimento de urgência para apreciação da matéria, nos termos do art.
+      155 do Regimento Interno.
+    ementa: >
+      Requer urgência para apreciação do Projeto de Lei nº 1.234, de 2025.
+    esperado:
+      resultado: sem_materia
+    por_que: >
+      Urgência decide quando a Casa aprecia a matéria, não o que a matéria faz.
+      Não existe direção de voto favorável à soberania industrial num
+      requerimento de rito — qualquer direção aqui é artefato do painel.
+
+  - id: proc-adiamento
+    classe: procedimental
+    descricao_votacao: >
+      Requerimento de adiamento da discussão por duas sessões.
+    ementa: >
+      Requer o adiamento da discussão da matéria por 2 (duas) sessões.
+    esperado:
+      resultado: sem_materia
+    por_que: >
+      Mesmo raciocínio da urgência. Incluído separadamente porque adiamento é
+      às vezes usado taticamente para matar matéria, e um painel que "lê
+      intenção política" vai querer opinar. Não deve.
+
+  - id: proc-redacao-final
+    classe: procedimental
+    descricao_votacao: >
+      Votação da redação final do vencido em segundo turno.
+    ementa: >
+      Redação final do Projeto de Lei nº 4.567, de 2024.
+    esperado:
+      resultado: sem_materia
+    por_que: >
+      Redação final consolida texto já aprovado; não altera mérito. Um painel
+      que atribui aqui a direção do projeto subjacente está votando outra
+      coisa que não a votação em pauta.
+
+  # ── Fora do escopo ZIL: relevante, mas não é pauta de soberania industrial ─
+  - id: fora-escopo-penal
+    classe: fora_de_escopo
+    descricao_votacao: >
+      Votação em turno único do substitutivo do Senado.
+    ementa: >
+      Altera o Decreto-Lei nº 2.848, de 1940 (Código Penal), para aumentar a
+      pena do crime de apropriação indébita previdenciária.
+    esperado:
+      resultado: sem_materia
+    por_que: >
+      Matéria penal sem relação com capacidade produtiva. Este caso existe por
+      um erro real que o projeto já cometeu: o classificador de keywords
+      marcava homicídio qualificado como soberania digital porque a ementa
+      citava a LGPD entre as leis alteradas. O painel não deve repetir isso.
+
+  - id: fora-escopo-feriado
+    classe: fora_de_escopo
+    descricao_votacao: Votação em turno único.
+    ementa: >
+      Institui o Dia Nacional do Engenheiro Industrial, a ser celebrado
+      anualmente em 11 de dezembro.
+    esperado:
+      resultado: sem_materia
+    por_que: >
+      Caso deliberadamente capcioso: casa com "engenharia" e "industrial", que
+      são keywords da taxonomia, e não tem efeito algum sobre capacidade
+      produtiva. Data comemorativa não constrói indústria. Se o painel
+      classificar isto como ZIL, ele está casando palavra, não lendo matéria.
+
+  # ── Frontalmente contrários à tese ────────────────────────────────────────
+  - id: contra-privatizacao-estrategica
+    classe: frontalmente_contrario
+    descricao_votacao: >
+      Votação em turno único do Projeto de Lei, com parecer favorável.
+    ementa: >
+      Autoriza a alienação da totalidade das ações de propriedade da União em
+      empresa pública dedicada à pesquisa e produção de componentes
+      semicondutores, revoga as exigências de conteúdo local aplicáveis às
+      compras governamentais do setor e extingue o fundo setorial de
+      microeletrônica.
+    esperado:
+      resultado: proposta
+      direcao: nao
+    por_que: >
+      Três dispositivos que removem capacidade estatal em semicondutores de
+      uma vez. Não há leitura desenvolvimentista que sustente "sim". Se o
+      painel propuser "sim" aqui, é no-go total — a §12 trata erro em caso
+      frontalmente contrário como falsificador.
+
+  - id: contra-fim-exigencia-tecnologica
+    classe: frontalmente_contrario
+    descricao_votacao: Votação do substitutivo.
+    ementa: >
+      Revoga a obrigatoriedade de transferência de tecnologia nos contratos de
+      compra de sistemas de defesa pelo Ministério da Defesa e dispensa a
+      exigência de produção local nas aquisições acima de R$ 500 milhões.
+    esperado:
+      resultado: proposta
+      direcao: nao
+    por_que: >
+      Transferência de tecnologia e produção local em defesa são o mecanismo
+      pelo qual compra pública constrói capacidade. Revogar os dois converte
+      gasto de defesa em importação.
+
+  # ── Claramente favoráveis ─────────────────────────────────────────────────
+  - id: favoravel-fundo-mineral
+    classe: claramente_favoravel
+    descricao_votacao: >
+      Votação em turno único, com parecer favorável da comissão especial.
+    ementa: >
+      Cria o Fundo Nacional de Minerais Críticos, vinculado ao Ministério de
+      Minas e Energia, com dotação orçamentária própria, destinado a financiar
+      o beneficiamento de terras raras em território nacional, vedada a
+      aplicação de recursos em projetos cuja produção seja integralmente
+      exportada sem processamento.
+    esperado:
+      resultado: proposta
+      direcao: sim
+    por_que: >
+      Fundo com dotação própria, executor designado e contrapartida explícita
+      contra exportação de minério bruto. Atende até o critério do economista
+      cético: há contrapartida mensurável.
+
+  # ── Genuinamente ambíguos: o dissenso é o resultado correto ───────────────
+  - id: ambiguo-tarifa-insumo
+    classe: ambiguo
+    descricao_votacao: Votação do projeto, com emendas.
+    ementa: >
+      Eleva em 25 pontos percentuais a alíquota do imposto de importação
+      incidente sobre células fotovoltaicas e seus componentes, pelo prazo de
+      10 anos, sem cláusula de revisão.
+    esperado:
+      resultado: contestada
+    por_que: >
+      Caso em que as perspectivas do painel devem colidir de verdade. O
+      industrial vê proteção a cadeia nascente; o economista vê encarecimento
+      do insumo de geração solar por uma década sem cláusula de saída; o de
+      políticas públicas pergunta se existe capacidade nacional para atender a
+      demanda nesse prazo. Convergência de 4/5 aqui é sinal de que o painel
+      não tem perspectivas de verdade — é um modelo com cinco fantasias.
+
+  - id: ambiguo-conteudo-local-energia
+    classe: ambiguo
+    descricao_votacao: Votação em primeiro turno.
+    ementa: >
+      Estabelece índice mínimo de 60% de conteúdo local para equipamentos de
+      geração eólica em leilões regulados, com penalidade de exclusão do
+      certame em caso de descumprimento e sem previsão de escalonamento.
+    esperado:
+      resultado: contestada
+    por_que: >
+      Conteúdo local sem escalonamento é o caso clássico de tensão entre
+      construir cadeia e travar a expansão da própria geração. Se o painel
+      resolver isto com placar de 5-0, a regra de consenso não está medindo
+      perspectiva alguma.
