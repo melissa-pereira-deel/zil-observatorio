@@ -2,7 +2,7 @@
 
 **Data:** 2026-10-18
 **Status:** RFC aberto — sem decisão
-**Janela:** fecha em 2026-10-25 (≥ 7 dias, [GOVERNANCE.md](../GOVERNANCE.md) § "Mudanças nas categorias ZIL")
+**Janela:** ≥ 7 dias de issue pública ([GOVERNANCE.md](../GOVERNANCE.md) § "Mudanças nas categorias ZIL") — conta da **abertura da issue**, não da redação deste documento. Issue aberta em 2026-10-21; fecha em **2026-10-28**
 **Abre:** a decisão que o [ADR-004](004-placar-focado.md) registrou como "a **próxima**"
 
 > **Procedência.** A redação deste documento e a medição da seção 4 são de
@@ -488,7 +488,7 @@ Duas coisas ditas sem rodeio, porque o contrário seria teatro:
 
 ## 8. Decisão
 
-*Vazia. A janela fecha em 2026-10-25.*
+*Vazia. A janela fecha em 2026-10-28.*
 
 Quando preenchida, esta seção deve dizer:
 
