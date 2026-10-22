@@ -9,6 +9,21 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Changed
+- **Núcleo comum dos pipelines de agentes** extraído para
+  `apps/workers/agentes/` — carga de definições em YAML com hash de
+  instruções e modelo pinado (`carga.py`), blindagem de texto de fonte e
+  preâmbulo de segurança (`blindagem.py`), a fronteira única com a API da
+  Anthropic e o parser tolerante (`fronteira.py`), e `MetaExecucao`
+  (`meta.py`). O painel (`apps/workers/panel/`) passa a consumir o núcleo e
+  mantém **todos** os nomes públicos e privados que `scripts/painel.py` e a
+  suite de injection importam. Sem mudança de comportamento: os 58 testes do
+  painel passam sem alteração, e o system prompt é byte a byte o mesmo —
+  verificado contra a `main`. Motivo: o pipeline de explicação de proposições
+  precisa das mesmas garantias com outra regra de síntese (dissenso
+  preservado, não consenso 4/5), e duplicar blindagem seria recriar a
+  divergência que o #26 eliminou entre `candidatas.py` e o classificador.
+
 ### Fixed
 - **`validar_direcoes.py --verificar-api` falhava na `main`:** três das sete
   entradas curadas são votações simbólicas e nenhuma declarava `processo`, então
