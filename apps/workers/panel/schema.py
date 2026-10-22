@@ -5,8 +5,13 @@ calibração usam — e porque o `Parecer` é o artefato que vai a público
 (docs/PRD-PAINEL.md §5, regra inviolável 5: todo parecer é público).
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Literal, Optional
+
+# Reprodutibilidade é garantia comum a todos os pipelines de agentes; mora no
+# núcleo e é reexportada aqui para que `from .schema import MetaExecucao` siga
+# valendo para quem já importava.
+from ..agentes.meta import MetaExecucao  # noqa: F401
 
 # "abster" é resposta de primeira classe, não falha. O princípio operacional do
 # projeto é "na dúvida sobre direção esperada, não classificar" (CLAUDE.md), e
@@ -90,22 +95,6 @@ class Apuracao:
     def gera_proposta(self) -> bool:
         """Só placar com consenso vira PR contra data/direcoes/."""
         return self.resultado == "proposta"
-
-
-@dataclass
-class MetaExecucao:
-    """Reprodutibilidade (regra inviolável 7).
-
-    Sem isto, uma atualização de modelo muda vereditos silenciosamente e a
-    promessa de auditabilidade do projeto se quebra (risco R5).
-    """
-
-    modelos: dict[str, str]
-    hashes_instrucoes: dict[str, str]
-    versoes_agentes: dict[str, int]
-    iniciado_em: str
-    concluido_em: Optional[str] = None
-    erros: list[str] = field(default_factory=list)
 
 
 @dataclass
