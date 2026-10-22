@@ -1,0 +1,25 @@
+
+=== VOCABULÁRIO `saude` → ZIL-SAU (Complexo Industrial da Saúde) ===
+keywords: insumo farmacêutico, insumos farmacêuticos, IFA, farmoquímico, farmoquímica, vacina, vacinas, medicamento, medicamentos, complexo industrial da saúde, equipamento médico-hospitalar, material médico-hospitalar, Farmanguinhos, Butantan, Fiocruz, Hemobrás, produção nacional de medicamentos, genérico
+fracas:   medicamento, medicamentos, genérico, vacina, vacinas
+
+2023: 20 → 20 candidatas (0 novas, 0 por keyword forte)
+
+2024: 28 → 28 candidatas (0 novas, 0 por keyword forte)
+
+2025: 12 → 12 candidatas (0 novas, 0 por keyword forte)
+
+2026: 12 → 14 candidatas (2 novas, 1 por keyword forte)
+  ✓      2572994-8 escore   9.2 315×38  [—]
+      casou por: insumos farmacêuticos, medicamentos
+      Altera a Lei nº 5.991, de 17 de dezembro de 1973, que “dispõe sobre o Controle Sanitário do Comércio de Drogas, Medicamentos, Insumos Farmacêuticos e 
+  ⚠      2601223-8 escore  -5.9 337×19  [só casou por palavra comum]
+      casou por: medicamentos
+      Declara de interesse público os medicamentos Mounjaro e Zepbound, para fins do disposto no art. 71 da Lei n° 9.279, de 14 de maio de 1996, alterado pe
+
+TOTAL: 2 candidatas novas, das quais 1 por keyword forte.
+Cada uma precisa de leitura humana: casar keyword forte não prova
+que a matéria é de soberania industrial — prova que entrou na rede.
+
+--- regressão: 9 afirmações de "não classifica" na suíte (taxonomia + ZIL-SAU) ---
+  ✓ nenhuma reacendeu (9/9 seguem vazias)

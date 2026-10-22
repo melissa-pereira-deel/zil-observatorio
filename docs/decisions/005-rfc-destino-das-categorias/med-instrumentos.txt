@@ -1,0 +1,31 @@
+
+=== VOCABULÁRIO `instrumentos` → ZIL-INS (Instrumentos de Política Industrial) ===
+keywords: depreciação acelerada, crédito à exportação, BNDES, FINEP, compras públicas, margem de preferência, desoneração, poder de compra do Estado, política industrial, conteúdo local, encomenda tecnológica, fundo garantidor
+fracas:   desoneração, compras públicas, BNDES, fundo garantidor
+
+2023: 20 → 20 candidatas (0 novas, 0 por keyword forte)
+
+2024: 28 → 31 candidatas (3 novas, 3 por keyword forte)
+  ✓     2416804-54 escore   2.6 142×287  [REJEITADA · indecidível]
+      casou por: depreciação acelerada
+      Autoriza a concessão de quotas diferenciadas de depreciação acelerada para máquinas, equipamentos, aparelhos e instrumentos novos destinados ao ativo 
+  ✓     2416804-48 escore   1.2 305×107  [indecidível]
+      casou por: depreciação acelerada
+      Autoriza a concessão de quotas diferenciadas de depreciação acelerada para máquinas, equipamentos, aparelhos e instrumentos novos destinados ao ativo 
+  ✓     2416804-51 escore   1.0 287×96  [indecidível]
+      casou por: depreciação acelerada
+      Autoriza a concessão de quotas diferenciadas de depreciação acelerada para máquinas, equipamentos, aparelhos e instrumentos novos destinados ao ativo 
+
+2025: 12 → 13 candidatas (1 novas, 0 por keyword forte)
+  ⚠     2557801-10 escore  -5.4 382×33  [só casou por palavra comum]
+      casou por: fundo garantidor
+      Altera a Lei nº 13.999, de 18 de maio de 2020, para autorizar a utilização de recursos não comprometidos do Fundo Garantidor de Operações (FGO) para a
+
+2026: 12 → 12 candidatas (0 novas, 0 por keyword forte)
+
+TOTAL: 4 candidatas novas, das quais 3 por keyword forte.
+Cada uma precisa de leitura humana: casar keyword forte não prova
+que a matéria é de soberania industrial — prova que entrou na rede.
+
+--- regressão: 9 afirmações de "não classifica" na suíte (taxonomia + ZIL-INS) ---
+  ✓ nenhuma reacendeu (9/9 seguem vazias)
