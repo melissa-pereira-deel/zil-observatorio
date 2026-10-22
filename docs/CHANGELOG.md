@@ -9,6 +9,120 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Added
+- **Verificação de alegações — pipeline v2** (`apps/workers/explicacao/verificacao.py`,
+  `data/explicacao/pipelines/v2.yml`, [ADR-008](decisions/008-fontes-curadas-e-verificacao.md)).
+  O único agente com ferramenta é o `verificador`, e a ferramenta é fechada.
+  - Extração cega: afirmações das lentes e parágrafos da justificação viram
+    trechos anônimos, embaralhados por hash; o `extrator` não sabe de quem é
+    cada um. Assinaturas de `montar_prompt_extracao` e
+    `montar_prompt_verificacao` não aceitam parecer.
+  - `consultar_serie` só aceita as séries que o código resolveu como
+    candidatas; série fora do catálogo, fora das candidatas ou ferramenta
+    inexistente é recusada e registrada antes da rede.
+  - Para alegação numérica, o veredito é refeito pelo código a partir da
+    observação consultada, com tolerância de arredondamento; se o modelo
+    discordar, prevalece a conta (`divergencia_verificador`). Alegação causal
+    vira `nao_verificavel_por_dado`. Duas origens primárias que discordam viram
+    `fontes_divergentes`.
+  - Contradita e fontes divergentes vão para `data/fontes/fila/` (fora do git),
+    para decisão humana.
+  - `agentes/fronteira.py`: `consultar_com_ferramentas`, com o laço no harness,
+    teto de rodadas e registro de cada chamada.
+  - `revisao.py`: número sem origem nos textos finais reprova a execução
+    (métrica 10), inclusive na v1; síntese que omite contradita ou repete o
+    número contradito no resumo didático também.
+  - Agentes `extrator` e `verificador`; `sintetizador` passa à versão 2 com a
+    obrigação sobre números e verificações. Seis casos construídos em
+    `data/explicacao/casos/verificacao.yml`.
+  - Colunas `explicacoes.verificacoes` e `explicacoes.contexto_hash`
+    (migration `b81e4c07d2a9`).
+- **Fontes externas curadas e contexto pré-registrado** (`apps/workers/fontes/`,
+  `data/fontes/`, `scripts/fontes.py`). O slot `contexto_economico` que o
+  economista declara como insumo nunca tinha sido preenchido: as perguntas
+  "quem paga e por quanto tempo" eram respondidas de memória do modelo.
+  Agora ele é preenchido por séries de fontes catalogadas — e de um jeito que
+  **não devolve ao agente a escolha do que buscar**, porque escolha de busca
+  é o vetor de viés mais silencioso que há.
+  - `data/fontes/catalogo.yml` é a allowlist, sob a governança dos dados
+    editoriais: toda fonte declara `natureza` e `vies_declarado` ("oficial"
+    não é "neutro"); toda fonte diz se é `primaria`, e secundária (IPEA
+    republica BCB e IBGE) nunca conta como evidência independente; toda
+    série tem os `conceitos` pelos quais pode ser escolhida. `chave` é o
+    nome de uma variável de ambiente, nunca o valor — a carga recusa. Hash
+    do arquivo vai para a execução.
+  - `cliente.py`: a única função que toca a rede para dados. A allowlist é
+    aplicada **no transporte do httpx**, não em instrução; falha vira
+    `Observacoes(erro=...)`, nunca exceção (o BCB responde HTML com status
+    200 para série inexistente); consulta é sempre por intervalo explícito,
+    porque "último valor" não é "valor de hoje" — a meta Selic é publicada
+    com datas futuras até o próximo Copom. Cache em disco (`data/fontes/cache/`,
+    fora do git) torna duas execuções reproduzíveis.
+  - `contexto.py` + `data/fontes/planos/por_tema.yml`: o plano decide
+    **antes** de qualquer consulta quais séries entram, por tema oficial da
+    Câmara ou categoria ZIL, idênticas para todas as lentes e ancoradas na
+    data de apresentação da proposição. O hash do contexto cobre só o
+    conteúdo (séries, datas, valores), nunca a data da consulta.
+  - Verificado com consulta real em 2026-10-21: BCB SGS (Selic 432, IPCA
+    13522/433, câmbio 3698), IBGE agregados (população 6579/9324), IPEA.
+    Tesouro/SICONFI, Comex Stat e Portal da Transparência (exige chave)
+    ficam catalogados e **não habilitados**: responderam, mas os
+    adaptadores não foram escritos.
+  - `scripts/explicar.py --proposicao ID --contexto` imprime o bloco que as
+    lentes receberiam, sem chave da Anthropic; `--proposicao ID` monta o
+    contexto uma vez por execução e grava hash e evidências na explicação.
+  - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
+
+### Changed
+- `apps/workers/explicacao/`: `Insumos` ganha `contexto_hash` e
+  `contexto_evidencias`; `Explicacao.contexto` e `explicacoes.evidencias.contexto`
+  carregam os números que as lentes leram, com fonte, data e URL — não um
+  ponteiro para séries que serão revisadas. `metricas.contexto_hash` registra
+  o que entrou.
+
+- **Pipeline de explicação de proposições — Fase 1, o harness**
+  (`apps/workers/explicacao/`, `data/explicacao/`, `scripts/explicar.py`).
+  Produz, por proposição, três sínteses sem veredito: resumo didático
+  (240–640 caracteres), resumo detalhado (480–2480) e análise crítica
+  sistêmica. O que difere do painel: **síntese não tem consenso a apurar** —
+  divergência entre lentes sobrevive no texto final em `dissensos[]`, e uma
+  síntese que a apaga falha na validação. O agente `industrial` fica de fora
+  de propósito: a explicação é para o público entender a proposição, não para
+  defender a tese.
+  - `coleta.py`: ficha de fatos pela API — autores com partido/UF,
+    cronologia, relacionadas, temas oficiais — com origem por campo. Entra
+    como contexto confiável; é a referência contra a qual o revisor confere
+    nomes, partidos e datas.
+  - `extracao.py`: inteiro teor via `pdfplumber` (dependência nova), separado
+    em dispositivo e justificação. OCR fica como gancho explícito
+    (`insuficiente`), fora do caminho principal.
+  - `roteamento.py` + `data/explicacao/pipelines/v1.yml`: lentes fixas
+    (leitor, jurista, economista, publicas) e condicionais (ambiental, saude,
+    pesquisa_cti, civel_consumidor, federativo) roteadas por tema oficial da
+    Câmara ou categoria ZIL; sem tema, todas. `pipeline_versao` é o hash do
+    YAML — duas abordagens coexistem na tabela, comparáveis.
+  - `revisao.py`: entidades fabricadas (zero é a meta), citações literais
+    conferidas contra o texto, dissenso preservado, cobertura de lentes.
+  - Tabela `explicacoes`, versionada por execução, com migration
+    `7f3c2e9a1b04`; `persistencia.py` idempotente em (proposição, versão do
+    pipeline, hash do texto).
+  - Nove agentes próprios em `data/explicacao/agentes/`; jurista, economista
+    e publicas vêm do painel **por referência**, com o mesmo hash.
+  - Seis casos construídos (`data/explicacao/casos/construidos.yml`) com
+    resposta conhecida por construção; **57 testes** sem rede.
+  - Experimento S5, medido: o inteiro teor de 2010+ é texto nativo e **traz a
+    justificação do autor** quando é a proposição original da Câmara (PNMCE,
+    PL 2583/2020, PL 9543/2018). **Não traz** quando é autógrafo do Senado ou
+    texto final após emendas (PL 1847/2024) — ter ou não justificação depende
+    da origem e do estágio, não do ano. A extração marca `origem_senado` e o
+    prompt explica a ausência em vez de só constatá-la.
+  - O harness já pegou dois erros antes de qualquer chamada real: "PL
+    1001/2025" era lido como o Partido Liberal pelo revisor (sigla seguida de
+    número agora é referência a proposição), e a cobertura de lentes
+    reprovava execuções quando é sinal sobre a tabela de roteamento, por lote.
+- `packages/camara_client`: `obter_autores`, `obter_tramitacoes`,
+  `obter_relacionadas`, `obter_temas` — nenhum era buscado antes.
+
 ### Changed
 - **Núcleo comum dos pipelines de agentes** extraído para
   `apps/workers/agentes/` — carga de definições em YAML com hash de

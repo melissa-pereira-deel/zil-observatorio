@@ -1,0 +1,35 @@
+# Plano de contexto pré-registrado — ver apps/workers/fontes/contexto.py.
+#
+# Este arquivo decide QUAIS séries entram no contexto de uma proposição,
+# ANTES de qualquer consulta e sem que nenhuma lente escolha. É o pré-registro:
+# a escolha do que olhar vira diff revisável, em vez de ficar com o agente
+# cujo viés declarado a orientaria. Todas as lentes recebem o mesmo bloco.
+#
+# As chaves de `por_tema` são temas oficiais da Câmara (os 32 de
+# /proposicoes/{id}/temas) ou categorias ZIL. Toda referência tem que existir
+# em data/fontes/catalogo.yml — a carga confere.
+#
+# Os valores são ancorados na data de apresentação da proposição: o contexto
+# que o autor tinha, não o de hoje.
+
+nome: por_tema
+
+# Base macro, para toda proposição.
+sempre:
+  - bcb_sgs.selic_meta
+  - bcb_sgs.ipca_12m
+  - ibge.populacao
+
+por_tema:
+  # Exposição cambial: insumo importado, energia, minerais, fertilizantes.
+  "Energia, Recursos Hídricos e Minerais": [bcb_sgs.cambio_usd_mensal]
+  "Indústria, Comércio e Serviços": [bcb_sgs.cambio_usd_mensal]
+  "Relações Internacionais e Comércio Exterior": [bcb_sgs.cambio_usd_mensal]
+  "Agricultura, Pecuária, Pesca e Extrativismo": [bcb_sgs.cambio_usd_mensal]
+  "ZIL-ENE": [bcb_sgs.cambio_usd_mensal]
+  "ZIL-MIN": [bcb_sgs.cambio_usd_mensal]
+  "ZIL-FER": [bcb_sgs.cambio_usd_mensal]
+  "ZIL-AGR": [bcb_sgs.cambio_usd_mensal]
+  # Matéria econômica e fiscal: a variação mensal além do acumulado.
+  "Economia": [bcb_sgs.ipca_mensal]
+  "Finanças Públicas e Orçamento": [bcb_sgs.ipca_mensal]

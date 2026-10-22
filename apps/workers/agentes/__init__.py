@@ -29,7 +29,7 @@ from .carga import (
     carregar_conjunto,
     validar_definicao,
 )
-from .fronteira import consultar, extrair_json
+from .fronteira import consultar, consultar_com_ferramentas, extrair_json
 from .meta import MetaExecucao
 
 __all__ = [
@@ -44,6 +44,7 @@ __all__ = [
     "carregar_conjunto",
     "validar_definicao",
     "consultar",
+    "consultar_com_ferramentas",
     "extrair_json",
     "MetaExecucao",
 ]

@@ -1,0 +1,77 @@
+# Variante v2 do pipeline de explicação — v1 + verificação de alegações.
+# Ver apps/workers/explicacao/roteamento.py e verificacao.py.
+#
+# A v1 fica como está, para comparação lado a lado (`--comparar v1 v2` na
+# calibração): é para isso que as variantes existem. A diferença entre as
+# duas é só o bloco de verificação no fim deste arquivo.
+#
+# Este arquivo É a abordagem: quais lentes rodam, quando, e quem sintetiza. O
+# hash do arquivo vira `pipeline_versao` na tabela `explicacao`, então mudar
+# uma linha aqui produz execuções comparáveis lado a lado com as antigas — é
+# assim que se testa uma abordagem nova sem apagar a anterior.
+#
+# Muda por PR, com diff. Quem controla o roteamento controla quais
+# perspectivas o público vê.
+
+nome: v2
+modelo_padrao: claude-opus-5-5
+
+# Rodam sempre. Jurista, economista e publicas vêm do painel por referência;
+# o leitor é próprio. O `industrial` do painel fica de fora de propósito: é o
+# advogado da tese do projeto, e a explicação é para o público entender a
+# proposição, não para defender a tese.
+lentes_fixas:
+  - leitor
+  - jurista
+  - economista
+  - publicas
+
+# Entram quando o tema oficial da Câmara (ou a categoria ZIL) liga.
+lentes_condicionais:
+  - ambiental
+  - saude
+  - pesquisa_cti
+  - civel_consumidor
+  - federativo
+
+# tema oficial da Câmara (32, ver RFC-006 C5) ou categoria ZIL → lente.
+# Sem nenhum tema nem categoria (a PNMCE não tinha tema), rodam TODAS.
+roteamento:
+  "Meio Ambiente e Desenvolvimento Sustentável": ambiental
+  "Energia, Recursos Hídricos e Minerais": ambiental
+  "Agricultura, Pecuária, Pesca e Extrativismo": ambiental
+  "ZIL-ENE": ambiental
+  "ZIL-MIN": ambiental
+  "ZIL-FER": ambiental
+  "ZIL-AGR": ambiental
+  "Saúde": saude
+  "Ciência, Tecnologia e Inovação": pesquisa_cti
+  "Educação": pesquisa_cti
+  "ZIL-EDU": pesquisa_cti
+  "ZIL-SEM": pesquisa_cti
+  "Direito Civil e Processual Civil": civel_consumidor
+  "Direito e Defesa do Consumidor": civel_consumidor
+  "Trabalho e Emprego": civel_consumidor
+  "Administração Pública": federativo
+  "Cidades e Desenvolvimento Urbano": federativo
+  "Finanças Públicas e Orçamento": federativo
+  "Direito Constitucional": federativo
+
+contraditor: contraditor
+sintetizador: sintetizador
+
+# Quantas vezes a síntese pode ser pedida de novo por tamanho fora do limite
+# antes de a execução ser marcada `invalido`.
+max_reformulacoes: 2
+
+# ── verificação de alegações ──
+# Extração cega (trechos anônimos e embaralhados) → verificador com uma
+# ferramenta fechada (séries do catálogo resolvidas por conceito) →
+# comparação determinística. Contradita e fontes divergentes vão para a fila
+# humana. Ver apps/workers/explicacao/verificacao.py.
+extrator: extrator
+verificador: verificador
+# Teto de alegações conferidas por execução; acima dele, o veredito é
+# `nao_verificada_limite` e isso aparece nas métricas. Custo: cada uma é uma
+# conversa de até 6 rodadas com o verificador.
+max_alegacoes: 12
