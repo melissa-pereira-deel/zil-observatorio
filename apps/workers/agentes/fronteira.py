@@ -43,6 +43,15 @@ def extrair_json(bruto: str) -> dict:
         return {"error": f"json_parse_failed: {bruto[:200]}"}
 
 
+def texto_da_resposta(blocos) -> str:
+    """Junta só os blocos de texto. O modelo pode pensar antes de responder,
+    e o raciocínio chega como bloco próprio, antes do texto — no SDK 0.40
+    ele aparece como `TextBlock` com `type="thinking"` e texto vazio. Ler só
+    o primeiro bloco devolvia "" e o parser falhava em todas as lentes
+    (primeira chamada real, 2026-10-22)."""
+    return "".join(getattr(b, "text", "") or "" for b in blocos or [] if getattr(b, "type", None) == "text")
+
+
 def consultar(
     modelo: str,
     system: str,
@@ -84,7 +93,9 @@ def consultar(
         return {"error": f"API respondeu {e.status_code}: {type(e).__name__}"}
     except anthropic.APIError as e:
         return {"error": f"chamada falhou: {type(e).__name__}"}
-    return extrair_json(message.content[0].text)
+    if message.stop_reason == "max_tokens":
+        return {"error": f"resposta cortada no limite de {max_tokens} tokens"}
+    return extrair_json(texto_da_resposta(message.content))
 
 
 # ── uso de ferramentas ────────────────────────────────────────────────────────
@@ -102,11 +113,23 @@ def consultar(
 Executor = Callable[[str, dict], dict]
 
 
-def _bloco_para_dict(bloco) -> dict:
-    """Converte um bloco de conteúdo do SDK em dict, para reenviá-lo."""
-    if getattr(bloco, "type", None) == "tool_use":
+def _bloco_para_dict(bloco) -> Optional[dict]:
+    """Converte um bloco de conteúdo do SDK em dict, para reenviá-lo.
+
+    Blocos de raciocínio voltam como vieram, com a assinatura: a API exige
+    que o raciocínio anterior a um uso de ferramenta seja devolvido intacto.
+    Texto vazio não volta — a API recusa bloco de texto vazio.
+    """
+    tipo = getattr(bloco, "type", None)
+    if tipo == "tool_use":
         return {"type": "tool_use", "id": bloco.id, "name": bloco.name, "input": bloco.input}
-    return {"type": "text", "text": getattr(bloco, "text", "")}
+    if tipo in ("thinking", "redacted_thinking"):
+        d = bloco.model_dump() if hasattr(bloco, "model_dump") else dict(vars(bloco))
+        if tipo == "thinking":
+            return {"type": "thinking", "thinking": d.get("thinking", ""), "signature": d.get("signature", "")}
+        return {"type": "redacted_thinking", "data": d.get("data", "")}
+    texto = getattr(bloco, "text", "") or ""
+    return {"type": "text", "text": texto} if texto else None
 
 
 def _resumo(resultado: dict, limite: int = 300) -> str:
@@ -167,10 +190,11 @@ def consultar_com_ferramentas(
         blocos = list(resposta.content or [])
         usos = [b for b in blocos if getattr(b, "type", None) == "tool_use"]
         if not usos:
-            texto = "".join(getattr(b, "text", "") for b in blocos if getattr(b, "type", None) == "text")
-            return extrair_json(texto)
+            if getattr(resposta, "stop_reason", None) == "max_tokens":
+                return {"error": f"resposta cortada no limite de {max_tokens} tokens"}
+            return extrair_json(texto_da_resposta(blocos))
 
-        mensagens.append({"role": "assistant", "content": [_bloco_para_dict(b) for b in blocos]})
+        mensagens.append({"role": "assistant", "content": [d for d in (_bloco_para_dict(b) for b in blocos) if d]})
         resultados = []
         for uso in usos:
             try:

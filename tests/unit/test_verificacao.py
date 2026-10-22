@@ -41,6 +41,9 @@ CASOS = {
         (REPO_ROOT / "data" / "explicacao" / "casos" / "verificacao.yml").read_text(encoding="utf-8")
     )["casos"]
 }
+# Valor fictício para testes da fronteira: não é chave, só não pode ser vazio.
+_FICTICIA = "valor-ficticio"
+
 _SINTESE_NEUTRA = {
     "resumo_didatico": "x" * 300,
     "resumo_detalhado": "y" * 600,
@@ -386,8 +389,8 @@ class _ClienteFalso:
         self.messages = self
 
     def create(self, **kw):
-        self.mensagens.append(kw["messages"])
-        return SimpleNamespace(content=self.roteiro.pop(0))
+        self.mensagens.append([dict(m) for m in kw["messages"]])
+        return SimpleNamespace(content=self.roteiro.pop(0), stop_reason="end_turn")
 
 
 def _uso(i, nome, args):
@@ -451,5 +454,41 @@ def test_chave_recusada_vira_erro_e_nao_excecao(monkeypatch):
         raise anthropic.AuthenticationError("invalid x-api-key", response=httpx.Response(401, request=req), body=None)
 
     monkeypatch.setattr(anthropic.resources.messages.Messages, "create", recusa)
-    res = consultar("m", "s", "p", max_tokens=10, api_key="sk-ant-teste")
-    assert "401" in res["error"] and "sk-ant-teste" not in res["error"]
+    res = consultar("m", "s", "p", max_tokens=10, api_key=_FICTICIA)
+    assert "401" in res["error"] and _FICTICIA not in res["error"]
+
+
+def test_raciocinio_antes_do_texto_nao_esconde_a_resposta(monkeypatch):
+    """O modelo pensa antes de responder: o primeiro bloco é raciocínio e o
+    JSON vem no segundo. Ler só o primeiro dava "" (2026-10-22)."""
+    import anthropic
+
+    from apps.workers.agentes.fronteira import consultar
+
+    def responde(self, **kw):
+        return SimpleNamespace(stop_reason="end_turn", content=[
+            SimpleNamespace(type="thinking", text=""),
+            SimpleNamespace(type="text", text='{"nada_a_dizer": true, "afirmacoes": []}'),
+        ])
+
+    monkeypatch.setattr(anthropic.resources.messages.Messages, "create", responde)
+    assert consultar("m", "s", "p", max_tokens=10, api_key=_FICTICIA) == {"nada_a_dizer": True, "afirmacoes": []}
+
+
+def test_resposta_cortada_e_erro_declarado(monkeypatch):
+    import anthropic
+
+    from apps.workers.agentes.fronteira import consultar
+
+    monkeypatch.setattr(anthropic.resources.messages.Messages, "create",
+                        lambda self, **kw: SimpleNamespace(stop_reason="max_tokens", content=[SimpleNamespace(type="text", text='{"a":')]))
+    assert "cortada" in consultar("m", "s", "p", max_tokens=10, api_key=_FICTICIA)["error"]
+
+
+def test_laco_devolve_raciocinio_com_assinatura_e_omite_texto_vazio():
+    pensa = SimpleNamespace(type="thinking", text="", model_dump=lambda: {"type": "thinking", "thinking": "hmm", "signature": "sig"})
+    cliente = _ClienteFalso([[pensa, SimpleNamespace(type="text", text=""), _uso(1, "x", {})], [_texto("{}")]])
+    consultar_com_ferramentas("m", "s", "p", ferramentas=[], executor=lambda n, a: {}, max_tokens=10, cliente=cliente)
+    reenviado = cliente.mensagens[1][1]["content"]
+    assert reenviado[0] == {"type": "thinking", "thinking": "hmm", "signature": "sig"}
+    assert [b["type"] for b in reenviado] == ["thinking", "tool_use"]
