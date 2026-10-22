@@ -369,6 +369,39 @@ class CamaraClient:
         """Detalhes de uma proposição."""
         return self._get(f"/proposicoes/{proposicao_id}")
 
+    # Os quatro abaixo alimentam a ficha de fatos do pipeline de explicação.
+    # Nenhum deles era buscado antes: `autores` e `tramitacoes` existem como
+    # colunas em Proposicao e nunca foram preenchidas (RFC-006, §1.1).
+
+    def obter_autores(self, proposicao_id: int) -> list[dict]:
+        """Autores de uma proposição — {nome, tipo, uri, codTipo, ordemAssinatura}.
+
+        A URI de deputado leva a `/deputados/{id}`, de onde saem partido e UF.
+        Proposição de iniciativa do Executivo ou de comissão tem autor sem URI
+        de deputado.
+        """
+        dados = self._get(f"/proposicoes/{proposicao_id}/autores")
+        return dados if isinstance(dados, list) else []
+
+    def obter_tramitacoes(self, proposicao_id: int) -> list[dict]:
+        """Cronologia da tramitação, com órgão, despacho e URL de documento."""
+        dados = self._get(f"/proposicoes/{proposicao_id}/tramitacoes")
+        return dados if isinstance(dados, list) else []
+
+    def obter_relacionadas(self, proposicao_id: int) -> list[dict]:
+        """Proposições relacionadas: apensadas, emendas, substitutivos, destaques."""
+        dados = self._get(f"/proposicoes/{proposicao_id}/relacionadas")
+        return dados if isinstance(dados, list) else []
+
+    def obter_temas(self, proposicao_id: int) -> list[dict]:
+        """Temas oficiais atribuídos pela Câmara — {codTema, tema, relevancia}.
+
+        São 32 temas, presentes em ~100% das proposições recentes (RFC-006, C5).
+        Não substituem a taxonomia ZIL; servem de prior e de roteamento.
+        """
+        dados = self._get(f"/proposicoes/{proposicao_id}/temas")
+        return dados if isinstance(dados, list) else []
+
     # ── Frentes ──
 
     def listar_frentes(self, legislatura: Optional[int] = None) -> list[dict]:

@@ -115,6 +115,7 @@ class Proposicao(Base):
     enriquecido_em: Mapped[Optional[datetime]] = mapped_column(DateTime)
 
     votacoes: Mapped[list["Votacao"]] = relationship(back_populates="proposicao")
+    explicacoes: Mapped[list["Explicacao"]] = relationship(back_populates="proposicao")
 
     __table_args__ = (
         UniqueConstraint("fonte_id", "fonte", name="uq_proposicao_fonte"),
@@ -251,4 +252,53 @@ class Financiamento(Base):
     __table_args__ = (
         Index("ix_financiamento_parlamentar", "parlamentar_id"),
         Index("ix_financiamento_doador", "doador_cnpj_cpf"),
+    )
+
+
+# ── Explicação de proposição (pipeline de agentes) ──
+
+class Explicacao(Base):
+    """Uma execução do pipeline de explicação sobre uma proposição.
+
+    Versionada por execução, de propósito: várias linhas por proposição
+    coexistem, uma por `pipeline_versao` (hash do YAML do pipeline) e por
+    `texto_hash` (o inteiro teor que foi lido). É o que permite rodar duas
+    abordagens sobre o mesmo conjunto e comparar lado a lado — e é o que a
+    tabela `proposicoes` não permitiria com colunas, onde a execução nova
+    sobrescreveria a anterior.
+    """
+
+    __tablename__ = "explicacoes"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    proposicao_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True), ForeignKey("proposicoes.id"), nullable=False
+    )
+    pipeline_versao: Mapped[str] = mapped_column(String(16), nullable=False)
+    texto_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+
+    # As três saídas. Nulas quando status != pronto.
+    resumo_didatico: Mapped[Optional[str]] = mapped_column(Text)
+    resumo_detalhado: Mapped[Optional[str]] = mapped_column(Text)
+    analise_sistemica: Mapped[Optional[dict]] = mapped_column(JSON(none_as_null=True))
+
+    # Evidência: afirmações por lente (com citações) e dissensos. É o que
+    # torna a explicação auditável sem o modelo (RFC-006 §7).
+    evidencias: Mapped[Optional[dict]] = mapped_column(JSON(none_as_null=True))
+
+    # Reprodutibilidade: modelos, hashes de instruções e versões por agente.
+    meta: Mapped[Optional[dict]] = mapped_column(JSON(none_as_null=True))
+    metricas: Mapped[Optional[dict]] = mapped_column(JSON(none_as_null=True))
+    problemas: Mapped[Optional[list]] = mapped_column(JSON(none_as_null=True))
+
+    status: Mapped[str] = mapped_column(String(24), nullable=False)  # pronto|invalido|lentes_indisponiveis
+    custo_estimado: Mapped[Optional[float]] = mapped_column(Numeric(8, 4))
+    criado_em: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    proposicao: Mapped["Proposicao"] = relationship(back_populates="explicacoes")
+
+    __table_args__ = (
+        UniqueConstraint("proposicao_id", "pipeline_versao", "texto_hash", name="uq_explicacao_execucao"),
+        Index("ix_explicacao_proposicao_versao", "proposicao_id", "pipeline_versao"),
+        Index("ix_explicacao_status", "status"),
     )
