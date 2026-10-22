@@ -67,3 +67,5 @@ data/dossies/
 
 # Cache de séries externas (apps/workers/fontes/cliente.py) — reproduzível
 data/fontes/cache/
+# Fila humana da verificação (scripts/explicar.py --pipeline v2) — decisão local
+data/fontes/fila/

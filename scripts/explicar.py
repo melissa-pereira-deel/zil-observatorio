@@ -19,6 +19,12 @@ Uso (da raiz do repositório):
         O contexto econômico pré-registrado (apps/workers/fontes) é montado
         antes e entra idêntico em toda lente que o declara.
 
+    python scripts/explicar.py --proposicao 2558692 --pipeline v2
+        Igual, com verificação de alegações: extração cega, verificador com
+        uma ferramenta fechada (séries do catálogo) e comparação pelo código.
+        Contraditas e fontes divergentes vão para data/fontes/fila/, para
+        decisão humana.
+
     python scripts/explicar.py --proposicao 2558692 --contexto
         Só monta e imprime o contexto que as lentes receberiam — ficha,
         temas, séries com proveniência. Rede pública, sem chave da Anthropic.
@@ -55,12 +61,14 @@ from apps.workers.explicacao.pipeline import (  # noqa: E402
 )
 from apps.workers.explicacao.roteamento import carregar_pipeline_por_nome, rotear  # noqa: E402
 from apps.workers.fontes import montar_contexto  # noqa: E402
+from apps.workers.explicacao.verificacao import fila_humana  # noqa: E402
 from packages.camara_client import CamaraClient  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 CASOS = Path(_repo_root) / "data" / "explicacao" / "casos" / "construidos.yml"
+FILA = Path(_repo_root) / "data" / "fontes" / "fila"
 
 
 def _exigir_chave() -> None:
@@ -118,7 +126,12 @@ def dry_run_caso(caso_id: str, pipeline_nome: str) -> int:
     p = montar_prompt_sintese(ag[pipe.sintetizador], ins, [])
     chars += len(p)
     print(f"  {pipe.sintetizador:16} prompt {len(p):6} chars")
-    print(f"\nchamadas: {len(lentes) + 2} · caracteres de prompt: {chars:,}\nNada foi chamado — --dry-run não usa a API.")
+    chamadas = f"{len(lentes) + 2}"
+    if pipe.verifica:
+        # A extração é uma chamada; o verificador, uma conversa por alegação
+        # verificável, até `max_alegacoes`, cada uma com até 6 rodadas.
+        chamadas += f" + 1 de extração + até {pipe.max_alegacoes} verificações (até 6 rodadas cada)"
+    print(f"\nchamadas: {chamadas} · caracteres de prompt: {chars:,}\nNada foi chamado — --dry-run não usa a API.")
     return 0
 
 
@@ -175,6 +188,25 @@ def rodar_proposicao(proposicao_id: int, pipeline_nome: str, gravar_no_banco: bo
         print("\n[PROBLEMAS]")
         for prob in res.problemas:
             print(f"  · {prob}")
+    if res.verificacoes:
+        print("\n[VERIFICAÇÕES]")
+        for v in res.verificacoes:
+            a = v.alegacao
+            achado = f" · {v.ref} = {v.valor_encontrado} em {v.data_referencia}" if v.valor_encontrado is not None else ""
+            print(f"  {a.id} {v.veredito:24} ({a.origem}) {a.texto[:90]}{achado}")
+            if v.recusas:
+                print(f"      recusas da ferramenta: {v.recusas}")
+        fila = fila_humana(ficha.fonte, ficha.fonte_id, res.verificacoes)
+        if fila:
+            FILA.mkdir(parents=True, exist_ok=True)
+            destino = FILA / f"{ficha.fonte}-{ficha.fonte_id}.yml"
+            destino.write_text(
+                "# Fila humana — alegações contraditas ou com fontes divergentes.\n"
+                "# Preencha `decisao`. O modelo não decide o destino de uma contradição.\n"
+                + yaml.safe_dump(fila, allow_unicode=True, sort_keys=False),
+                encoding="utf-8",
+            )
+            print(f"\n{len(fila)} item(ns) para decisão humana em {destino}")
     print(f"\n[MÉTRICAS] {json.dumps(res.metricas, ensure_ascii=False)}")
     if res.meta.erros:
         print("[ERROS]")

@@ -10,6 +10,33 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Verificação de alegações — pipeline v2** (`apps/workers/explicacao/verificacao.py`,
+  `data/explicacao/pipelines/v2.yml`, [ADR-008](decisions/008-fontes-curadas-e-verificacao.md)).
+  O único agente com ferramenta é o `verificador`, e a ferramenta é fechada.
+  - Extração cega: afirmações das lentes e parágrafos da justificação viram
+    trechos anônimos, embaralhados por hash; o `extrator` não sabe de quem é
+    cada um. Assinaturas de `montar_prompt_extracao` e
+    `montar_prompt_verificacao` não aceitam parecer.
+  - `consultar_serie` só aceita as séries que o código resolveu como
+    candidatas; série fora do catálogo, fora das candidatas ou ferramenta
+    inexistente é recusada e registrada antes da rede.
+  - Para alegação numérica, o veredito é refeito pelo código a partir da
+    observação consultada, com tolerância de arredondamento; se o modelo
+    discordar, prevalece a conta (`divergencia_verificador`). Alegação causal
+    vira `nao_verificavel_por_dado`. Duas origens primárias que discordam viram
+    `fontes_divergentes`.
+  - Contradita e fontes divergentes vão para `data/fontes/fila/` (fora do git),
+    para decisão humana.
+  - `agentes/fronteira.py`: `consultar_com_ferramentas`, com o laço no harness,
+    teto de rodadas e registro de cada chamada.
+  - `revisao.py`: número sem origem nos textos finais reprova a execução
+    (métrica 10), inclusive na v1; síntese que omite contradita ou repete o
+    número contradito no resumo didático também.
+  - Agentes `extrator` e `verificador`; `sintetizador` passa à versão 2 com a
+    obrigação sobre números e verificações. Seis casos construídos em
+    `data/explicacao/casos/verificacao.yml`.
+  - Colunas `explicacoes.verificacoes` e `explicacoes.contexto_hash`
+    (migration `b81e4c07d2a9`).
 - **Fontes externas curadas e contexto pré-registrado** (`apps/workers/fontes/`,
   `data/fontes/`, `scripts/fontes.py`). O slot `contexto_economico` que o
   economista declara como insumo nunca tinha sido preenchido: as perguntas
