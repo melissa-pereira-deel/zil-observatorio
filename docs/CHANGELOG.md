@@ -9,6 +9,50 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Added
+- **Pipeline de explicação de proposições — Fase 1, o harness**
+  (`apps/workers/explicacao/`, `data/explicacao/`, `scripts/explicar.py`).
+  Produz, por proposição, três sínteses sem veredito: resumo didático
+  (240–640 caracteres), resumo detalhado (480–2480) e análise crítica
+  sistêmica. O que difere do painel: **síntese não tem consenso a apurar** —
+  divergência entre lentes sobrevive no texto final em `dissensos[]`, e uma
+  síntese que a apaga falha na validação. O agente `industrial` fica de fora
+  de propósito: a explicação é para o público entender a proposição, não para
+  defender a tese.
+  - `coleta.py`: ficha de fatos pela API — autores com partido/UF,
+    cronologia, relacionadas, temas oficiais — com origem por campo. Entra
+    como contexto confiável; é a referência contra a qual o revisor confere
+    nomes, partidos e datas.
+  - `extracao.py`: inteiro teor via `pdfplumber` (dependência nova), separado
+    em dispositivo e justificação. OCR fica como gancho explícito
+    (`insuficiente`), fora do caminho principal.
+  - `roteamento.py` + `data/explicacao/pipelines/v1.yml`: lentes fixas
+    (leitor, jurista, economista, publicas) e condicionais (ambiental, saude,
+    pesquisa_cti, civel_consumidor, federativo) roteadas por tema oficial da
+    Câmara ou categoria ZIL; sem tema, todas. `pipeline_versao` é o hash do
+    YAML — duas abordagens coexistem na tabela, comparáveis.
+  - `revisao.py`: entidades fabricadas (zero é a meta), citações literais
+    conferidas contra o texto, dissenso preservado, cobertura de lentes.
+  - Tabela `explicacoes`, versionada por execução, com migration
+    `7f3c2e9a1b04`; `persistencia.py` idempotente em (proposição, versão do
+    pipeline, hash do texto).
+  - Nove agentes próprios em `data/explicacao/agentes/`; jurista, economista
+    e publicas vêm do painel **por referência**, com o mesmo hash.
+  - Seis casos construídos (`data/explicacao/casos/construidos.yml`) com
+    resposta conhecida por construção; **57 testes** sem rede.
+  - Experimento S5, medido: o inteiro teor de 2010+ é texto nativo e **traz a
+    justificação do autor** quando é a proposição original da Câmara (PNMCE,
+    PL 2583/2020, PL 9543/2018). **Não traz** quando é autógrafo do Senado ou
+    texto final após emendas (PL 1847/2024) — ter ou não justificação depende
+    da origem e do estágio, não do ano. A extração marca `origem_senado` e o
+    prompt explica a ausência em vez de só constatá-la.
+  - O harness já pegou dois erros antes de qualquer chamada real: "PL
+    1001/2025" era lido como o Partido Liberal pelo revisor (sigla seguida de
+    número agora é referência a proposição), e a cobertura de lentes
+    reprovava execuções quando é sinal sobre a tabela de roteamento, por lote.
+- `packages/camara_client`: `obter_autores`, `obter_tramitacoes`,
+  `obter_relacionadas`, `obter_temas` — nenhum era buscado antes.
+
 ### Changed
 - **Núcleo comum dos pipelines de agentes** extraído para
   `apps/workers/agentes/` — carga de definições em YAML com hash de
