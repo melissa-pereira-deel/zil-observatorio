@@ -104,7 +104,13 @@ class Insumos:
     texto: TextoExtraido
     categorias_zil: list[str] = field(default_factory=list)
     leis_referenciadas: list[str] = field(default_factory=list)
+    # Texto do contexto pré-registrado (apps/workers/fontes/contexto.py),
+    # construído UMA vez e lido por toda lente que o declare como insumo —
+    # informação simétrica por construção. O hash e as evidências seguem para
+    # a explicação; o pipeline não consulta nada.
     contexto_economico: str = ""
+    contexto_hash: str = ""
+    contexto_evidencias: Optional[dict] = None
     taxonomia: str = ""
 
 
@@ -326,8 +332,9 @@ def explicar(
         return Explicacao(
             fonte=insumos.ficha.fonte, fonte_id=insumos.ficha.fonte_id, pipeline_versao=pipeline.versao,
             resumo_didatico=None, resumo_detalhado=None, analise=None, pareceres=pareceres, meta=meta,
-            metricas={"roteamento": motivo_roteamento}, problemas=["nenhuma lente disponível"],
-            status="lentes_indisponiveis",
+            metricas={"roteamento": motivo_roteamento, "contexto_hash": insumos.contexto_hash or None},
+            problemas=["nenhuma lente disponível"], status="lentes_indisponiveis",
+            contexto=insumos.contexto_evidencias,
         )
 
     # ── síntese, com reformulação por tamanho ──
@@ -362,6 +369,7 @@ def explicar(
     )
     rev.metricas["roteamento"] = motivo_roteamento
     rev.metricas["reformulacoes"] = sum(1 for e in erros if "/sintese tentativa" in e)
+    rev.metricas["contexto_hash"] = insumos.contexto_hash or None
     problemas.extend(rev.problemas)
     if problemas and status == "pronto":
         status = "invalido"
@@ -371,4 +379,5 @@ def explicar(
         fonte=insumos.ficha.fonte, fonte_id=insumos.ficha.fonte_id, pipeline_versao=pipeline.versao,
         resumo_didatico=didatico, resumo_detalhado=detalhado, analise=analise,
         pareceres=pareceres, meta=meta, metricas=rev.metricas, problemas=problemas, status=status,
+        contexto=insumos.contexto_evidencias,
     )

@@ -16,6 +16,12 @@ Uso (da raiz do repositório):
     python scripts/explicar.py --proposicao 2558692 [--pipeline v1] [--gravar]
         Roda o pipeline de verdade sobre uma proposição da Câmara. Exige
         ANTHROPIC_API_KEY. Com --gravar, persiste na tabela `explicacoes`.
+        O contexto econômico pré-registrado (apps/workers/fontes) é montado
+        antes e entra idêntico em toda lente que o declara.
+
+    python scripts/explicar.py --proposicao 2558692 --contexto
+        Só monta e imprime o contexto que as lentes receberiam — ficha,
+        temas, séries com proveniência. Rede pública, sem chave da Anthropic.
 
     python scripts/explicar.py --calibrar [--pipeline v1] [--out DIR]
         Roda os casos construídos com chamada real e imprime as métricas 1–9.
@@ -48,6 +54,7 @@ from apps.workers.explicacao.pipeline import (  # noqa: E402
     montar_prompt_sintese,
 )
 from apps.workers.explicacao.roteamento import carregar_pipeline_por_nome, rotear  # noqa: E402
+from apps.workers.fontes import montar_contexto  # noqa: E402
 from packages.camara_client import CamaraClient  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -115,6 +122,29 @@ def dry_run_caso(caso_id: str, pipeline_nome: str) -> int:
     return 0
 
 
+def _contexto_da_ficha(ficha):
+    """Uma chamada por execução — é o que torna a informação simétrica entre
+    as lentes. Sem data de apresentação não há âncora, e o contexto fica vazio
+    declarado, não inventado."""
+    if not ficha.data_apresentacao:
+        logger.warning("proposição sem data de apresentação — contexto econômico não montado")
+        return None
+    ctx = montar_contexto(ancora=ficha.data_apresentacao, temas_oficiais=ficha.temas_oficiais)
+    logger.info("contexto: %d série(s), %d lacuna(s) · hash %s", len(ctx.linhas), len(ctx.lacunas), ctx.hash)
+    return ctx
+
+
+def mostrar_contexto(proposicao_id: int) -> int:
+    with CamaraClient() as c:
+        ficha = coletar_ficha(c, proposicao_id)
+    print(f"{ficha.rotulo} · apresentada em {ficha.data_apresentacao or '(não informada)'} · temas: {ficha.temas_oficiais or 'nenhum'}\n")
+    ctx = _contexto_da_ficha(ficha)
+    if ctx is None:
+        return 1
+    print(f"plano: {ctx.motivo}\n\n{ctx.para_prompt()}\n\nhash do contexto: {ctx.hash}")
+    return 0 if not ctx.vazio else 1
+
+
 def rodar_proposicao(proposicao_id: int, pipeline_nome: str, gravar_no_banco: bool, out: Optional[Path]) -> int:
     _exigir_chave()
     pipe = carregar_pipeline_por_nome(pipeline_nome)
@@ -124,7 +154,13 @@ def rodar_proposicao(proposicao_id: int, pipeline_nome: str, gravar_no_banco: bo
     texto = baixar_e_extrair(ficha.url_inteiro_teor)
     logger.info("ficha: %s · texto: %s (%d págs, %.0f c/pág) · justificação: %s",
                 ficha.rotulo, texto.metodo, texto.paginas, texto.chars_por_pagina, "sim" if texto.justificacao else "não")
-    ins = Insumos(ficha=ficha, texto=texto)
+    ctx = _contexto_da_ficha(ficha)
+    ins = Insumos(
+        ficha=ficha, texto=texto,
+        contexto_economico=ctx.para_prompt() if ctx else "",
+        contexto_hash=ctx.hash if ctx else "",
+        contexto_evidencias=ctx.evidencias() if ctx else None,
+    )
     res = explicar(ins, pipe, ag, consultar_agente)
 
     print(f"\n{'═' * 70}\n{ficha.rotulo} · status: {res.status} · {res.metricas.get('roteamento')}")
@@ -177,6 +213,7 @@ def main() -> int:
     ap.add_argument("--caso")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--proposicao", type=int)
+    ap.add_argument("--contexto", action="store_true", help="só o contexto pré-registrado; sem chave")
     ap.add_argument("--pipeline", default="v1")
     ap.add_argument("--gravar", action="store_true")
     ap.add_argument("--out", type=Path)
@@ -189,6 +226,8 @@ def main() -> int:
         if not a.dry_run:
             raise SystemExit("✗ --caso só roda com --dry-run na Fase 1; chamada real sobre casos é --calibrar (Fase 2)")
         return dry_run_caso(a.caso, a.pipeline)
+    if a.proposicao and a.contexto:
+        return mostrar_contexto(a.proposicao)
     if a.proposicao:
         return rodar_proposicao(a.proposicao, a.pipeline, a.gravar, a.out)
     if a.calibrar:

@@ -10,6 +10,49 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Fontes externas curadas e contexto pré-registrado** (`apps/workers/fontes/`,
+  `data/fontes/`, `scripts/fontes.py`). O slot `contexto_economico` que o
+  economista declara como insumo nunca tinha sido preenchido: as perguntas
+  "quem paga e por quanto tempo" eram respondidas de memória do modelo.
+  Agora ele é preenchido por séries de fontes catalogadas — e de um jeito que
+  **não devolve ao agente a escolha do que buscar**, porque escolha de busca
+  é o vetor de viés mais silencioso que há.
+  - `data/fontes/catalogo.yml` é a allowlist, sob a governança dos dados
+    editoriais: toda fonte declara `natureza` e `vies_declarado` ("oficial"
+    não é "neutro"); toda fonte diz se é `primaria`, e secundária (IPEA
+    republica BCB e IBGE) nunca conta como evidência independente; toda
+    série tem os `conceitos` pelos quais pode ser escolhida. `chave` é o
+    nome de uma variável de ambiente, nunca o valor — a carga recusa. Hash
+    do arquivo vai para a execução.
+  - `cliente.py`: a única função que toca a rede para dados. A allowlist é
+    aplicada **no transporte do httpx**, não em instrução; falha vira
+    `Observacoes(erro=...)`, nunca exceção (o BCB responde HTML com status
+    200 para série inexistente); consulta é sempre por intervalo explícito,
+    porque "último valor" não é "valor de hoje" — a meta Selic é publicada
+    com datas futuras até o próximo Copom. Cache em disco (`data/fontes/cache/`,
+    fora do git) torna duas execuções reproduzíveis.
+  - `contexto.py` + `data/fontes/planos/por_tema.yml`: o plano decide
+    **antes** de qualquer consulta quais séries entram, por tema oficial da
+    Câmara ou categoria ZIL, idênticas para todas as lentes e ancoradas na
+    data de apresentação da proposição. O hash do contexto cobre só o
+    conteúdo (séries, datas, valores), nunca a data da consulta.
+  - Verificado com consulta real em 2026-10-21: BCB SGS (Selic 432, IPCA
+    13522/433, câmbio 3698), IBGE agregados (população 6579/9324), IPEA.
+    Tesouro/SICONFI, Comex Stat e Portal da Transparência (exige chave)
+    ficam catalogados e **não habilitados**: responderam, mas os
+    adaptadores não foram escritos.
+  - `scripts/explicar.py --proposicao ID --contexto` imprime o bloco que as
+    lentes receberiam, sem chave da Anthropic; `--proposicao ID` monta o
+    contexto uma vez por execução e grava hash e evidências na explicação.
+  - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
+
+### Changed
+- `apps/workers/explicacao/`: `Insumos` ganha `contexto_hash` e
+  `contexto_evidencias`; `Explicacao.contexto` e `explicacoes.evidencias.contexto`
+  carregam os números que as lentes leram, com fonte, data e URL — não um
+  ponteiro para séries que serão revisadas. `metricas.contexto_hash` registra
+  o que entrou.
+
 - **Pipeline de explicação de proposições — Fase 1, o harness**
   (`apps/workers/explicacao/`, `data/explicacao/`, `scripts/explicar.py`).
   Produz, por proposição, três sínteses sem veredito: resumo didático

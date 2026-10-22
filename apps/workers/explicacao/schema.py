@@ -154,6 +154,10 @@ class Explicacao:
     metricas: dict = field(default_factory=dict)
     problemas: list[str] = field(default_factory=list)
     status: Status = "pronto"
+    # O contexto econômico que TODAS as lentes viram (apps/workers/fontes):
+    # as observações com proveniência, para a explicação carregar os números
+    # que leu em vez de um ponteiro para séries que vão mudar.
+    contexto: Optional[dict] = None
 
     @property
     def houve_injecao(self) -> bool:

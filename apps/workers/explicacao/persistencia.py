@@ -26,6 +26,9 @@ def _evidencias(res: ExplicacaoResultado) -> dict:
         "pareceres": [asdict(p) for p in res.pareceres],
         "dissensos": [asdict(d) for d in (res.analise.dissensos if res.analise else [])],
         "lentes": list(res.analise.lentes) if res.analise else [],
+        # Os números que as lentes leram, com fonte, data e URL — não um
+        # ponteiro para séries que serão revisadas (apps/workers/fontes).
+        "contexto": res.contexto,
     }
 
 

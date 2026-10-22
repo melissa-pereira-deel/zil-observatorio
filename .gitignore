@@ -64,3 +64,6 @@ celerybeat-schedule.*
 
 # Dossiês gerados por scripts/dossie.py — reproduzíveis a qualquer momento
 data/dossies/
+
+# Cache de séries externas (apps/workers/fontes/cliente.py) — reproduzível
+data/fontes/cache/
