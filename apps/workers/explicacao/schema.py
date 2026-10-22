@@ -138,6 +138,84 @@ class AnaliseSistemica:
             raise ValueError(f"dimensões desconhecidas na análise: {sorted(desconhecidas)}")
 
 
+# ── verificação de alegações (apps/workers/explicacao/verificacao.py) ──
+
+TipoAlegacao = Literal["quantitativa", "factual", "causal"]
+
+# O que uma verificação pode concluir. "confirmada" e "contradita" são
+# atributos DE UM NÚMERO, nunca selo da explicação. Alegação causal ("vai
+# gerar empregos") não chega ao verificador: não existe série que a teste.
+VEREDITOS = (
+    "confirmada",
+    "contradita",
+    "inconclusiva",            # havia fonte, a consulta não permitiu concluir
+    "fontes_divergentes",      # duas origens primárias discordam entre si
+    "sem_fonte_curada",        # nenhuma série do catálogo cobre o conceito
+    "nao_verificavel_por_dado",  # alegação causal — fica como argumento
+    "nao_verificada_limite",   # acima do teto de verificações por execução
+)
+# Vão para a fila humana: a decisão sobre elas nunca é do modelo.
+VEREDITOS_FILA = ("contradita", "fontes_divergentes")
+
+
+@dataclass(frozen=True)
+class Alegacao:
+    """Uma alegação verificável extraída de um trecho — sem saber de quem.
+
+    `origem` é preenchida pelo harness depois da extração, a partir do id
+    opaco do trecho; o extrator nunca a vê. `valor` vem na unidade natural:
+    percentuais como número de pontos (25 para 25%), contagens por extenso
+    (212000000 para "212 milhões").
+    """
+
+    id: str
+    texto: str
+    tipo: TipoAlegacao
+    conceito: str
+    trecho: str
+    origem: str = ""
+    valor: Optional[float] = None
+    unidade: str = ""
+    periodo: str = ""  # AAAA, AAAA-MM ou AAAA-MM-DD
+
+    def __post_init__(self) -> None:
+        if self.tipo not in ("quantitativa", "factual", "causal"):
+            raise ValueError(f"tipo de alegação inválido: {self.tipo!r}")
+        if not self.texto.strip():
+            raise ValueError("alegação vazia")
+        if self.tipo == "quantitativa" and self.valor is None:
+            raise ValueError("alegação quantitativa sem valor")
+
+
+@dataclass
+class Verificacao:
+    alegacao: Alegacao
+    veredito: str
+    candidatas: list[str] = field(default_factory=list)
+    ref: Optional[str] = None
+    data_referencia: Optional[str] = None
+    valor_encontrado: Optional[float] = None
+    tolerancia: Optional[float] = None
+    # "codigo" quando o veredito saiu da comparação determinística; "modelo"
+    # quando só o verificador julgou (alegação factual sem número).
+    conferido_por: str = ""
+    # O modelo disse uma coisa e a conta disse outra: vale a conta, e isso
+    # fica registrado — é sinal sobre o verificador, não sobre a alegação.
+    divergencia_verificador: bool = False
+    nota_vintage: str = ""
+    justificativa: str = ""
+    chamadas: list[dict] = field(default_factory=list)
+    recusas: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if self.veredito not in VEREDITOS:
+            raise ValueError(f"veredito desconhecido: {self.veredito!r} — válidos: {VEREDITOS}")
+
+    @property
+    def requer_humano(self) -> bool:
+        return self.veredito in VEREDITOS_FILA
+
+
 Status = Literal["pronto", "invalido", "lentes_indisponiveis"]
 
 
@@ -158,6 +236,8 @@ class Explicacao:
     # as observações com proveniência, para a explicação carregar os números
     # que leu em vez de um ponteiro para séries que vão mudar.
     contexto: Optional[dict] = None
+    # Uma por alegação extraída (só em pipelines com verificador).
+    verificacoes: list[Verificacao] = field(default_factory=list)
 
     @property
     def houve_injecao(self) -> bool:

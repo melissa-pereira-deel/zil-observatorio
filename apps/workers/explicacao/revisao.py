@@ -9,14 +9,23 @@ o que torna o go/no-go verificável sem chave:
 - métrica 3: citações literais presentes no texto extraído;
 - métrica 4: dissenso preservado — se duas lentes discordaram, a síntese tem
   que listar;
-- métrica 7: lentes roteadas que disseram "nada a dizer".
+- métrica 7: lentes roteadas que disseram "nada a dizer";
+- métrica 10: **números sem origem** — todo número nos textos finais tem que
+  existir no texto extraído, na ficha, no contexto econômico ou numa
+  verificação. A instrução "não traga números de memória" sozinha não vale
+  nada; esta conta é o que a torna verificável. Zero é a meta;
+- contradição sobrevive: alegação contradita tem que estar citada pela
+  síntese como contradita, e o número contradito nunca aparece no resumo
+  didático.
 """
 
 import re
 from dataclasses import dataclass, field
 
-from .coleta import FichaFatos, entidades_conhecidas
-from .schema import AnaliseSistemica, ParecerLente, ResumoDetalhado, ResumoDidatico
+from typing import Iterable, Optional
+
+from .coleta import FichaFatos, entidades_conhecidas, ficha_para_prompt
+from .schema import AnaliseSistemica, ParecerLente, ResumoDetalhado, ResumoDidatico, Verificacao
 
 # "Deputado Fulano de Tal", "Deputada Fulana" — a forma como um texto nomeia
 # um autor. É o único padrão de nome que o revisor confere: nome genérico
@@ -88,6 +97,68 @@ def entidades_fabricadas(texto: str, ficha: FichaFatos) -> list[str]:
     return [a for a in achadas if not (a in vistas or vistas.add(a))]
 
 
+# ── números ──────────────────────────────────────────────────────────────────
+
+# "1.234.567,89", "13,25", "2025", "30". Ponto como milhar, vírgula decimal.
+_NUMERO = re.compile(r"(?<![\w.,])(\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:,\d+)?)(?![\w])")
+_ESCALA = re.compile(r"\s*(mil|milh(?:ão|ões|ao|oes)|bilh(?:ão|ões|ao|oes)|trilh(?:ão|ões|ao|oes))\b", re.IGNORECASE)
+# Ordem importa: "milhões" começa com "mil".
+_FATOR = {"trilh": 1e12, "bilh": 1e9, "milh": 1e6, "mil": 1e3}
+# Na SAÍDA, datas e referências de proposição já são conferidas como entidade
+# (métrica 2) ou são rótulo ("PL 1001/2025"); ordinais são artigo de lei.
+_NAO_E_QUANTIDADE = re.compile(
+    r"\b\d{1,2}/\d{1,2}/\d{4}\b|\b\d{4}-\d{2}-\d{2}\b|\b\d+/\d{4}\b|\b\d+\s?[ºª°]"
+)
+
+
+def numeros(texto: str, *, so_quantidades: bool = False) -> list[float]:
+    """Os números de um texto em português, com escala por extenso
+    ("212 milhões" → 212000000). `so_quantidades` remove antes datas,
+    referências de proposição e ordinais."""
+    if so_quantidades:
+        texto = _NAO_E_QUANTIDADE.sub(" ", texto or "")
+    out: list[float] = []
+    for m in _NUMERO.finditer(texto or ""):
+        bruto = m.group(1).replace(".", "").replace(",", ".")
+        try:
+            v = float(bruto)
+        except ValueError:
+            continue
+        esc = _ESCALA.match(texto, m.end())
+        if esc:
+            palavra = esc.group(1).lower()
+            v *= next(f for k, f in _FATOR.items() if palavra.startswith(k))
+        out.append(v)
+    return out
+
+
+def _arredonda(v: float) -> float:
+    from .verificacao import arredondamento
+    return arredondamento(v)
+
+
+def _conhecido(n: float, conhecidos: list[float]) -> bool:
+    folga = max(_arredonda(n), 0.0)
+    return any(abs(n - k) <= max(folga, 0.005 * abs(k)) for k in conhecidos)
+
+
+def numeros_sem_origem(textos: Iterable[str], conhecidos: list[float]) -> list[float]:
+    achados: list[float] = []
+    for texto in textos:
+        for n in numeros(texto, so_quantidades=True):
+            if not _conhecido(n, conhecidos) and n not in achados:
+                achados.append(n)
+    return achados
+
+
+def _textos_da_saida(didatico, detalhado, analise) -> list[str]:
+    textos = [r.texto for r in (didatico, detalhado) if r]
+    if analise:
+        textos += analise.causas_raizes + analise.dependencias + analise.fatores_limitantes
+        textos += list(analise.dimensoes.values()) + [d.ponto for d in analise.dissensos]
+    return textos
+
+
 def _citacao_presente(citacao: str, texto: str) -> bool:
     if not texto:
         return False
@@ -104,8 +175,12 @@ def revisar(
     resumo_didatico: ResumoDidatico | None,
     resumo_detalhado: ResumoDetalhado | None,
     analise: AnaliseSistemica | None,
+    numeros_do_contexto: Iterable[float] = (),
+    verificacoes: Optional[list[Verificacao]] = None,
+    contraditas_citadas: Iterable[str] = (),
 ) -> Revisao:
     r = Revisao()
+    verificacoes = verificacoes or []
 
     # 1 — tamanhos (o schema já rejeitou; aqui só registra o que passou)
     r.metricas["tamanho_didatico"] = len(resumo_didatico.texto) if resumo_didatico else None
@@ -159,6 +234,39 @@ def revisar(
     r.metricas["roteamento_suspeito"] = bool(
         lentes_roteadas and len(sem_nada) / len(lentes_roteadas) > 0.5
     )
+
+    # 10 — números sem origem. O universo é o que as lentes puderam ler:
+    # texto extraído, ficha (que já traz ementa, datas e relacionadas),
+    # contexto econômico e o que a verificação encontrou ou confirmou.
+    from .verificacao import valores_verificados
+
+    conhecidos = numeros(texto_extraido) + numeros(ficha_para_prompt(ficha)) + list(numeros_do_contexto)
+    conhecidos += valores_verificados(verificacoes)
+    saida = _textos_da_saida(resumo_didatico, resumo_detalhado, analise)
+    sem_origem = numeros_sem_origem(saida, conhecidos)
+    r.metricas["numeros_sem_origem"] = len(sem_origem)
+    if sem_origem:
+        r.problemas.append(
+            "números sem origem no texto, na ficha, no contexto ou nas verificações: "
+            + ", ".join(f"{n:g}" for n in sem_origem)
+        )
+
+    # contradição sobrevive — e não contamina o resumo didático
+    contraditas = [v for v in verificacoes if v.veredito == "contradita"]
+    citadas = set(contraditas_citadas)
+    apagadas = [v.alegacao.id for v in contraditas if v.alegacao.id not in citadas]
+    r.metricas["contraditas"] = len(contraditas)
+    r.metricas["contraditas_apagadas"] = len(apagadas)
+    if apagadas and analise is not None:
+        r.problemas.append(f"alegações contraditas omitidas pela síntese: {apagadas}")
+    if resumo_didatico and contraditas:
+        no_didatico = numeros(resumo_didatico.texto, so_quantidades=True)
+        repetidas = [
+            v.alegacao.id for v in contraditas
+            if v.alegacao.valor is not None and any(abs(n - v.alegacao.valor) <= _arredonda(v.alegacao.valor) for n in no_didatico)
+        ]
+        if repetidas:
+            r.problemas.append(f"resumo didático repete número contradito: {repetidas}")
 
     # injection — sinal, não falha: a análise continua, mas fica marcada
     r.metricas["injecao_detectada"] = any(p.injecao_detectada for p in pareceres)

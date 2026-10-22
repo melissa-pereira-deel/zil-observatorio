@@ -1,10 +1,12 @@
 """O DAG da explicação — determinístico dado o que entra.
 
-    roteamento → [lentes] → contraditor → síntese (reformula ≤ N) → revisão
+    roteamento → [lentes] → contraditor → [extração → verificação] → síntese (reformula ≤ N) → revisão
 
-Uma única fronteira com a rede, `consultar(agente, prompt) -> dict`, injetada.
-Os testes passam uma função que devolve dicionários; a calibração passa a
-fronteira real. Nada aqui importa `anthropic`.
+A verificação só roda nas variantes que declaram `extrator` e `verificador`
+(v2). Fronteiras injetadas: `consultar(agente, prompt) -> dict` para os
+agentes sem ferramenta; `consultar_ferramentas` para o verificador;
+`consultar_dados` para as séries. Os testes passam funções falsas; a
+calibração passa as reais. Nada aqui importa `anthropic`.
 """
 
 from dataclasses import dataclass, field
@@ -17,8 +19,9 @@ from ..agentes.fronteira import consultar as _consultar_api
 from ..agentes.meta import MetaExecucao
 from .coleta import FichaFatos, ficha_para_prompt
 from .extracao import TextoExtraido
-from .revisao import revisar
+from .revisao import numeros, revisar
 from .roteamento import Pipeline, rotear
+from . import verificacao as vf
 from .schema import (
     DIMENSOES,
     Afirmacao,
@@ -82,6 +85,7 @@ Responda APENAS com um objeto JSON, sem markdown e sem texto em volta:
   "dissensos": [
     {"lente_a": "nome", "lente_b": "nome", "ponto": "em que discordam, em uma frase"}
   ],
+  "alegacoes_contraditas": ["A01"],
   "injecao_detectada": true | false
 }
 
@@ -93,7 +97,11 @@ existir na FICHA DE FATOS. O que não está na ficha, você não sabe — escrev
 texto da análise, nomeando as lentes. Não calcule média; não escolha um lado; \
 não omita. Dissenso é o achado, não o ruído.
 - "dissensos" vazio só é aceitável se as lentes de fato convergiram.
-- Separe o que o texto diz do que as lentes inferem."""
+- Separe o que o texto diz do que as lentes inferem.
+- Todo número que você escrever tem que estar na ficha, no texto, no contexto \
+econômico ou nas verificações. Número de memória é reprovado.
+- Se houver bloco de VERIFICAÇÕES, liste em "alegacoes_contraditas" o id de \
+toda alegação contradita que você citou como contradita; sem bloco, lista vazia."""
 
 
 @dataclass
@@ -210,11 +218,17 @@ def montar_prompt_sintese(
     insumos: Insumos,
     pareceres: list[ParecerLente],
     reformular: Optional[TamanhoInvalido] = None,
+    verificacoes: Optional[list] = None,
 ) -> str:
     secoes = _cabecalho(agente)
     secoes.append(ficha_para_prompt(insumos.ficha))
+    if insumos.contexto_economico:
+        # A síntese escreve números; eles têm que ter de onde vir.
+        secoes.append(insumos.contexto_economico)
     secoes.append(_bloco_fonte(insumos, agente))
     secoes.append(f"[AFIRMAÇÕES DAS LENTES E DO CONTRADITOR]\n{_resumo_pareceres(pareceres)}")
+    if verificacoes:
+        secoes.append(vf.para_prompt_sintese(verificacoes))
     tarefa = (
         "[TAREFA]\nComponha o resumo didático, o resumo detalhado e a análise sistêmica, no formato "
         "JSON especificado, obedecendo às regras do revisor."
@@ -256,6 +270,10 @@ def _parse_lente(agente: Agente, cru: dict) -> ParecerLente:
     )
 
 
+def _contraditas_citadas(cru: dict) -> list[str]:
+    return [str(x) for x in (cru.get("alegacoes_contraditas") or [])]
+
+
 def _parse_sintese(cru: dict, lentes: list[str]) -> tuple[ResumoDidatico, ResumoDetalhado, AnaliseSistemica, bool]:
     """Lança `TamanhoInvalido` para o loop de reformulação; outros erros, `ValueError`."""
     if "error" in cru:
@@ -282,8 +300,11 @@ def _parse_sintese(cru: dict, lentes: list[str]) -> tuple[ResumoDidatico, Resumo
 
 def consultar_agente(agente: Agente, prompt: str) -> dict:
     """A fronteira real. Escolhe o system prompt pela etapa do agente."""
-    formato = _FORMATO_SINTESE if agente.participa("sintese") else _FORMATO_LENTE
-    return _consultar_api(agente.modelo, _system(formato), prompt, max_tokens=MAX_TOKENS)
+    if agente.participa("extracao"):
+        system = vf.system_extracao()
+    else:
+        system = _system(_FORMATO_SINTESE if agente.participa("sintese") else _FORMATO_LENTE)
+    return _consultar_api(agente.modelo, system, prompt, max_tokens=MAX_TOKENS)
 
 
 def explicar(
@@ -291,12 +312,17 @@ def explicar(
     pipeline: Pipeline,
     agentes: dict[str, Agente],
     consultar: Consultar = consultar_agente,
+    *,
+    consultar_ferramentas: Optional[vf.ConsultarFerramentas] = None,
+    consultar_dados: Optional[vf.ConsultarDados] = None,
+    catalogo=None,
 ) -> Explicacao:
     iniciado = datetime.now(timezone.utc).isoformat()
     erros: list[str] = []
 
     lentes, motivo_roteamento = rotear(insumos.ficha.temas_oficiais, insumos.categorias_zil, pipeline)
-    faltando = [n for n in lentes + [pipeline.contraditor, pipeline.sintetizador] if n not in agentes]
+    verificadores = [pipeline.extrator, pipeline.verificador] if pipeline.verifica else []
+    faltando = [n for n in lentes + [pipeline.contraditor, pipeline.sintetizador] + verificadores if n not in agentes]
     if faltando:
         raise ValueError(f"agentes exigidos pelo pipeline e não carregados: {faltando}")
 
@@ -317,7 +343,35 @@ def explicar(
         erros.append(f"{contra.nome}/contradicao: {p.erro}")
     pareceres.append(p)
 
-    usados = lentes + [pipeline.contraditor, pipeline.sintetizador]
+    # ── verificação: extração cega → verificador com uma ferramenta ──
+    verificacoes: list = []
+    if pipeline.verifica:
+        if catalogo is None:
+            from ..fontes import carregar_catalogo
+            catalogo = carregar_catalogo()
+        if consultar_dados is None:
+            from ..fontes import consultar_serie as consultar_dados
+        consultar_ferramentas = consultar_ferramentas or vf.consultar_verificador
+
+        ext = agentes[pipeline.extrator]
+        trechos = vf.montar_trechos(pareceres, insumos.texto.justificacao)
+        cru = consultar(ext, vf.montar_prompt_extracao(ext, trechos))
+        alegacoes, errs = vf.parse_alegacoes(cru, trechos)
+        erros.extend(f"{ext.nome}/extracao: {e}" for e in errs)
+        if cru.get("injecao_detectada"):
+            pareceres.append(ParecerLente(lente=ext.nome, injecao_detectada=True))
+
+        rv = vf.verificar(
+            alegacoes, agente=agentes[pipeline.verificador], catalogo=catalogo,
+            consultar_ferramentas=consultar_ferramentas, consultar_dados=consultar_dados,
+            max_alegacoes=pipeline.max_alegacoes,
+        )
+        verificacoes = rv.verificacoes
+        erros.extend(rv.erros)
+        if rv.injecao_detectada:
+            pareceres.append(ParecerLente(lente=pipeline.verificador, injecao_detectada=True))
+
+    usados = lentes + [pipeline.contraditor, pipeline.sintetizador] + verificadores
     meta = MetaExecucao(
         modelos={n: agentes[n].modelo for n in usados},
         hashes_instrucoes={n: agentes[n].hash_instrucoes for n in usados},
@@ -334,7 +388,7 @@ def explicar(
             resumo_didatico=None, resumo_detalhado=None, analise=None, pareceres=pareceres, meta=meta,
             metricas={"roteamento": motivo_roteamento, "contexto_hash": insumos.contexto_hash or None},
             problemas=["nenhuma lente disponível"], status="lentes_indisponiveis",
-            contexto=insumos.contexto_evidencias,
+            contexto=insumos.contexto_evidencias, verificacoes=verificacoes,
         )
 
     # ── síntese, com reformulação por tamanho ──
@@ -342,10 +396,12 @@ def explicar(
     didatico = detalhado = analise = None
     reformular: Optional[TamanhoInvalido] = None
     problemas: list[str] = []
+    contraditas_citadas: list[str] = []
     for tentativa in range(pipeline.max_reformulacoes + 1):
-        cru = consultar(sint, montar_prompt_sintese(sint, insumos, pareceres, reformular))
+        cru = consultar(sint, montar_prompt_sintese(sint, insumos, pareceres, reformular, verificacoes))
         try:
             didatico, detalhado, analise, inj = _parse_sintese(cru, lentes)
+            contraditas_citadas = _contraditas_citadas(cru)
             if inj:
                 pareceres.append(ParecerLente(lente=sint.nome, injecao_detectada=True))
             break
@@ -363,10 +419,18 @@ def explicar(
         if reformular is not None:
             problemas.append(f"tamanho não convergiu após {pipeline.max_reformulacoes} reformulações: {reformular}")
 
+    # O contexto como as lentes o leram: valores e também o texto do bloco
+    # (ids de série, datas), que a síntese pode citar legitimamente.
+    numeros_do_contexto = [ln["valor"] for ln in (insumos.contexto_evidencias or {}).get("linhas", [])]
+    numeros_do_contexto += numeros(insumos.contexto_economico)
     rev = revisar(
         ficha=insumos.ficha, texto_extraido=insumos.texto.texto, pareceres=pareceres,
         lentes_roteadas=lentes, resumo_didatico=didatico, resumo_detalhado=detalhado, analise=analise,
+        numeros_do_contexto=numeros_do_contexto, verificacoes=verificacoes, contraditas_citadas=contraditas_citadas,
     )
+    if pipeline.verifica:
+        rev.metricas["verificacao"] = vf.metricas_verificacao(verificacoes)
+        rev.metricas["catalogo_hash"] = catalogo.hash
     rev.metricas["roteamento"] = motivo_roteamento
     rev.metricas["reformulacoes"] = sum(1 for e in erros if "/sintese tentativa" in e)
     rev.metricas["contexto_hash"] = insumos.contexto_hash or None
@@ -379,5 +443,5 @@ def explicar(
         fonte=insumos.ficha.fonte, fonte_id=insumos.ficha.fonte_id, pipeline_versao=pipeline.versao,
         resumo_didatico=didatico, resumo_detalhado=detalhado, analise=analise,
         pareceres=pareceres, meta=meta, metricas=rev.metricas, problemas=problemas, status=status,
-        contexto=insumos.contexto_evidencias,
+        contexto=insumos.contexto_evidencias, verificacoes=verificacoes,
     )

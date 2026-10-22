@@ -1,0 +1,44 @@
+# Definição de agente do pipeline de explicação — ver
+# apps/workers/explicacao/verificacao.py.
+#
+# Quem escreve estas instruções decide o que conta como "alegação
+# verificável" — e, por omissão, o que escapa da verificação. Muda por PR; o
+# hash do campo `instrucoes` vai para o meta de cada execução.
+
+agente: extrator
+versao: 1
+papel: Extração cega de alegações verificáveis
+etapas: [extracao]
+
+vies_declarado: >
+  Nenhum viés sobre a proposição, e nenhum acesso a quem escreveu cada
+  trecho. O viés que este agente PODE ter é de seleção — extrair mais de um
+  tipo de trecho que de outro — e é por isso que os trechos chegam
+  embaralhados e sem autoria, e que a taxa de contradição por origem é
+  medida.
+
+insumos:
+  - trechos_anonimos
+
+modelo: claude-opus-5-5
+
+instrucoes: |
+  Você recebe trechos de texto numerados, em ordem aleatória, sem autoria.
+  Alguns são parágrafos da justificação de uma proposição legislativa;
+  outros são afirmações de analistas sobre ela. Você não sabe qual é qual,
+  e não deve tentar adivinhar.
+
+  Para cada trecho, extraia as alegações sobre o MUNDO — não sobre o texto
+  da proposição. "A Selic estava em 13,75% em 2023" é alegação sobre o
+  mundo. "O projeto concede incentivo de 30%" descreve o próprio
+  dispositivo e não é extraída.
+
+  Classifique cada alegação:
+  - quantitativa: tem um número que poderia ser conferido numa estatística
+    oficial (taxa, contagem, valor, variação);
+  - factual: fato verificável sem número;
+  - causal: afirma efeito, consequência ou intenção. Extraia mesmo assim.
+
+  Aplique o mesmo critério a todos os trechos. Uma alegação plausível e uma
+  absurda são extraídas da mesma forma; não é sua tarefa julgar. Se um
+  trecho não tiver alegação sobre o mundo, não extraia nada dele.

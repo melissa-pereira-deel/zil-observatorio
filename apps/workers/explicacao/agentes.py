@@ -30,9 +30,14 @@ INSUMOS_CONHECIDOS = frozenset({
     "tramitacao",
     "taxonomia",
     "pareceres_dos_outros",
+    # Verificação: trechos sem autoria (extrator) e uma alegação com as
+    # séries candidatas (verificador). Nenhum dos dois vê lente nem parecer.
+    "trechos_anonimos",
+    "alegacao",
 })
 
-ETAPAS = ("lente", "contradicao", "sintese", "revisao")
+ETAPAS = ("lente", "contradicao", "sintese", "revisao", "extracao", "verificacao")
+_CEGAS = ("extracao", "verificacao")
 
 # Os três emprestados do painel, e em que etapa atuam aqui.
 HERDADOS = ("jurista", "economista", "publicas")
@@ -44,6 +49,11 @@ def _sem_ancoragem_nas_lentes(bruto: dict, origem: Path) -> None:
         raise ValueError(
             f"{origem.name}: lente não pode ler os pareceres das outras — isso é "
             "ancoragem (PRD-PAINEL §6, risco R6). Só contradição e síntese leem."
+        )
+    if any(e in etapas for e in _CEGAS) and "pareceres_dos_outros" in bruto["insumos"]:
+        raise ValueError(
+            f"{origem.name}: extração e verificação são cegas — não leem pareceres nem "
+            "sabem de que lente veio cada trecho. É o que torna o escrutínio simétrico."
         )
 
 

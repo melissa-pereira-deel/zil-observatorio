@@ -286,6 +286,14 @@ class Explicacao(Base):
     # torna a explicação auditável sem o modelo (RFC-006 §7).
     evidencias: Mapped[Optional[dict]] = mapped_column(JSON(none_as_null=True))
 
+    # Uma entrada por alegação extraída e conferida contra o catálogo de
+    # fontes (só variantes com verificador). Veredito por número, nunca selo
+    # da explicação.
+    verificacoes: Mapped[Optional[list]] = mapped_column(JSON(none_as_null=True))
+    # Hash do contexto econômico pré-registrado que as lentes leram
+    # (apps/workers/fontes/contexto.py). Mesmo hash = mesmos números.
+    contexto_hash: Mapped[Optional[str]] = mapped_column(String(16))
+
     # Reprodutibilidade: modelos, hashes de instruções e versões por agente.
     meta: Mapped[Optional[dict]] = mapped_column(JSON(none_as_null=True))
     metricas: Mapped[Optional[dict]] = mapped_column(JSON(none_as_null=True))

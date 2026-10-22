@@ -32,6 +32,15 @@ class Pipeline:
     max_reformulacoes: int = 2
     modelo_padrao: str = ""
     origem: str = ""
+    # Verificação de alegações (apps/workers/explicacao/verificacao.py).
+    # Vazios = a variante não verifica (v1). Os dois andam juntos.
+    extrator: str = ""
+    verificador: str = ""
+    max_alegacoes: int = 12
+
+    @property
+    def verifica(self) -> bool:
+        return bool(self.verificador)
 
     @property
     def todas_as_lentes(self) -> tuple[str, ...]:
@@ -55,6 +64,9 @@ def carregar_pipeline(caminho: Path) -> Pipeline:
             f"{caminho.name}: roteamento aponta para lentes que não são condicionais: {fora}"
         )
 
+    if bool(bruto.get("extrator")) != bool(bruto.get("verificador")):
+        raise ValueError(f"{caminho.name}: 'extrator' e 'verificador' andam juntos — declare os dois ou nenhum")
+
     return Pipeline(
         nome=bruto["nome"],
         versao=hashlib.sha256(bruto_txt.encode("utf-8")).hexdigest()[:16],
@@ -66,6 +78,9 @@ def carregar_pipeline(caminho: Path) -> Pipeline:
         max_reformulacoes=int(bruto.get("max_reformulacoes", 2)),
         modelo_padrao=bruto.get("modelo_padrao", ""),
         origem=caminho.name,
+        extrator=bruto.get("extrator") or "",
+        verificador=bruto.get("verificador") or "",
+        max_alegacoes=int(bruto.get("max_alegacoes", 12)),
     )
 
 

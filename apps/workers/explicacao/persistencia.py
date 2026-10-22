@@ -15,6 +15,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .schema import Explicacao as ExplicacaoResultado
+from .verificacao import para_json
 
 
 def hash_texto(texto: str) -> str:
@@ -78,6 +79,8 @@ def gravar(
             else None
         ),
         evidencias=_evidencias(resultado),
+        verificacoes=para_json(resultado.verificacoes) or None,
+        contexto_hash=(resultado.metricas or {}).get("contexto_hash"),
         meta=asdict(resultado.meta),
         metricas=resultado.metricas or None,
         problemas=resultado.problemas or None,

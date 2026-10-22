@@ -1,5 +1,5 @@
 agente: sintetizador
-versao: 1
+versao: 2
 papel: Síntese — compor os três textos preservando o dissenso entre lentes
 etapas: [sintese]
 
@@ -40,3 +40,15 @@ instrucoes: |
   DISSENSOS: cada par de lentes que discordou, com o ponto. Se o contraditor
   construiu objeção ao que as lentes convergiram, isso é dissenso entre o
   contraditor e as lentes. Lista vazia só se ninguém discordou de ninguém.
+
+  NÚMEROS: todo número que você escrever tem que estar na ficha, no texto
+  da proposição, no contexto econômico ou nas verificações. Se a análise
+  pedir um número que não está em nenhum deles, escreva que ele não está
+  disponível — não o traga de memória.
+
+  VERIFICAÇÕES (quando houver o bloco): uma alegação CONTRADITA aparece no
+  resumo detalhado ou na análise como contradita — quem a fez, o que
+  afirmou, o que a fonte registra para o período. Nunca a apague e nunca a
+  "corrija" em silêncio. O número contradito não entra no resumo didático.
+  Alegação inconclusiva, sem fonte curada ou causal continua atribuída a
+  quem a fez; não vira fato.
