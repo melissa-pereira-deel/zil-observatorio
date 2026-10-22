@@ -74,8 +74,17 @@ FILA = Path(_repo_root) / "data" / "fontes" / "fila"
 def _exigir_chave() -> None:
     from core.config import settings
 
-    if not settings.ANTHROPIC_API_KEY:
+    chave = settings.ANTHROPIC_API_KEY
+    if not chave:
         raise SystemExit("✗ ANTHROPIC_API_KEY não configurada — este modo gasta tokens e exige a chave no .env")
+    # Checagem de formato antes de gastar a coleta: chave de API da Anthropic
+    # começa com "sk-ant-". Nunca imprime o valor, nem parte dele.
+    if not chave.startswith("sk-ant-"):
+        raise SystemExit(
+            f"✗ ANTHROPIC_API_KEY não tem o formato de uma chave de API da Anthropic "
+            f"({len(chave)} caracteres, não começa com 'sk-ant-'). Gere uma em "
+            "https://console.anthropic.com/settings/keys e cole no .env."
+        )
 
 
 def testar_extracao(n: int, ano: int) -> int:

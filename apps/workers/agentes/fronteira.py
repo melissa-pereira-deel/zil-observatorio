@@ -70,12 +70,20 @@ def consultar(
         return {"error": "ANTHROPIC_API_KEY não configurado"}
 
     client = anthropic.Anthropic(api_key=api_key)
-    message = client.messages.create(
-        model=modelo,
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    try:
+        message = client.messages.create(
+            model=modelo,
+            max_tokens=max_tokens,
+            system=system,
+            messages=[{"role": "user", "content": prompt}],
+        )
+    except anthropic.AuthenticationError:
+        # Nunca inclui a chave na mensagem — nem parte dela.
+        return {"error": "ANTHROPIC_API_KEY recusada pela API (401): chave inválida ou revogada"}
+    except anthropic.APIStatusError as e:
+        return {"error": f"API respondeu {e.status_code}: {type(e).__name__}"}
+    except anthropic.APIError as e:
+        return {"error": f"chamada falhou: {type(e).__name__}"}
     return extrair_json(message.content[0].text)
 
 
@@ -152,6 +160,8 @@ def consultar_com_ferramentas(
                 messages=mensagens,
             )
         except Exception as e:  # noqa: BLE001 — erro de rede/API vira contrato de erro
+            if type(e).__name__ == "AuthenticationError":
+                return {"error": "ANTHROPIC_API_KEY recusada pela API (401): chave inválida ou revogada"}
             return {"error": f"chamada falhou na rodada {rodada}: {type(e).__name__}"}
 
         blocos = list(resposta.content or [])

@@ -436,3 +436,20 @@ def test_datas_do_caso_sao_coerentes():
             for d, _ in obs:
                 date.fromisoformat(str(d))
     assert Verificacao  # exportado
+
+
+def test_chave_recusada_vira_erro_e_nao_excecao(monkeypatch):
+    """401 da API volta como contrato de erro — a execução marca as lentes
+    indisponíveis em vez de quebrar com traceback (observado em 2026-10-22)."""
+    import anthropic
+    import httpx
+
+    from apps.workers.agentes.fronteira import consultar
+
+    def recusa(self, **kw):
+        req = httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+        raise anthropic.AuthenticationError("invalid x-api-key", response=httpx.Response(401, request=req), body=None)
+
+    monkeypatch.setattr(anthropic.resources.messages.Messages, "create", recusa)
+    res = consultar("m", "s", "p", max_tokens=10, api_key="sk-ant-teste")
+    assert "401" in res["error"] and "sk-ant-teste" not in res["error"]
