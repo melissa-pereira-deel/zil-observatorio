@@ -4,6 +4,8 @@
 **Status:** RFC aberto — sem decisão
 **Janela:** ≥ 7 dias de issue pública ([GOVERNANCE.md](../GOVERNANCE.md) § "Mudanças nas categorias ZIL") — conta da **abertura da issue**, não da redação deste documento. Issue aberta em 2026-10-21; fecha em **2026-10-28**
 **Abre:** a decisão que o [ADR-004](004-placar-focado.md) registrou como "a **próxima**"
+**Relaciona-se com:** [RFC-006](006-rfc-pipeline-de-texto-e-classificacao.md) (a mesma máquina pelo ângulo do texto integral) e [issue #27](https://github.com/melissa-pereira-deel/zil-observatorio/issues/27) (auditabilidade da classificação)
+**Evidência:** [`005-rfc-destino-das-categorias/`](005-rfc-destino-das-categorias/) — harness, corpus e saídas da seção 4
 
 > **Procedência.** A redação deste documento e a medição da seção 4 são de
 > Claude (assistente), não de deliberação. A decisão da seção 6 está **vazia** e
@@ -171,7 +173,9 @@ A cultura do projeto é medir: o `444b173` justificou-se com −33% apurado numa
 varredura real, não com argumento. Um RFC que só liste opções fica abaixo desse
 padrão.
 
-**Harness:** `exp_taxonomia.py` (scratchpad, fora do repositório) separa a coleta
+**Harness:** [`005-rfc-destino-das-categorias/exp_taxonomia.py`](005-rfc-destino-das-categorias/exp_taxonomia.py),
+com o corpus e as três saídas de medição ao lado — ver o
+[README da pasta](005-rfc-destino-das-categorias/README.md). Ele separa a coleta
 da classificação. A API da Câmara é chamada uma vez por ano e o corpus cru fica
 em JSONL; toda medição depois roda offline sobre o mesmo corpus, então a única
 diferença entre duas rodadas é a taxonomia. O escore, as flags e a regra de

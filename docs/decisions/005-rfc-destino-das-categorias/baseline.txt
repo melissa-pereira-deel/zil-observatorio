@@ -1,0 +1,88 @@
+
+=== LINHA DE BASE — taxonomia do repositório, inalterada ===
+Compare com scratchpad/candidatas/<ano>.txt. Divergência aqui
+invalida qualquer medição posterior.
+
+2023: 20 candidata(s)
+      2362567-18  escore   9.2  374×47  ZIL-COM  [—]
+      2355135-49  escore   7.3  295×136  ZIL-EDU  [só casou por palavra comum]
+      2395883-53  escore   6.0  311×103  ZIL-DEF  [só casou por palavra comum]
+     2125189-176  escore   6.0  305×101  ZIL-EDU  [só casou por palavra comum]
+      1197773-90  escore   3.6  335×49  ZIL-DIG  [só casou dentro do nome de uma lei citada]
+      2149303-50  escore   2.7  323×98  ZIL-COM  [só casou por palavra comum]
+      2350586-63  escore   1.8  430×17  ZIL-COM  [só casou por palavra comum]
+       2326749-8  escore  -1.7  296×107  ZIL-DIG  [só casou por palavra comum]
+      2355135-39  escore  -4.0  114×265  ZIL-EDU  [REJEITADA · só casou por palavra comum]
+     2125189-174  escore  -4.9  106×308  ZIL-EDU  [REJEITADA · só casou por palavra comum]
+     2125189-161  escore  -5.0  98×292  ZIL-EDU  [REJEITADA · só casou por palavra comum]
+       2375501-8  escore  -5.2  346×34  ZIL-DIG  [só casou dentro do nome de uma lei citada]
+       2377273-8  escore  -6.3  390×15  ZIL-COM  [só casou por palavra comum]
+       2379582-7  escore  -6.8  450×5  ZIL-EDU  [só casou por palavra comum]
+      2349947-42  escore -10.6  159×270  ZIL-EDU  [REJEITADA · indecidível · só casou por palavra comum]
+      1197773-99  escore -11.9  117×264  ZIL-DIG  [REJEITADA · indecidível · só casou dentro do nome de uma lei citada]
+     2125189-180  escore -12.0  119×278  ZIL-EDU  [REJEITADA · indecidível · só casou por palavra comum]
+      2395883-58  escore -12.3  288×114  ZIL-DEF  [indecidível · só casou por palavra comum]
+     2125189-191  escore -12.5  276×105  ZIL-EDU  [indecidível · só casou por palavra comum]
+      2350586-73  escore -12.7  116×325  ZIL-COM  [REJEITADA · indecidível · só casou por palavra comum]
+
+2024: 28 candidata(s)
+       2421251-7  escore   8.2  349×23  ZIL-SEM  [—]
+       2418020-7  escore   7.4  353×7  ZIL-ENE  [—]
+      2269745-70  escore   6.5  51×350  ZIL-ENE  [REJEITADA]
+      2167882-83  escore   5.6  325×97  ZIL-COM  [só casou por palavra comum]
+      2269745-81  escore   5.4  195×222  ZIL-ENE  [REJEITADA · indecidível]
+      2269745-84  escore   5.1  225×187  ZIL-ENE  [indecidível]
+      2269745-86  escore   2.5  283×135  ZIL-ENE  [indecidível]
+     1197773-140  escore   2.1  23×404  ZIL-DIG  [REJEITADA · só casou dentro do nome de uma lei citada]
+      2236291-85  escore   1.9  313×116  ZIL-SEM,ZIL-EDU  [indecidível]
+      2269745-93  escore   1.7  306×121  ZIL-ENE  [indecidível]
+      2269745-79  escore   1.0  279×93  ZIL-ENE  [indecidível]
+      2269745-90  escore   0.3  315×87  ZIL-ENE  [indecidível]
+      2455033-10  escore  -1.3  293×118  ZIL-COM  [só casou por palavra comum]
+       2431821-7  escore  -2.7  285×78  ZIL-ENE  [só casou dentro do nome de uma lei citada]
+      2269745-88  escore  -3.0  382×21  ZIL-ENE  [indecidível]
+       2452211-7  escore  -4.1  350×60  ZIL-EDU  [só casou por palavra comum]
+      2454704-50  escore  -6.4  53×240  ZIL-COM  [REJEITADA · só casou por palavra comum]
+      2454704-40  escore  -6.5  57×269  ZIL-COM  [REJEITADA · só casou por palavra comum]
+      2454704-36  escore  -7.0  43×243  ZIL-COM  [REJEITADA · só casou por palavra comum]
+      2452037-70  escore  -8.8  22×342  ZIL-EDU  [REJEITADA · só casou por palavra comum]
+      2425883-50  escore  -9.2  179×229  ZIL-EDU  [REJEITADA · indecidível · só casou por palavra comum]
+      2454704-70  escore  -9.5  189×140  ZIL-COM  [indecidível · só casou por palavra comum]
+      2454704-58  escore -10.1  133×204  ZIL-COM  [REJEITADA · indecidível · só casou por palavra comum]
+      2452037-91  escore -10.7  292×167  ZIL-EDU  [indecidível · só casou por palavra comum]
+      2454704-67  escore -12.3  200×80  ZIL-COM  [indecidível · só casou por palavra comum]
+      2454704-64  escore -12.9  206×70  ZIL-COM  [indecidível · só casou por palavra comum]
+      2454704-55  escore -14.0  57×228  ZIL-COM  [REJEITADA · indecidível · só casou por palavra comum]
+      2454704-76  escore -14.2  231×54  ZIL-COM  [indecidível · só casou por palavra comum]
+
+2025: 12 candidata(s)
+     2252295-120  escore  18.0  352×63  ZIL-EDU  [—]
+      2341047-60  escore   9.3  105×289  ZIL-DIG  [REJEITADA]
+      2558692-10  escore   8.9  369×38  ZIL-MIN  [—]
+     2252295-110  escore   8.1  55×212  ZIL-EDU  [REJEITADA]
+      2341047-55  escore   8.0  76×303  ZIL-DIG  [REJEITADA]
+     2164336-110  escore   1.8  427×18  ZIL-EDU  [só casou por palavra comum]
+     2252295-130  escore   1.2  316×110  ZIL-EDU  [indecidível]
+       2494645-8  escore  -0.9  259×113  ZIL-EDU  [só casou por palavra comum]
+       2583550-7  escore  -2.8  323×86  ZIL-DIG  [só casou dentro do nome de uma lei citada]
+       2570219-7  escore  -3.9  303×55  ZIL-DIG  [só casou por palavra comum]
+      2467641-27  escore  -6.0  70×279  ZIL-EDU  [REJEITADA · só casou por palavra comum]
+       2552333-8  escore  -6.4  349×11  ZIL-COM  [só casou por palavra comum]
+
+2026: 12 candidata(s)
+      2382675-97  escore  20.9  308×129  ZIL-COM  [—]
+      2382675-89  escore  10.4  117×250  ZIL-COM  [REJEITADA]
+      2543171-49  escore   5.8  340×108  ZIL-COM  [só casou por palavra comum]
+      2562173-30  escore   3.4  271×127  ZIL-DIG  [só casou por palavra comum]
+      2447259-99  escore   0.4  343×97  ZIL-MIN  [indecidível]
+       2600277-9  escore  -1.0  277×119  ZIL-EDU  [só casou por palavra comum]
+       2600278-9  escore  -1.5  273×103  ZIL-EDU  [só casou por palavra comum]
+      2591974-26  escore  -2.4  147×242  ZIL-EDU  [REJEITADA · só casou por palavra comum]
+      2562173-21  escore  -4.0  126×296  ZIL-DIG  [REJEITADA · só casou por palavra comum]
+      2563330-59  escore  -4.5  97×258  ZIL-DIG  [REJEITADA · só casou por palavra comum]
+      2543171-41  escore  -4.9  102×301  ZIL-COM  [REJEITADA · só casou por palavra comum]
+       2606970-8  escore  -6.1  399×19  ZIL-COM  [só casou por palavra comum]
+
+
+--- regressão: 9 afirmações de "não classifica" na suíte (taxonomia do repositório) ---
+  ✓ nenhuma reacendeu (9/9 seguem vazias)
