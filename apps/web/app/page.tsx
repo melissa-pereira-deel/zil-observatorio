@@ -31,23 +31,31 @@ const CONQUISTAS = [
 ];
 
 const PRINCIPIOS = [
-  ["Consenso, não polarização", "Redes sociais amplificam divisão porque engajamento raivoso gera cliques. O ZIL faz o oposto: usa tecnologia que identifica e amplifica os pontos onde grupos opostos concordam."],
+  ["Consenso, não polarização", "Redes sociais amplificam divisão porque engajamento raivoso gera cliques. O ZIL faz o oposto: parte do que já é consenso — o país não pode depender de fora no que é estratégico — e mede quem age de acordo."],
   ["Sinal, não ruído", "O debate público está afogado em ruído. O ZIL é o lugar onde há clareza: dados verificáveis, metas mensuráveis, progresso rastreável."],
-  ["Projeto de Estado, não de governo", "Nenhum programa estratégico pode morrer com um mandato. Criamos tecnologia que mede continuidade, registra compromissos e torna a descontinuidade visível."],
+  ["Projeto de Estado, não de governo", "Nenhum programa estratégico pode morrer com um mandato. A Bússola mede marcos que não mudam com o governo, e o placar mostra quem vota pela continuidade."],
   ["Apartidário por design", "O ZIL não lança candidatos, não apoia partidos. Tem método. O agricultor conservador e o sindicalista progressista concordam que importar 87% dos fertilizantes é absurdo."],
   ["Aberto e auditável", "Todo dado, algoritmo, classificação e decisão é pública. Código aberto. Processo rastreável. Legitimidade vem de transparência."],
-  ["Compromisso tem registro", "Todo parlamentar que assumir compromisso terá esse compromisso registrado publicamente. A plataforma cruza promessa com voto real."],
 ];
 
-const MECANISMOS = [
-  ["Deliberação por consenso", "Inspirado no Polis/vTaiwan — que gerou legislação real para 23 milhões de taiwaneses. Ninguém responde a ninguém: apenas propõe, concorda ou discorda. O algoritmo identifica declarações-ponte entre grupos opostos."],
-  ["A bússola", "Marcos estratégicos com métricas verificáveis, definidos em arquivo versionado e auditável. Monitorados trimestralmente, independente de quem governa. Quando um governo muda, os marcos não mudam."],
-  ["Compromisso rastreável", "Parlamentares registram metas específicas. O sistema cruza cada compromisso com dados reais de votação e execução orçamentária."],
-  ["Score de alinhamento", "Score calculado por fórmula transparente sobre as votações selecionadas. A fórmula, os dados e cada classificação estão no repositório."],
-  ["Continuidade mensurável", "Índice público que mostra quanto cada governo manteve, expandiu ou desmontou dos programas estratégicos anteriores."],
+// O que está no ar (v1). Cada cartão leva à página correspondente.
+const O_QUE_EXISTE = [
+  { titulo: "Score de alinhamento", href: "/metodologia", desc: "Calculado por fórmula publicada sobre votações selecionadas, cada uma com direção esperada justificada. Fórmula, dados e classificações estão no repositório." },
+  { titulo: "Proposições classificadas", href: "/proposicoes", desc: "Projetos, PECs e MPs do Congresso classificados nas nove pautas de soberania industrial, com resumo em linguagem simples quando há." },
+  { titulo: "A Bússola", href: "/bussula", desc: "Marcos com métrica, fonte oficial e prazo, em arquivo versionado. Quando um governo muda, os marcos não mudam." },
+  { titulo: "Dados abertos", href: "/proposicoes", desc: "API pública, código AGPL e histórico de cada decisão editorial no git. Sem login, sem paywall, sem tracking." },
 ];
 
-const O_QUE_E = ["Tecnologia para consenso", "Bússola de longo prazo", "Dados verificáveis", "Apartidário por design", "Código aberto", "Espaço de clareza"];
+// v2 e v3 do roadmap (docs/ROADMAP.md). Fora da v1 por decisão explícita:
+// aparecem como visão, sem mecânica, para a home não prometer o que não há.
+const VISAO = [
+  { titulo: "Deliberação por consenso", desc: "Decisões estratégicas discutidas por declarações, ao estilo vTaiwan." },
+  { titulo: "Compromissos públicos", desc: "Parlamentares registram posições verificáveis; a plataforma cruza promessa com voto." },
+  { titulo: "Índice de continuidade", desc: "Quanto cada governo manteve, expandiu ou desmontou dos programas estratégicos." },
+];
+const ROADMAP_URL = "https://github.com/zil-observatorio/zil-observatorio/blob/main/docs/ROADMAP.md";
+
+const O_QUE_E = ["Observatório de votos e proposições", "Bússola de longo prazo", "Dados verificáveis", "Apartidário por design", "Código aberto", "Método publicado"];
 
 const O_QUE_NAO_E = ["Partido ou movimento", "Veículo de candidaturas", "Órgão de denúncia", "Rede social de opinião", "Ferramenta de um lado", "Mais ruído"];
 
@@ -196,7 +204,7 @@ export default function HomePage() {
 
       {/* ═══════ 04 — O QUE É ═══════ */}
       <section className="zil-secao">
-        <TituloSecao chapeu="04" titulo="O ZIL é tecnologia para consenso." />
+        <TituloSecao chapeu="04" titulo="O ZIL é um observatório." />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <Lista titulo="O que é">
             {O_QUE_E.map((t) => (
@@ -241,7 +249,7 @@ export default function HomePage() {
         <CategoryGrid />
       </section>
 
-      {/* ═══════ 08 — PRINCÍPIOS + MECANISMOS ═══════ */}
+      {/* ═══════ 08 — PRINCÍPIOS, O QUE EXISTE E VISÃO ═══════ */}
       <section className="zil-secao">
         <TituloSecao chapeu="08" titulo="Princípios de design" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -255,16 +263,43 @@ export default function HomePage() {
           ))}
         </div>
 
-        <h3 className="text-titulo-3 mt-16 md:mt-20 mb-6 md:mb-8">Como funciona</h3>
+        <h3 className="text-titulo-3 mt-16 md:mt-20 mb-6 md:mb-8">Como funciona hoje</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          {MECANISMOS.map(([titulo, desc], i) => (
-            <Revelar key={titulo} ordem={i}>
-              <Card className="h-full grid content-start gap-2">
-                <h4 className="text-titulo-4">{titulo}</h4>
-                <p className="text-texto text-zil-texto-2">{desc}</p>
+          {O_QUE_EXISTE.map((m, i) => (
+            <Revelar key={m.titulo} ordem={i}>
+              <Card href={m.href} className="h-full grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-2 content-start">
+                <h4 className="text-titulo-4">{m.titulo}</h4>
+                <Icone nome="chevron-direita" className="text-zil-texto-3 mt-0.5" />
+                <p className="text-texto text-zil-texto-2 col-span-2">{m.desc}</p>
               </Card>
             </Revelar>
           ))}
+        </div>
+
+        {/* Visão de longo prazo: v2 e v3 do roadmap, fora da v1 por decisão
+            explícita (CLAUDE.md, ROADMAP). Fica separado e rotulado para a
+            home não prometer o que não existe. */}
+        <div className="mt-16 md:mt-20 grid gap-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <h3 className="text-titulo-3">Para onde vamos</h3>
+            <Selo tom="neutro" ponto>
+              Visão de longo prazo · v2 e v3
+            </Selo>
+          </div>
+          <p className="text-texto text-zil-texto-2 max-w-[60ch]">
+            Nada disto existe hoje. Está no roadmap público, nesta ordem, e só entra quando o placar estiver sustentado pela curadoria.
+          </p>
+          <Lista>
+            {VISAO.map((v) => (
+              <Linha key={v.titulo} titulo={v.titulo} sub={v.desc} />
+            ))}
+          </Lista>
+          <div>
+            <Button href={ROADMAP_URL} variante="fantasma" tamanho="s" target="_blank" rel="noopener noreferrer">
+              Ver o roadmap
+              <Icone nome="externo" tamanho="s" />
+            </Button>
+          </div>
         </div>
       </section>
 

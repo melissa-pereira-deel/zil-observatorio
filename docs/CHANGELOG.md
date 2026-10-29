@@ -92,6 +92,14 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- `apps/web/app/page.tsx`: a home deixa de apresentar como mecanismo o que
+  é v2/v3 no roadmap. "Como funciona hoje" lista só o que está no ar
+  (score, proposições classificadas, Bússola, dados abertos), cada um
+  ligando à sua página; deliberação por consenso, compromissos públicos e
+  índice de continuidade vão para um bloco "Para onde vamos" com selo
+  "Visão de longo prazo" e link para o roadmap. Título da seção 04 passa de
+  "tecnologia para consenso" para "um observatório"; princípios reescritos
+  sem descrever o Polis como existente.
 - `apps/web`: nova abertura da home. Título "O Brasil já provou que pode.
   Falta convergir.", linha fina de três frases com a tese e o papel do
   observatório, dois botões, foto ao lado do texto no desktop e quatro
