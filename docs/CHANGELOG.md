@@ -237,7 +237,10 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   com o texto enviado ao modelo. Também: leis que só existem na página
   consolidada (`l9427cons.htm`) eram "não encontradas"; o cache de
   `lei_artigos` guardava os status errados; e `_extract_article_text` não
-  achava "Art. 7º Fica…", porque `\b` falha depois de "º".
+  achava "Art. 7º Fica…", porque `\b` falha depois de "º". E as leis de 2001
+  a 2006 estavam todas "não encontradas": o Planalto guarda 2001 em
+  `leis/leis_2001`, 2002–2003 em `leis/<ano>` e o primeiro bloco `_ato` é
+  2004-2006, não 2003-2006; algumas usam o número com ponto (`l10.848.htm`).
 - `/bussula`: a barra de progresso fazia `valor / meta` travado em 100% e
   aparecia cheia para a dependência de fertilizantes (87% com meta 60%), o
   indicador mais distante da meta. Agora a barra só existe com valor de

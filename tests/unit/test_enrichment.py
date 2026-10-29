@@ -66,6 +66,18 @@ class TestBuildPlanaltoUrl:
         assert "l9472" in url
         assert "_ato" not in url
 
+    @pytest.mark.parametrize("numero,ano,caminho", [
+        ("10332", 2001, "/leis/leis_2001/l10332.htm"),
+        ("10438", 2002, "/leis/2002/l10438.htm"),
+        ("10753", 2003, "/leis/2003/l10753.htm"),
+        ("11196", 2005, "/_ato2004-2006/2005/lei/l11196.htm"),
+        ("11508", 2007, "/_ato2007-2010/2007/lei/l11508.htm"),
+        ("9991", 2000, "/leis/l9991.htm"),
+    ])
+    def test_diretorios_de_2001_a_2006(self, numero, ano, caminho):
+        """2001–2006 não seguem os blocos de quatro anos do Planalto."""
+        assert build_planalto_url("lei", numero, ano).endswith(caminho)
+
     def test_lc(self):
         url = build_planalto_url("lc", "87", 1996)
         assert "lcp" in url.lower()
@@ -270,6 +282,10 @@ class TestUrlConsolidada:
         with patch("apps.workers.enrichment._fetch_planalto", side_effect=responde):
             html, status, url = _buscar_lei(_urls_planalto("lei", "9427", 1996))
         assert status == "resolvido" and url.endswith("l9427cons.htm")
+
+    def test_variante_com_ponto_de_milhar(self):
+        urls = _urls_planalto("lei", "10848", 2004)
+        assert urls[-1].endswith("/_ato2004-2006/2004/lei/l10.848.htm")
 
     def test_todas_404_e_nao_encontrada_com_a_canonica(self):
         with patch("apps.workers.enrichment._fetch_planalto", return_value=("", "nao_encontrada")):

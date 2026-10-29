@@ -143,9 +143,18 @@ def build_planalto_url(tipo: str, numero: str, ano: int) -> str:
             return f"https://www.planalto.gov.br/ccivil_03/mpv/Antigas/mpv{num}.htm"
         s, e = _year_range(ano)
         return f"https://www.planalto.gov.br/ccivil_03/_ato{s}-{e}/{ano}/mpv/mpv{num}.htm"
-    # lei ordinária
-    if ano < 2003:
+    # lei ordinária. 2001 a 2006 não seguem o padrão dos blocos de quatro anos:
+    # 2001 fica em leis/leis_2001, 2002 e 2003 em leis/<ano>, e o primeiro
+    # bloco "_ato" é 2004-2006 (conferido no Planalto em 2026-10-29; antes
+    # disso as leis desses anos saíam todas "não encontradas").
+    if ano < 2001:
         return f"https://www.planalto.gov.br/ccivil_03/leis/l{num}.htm"
+    if ano == 2001:
+        return f"https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l{num}.htm"
+    if ano <= 2003:
+        return f"https://www.planalto.gov.br/ccivil_03/leis/{ano}/l{num}.htm"
+    if ano <= 2006:
+        return f"https://www.planalto.gov.br/ccivil_03/_ato2004-2006/{ano}/lei/l{num}.htm"
     s, e = _year_range(ano)
     return f"https://www.planalto.gov.br/ccivil_03/_ato{s}-{e}/{ano}/lei/l{num}.htm"
 
@@ -159,6 +168,10 @@ def _urls_planalto(tipo: str, numero: str, ano: int) -> list[str]:
     base, arquivo = canonica.rsplit("/", 1)
     nome = arquivo.removesuffix(".htm")
     variantes = [f"{nome}cons.htm", f"{nome}compilado.htm", f"{nome[:1].upper()}{nome[1:]}compilado.htm"]
+    # Algumas leis usam o número com ponto de milhar no arquivo: l10.848.htm.
+    num = numero.lstrip("0") or "0"
+    if tipo == "lei" and len(num) > 3:
+        variantes.append(f"l{int(num):,}.htm".replace(",", "."))
     return [canonica] + [f"{base}/{v}" for v in variantes]
 
 
