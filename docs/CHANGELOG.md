@@ -92,6 +92,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- `apps/web`: a seção final da home deixa de ser um formulário de assinatura
+  do manifesto (com contador fictício) e passa a ser a chamada para a
+  newsletter no Substack (`components/Newsletter.tsx`). O endereço vem de
+  `NEXT_PUBLIC_NEWSLETTER_URL`; vazio, a seção diz que a newsletter abre em
+  breve. O botão da nav vira "Newsletter" e aponta para `/#newsletter`.
 - `apps/web`: superfícies por preenchimento, sem borda, em todo o site;
   botões e controles em pílula; um primário por área; rótulos de voto e
   direção saem da caixa alta ("Favorável", "Sim"). `/parlamentar/[id]`: a

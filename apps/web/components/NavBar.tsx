@@ -65,8 +65,8 @@ export function NavBar() {
 
         <div className="ml-auto flex items-center gap-2">
           <BotaoIcone icone="busca" rotulo="Buscar proposições" variante="fantasma" redondo href="/proposicoes" />
-          <Button href="/#assinar" variante="primario" tamanho="s" className="hidden sm:inline-flex">
-            Assinar
+          <Button href="/#newsletter" variante="primario" tamanho="s" className="hidden sm:inline-flex">
+            Newsletter
           </Button>
         </div>
       </nav>

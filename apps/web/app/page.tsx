@@ -3,7 +3,7 @@ import { ScoreExplainer } from "@/components/ScoreExplainer";
 import { RankingPreview } from "@/components/RankingPreview";
 import { rankingPublico } from "@/lib/flags";
 import { CategoryGrid } from "@/components/CategoryGrid";
-import { ManifestoSignature } from "@/components/ManifestoSignature";
+import { Newsletter } from "@/components/Newsletter";
 
 /* ── Dados estáticos do manifesto ── */
 
@@ -336,13 +336,13 @@ export default function HomePage() {
         </Revelar>
       </section>
 
-      {/* ═══════ 11 — ASSINAR ═══════ */}
-      {/* A nav aponta para /#assinar. */}
-      <section id="assinar" className="zil-secao scroll-mt-20">
+      {/* ═══════ 11 — NEWSLETTER ═══════ */}
+      {/* A nav aponta para /#newsletter. */}
+      <section id="newsletter" className="zil-secao scroll-mt-20">
         <Painel>
           <p className="text-rotulo uppercase text-zil-texto-2">11</p>
-          <h2 className="text-titulo-1 md:text-display-m">Assinar o manifesto</h2>
-          <ManifestoSignature />
+          <h2 className="text-titulo-1 md:text-display-m">Acompanhe o ZIL</h2>
+          <Newsletter />
         </Painel>
       </section>
     </div>
