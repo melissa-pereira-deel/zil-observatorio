@@ -92,6 +92,17 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- **Bússola diz o que sabe e o que não sabe.** `data/bussula/marcos.yml`
+  ganha metadados sem mudar valores: `direcao` (maior/menor é melhor),
+  `meta_origem` (nulo nos quatro: nenhuma meta cita plano oficial),
+  `natureza_fonte`, `fonte_dataset` (nulo nos quatro: os links são a home do
+  órgão) e `validacao: nao-validado`. `schemas/bussula.py` valida o YAML na
+  API e calcula `progresso_pct`, `meta_atingida` e `meta_provisoria` no
+  servidor; arquivo ausente passa a logar aviso. A página mostra o sentido
+  do indicador, a meta como provisória, a natureza da fonte, a data do dado
+  e o selo "Não validado"; o aviso do topo resume o estado real do conjunto.
+  16 testes novos em `tests/unit/test_bussula.py`. Levantamento completo em
+  `docs/DISCOVERY-BUSSOLA.md`.
 - `apps/web/app/metodologia/page.tsx`: conferida frase a frase contra
   `scoring/`, `data/direcoes/`, `marcos.yml` e o ADR-004. Ganha a seção
   "Quais votações entram", com o critério de saliência de `candidatas.py`
@@ -201,6 +212,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+- `/bussula`: a barra de progresso fazia `valor / meta` travado em 100% e
+  aparecia cheia para a dependência de fertilizantes (87% com meta 60%), o
+  indicador mais distante da meta; agora respeita a direção (69%). O selo de
+  tendência quebrava em duas linhas (svg `display:block` dentro do span
+  truncado); `Selo` ganhou `icone`. O fetch não conferia `r.ok`.
 - `apps/web/app/metodologia/page.tsx`: dizia que "dados do Senado ainda não
   estão incluídos" — senadores e proposições do Senado estão no banco; o que
   falta é votação do Senado classificada. Dizia que ausência conta zero sem

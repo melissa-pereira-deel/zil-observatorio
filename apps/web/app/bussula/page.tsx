@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Aviso, Button, Card, CardEsqueleto, Icone, Revelar, Selo, Vazio, type TomSelo } from "@/components/ui";
-import { CATEGORIA_COR } from "@/lib/categorias";
+import { Aviso, Button, Card, CardEsqueleto, Icone, Revelar, Selo, Vazio, type NomeIcone, type TomSelo } from "@/components/ui";
+import { CATEGORIA_COR, CATEGORIA_LABELS } from "@/lib/categorias";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+/** Espelha `apps/api/schemas/bussula.py`, inclusive os campos calculados no servidor. */
 interface Marco {
   codigo: string;
   nome: string;
@@ -14,62 +15,60 @@ interface Marco {
   descricao: string;
   valor_atual: number;
   unidade: string;
+  direcao: "maior_melhor" | "menor_melhor";
   tendencia: "avancando" | "retrocedendo" | "estavel";
-  meta?: number;
-  prazo?: number;
+  meta: number | null;
+  prazo: number | null;
+  meta_origem: { nome: string; url?: string | null } | null;
   fonte: string;
+  natureza_fonte: "estatal" | "autarquia" | "associacao_setorial" | "academia" | "imprensa";
   fonte_url: string;
+  fonte_dataset: string | null;
   ultima_atualizacao: string;
-  governo_referencia: string;
+  validacao: "nao-validado" | "revisado";
+  governo_referencia: string | null;
+  progresso_pct: number | null;
+  meta_atingida: boolean;
+  meta_provisoria: boolean;
 }
 
 /**
  * A tendência diz se o indicador melhora para a soberania, não se o número
- * sobe (como o delta do KPI do ZIL Interface): `alinhado` avança rumo à
- * meta, `contra` retrocede, `neutro` está parado.
+ * sobe (como o delta do KPI do ZIL Interface). Hoje ela é declarada no
+ * arquivo pelo maintainer, não calculada: não há histórico ainda.
  */
-const TENDENCIA: Record<Marco["tendencia"], { label: string; title: string; tom: TomSelo }> = {
-  avancando: { label: "Avançando", title: "Avançando em direção à meta", tom: "alinhado" },
-  retrocedendo: { label: "Retrocedendo", title: "Retrocedendo em relação à meta", tom: "contra" },
-  estavel: { label: "Estável", title: "Estável", tom: "neutro" },
+const TENDENCIA: Record<Marco["tendencia"], { label: string; tom: TomSelo; icone: NomeIcone }> = {
+  avancando: { label: "Avançando", tom: "alinhado", icone: "seta-cima" },
+  retrocedendo: { label: "Retrocedendo", tom: "contra", icone: "seta-baixo" },
+  estavel: { label: "Estável", tom: "neutro", icone: "seta-direita" },
 };
 
-const CAT_LABEL: Record<string, string> = {
-  "ZIL-FER": "Fertilizantes",
-  "ZIL-MIN": "Minerais",
-  "ZIL-SEM": "Semicondutores",
-  "ZIL-ENE": "Energia",
-  "ZIL-DIG": "Digital",
-  "ZIL-DEF": "Defesa",
-  "ZIL-EDU": "Capital Humano",
-  "ZIL-AGR": "Agro",
-  "ZIL-COM": "Comércio",
+const NATUREZA: Record<Marco["natureza_fonte"], string> = {
+  estatal: "órgão estatal",
+  autarquia: "autarquia",
+  associacao_setorial: "associação setorial",
+  academia: "academia",
+  imprensa: "imprensa",
 };
 
-/** Seta para a direita, no padrão do `Icone` (não existe no kit). */
-function SetaDireita() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="w-4 h-4 shrink-0 fill-none stroke-current" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
-  );
+/** "2024-12" → "12/2024". */
+function mesAno(iso: string): string {
+  const [ano, mes] = iso.split("-");
+  return mes && ano ? `${mes}/${ano}` : iso;
 }
 
 function TendenciaSelo({ tendencia }: { tendencia: Marco["tendencia"] }) {
   const t = TENDENCIA[tendencia] ?? TENDENCIA.estavel;
   return (
-    <Selo tom={t.tom} title={t.title}>
-      {tendencia === "avancando" ? <Icone nome="seta-cima" tamanho="s" /> : tendencia === "retrocedendo" ? <Icone nome="seta-baixo" tamanho="s" /> : <SetaDireita />}
+    <Selo tom={t.tom} icone={<Icone nome={t.icone} tamanho="s" />} className="shrink-0" title={`${t.label} — tendência declarada no arquivo de dados, ainda não calculada a partir de histórico`}>
       {t.label}
     </Selo>
   );
 }
 
 function MarcoCard({ marco }: { marco: Marco }) {
-  const progresso =
-    marco.meta !== undefined
-      ? Math.min(100, Math.round((marco.valor_atual / marco.meta) * 100))
-      : null;
+  const unidadeCurta = marco.unidade.split(" ")[0];
+  const sentido = marco.direcao === "menor_melhor" ? "quanto menor, melhor" : "quanto maior, melhor";
 
   return (
     <Card className="h-full grid content-start gap-3">
@@ -81,51 +80,104 @@ function MarcoCard({ marco }: { marco: Marco }) {
 
       {/* Valor */}
       <div className="grid gap-1">
-        <span className="text-numero-l zil-num">{marco.valor_atual}</span>
-        <span className="text-texto-s text-zil-texto-2">{marco.unidade}</span>
+        <span className="text-numero-l zil-num">{marco.valor_atual.toLocaleString("pt-BR")}</span>
+        <span className="text-texto-s text-zil-texto-2">
+          {marco.unidade} · {sentido}
+        </span>
       </div>
 
-      {/* Progresso rumo à meta */}
-      {marco.meta !== undefined && progresso !== null && (
+      {/* Progresso rumo à meta — calculado no servidor, com a direção do indicador */}
+      {marco.meta !== null && marco.progresso_pct !== null && (
         <div className="grid gap-2">
-          <div className="flex justify-between gap-3 text-texto-s text-zil-texto-2 zil-num">
+          <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-texto-s text-zil-texto-2 zil-num">
             <span>
-              Meta: {marco.meta} {marco.unidade.split(" ")[0]}
+              Meta: {marco.meta.toLocaleString("pt-BR")} {unidadeCurta}
+              {marco.prazo && <> até {marco.prazo}</>}
             </span>
-            {marco.prazo && <span>até {marco.prazo}</span>}
+            {marco.meta_atingida ? (
+              <Selo tom="alinhado">Meta atingida</Selo>
+            ) : (
+              <span>{marco.progresso_pct}% do caminho</span>
+            )}
           </div>
           <div
             role="progressbar"
-            aria-valuenow={progresso}
+            aria-valuenow={marco.progresso_pct}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-label={`${progresso}% da meta`}
+            aria-label={`${marco.progresso_pct}% do caminho até a meta`}
             className="h-2 rounded-pilula bg-zil-superficie-3 overflow-hidden"
           >
             <div
               className="h-full rounded-pilula bg-zil-inverso transition-[width] duration-lenta ease-padrao"
-              // Largura é o dado (percentual da meta), não estilo decorativo.
-              style={{ width: `${progresso}%` }}
+              // Largura é o dado (percentual do caminho), não estilo decorativo.
+              style={{ width: `${marco.progresso_pct}%` }}
             />
           </div>
+          {marco.meta_provisoria ? (
+            <p className="text-legenda text-zil-texto-2">Meta provisória, escolhida pelo projeto: nenhum plano oficial foi citado como origem.</p>
+          ) : (
+            marco.meta_origem && (
+              <p className="text-legenda text-zil-texto-2">
+                Meta de{" "}
+                {marco.meta_origem.url ? (
+                  <a href={marco.meta_origem.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-zil-texto">
+                    {marco.meta_origem.nome}
+                  </a>
+                ) : (
+                  marco.meta_origem.nome
+                )}
+              </p>
+            )
+          )}
         </div>
       )}
 
-      {/* Fonte oficial e data do dado */}
-      <div className="flex items-center justify-between gap-3 text-texto-s text-zil-texto-2">
-        <a
-          href={marco.fonte_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 min-w-0 text-zil-texto-2 hover:text-zil-texto transition-colors duration-toque"
-        >
-          <span className="truncate">{marco.fonte}</span>
-          <Icone nome="externo" tamanho="s" />
-        </a>
-        <span className="shrink-0 zil-num">{marco.ultima_atualizacao}</span>
+      {/* Proveniência: fonte, natureza, dado, validação */}
+      <div className="grid gap-1.5 text-texto-s text-zil-texto-2">
+        <div className="flex items-center justify-between gap-3">
+          <a
+            href={marco.fonte_dataset ?? marco.fonte_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={marco.fonte_dataset ? "Abre o dado na fonte" : "Abre a página da instituição; o link direto do dado ainda não foi indicado"}
+            className="inline-flex items-center gap-1 min-w-0 text-zil-texto-2 hover:text-zil-texto transition-colors duration-toque"
+          >
+            <span className="truncate">{marco.fonte}</span>
+            <Icone nome="externo" tamanho="s" />
+          </a>
+          <span className="shrink-0 zil-num">dado de {mesAno(marco.ultima_atualizacao)}</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Selo>{NATUREZA[marco.natureza_fonte] ?? marco.natureza_fonte}</Selo>
+          {!marco.fonte_dataset && <Selo title="O link aponta para a página inicial da instituição, não para a tabela ou série de onde o número saiu">sem link do dado</Selo>}
+          {marco.validacao === "nao-validado" ? (
+            <Selo tom="neutro" ponto title="Ainda não passou por revisão editorial independente">
+              Não validado
+            </Selo>
+          ) : (
+            <Selo tom="alinhado" ponto>
+              Revisado
+            </Selo>
+          )}
+        </div>
       </div>
     </Card>
   );
+}
+
+/** "4 indicadores · nenhum validado · nenhuma meta com fonte · dado mais recente 12/2024". */
+function resumo(marcos: Marco[]): string {
+  const validados = marcos.filter((m) => m.validacao === "revisado").length;
+  const comOrigem = marcos.filter((m) => m.meta !== null && !m.meta_provisoria).length;
+  const maisRecente = marcos.map((m) => m.ultima_atualizacao).sort().at(-1);
+  const partes = [
+    `${marcos.length} ${marcos.length === 1 ? "indicador" : "indicadores"}`,
+    validados === 0 ? "nenhum validado" : `${validados} ${validados === 1 ? "validado" : "validados"}`,
+    comOrigem === 0 ? "nenhuma meta com fonte declarada" : `${comOrigem} ${comOrigem === 1 ? "meta com fonte" : "metas com fonte"}`,
+  ];
+  if (maisRecente) partes.push(`dado mais recente de ${mesAno(maisRecente)}`);
+  return partes.join(" · ");
 }
 
 export default function BussulaPage() {
@@ -139,7 +191,10 @@ export default function BussulaPage() {
     setLoading(true);
     setErro(false);
     fetch(`${API_BASE}/bussula`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
       .then(setMarcos)
       .catch(() => setErro(true))
       .finally(() => setLoading(false));
@@ -158,10 +213,11 @@ export default function BussulaPage() {
         <p className="text-rotulo uppercase text-zil-texto-2">Bússola</p>
         <h1 className="text-titulo-1 md:text-display-m">Bússola ZIL</h1>
         <p className="text-texto-l text-zil-texto-2 max-w-[60ch]">
-          Estado atual da soberania industrial brasileira, por categoria estratégica. Indicadores verificáveis a partir de fontes oficiais.
+          Onde o Brasil está em cada eixo da soberania industrial, com meta e prazo. Cada indicador diz de onde veio o número e o que
+          ainda não foi conferido.
         </p>
         <p className="text-texto-s text-zil-texto-2 max-w-[60ch]">
-          Atualização trimestral via PR. Fontes linkadas diretamente em cada indicador.{" "}
+          Os indicadores entram e mudam por PR no repositório, com link para a fonte.{" "}
           <Link href="/metodologia" className="text-zil-texto underline underline-offset-4 decoration-1">
             Como isso é calculado?
           </Link>
@@ -193,9 +249,10 @@ export default function BussulaPage() {
           </Vazio>
         ) : (
           <>
-            {/* Os marcos ainda estão em formação (ver o cabeçalho de data/bussula/marcos.yml) */}
+            {/* O estado vem do dado (validacao, meta_origem, ultima_atualizacao), não de texto fixo. */}
             <Aviso tom="neutro" titulo="Indicadores em formação">
-              {marcos.length} {marcos.length === 1 ? "indicador publicado" : "indicadores publicados"} até agora. Cada um entra por PR, com link para a fonte oficial.
+              {resumo(marcos)}. As metas sem fonte são escolhas provisórias do projeto, e a tendência é declarada por quem edita o
+              arquivo, não medida: ainda não há histórico.
             </Aviso>
 
             {Object.entries(porCategoria).map(([cat, items], gi) => (
@@ -203,7 +260,7 @@ export default function BussulaPage() {
                 {/* UI-021: o código interno fica no title, não no texto */}
                 <h2 className="flex items-center gap-2.5 text-titulo-3" title={cat}>
                   {CATEGORIA_COR[cat] && <span aria-hidden="true" className={`w-2.5 h-2.5 rounded-full shrink-0 ${CATEGORIA_COR[cat]}`} />}
-                  {CAT_LABEL[cat] ?? cat}
+                  {CATEGORIA_LABELS[cat] ?? cat}
                 </h2>
                 <ul className="grid gap-4 md:grid-cols-2 list-none m-0 p-0">
                   {items.map((m, i) => (

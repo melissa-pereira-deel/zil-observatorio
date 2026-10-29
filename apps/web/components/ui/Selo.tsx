@@ -18,12 +18,14 @@ const TOM: Record<TomSelo, string> = {
 interface SeloProps {
   tom?: TomSelo;
   ponto?: boolean;
+  /** Ícone antes do texto. Vai fora do span truncado: svg é `display:block` no preflight e quebraria a linha. */
+  icone?: React.ReactNode;
   title?: string;
   className?: string;
   children: React.ReactNode;
 }
 
-export function Selo({ tom = "padrao", ponto = false, title, className = "", children }: SeloProps) {
+export function Selo({ tom = "padrao", ponto = false, icone, title, className = "", children }: SeloProps) {
   // Texto longo (situação da Câmara) trunca em vez de alargar o cartão; o
   // inteiro vai para o title quando o texto é uma string.
   const inteiro = title ?? (typeof children === "string" ? children : undefined);
@@ -33,6 +35,7 @@ export function Selo({ tom = "padrao", ponto = false, title, className = "", chi
       className={`inline-flex items-center gap-1.5 max-w-full min-w-0 h-[26px] px-2.5 rounded-pilula text-[13px] font-semibold leading-none ${TOM[tom]} ${className}`}
     >
       {ponto && <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />}
+      {icone && <span aria-hidden="true" className="inline-flex shrink-0">{icone}</span>}
       <span className="truncate">{children}</span>
     </span>
   );

@@ -23,6 +23,7 @@ export type NomeIcone =
   | "download"
   | "seta-baixo"
   | "seta-cima"
+  | "seta-direita"
   | "compartilhar"
   | "menu";
 
@@ -71,6 +72,7 @@ const CAMINHOS: Record<NomeIcone, React.ReactNode> = {
   download: <path d="M12 3v12M8 11l4 4 4-4M5 19h14" />,
   "seta-baixo": <path d="M12 5v14M6 13l6 6 6-6" />,
   "seta-cima": <path d="M12 19V5M6 11l6-6 6 6" />,
+  "seta-direita": <path d="M5 12h14M13 6l6 6-6 6" />,
   compartilhar: <path d="M12 3v12M8 7l4-4 4 4M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />,
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
 };

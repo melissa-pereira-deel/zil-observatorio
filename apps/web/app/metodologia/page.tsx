@@ -289,8 +289,9 @@ export default function MetodologiaPage() {
           <Card className="grid content-start gap-2">
             <h3 className="text-titulo-4">Bússola ZIL</h3>
             <p className="text-texto text-zil-texto-2">
-              Quatro indicadores, em formação, em data/bussula/marcos.yml. Cada atualização entra por PR com link para a fonte oficial,
-              a cada trimestre ou quando sai dado novo.
+              Quatro indicadores, em formação, em data/bussula/marcos.yml. Nenhum passou por revisão e nenhuma meta tem plano oficial
+              como origem; a página mostra isso em cada cartão. Cada atualização entra por PR com link para a fonte, a cada trimestre
+              ou quando sai dado novo.
             </p>
           </Card>
         </div>
