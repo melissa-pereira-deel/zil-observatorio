@@ -10,6 +10,14 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- `docs/DISCOVERY-BUSSOLA.md`: levantamento da Bússola por cinco agentes
+  (mapeamento, dados, engenharia de dados, software, UI/UX) mais a sessão
+  paralela da maintainer. Verifica os 4 indicadores contra fontes primárias
+  (três metas não existem em plano oficial; a quarta tem prazo errado;
+  dois valores não batem; duas tendências estão erradas), propõe o schema
+  v2 com proveniência e histórico em CSV versionado, o pipeline sobre
+  `apps/workers/fontes/`, validador e CI, a anatomia do cartão, 12
+  indicadores candidatos e um plano em fases com critérios de aceite.
 - **Site no design system ZIL Interface** (`apps/web`): tokens do sistema como
   variáveis CSS em `app/globals.css` (dois temas; o escuro é o padrão, via
   `data-theme` no `<html>`) e nomes Tailwind em `tailwind.config.js`
@@ -214,7 +222,8 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ### Fixed
 - `/bussula`: a barra de progresso fazia `valor / meta` travado em 100% e
   aparecia cheia para a dependência de fertilizantes (87% com meta 60%), o
-  indicador mais distante da meta; agora respeita a direção (69%). O selo de
+  indicador mais distante da meta; sem valor de base não há barra, só a
+  distância em texto ("faltam 27 pontos"). O selo de
   tendência quebrava em duas linhas (svg `display:block` dentro do span
   truncado); `Selo` ganhou `icone`. O fetch não conferia `r.ok`.
 - `apps/web/app/metodologia/page.tsx`: dizia que "dados do Senado ainda não
