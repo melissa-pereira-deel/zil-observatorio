@@ -59,9 +59,12 @@ class TestDadoReal:
 
 
 class TestProgresso:
-    def test_menor_melhor_nao_enche_a_barra(self):
-        # 87% importado com meta de 60%: a meta é 69% do valor atual.
-        assert Indicador(**_base()).progresso_pct == 69
+    def test_menor_melhor_sem_base_nao_tem_barra(self):
+        # 87% importado com meta de 60%: sem valor de base não há "caminho
+        # percorrido" a mostrar; o que há é a distância, 27 pontos.
+        i = Indicador(**_base())
+        assert i.progresso_pct is None
+        assert i.distancia_meta == 27
 
     def test_maior_melhor(self):
         assert Indicador(**_base(direcao="maior_melhor", valor_atual=83, meta=90)).progresso_pct == 92
@@ -74,7 +77,7 @@ class TestProgresso:
 
     def test_sem_meta_sem_progresso(self):
         i = Indicador(**_base(meta=None, prazo=None))
-        assert i.progresso_pct is None and not i.meta_atingida and not i.meta_provisoria
+        assert i.progresso_pct is None and i.distancia_meta is None and not i.meta_atingida and not i.meta_provisoria
 
     def test_meta_sem_origem_e_provisoria(self):
         assert Indicador(**_base()).meta_provisoria
@@ -91,7 +94,7 @@ class TestEndpoints:
         r = client.get("/bussula")
         assert r.status_code == 200
         fer = next(m for m in r.json() if m["codigo"] == "BUSSULA-FER-01")
-        assert fer["progresso_pct"] == 69 and fer["meta_provisoria"] is True
+        assert fer["progresso_pct"] is None and fer["distancia_meta"] == 27 and fer["meta_provisoria"] is True
 
     def test_404(self, client):
         assert client.get("/bussula/BUSSULA-XXX-99").status_code == 404

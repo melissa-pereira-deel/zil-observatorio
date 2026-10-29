@@ -28,6 +28,7 @@ interface Marco {
   validacao: "nao-validado" | "revisado";
   governo_referencia: string | null;
   progresso_pct: number | null;
+  distancia_meta: number | null;
   meta_atingida: boolean;
   meta_provisoria: boolean;
 }
@@ -86,8 +87,10 @@ function MarcoCard({ marco }: { marco: Marco }) {
         </span>
       </div>
 
-      {/* Progresso rumo à meta — calculado no servidor, com a direção do indicador */}
-      {marco.meta !== null && marco.progresso_pct !== null && (
+      {/* Meta e distância — calculadas no servidor, com a direção do indicador.
+          A barra só aparece quando há "caminho percorrido" calculável; para
+          "menor é melhor" sem valor de base, só a distância em texto. */}
+      {marco.meta !== null && (
         <div className="grid gap-2">
           <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-texto-s text-zil-texto-2 zil-num">
             <span>
@@ -96,24 +99,29 @@ function MarcoCard({ marco }: { marco: Marco }) {
             </span>
             {marco.meta_atingida ? (
               <Selo tom="alinhado">Meta atingida</Selo>
-            ) : (
-              <span>{marco.progresso_pct}% do caminho</span>
-            )}
+            ) : marco.distancia_meta !== null ? (
+              <span>
+                faltam {marco.distancia_meta.toLocaleString("pt-BR")} {unidadeCurta === "%" ? "pontos" : unidadeCurta}
+              </span>
+            ) : null}
           </div>
-          <div
-            role="progressbar"
-            aria-valuenow={marco.progresso_pct}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`${marco.progresso_pct}% do caminho até a meta`}
-            className="h-2 rounded-pilula bg-zil-superficie-3 overflow-hidden"
-          >
+          {marco.progresso_pct !== null && (
             <div
-              className="h-full rounded-pilula bg-zil-inverso transition-[width] duration-lenta ease-padrao"
-              // Largura é o dado (percentual do caminho), não estilo decorativo.
-              style={{ width: `${marco.progresso_pct}%` }}
-            />
-          </div>
+              role="progressbar"
+              aria-valuenow={marco.progresso_pct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`${marco.progresso_pct}% do caminho até a meta, estimado sem valor de base`}
+              title="Estimativa sem valor de base: valor atual sobre a meta"
+              className="h-2 rounded-pilula bg-zil-superficie-3 overflow-hidden"
+            >
+              <div
+                className="h-full rounded-pilula bg-zil-inverso transition-[width] duration-lenta ease-padrao"
+                // Largura é o dado (percentual do caminho), não estilo decorativo.
+                style={{ width: `${marco.progresso_pct}%` }}
+              />
+            </div>
+          )}
           {marco.meta_provisoria ? (
             <p className="text-legenda text-zil-texto-2">Meta provisória, escolhida pelo projeto: nenhum plano oficial foi citado como origem.</p>
           ) : (

@@ -49,17 +49,27 @@ class Indicador(BaseModel):
     def progresso_pct(self) -> Optional[int]:
         """Quanto do caminho até a meta já foi percorrido, de 0 a 100.
 
-        Sem valor de base no dado, é uma aproximação: para "maior é melhor",
-        valor/meta; para "menor é melhor", meta/valor. Ultrapassar a meta
-        dá 100. Sem meta, não há progresso a mostrar.
+        Sem valor de base no dado é uma aproximação, e só faz sentido para
+        "maior é melhor" (valor/meta, zero como base natural). Para "menor
+        é melhor" não há zero natural: 87% com meta 60% não é "69% do
+        caminho" — é 27 pontos acima da meta. Nesse caso devolve None, e a
+        interface mostra a distância em texto, sem barra. Ultrapassar a
+        meta dá 100. Sem meta, não há progresso a mostrar.
         """
-        if self.meta is None or self.meta <= 0 or self.valor_atual <= 0:
+        if self.meta is None or self.meta <= 0 or self.valor_atual < 0:
             return None
-        if self.direcao == "maior_melhor":
-            razao = self.valor_atual / self.meta
-        else:
-            razao = self.meta / self.valor_atual
-        return max(0, min(100, round(razao * 100)))
+        if self.direcao == "menor_melhor":
+            return 100 if self.valor_atual <= self.meta else None
+        return max(0, min(100, round(self.valor_atual / self.meta * 100)))
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def distancia_meta(self) -> Optional[float]:
+        """Quanto falta, em unidades do indicador (positivo = ainda não chegou)."""
+        if self.meta is None:
+            return None
+        d = self.meta - self.valor_atual if self.direcao == "maior_melhor" else self.valor_atual - self.meta
+        return round(max(0.0, d), 2)
 
     @computed_field  # type: ignore[prop-decorator]
     @property
