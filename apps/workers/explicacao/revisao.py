@@ -106,13 +106,15 @@ _ESCALA = re.compile(r"\s*(mil|milh(?:ão|ões|ao|oes)|bilh(?:ão|ões|ao|oes)|t
 _FATOR = {"trilh": 1e12, "bilh": 1e9, "milh": 1e6, "mil": 1e3}
 # Na SAÍDA, datas e referências de proposição já são conferidas como entidade
 # (métrica 2) ou são rótulo ("PL 1001/2025"); ordinais são artigo de lei.
-# Referência a norma é endereço, não quantidade: "art. 61 da Constituição",
-# "art. 113 do ADCT", "Lei nº 14.300", "LC 140". Na PNMCE (2026-10-28) o
-# revisor acusou 61 e 113 como números sem origem.
+# Referência a norma ou a precedente é endereço, não quantidade: "art. 61 da
+# Constituição", "art. 113 do ADCT", "Lei nº 14.300", "LC 140", "Tema 682 do
+# STF", "Súmula 473", "RE 1.234.567", "ADI 5.000". Na PNMCE (2026-10-28) o
+# revisor acusou 61 e 113; na segunda rodada (2026-10-29), o 682 do Tema.
 _REFERENCIA_LEGAL = (
     r"\b(?:arts?\.|artigos?|par[áa]grafos?|incisos?|al[íi]neas?|"
     r"Leis?(?:\s+Complementar(?:es)?)?|LC|Decretos?(?:-Lei)?|EC|Emendas?\s+Constitucion(?:al|ais)|"
-    r"MPs?|Medidas?\s+Provis[óo]rias?|Resolu[çc][ãa]o|Portaria)"
+    r"MPs?|Medidas?\s+Provis[óo]rias?|Resolu[çc][ãa]o|Portaria|"
+    r"Temas?|S[úu]mulas?(?:\s+Vinculantes?)?|RE|AR[EG]|ADIs?|ADPFs?|ADCs?|ADOs?|REsp|HC|MS|RExt)"
     r"\s*(?:n[ºo°.]?\s*)?\d{1,3}(?:\.\d{3})*(?:\s?[ºª°])?(?:/\d{2,4})?"
     r"|§\s*\d+"
 )

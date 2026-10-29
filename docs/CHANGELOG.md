@@ -187,8 +187,10 @@ Versions map to git tags (not yet created — pending deploy pipeline).
     nesse formato.
   - `revisao.numeros(so_quantidades=True)` lia "art. 61" e "art. 113 do ADCT"
     como quantidades sem origem. Referências a norma (artigo, parágrafo,
-    inciso, lei, LC, decreto, EC, MP) saem da conta, e "Lei nº 14.300/2022"
-    não deixa mais um "14" solto.
+    inciso, lei, LC, decreto, EC, MP) e a precedente (Tema, Súmula, RE, ADI,
+    ADPF, REsp, HC, MS) saem da conta, e "Lei nº 14.300/2022" não deixa mais
+    um "14" solto. A segunda rodada da PNMCE (2026-10-29) caiu só pelo
+    "Tema 682" do STF citado pelo contraditor.
 - **Dissenso repetido contava duas vezes:** a síntese listava o mesmo desacordo
   com as lentes trocadas. `pipeline._parse_sintese` deduplica por par de
   lentes e ponto, e descarta dissenso de uma lente consigo mesma.

@@ -192,6 +192,9 @@ class TestRevisao:
         "Altera a Lei nº 14.300/2022 e a LC 140.",
         "Conforme os arts. 150 e § 6 da Constituição.",
         "Altera o PL 2780/2024.",
+        "O STF fixou no Tema 682 que não há reserva de iniciativa.",
+        "Conforme a Súmula Vinculante 10 e a Súmula 473.",
+        "Decidido no RE 1.234.567 e na ADI 5.000.",
     ])
     def test_referencia_legal_nao_e_quantidade(self, texto):
         assert numeros(texto, so_quantidades=True) == []
