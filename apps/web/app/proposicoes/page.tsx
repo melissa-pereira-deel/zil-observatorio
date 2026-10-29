@@ -13,6 +13,7 @@ import {
   Chip,
   Chips,
   Revelar,
+  Segmentado,
   Seletor,
   Selo,
   Vazio,
@@ -29,6 +30,15 @@ const TIPOS = ["PL", "PEC", "PLP", "MPV", "PDL", "PRC"];
 const ANO_ATUAL = new Date().getFullYear();
 const ANOS = Array.from({ length: 10 }, (_, i) => ANO_ATUAL - i);
 
+// "Analisada" = enriquecimento pronto (resumo em linguagem simples). A API
+// filtra e, sem filtro, já devolve as analisadas primeiro.
+type Analise = "" | "analisada" | "pendente";
+const ANALISES: { valor: Analise; rotulo: string }[] = [
+  { valor: "", rotulo: "Todas" },
+  { valor: "analisada", rotulo: "Analisadas" },
+  { valor: "pendente", rotulo: "Sem análise" },
+];
+
 // Ordenação é separada dos filtros (UI-005). Sem escolha, vale a ordem da API.
 const ORDENS = [
   { valor: "recentes", rotulo: "Mais recentes" },
@@ -42,6 +52,7 @@ export default function ProposicoesPage() {
   const [categoria, setCategoria] = useState("");
   const [tipo, setTipo] = useState("");
   const [ano, setAno] = useState("");
+  const [analise, setAnalise] = useState<Analise>("");
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState("");
   // Incrementa para refazer a busca depois de um erro.
@@ -56,6 +67,7 @@ export default function ProposicoesPage() {
         if (categoria) params.set("categoria", categoria);
         if (tipo) params.set("tipo", tipo);
         if (ano) params.set("ano", ano);
+        if (analise) params.set("analise", analise);
         const res = await fetch(`${API_BASE}/proposicoes?${params}`);
         setProposicoes(await res.json());
       } catch (err) {
@@ -66,7 +78,7 @@ export default function ProposicoesPage() {
       }
     }
     load();
-  }, [categoria, tipo, ano, tentativa]);
+  }, [categoria, tipo, ano, analise, tentativa]);
 
   const filtered = busca
     ? proposicoes.filter((p) =>
@@ -83,13 +95,14 @@ export default function ProposicoesPage() {
       })
     : filtered;
 
-  const hasFilters = !!(busca || categoria || tipo || ano);
+  const hasFilters = !!(busca || categoria || tipo || ano || analise);
 
   function clearFilters() {
     setBusca("");
     setCategoria("");
     setTipo("");
     setAno("");
+    setAnalise("");
   }
 
   return (
@@ -126,6 +139,7 @@ export default function ProposicoesPage() {
           />
           <Seletor valor={tipo} onMudar={setTipo} rotulo="Tipo de proposição" vazio="Todos os tipos" opcoes={TIPOS.map((t) => ({ valor: t, rotulo: t }))} />
           <Seletor valor={ano} onMudar={setAno} rotulo="Ano de apresentação" vazio="Todos os anos" opcoes={ANOS.map((a) => ({ valor: String(a), rotulo: String(a) }))} />
+          <Segmentado opcoes={ANALISES} valor={analise} onMudar={setAnalise} rotulo="Análise" />
         </BarraFiltros>
 
         {/* Pauta: escolha única, como rádio; "Todas" é o padrão */}
@@ -176,7 +190,9 @@ export default function ProposicoesPage() {
               ) : undefined
             }
           >
-            {hasFilters
+            {analise === "analisada"
+              ? "Nenhuma proposição analisada com esses filtros. A análise em linguagem simples é feita pelo pipeline de enriquecimento."
+              : hasFilters
               ? "Tente outra pauta, tipo ou ano, ou busque por outro termo."
               : "A cobertura ainda está em formação: as proposições entram conforme a curadoria classifica cada pauta."}
           </Vazio>
@@ -187,6 +203,8 @@ export default function ProposicoesPage() {
               {ordenadas.length}
               {busca && ordenadas.length !== proposicoes.length ? ` de ${proposicoes.length}` : ""}{" "}
               {ordenadas.length === 1 ? "proposição" : "proposições"}
+              {analise === "analisada" ? (ordenadas.length === 1 ? " analisada" : " analisadas") : ""}
+              {analise === "pendente" ? " sem análise" : ""}
             </p>
 
             <ul className="grid gap-4 md:grid-cols-2 list-none m-0 p-0">

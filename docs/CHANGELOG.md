@@ -10,6 +10,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Filtro de proposições analisadas** (`apps/api/routers/legislativo.py`,
+  `apps/web/app/proposicoes/page.tsx`): `GET /proposicoes?analise=analisada|pendente`
+  e um segmentado "Todas · Analisadas · Sem análise" na lista. Sem filtro, as
+  analisadas vêm primeiro.
+- `scripts/sync_pipeline.py --refazer-citacoes`: reprocessa só as proposições
+  prontas com confiança < 1 (as que citaram lei), para corrigir resumos gerados
+  com o falso "lei revogada".
 - `docs/DISCOVERY-BUSSOLA.md`: levantamento da Bússola por cinco agentes
   (mapeamento, dados, engenharia de dados, software, UI/UX) mais a sessão
   paralela da maintainer. Verifica os 4 indicadores contra fontes primárias
@@ -220,6 +227,17 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+- **Enriquecimento dizia ao modelo que leis vigentes estavam revogadas**
+  (`apps/workers/enrichment/__init__.py`). A busca por "revogado" corria no
+  HTML inteiro do Planalto, e toda lei consolidada tem algum dispositivo
+  revogado: a Lei do Petróleo, a da Política Agrícola e a da PPSA saíam
+  "revogada", a confiança ia a zero e o prompt mandava o Haiku citar a
+  revogação no resumo. Agora só o cabeçalho (antes do art. 1º) decide se a
+  norma caiu; artigo citado revogado em lei vigente vira `artigo_revogado`,
+  com o texto enviado ao modelo. Também: leis que só existem na página
+  consolidada (`l9427cons.htm`) eram "não encontradas"; o cache de
+  `lei_artigos` guardava os status errados; e `_extract_article_text` não
+  achava "Art. 7º Fica…", porque `\b` falha depois de "º".
 - `/bussula`: a barra de progresso fazia `valor / meta` travado em 100% e
   aparecia cheia para a dependência de fertilizantes (87% com meta 60%), o
   indicador mais distante da meta. Agora a barra só existe com valor de

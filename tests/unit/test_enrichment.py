@@ -18,8 +18,12 @@ from apps.workers.enrichment import (
     ArtigoResolvido,
     build_planalto_url,
     extract_citacoes,
+    norma_revogada,
     validate_enrichment,
+    _build_user_prompt,
+    _buscar_lei,
     _extract_article_text,
+    _urls_planalto,
     _year_range,
 )
 
@@ -185,10 +189,92 @@ class TestExtractArticleText:
         text = _extract_article_text(self.SAMPLE_HTML, "99")
         assert text is None
 
+    def test_artigo_com_ordinal_seguido_de_espaco(self):
+        html = "<p>Art. 7º Fica criado o fundo.</p><p>Art. 70 Outra coisa.</p>"
+        text = _extract_article_text(html, "7")
+        assert text is not None and "fundo" in text and "Outra" not in text
+
     def test_strips_html_tags(self):
         text = _extract_article_text(self.SAMPLE_HTML, "1")
         assert "<p>" not in (text or "")
         assert "<html>" not in (text or "")
+
+
+# ── revogação: norma inteira × dispositivo ───────────────────────────────────
+#
+# Até 2026-10-29 bastava a palavra "revogado" em qualquer ponto da página para
+# a lei inteira virar "revogada". Toda lei consolidada tem algum dispositivo
+# revogado, e o prompt dizia ao modelo que a Lei do Petróleo estava revogada.
+
+_LEI_VIGENTE = """
+<p>LEI Nº 9.478, DE 6 DE AGOSTO DE 1997.</p>
+<p>Dispõe sobre a política energética nacional.</p>
+<p>O PRESIDENTE DA REPÚBLICA Faço saber que o Congresso Nacional decreta:</p>
+<p>Art. 1º As políticas nacionais para o aproveitamento racional das fontes de energia.</p>
+<p>Art. 5º As atividades econômicas serão reguladas.</p>
+<p>§ 2º (Revogado pela Lei nº 12.351, de 2010)</p>
+<p>Art. 7º (Revogado).</p>
+<p>Art. 8º A ANP terá como finalidade promover a regulação.</p>
+"""
+
+_LEI_REVOGADA = """
+<p>LEI Nº 8.666, DE 21 DE JUNHO DE 1993</p>
+<p>Revogada pela Lei nº 14.133, de 2021</p>
+<p>Regulamenta o art. 37, inciso XXI, da Constituição Federal.</p>
+<p>Art. 1º Esta Lei estabelece normas gerais sobre licitações.</p>
+"""
+
+
+class TestRevogacao:
+    def test_dispositivo_revogado_nao_revoga_a_lei(self):
+        assert norma_revogada(_LEI_VIGENTE) is False
+
+    def test_aviso_no_cabecalho_revoga_a_lei(self):
+        assert norma_revogada(_LEI_REVOGADA) is True
+
+    def test_artigo_citado_revogado_vira_artigo_revogado(self):
+        from apps.workers.enrichment import resolve_citacoes
+
+        db = MagicMock()
+        db.execute.return_value.scalar_one_or_none.return_value = None
+        c = Citacao(tipo="lei", numero="9478", ano=1997, artigo="7")
+        with patch("apps.workers.enrichment._fetch_planalto", return_value=(_LEI_VIGENTE, "resolvido")):
+            [a] = resolve_citacoes([c], db)
+        assert a.status == "artigo_revogado"
+        assert a.texto and "Revogado" in a.texto
+
+    def test_artigo_revogado_conta_na_confianca(self):
+        c = Citacao(tipo="lei", numero="9478", ano=1997, artigo="7")
+        a = ArtigoResolvido(lei_id=c.lei_id, numero_artigo="7", texto="Art. 7º (Revogado).", url="u", status="artigo_revogado")
+        _, confianca = validate_enrichment({"resumo_simples": "x"}, [c], [a])
+        assert confianca == 1.0
+
+    def test_prompt_nao_diz_que_a_lei_foi_revogada(self):
+        a = ArtigoResolvido(lei_id="9478-1997", numero_artigo="7", texto="Art. 7º (Revogado).", url="u", status="artigo_revogado")
+        prompt = _build_user_prompt("Altera a Lei nº 9.478, de 1997.", [a])
+        assert "Esta lei foi REVOGADA" not in prompt
+        assert "a lei segue vigente" in prompt
+
+
+class TestUrlConsolidada:
+    def test_variantes_no_mesmo_diretorio(self):
+        urls = _urls_planalto("lei", "9427", 1996)
+        assert urls[0].endswith("/leis/l9427.htm")
+        assert urls[1].endswith("/leis/l9427cons.htm")
+        assert all("/ccivil_03/leis/" in u for u in urls)
+
+    def test_404_na_canonica_tenta_a_consolidada(self):
+        def responde(url):
+            return (_LEI_VIGENTE, "resolvido") if url.endswith("cons.htm") else ("", "nao_encontrada")
+
+        with patch("apps.workers.enrichment._fetch_planalto", side_effect=responde):
+            html, status, url = _buscar_lei(_urls_planalto("lei", "9427", 1996))
+        assert status == "resolvido" and url.endswith("l9427cons.htm")
+
+    def test_todas_404_e_nao_encontrada_com_a_canonica(self):
+        with patch("apps.workers.enrichment._fetch_planalto", return_value=("", "nao_encontrada")):
+            _, status, url = _buscar_lei(_urls_planalto("lei", "9427", 1996))
+        assert status == "nao_encontrada" and url.endswith("l9427.htm")
 
 
 # ── validate_enrichment ───────────────────────────────────────────────────────

@@ -13,6 +13,8 @@ Options:
     --skip-discovery     Skip Step 1 (proposição discovery)
     --skip-votacoes      Skip Step 2 (votação sync)
     --skip-enrichment    Skip Step 3 (LLM enrichment)
+    --refazer-citacoes   Step 3 reprocessa só as prontas com confiança < 1 (as
+                         que citaram lei), em vez das pendentes
     --skip-scores        Skip Step 4 (score recalculation)
     --dry-run            Dry-run all steps
     --ano-inicio N       Start year for discovery (default: 2020)
@@ -77,8 +79,14 @@ def step2_sync_votacoes(db: Session, dry_run: bool) -> dict:
     return result
 
 
-def step3_enrich(db: Session, dry_run: bool) -> dict:
-    """Step 3: Enrich pending proposições via LLM."""
+def step3_enrich(db: Session, dry_run: bool, refazer_citacoes: bool = False) -> dict:
+    """Step 3: Enrich pending proposições via LLM.
+
+    Com `refazer_citacoes`, reprocessa (force) as prontas com confiança < 1:
+    até 2026-10-29 toda lei citada com algum dispositivo revogado saía como
+    "revogada", a confiança ia a zero e o prompt dizia ao modelo que a lei
+    estava revogada. As que não citam lei têm confiança 1 e não mudam.
+    """
     from models import Proposicao
     from apps.workers.enrichment import enriquecer_proposicao
 
@@ -86,21 +94,24 @@ def step3_enrich(db: Session, dry_run: bool) -> dict:
     print("STEP 3: Enriquecimento LLM de proposições pendentes")
     print("=" * 60)
 
-    ids = db.execute(
-        select(Proposicao.id).where(
-            or_(
-                Proposicao.contexto_status == "pendente",
-                Proposicao.contexto_status.is_(None),
-            ),
-            Proposicao.categorias_zil.isnot(None),
+    if refazer_citacoes:
+        filtro = (Proposicao.contexto_status == "pronto", Proposicao.confianca < 1)
+        descricao = "prontas com lei citada (confiança < 1), para reprocessar"
+    else:
+        filtro = (
+            or_(Proposicao.contexto_status == "pendente", Proposicao.contexto_status.is_(None)),
         )
+        descricao = "pendentes de enriquecimento"
+
+    ids = db.execute(
+        select(Proposicao.id).where(*filtro, Proposicao.categorias_zil.isnot(None))
     ).scalars().all()
 
     if not ids:
-        print("  Nenhuma proposição pendente de enriquecimento.")
+        print(f"  Nenhuma proposição {descricao}.")
         return {"total": 0, "enriquecidas": 0, "erros": 0}
 
-    print(f"  {len(ids)} proposições pendentes de enriquecimento")
+    print(f"  {len(ids)} proposições {descricao}")
     if dry_run:
         print("  [DRY RUN — enriquecimento não será executado]")
         return {"total": len(ids), "enriquecidas": 0, "erros": 0, "dry_run": True}
@@ -111,7 +122,7 @@ def step3_enrich(db: Session, dry_run: bool) -> dict:
     for i, pid in enumerate(ids):
         try:
             pid_uuid = UUID(pid) if isinstance(pid, str) and len(pid) == 32 else pid
-            result = enriquecer_proposicao(pid_uuid, db)
+            result = enriquecer_proposicao(pid_uuid, db, force=refazer_citacoes)
             enriquecidas += 1
             print(f"  [{i + 1}/{len(ids)}] {result}")
         except Exception as e:
@@ -196,6 +207,11 @@ def main():
         help="Dry-run all steps",
     )
     parser.add_argument(
+        "--refazer-citacoes",
+        action="store_true",
+        help="Step 3 reprocessa só as prontas com confiança < 1 (lei citada)",
+    )
+    parser.add_argument(
         "--ano-inicio",
         type=int,
         default=2020,
@@ -245,7 +261,7 @@ def main():
         # Step 3: Enrichment
         if not args.skip_enrichment:
             try:
-                results["enrichment"] = step3_enrich(db, args.dry_run)
+                results["enrichment"] = step3_enrich(db, args.dry_run, args.refazer_citacoes)
             except Exception as e:
                 logger.error(f"Step 3 falhou: {e}")
                 traceback.print_exc()

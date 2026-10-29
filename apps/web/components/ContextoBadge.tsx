@@ -5,7 +5,11 @@ export function ContextoBadge({ status, confianca }: { status: string | null | u
   if (status !== "pronto") return null;
   const parcial = confianca !== null && confianca !== undefined && confianca < 0.7;
   return (
-    <Selo tom={parcial ? "neutro" : "alinhado"} ponto>
+    <Selo
+      tom={parcial ? "neutro" : "alinhado"}
+      ponto
+      title={parcial ? "Nem todas as leis citadas foram encontradas no Planalto; o resumo usa só as que foram." : "Resumo em linguagem simples disponível."}
+    >
       {parcial ? "Análise parcial" : "Análise disponível"}
     </Selo>
   );

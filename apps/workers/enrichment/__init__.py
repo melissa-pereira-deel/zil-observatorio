@@ -61,7 +61,10 @@ class ArtigoResolvido:
     numero_artigo: str
     texto: Optional[str]
     url: str
-    status: str  # resolvido | revogada | nao_encontrada | pdf_nao_parseavel | timeout
+    # resolvido | artigo_revogado | revogada | nao_encontrada | pdf_nao_parseavel | timeout
+    # `revogada` é a norma inteira; `artigo_revogado` é só o dispositivo citado,
+    # numa lei que segue vigente.
+    status: str
 
 
 # ── Stage 1 — EXTRACT ─────────────────────────────────────────────────────────
@@ -147,6 +150,39 @@ def build_planalto_url(tipo: str, numero: str, ano: int) -> str:
     return f"https://www.planalto.gov.br/ccivil_03/_ato{s}-{e}/{ano}/lei/l{num}.htm"
 
 
+def _urls_planalto(tipo: str, numero: str, ano: int) -> list[str]:
+    """A URL canônica e, no mesmo diretório, as variantes que o Planalto usa
+    para leis alteradas: o texto consolidado (`cons`) e o compilado. A Lei
+    9.427/1996 (ANEEL), por exemplo, só existe em `l9427cons.htm`; sem isto ela
+    saía `nao_encontrada`."""
+    canonica = build_planalto_url(tipo, numero, ano)
+    base, arquivo = canonica.rsplit("/", 1)
+    nome = arquivo.removesuffix(".htm")
+    variantes = [f"{nome}cons.htm", f"{nome}compilado.htm", f"{nome[:1].upper()}{nome[1:]}compilado.htm"]
+    return [canonica] + [f"{base}/{v}" for v in variantes]
+
+
+# A norma inteira está revogada quando o aviso aparece no cabeçalho, entre a
+# epígrafe e o art. 1º: "Revogada pela Lei nº 14.133, de 2021". No corpo, o
+# Planalto marca cada dispositivo revogado — "(Revogado pela Lei nº ...)" —, e
+# quase toda lei consolidada tem algum. Procurar no HTML inteiro, como se fazia
+# até 2026-10-29, marcava como revogadas a Lei do Petróleo, a da Política
+# Agrícola e a da PPSA, e o prompt dizia isso ao modelo.
+_PRIMEIRO_ARTIGO = re.compile(r"\bArt\.?\s*1\s*[ºo°]?(?!\d)", re.IGNORECASE)
+_NORMA_REVOGADA = re.compile(r"Revogad[ao]\s+pel[ao]|\bSEM EFIC[ÁA]CIA\b", re.IGNORECASE)
+_DISPOSITIVO_REVOGADO = re.compile(r"\(\s*Revogad[oa]", re.IGNORECASE)
+
+
+def _cabecalho(texto: str) -> str:
+    m = _PRIMEIRO_ARTIGO.search(texto)
+    return texto[: m.start()] if m else texto[:3_000]
+
+
+def norma_revogada(html: str) -> bool:
+    """A norma inteira foi revogada? Só o cabeçalho decide."""
+    return bool(_NORMA_REVOGADA.search(_cabecalho(_strip_tags(html))))
+
+
 def _strip_tags(html: str) -> str:
     """Remove HTML tags, resolve entidades e normaliza espaços.
 
@@ -166,7 +202,10 @@ def _extract_article_text(html: str, numero_artigo: str) -> Optional[str]:
     for pattern in (
         rf"Art\.?\s*{re.escape(num)}\s*[°oº]?\s*[.\u2013\-]",
         rf"Art\.?\s*{re.escape(num)}\s*[°oº]?\s*\n",
-        rf"\bArt\.?\s*{re.escape(num)}\b",
+        # "º" é letra para o regex, então `\b` depois de "7" falha em "Art. 7º
+        # Fica…" — o caso comum, de 1º a 9º. O lookahead de dígito evita que
+        # "Art. 1" case com "Art. 10".
+        rf"\bArt\.?\s*{re.escape(num)}(?:\s*[°oº])?(?!\d)",
     ):
         m = re.search(pattern, html, re.IGNORECASE)
         if not m:
@@ -220,7 +259,7 @@ def _fetch_planalto(url: str) -> tuple[str, str]:
 
         html = resp.text
 
-        if re.search(r"\bREVOGAD[AO]\b|\bSEM EFICÁCIA\b", html, re.IGNORECASE):
+        if norma_revogada(html):
             return html, "revogada"
 
         return html, "resolvido"
@@ -233,6 +272,22 @@ def _fetch_planalto(url: str) -> tuple[str, str]:
         return "", "nao_encontrada"
 
 
+def _buscar_lei(urls: list[str]) -> tuple[str, str, str]:
+    """Tenta as URLs em ordem e para na primeira que não for 404.
+    Devolve (html, status, url que respondeu)."""
+    for url in urls:
+        html, status = _fetch_planalto(url)
+        if status != "nao_encontrada":
+            return html, status, url
+    return "", "nao_encontrada", urls[0]
+
+
+# Só estes status são confiáveis no cache. `revogada` e `nao_encontrada`
+# gravados antes da correção da detecção estavam errados com frequência;
+# rebuscá-los é barato e corrige o histórico sem migração.
+_CACHE_CONFIAVEL = ("resolvido", "artigo_revogado")
+
+
 def resolve_citacoes(citacoes: list[Citacao], db) -> list[ArtigoResolvido]:
     """
     Stage 2 — RESOLVE: fetch article texts from Planalto with DB cache.
@@ -242,11 +297,12 @@ def resolve_citacoes(citacoes: list[Citacao], db) -> list[ArtigoResolvido]:
     from models import LeiArtigo
 
     resolved: list[ArtigoResolvido] = []
-    html_cache: dict[str, tuple[str, str]] = {}  # lei_id → (html, status)
+    html_cache: dict[str, tuple[str, str, str]] = {}  # lei_id → (html, status, url)
 
     for c in citacoes:
         numero_artigo = c.artigo or "1"
-        url = build_planalto_url(c.tipo, c.numero, c.ano)
+        urls = _urls_planalto(c.tipo, c.numero, c.ano)
+        url = urls[0]
 
         # Check DB cache (TTL still valid)
         cached = db.execute(
@@ -254,6 +310,7 @@ def resolve_citacoes(citacoes: list[Citacao], db) -> list[ArtigoResolvido]:
                 LeiArtigo.lei_id == c.lei_id,
                 LeiArtigo.numero_artigo == numero_artigo,
                 LeiArtigo.expira_em > datetime.utcnow(),
+                LeiArtigo.status.in_(_CACHE_CONFIAVEL),
             )
         ).scalar_one_or_none()
 
@@ -269,14 +326,18 @@ def resolve_citacoes(citacoes: list[Citacao], db) -> list[ArtigoResolvido]:
 
         # Fetch HTML — reuse within same pipeline run
         if c.lei_id not in html_cache:
-            html, status = _fetch_planalto(url)
-            html_cache[c.lei_id] = (html, status)
+            html, status, url = _buscar_lei(urls)
+            html_cache[c.lei_id] = (html, status, url)
         else:
-            html, status = html_cache[c.lei_id]
+            html, status, url = html_cache[c.lei_id]
 
         texto: Optional[str] = None
         if status == "resolvido" and html:
             texto = _extract_article_text(html, numero_artigo)
+            # Lei vigente, dispositivo citado revogado: o modelo precisa
+            # saber disso, e a lei não vira "revogada" por causa dele.
+            if texto and _DISPOSITIVO_REVOGADO.search(texto[:300]):
+                status = "artigo_revogado"
 
         # Upsert lei_artigos cache
         now = datetime.utcnow()
@@ -331,6 +392,10 @@ def _build_user_prompt(ementa: str, artigos: list[ArtigoResolvido]) -> str:
     for a in artigos:
         if a.status == "resolvido" and a.texto:
             context_parts.append(f"[{a.lei_id} — Art. {a.numero_artigo}]\n{a.texto}")
+        elif a.status == "artigo_revogado":
+            context_parts.append(
+                f"[{a.lei_id} — Art. {a.numero_artigo}]\nNOTA: este artigo foi revogado; a lei segue vigente.\n{a.texto or ''}"
+            )
         elif a.status == "revogada":
             context_parts.append(
                 f"[{a.lei_id} — Art. {a.numero_artigo}]\nNOTA: Esta lei foi REVOGADA."
@@ -359,7 +424,7 @@ Regras:
 - resumo_simples: máximo 5 frases, linguagem acessível (nível ensino médio)
 - glossario: máximo 10 termos técnicos presentes na proposição, cada definição em 1 frase simples
 - impacto_zil: foco em semicondutores, energia, minerais, defesa, fertilizantes, digital ou comércio exterior
-- Se uma lei foi revogada, mencione isso no resumo_simples
+- Se uma lei inteira foi revogada, mencione isso no resumo_simples; artigo revogado não torna a lei revogada
 - Responda APENAS com o JSON, sem markdown ou texto adicional"""
 
 
@@ -412,7 +477,7 @@ def validate_enrichment(
     confianca = resolved_articles / max(cited_laws, 1)
     """
     citados = len(citacoes)
-    resolvidos = sum(1 for a in artigos if a.status == "resolvido")
+    resolvidos = sum(1 for a in artigos if a.status in ("resolvido", "artigo_revogado"))
     confianca = round(resolvidos / max(citados, 1), 2) if citados > 0 else 1.0
 
     validated = {
@@ -517,7 +582,7 @@ def enriquecer_proposicao(
             "status": "pronto",
             "confianca": confianca,
             "citacoes": len(citacoes),
-            "artigos_resolvidos": sum(1 for a in artigos if a.status == "resolvido"),
+            "artigos_resolvidos": sum(1 for a in artigos if a.status in ("resolvido", "artigo_revogado")),
         }
 
     except Exception as exc:
