@@ -10,6 +10,19 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Site no design system ZIL Interface** (`apps/web`): tokens do sistema como
+  variáveis CSS em `app/globals.css` (dois temas; o escuro é o padrão, via
+  `data-theme` no `<html>`) e nomes Tailwind em `tailwind.config.js`
+  (`bg-zil-superficie-1`, `text-titulo-2`, `rounded-pilula`, `duration-toque`,
+  `ease-mola`). Kit em `components/ui/` com 20 componentes (botão, chips,
+  busca, segmentado, selo, cartão, lista, placar, score com medidor e barra
+  de votos, aviso, vazio/esqueleto, paginação, linha do tempo, etapas,
+  revelar ao rolar) e `README.md` com as regras. Dez páginas e a navegação
+  (barra em vidro; tab bar flutuante no celular) reescritas sobre o kit, sem
+  mudança de comportamento: filtros, flags (`rankingPublico`), rotas e
+  textos de dados preservados. Archivo é a única família, servida por
+  `next/font`. Verificado em 375px, 768px e desktop: nenhuma rota rola na
+  horizontal.
 - **Tokens por execução** (`agentes/fronteira.py`, `explicacao/pipeline.py`):
   a fronteira devolve o gasto de cada chamada (somado entre as rodadas, no
   laço com ferramentas) e a explicação registra
@@ -79,6 +92,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- `apps/web`: superfícies por preenchimento, sem borda, em todo o site;
+  botões e controles em pílula; um primário por área; rótulos de voto e
+  direção saem da caixa alta ("Favorável", "Sim"). `/parlamentar/[id]`: a
+  frase de síntese (UI-022) conta só votos com direção esperada e diz quantos
+  ainda não têm. `/ranking`: a coluna "Votos alinhados" fica oculta enquanto
+  a API só traz o total. Estado de erro visível, com "Tentar de novo", em
+  todas as páginas que buscam dados.
 - `apps/workers/explicacao/agentes.py`: economista e publicas, herdados do
   painel, leem também o **dispositivo** na explicação (`INSUMOS_ADICIONAIS`).
   No painel o objeto é uma votação e a ementa basta; aqui é o texto, e a
@@ -154,6 +174,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+- `apps/web`: lista de proposições alargava a página para 623px no celular —
+  item de grid tem `min-width:auto` e a coluna implícita crescia até o
+  conteúdo mínimo; `.grid > * { min-width: 0 }` no `globals.css`. Selos com
+  texto longo ("Aguardando Despacho do Presidente…") truncam com o texto
+  inteiro no `title` em vez de vazar.
 - **Revisor da explicação reprovava a PNMCE por dois alarmes falsos** (PL 2780/2024,
   primeira execução real da v2, 2026-10-28):
   - `coleta.entidades_conhecidas` só conhecia os autores. O relator, que a

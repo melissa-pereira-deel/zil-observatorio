@@ -1,12 +1,31 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ParlamentarAvatar } from "@/components/ParlamentarAvatar";
-import { ScoreGauge } from "@/components/ScoreGauge";
+
 import { CategoriaBadge } from "@/components/CategoriaBadge";
-import { CATEGORIA_LABELS } from "@/lib/categorias";
+import { DirecaoBadge } from "@/components/DirecaoBadge";
+import { tituloDoScore } from "@/components/ParlamentarCard";
+import {
+  Avatar,
+  Aviso,
+  Button,
+  Card,
+  Chip,
+  Chips,
+  Esqueleto,
+  Icone,
+  Linha,
+  Lista,
+  Medidor,
+  ScoreGrande,
+  ScorePilula,
+  Selo,
+  Vazio,
+  VotosBarra,
+} from "@/components/ui";
+import { CATEGORIA_COR, CATEGORIA_LABELS } from "@/lib/categorias";
 import type { VotoHistorico } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -26,43 +45,60 @@ interface ParlamentarDetail {
 }
 
 const VOTO_LABEL: Record<string, string> = {
-  sim: "SIM",
-  nao: "NÃO",
-  abstencao: "ABSTENÇÃO",
-  ausente: "AUSENTE",
-  obstrucao: "OBSTRUÇÃO",
-  artigo_17: "ART.17",
+  sim: "Sim",
+  nao: "Não",
+  abstencao: "Abstenção",
+  ausente: "Ausente",
+  obstrucao: "Obstrução",
+  artigo_17: "Art. 17",
 };
+
+/** Ponto de alinhamento com a posição ZIL: o primeiro encoding (UI-014). */
+function PontoAlinhamento({ alinhado }: { alinhado: boolean | null }) {
+  const cor = alinhado === true ? "bg-zil-alinhado" : alinhado === false ? "bg-zil-contra" : "bg-zil-superficie-4";
+  return <span aria-hidden="true" className={`w-2.5 h-2.5 rounded-full ${cor}`} />;
+}
 
 export default function ParlamentarPage() {
   const params = useParams();
-  const router = useRouter();
   const id = params?.parlamentar_id as string;
 
   const [parl, setParl] = useState<ParlamentarDetail | null>(null);
   const [votos, setVotos] = useState<VotoHistorico[]>([]);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(false);
+  // Incrementar refaz o fetch: é o que "Tentar de novo" faz.
+  const [tentativa, setTentativa] = useState(0);
   const [filtroCategoria, setFiltroCategoria] = useState("");
 
   useEffect(() => {
     if (!id) return;
     async function load() {
       setLoading(true);
+      setErro(false);
       try {
         const [pRes, vRes] = await Promise.all([
           fetch(`${API_BASE}/parlamentares/${id}`),
           fetch(`${API_BASE}/parlamentares/${id}/votos-zil`),
         ]);
+        // 404 é "não encontrado", não erro de rede: cai no estado vazio.
+        if (pRes.status === 404) {
+          setParl(null);
+          setVotos([]);
+          return;
+        }
+        if (!pRes.ok || !vRes.ok) throw new Error(`API error: ${pRes.status}/${vRes.status}`);
         setParl(await pRes.json());
         setVotos(await vRes.json());
       } catch (err) {
         console.error(err);
+        setErro(true);
       } finally {
         setLoading(false);
       }
     }
     load();
-  }, [id]);
+  }, [id, tentativa]);
 
   const breakdown = useMemo(() => {
     const map: Record<string, { alinhados: number; contra: number; total: number }> = {};
@@ -84,7 +120,6 @@ export default function ParlamentarPage() {
   const alinhados = votos.filter((v) => v.alinhado === true).length;
   const contra = votos.filter((v) => v.alinhado === false).length;
   const semDirecao = votos.length - alinhados - contra;
-  const pctAlinhado = votos.length > 0 ? Math.round((alinhados / votos.length) * 100) : 0;
 
   function getScoreLabel(score: number | null): string {
     if (score === null) return "Sem dados suficientes";
@@ -97,335 +132,325 @@ export default function ParlamentarPage() {
     return "Posição contrária";
   }
 
+  // UI-022: a frase conta só os votos com direção esperada. Quem votou em 9
+  // pautas e só 4 tinham direção não "votou contra" nas outras 5 — elas não
+  // entram no score, e a frase diz isso.
   function getSynthesis(): string | null {
-    if (votos.length === 0) return null;
-    const pct = Math.round((alinhados / votos.length) * 100);
-    if (pct === 100) return `Votou a favor da soberania industrial em todas as ${votos.length} pautas monitoradas.`;
-    if (pct >= 75) return `Votou a favor da soberania industrial na maioria das pautas monitoradas (${alinhados} de ${votos.length}).`;
-    if (pct >= 50) return `Votou a favor da soberania industrial em ${alinhados} de ${votos.length} pautas monitoradas.`;
-    if (pct >= 25) return `Votou contra a posição de soberania industrial na maioria das pautas monitoradas (${votos.length - alinhados} de ${votos.length}).`;
-    if (pct > 0) return `Votou contra a posição de soberania industrial em quase todas as pautas monitoradas (${votos.length - alinhados} de ${votos.length}).`;
-    return `Votou contra a posição de soberania industrial em todas as ${votos.length} pautas monitoradas.`;
+    const comDirecao = alinhados + contra;
+    if (comDirecao === 0) return votos.length ? `Nenhuma das ${votos.length} votações registradas tem direção esperada definida.` : null;
+    const pct = Math.round((alinhados / comDirecao) * 100);
+    const resto = semDirecao ? ` Outras ${semDirecao} ainda não têm direção definida.` : "";
+    if (pct === 100) return `Votou a favor da soberania industrial em todas as ${comDirecao} pautas com direção definida.${resto}`;
+    if (pct >= 50) return `Votou a favor da soberania industrial em ${alinhados} de ${comDirecao} pautas com direção definida.${resto}`;
+    if (pct > 0) return `Votou contra a posição de soberania industrial em ${contra} de ${comDirecao} pautas com direção definida.${resto}`;
+    return `Votou contra a posição de soberania industrial em todas as ${comDirecao} pautas com direção definida.${resto}`;
   }
 
   const synthesis = getSynthesis();
+  const rotuloFiltro = filtroCategoria ? CATEGORIA_LABELS[filtroCategoria] ?? filtroCategoria : "";
+
+  const voltar = (
+    <Button href="/ranking" variante="fantasma" tamanho="s" className="-ml-3.5">
+      <Icone nome="chevron-esquerda" />
+      Voltar ao placar
+    </Button>
+  );
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto px-6 py-20 text-center font-mono text-sm text-zil-muted">
-        Carregando...
+      <div className="zil-container pt-10 md:pt-16 grid gap-8">
+        {voltar}
+        {/* Esqueleto com a forma do hero: avatar, nome, meta e o bloco do score. */}
+        <Card className="grid gap-8 md:grid-cols-2 md:p-10" aria-busy="true">
+          <div className="flex items-start gap-6">
+            <Esqueleto className="w-24 h-24 rounded-full shrink-0" />
+            <div className="flex-1 grid gap-3 pt-2">
+              <Esqueleto className="h-8 w-[70%]" />
+              <Esqueleto className="h-4 w-[45%]" />
+            </div>
+          </div>
+          <div className="grid gap-4">
+            <Esqueleto className="h-16 w-40" />
+            <Esqueleto className="h-5 w-[60%]" />
+            <Esqueleto className="h-2.5 w-full rounded-pilula" />
+          </div>
+        </Card>
+        <Lista aria-hidden="true">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3.5 min-h-14 px-3 py-2.5">
+              <Esqueleto className="w-8 h-8 rounded-[10px]" />
+              <div className="flex-1 grid gap-2">
+                <Esqueleto className="h-3.5 w-[55%]" />
+                <Esqueleto className="h-3 w-[35%]" />
+              </div>
+              <Esqueleto className="h-[26px] w-14 rounded-pilula" />
+            </div>
+          ))}
+        </Lista>
+      </div>
+    );
+  }
+
+  if (erro) {
+    return (
+      <div className="zil-container pt-10 md:pt-16 grid gap-8">
+        {voltar}
+        <Aviso
+          tom="contra"
+          titulo="Não foi possível carregar este parlamentar"
+          acao={
+            <Button variante="secundario" tamanho="s" onClick={() => setTentativa((t) => t + 1)}>
+              Tentar de novo
+            </Button>
+          }
+        >
+          A API não respondeu. Confira a conexão e tente de novo; se persistir, o serviço pode estar fora do ar.
+        </Aviso>
       </div>
     );
   }
 
   if (!parl) {
     return (
-      <div className="max-w-5xl mx-auto px-6 py-20 text-center font-mono text-sm text-zil-muted">
-        Parlamentar não encontrado.
+      <div className="zil-container pt-10 md:pt-16 grid gap-8">
+        {voltar}
+        <Vazio
+          icone="busca"
+          titulo="Parlamentar não encontrado"
+          acao={
+            <Button href="/ranking" variante="secundario">
+              Ver o placar
+            </Button>
+          }
+        >
+          Não há ninguém com esse identificador na base. O link pode estar desatualizado.
+        </Vazio>
       </div>
     );
   }
 
+  const cargo = parl.fonte === "camara" ? "Deputado(a) Federal" : "Senador(a)";
+  const meta = [parl.partido, parl.uf, cargo].filter(Boolean).join(" · ");
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      {/* Back */}
-      <button
-        onClick={() => router.back()}
-        className="font-mono text-xs text-zil-muted hover:text-zil-green mb-8 inline-block"
-      >
-        ← Voltar
-      </button>
+    <div className="zil-container pt-10 md:pt-16">
+      {voltar}
 
-      {/* Profile header */}
-      <div className="flex items-start gap-6 flex-wrap mb-8">
-        <ParlamentarAvatar nome={parl.nome} fotoUrl={parl.foto_url} size="lg" />
-
-        <div className="flex-1 min-w-0">
-          <h1 className="font-display text-2xl uppercase tracking-wide">
-            {parl.nome}
-          </h1>
-          {parl.nome_civil && parl.nome_civil !== parl.nome && (
-            <p className="text-sm text-zil-muted mt-1">{parl.nome_civil}</p>
-          )}
-          <div className="flex items-center gap-3 mt-2 text-sm text-zil-soft">
-            {parl.partido && <span className="font-semibold">{parl.partido}</span>}
-            {parl.uf && <span>· {parl.uf}</span>}
-            <span className="font-mono text-xs opacity-50">
-              {parl.fonte === "camara" ? "Deputado(a) Federal" : "Senador(a)"}
-            </span>
-          </div>
-          {parl.email && (
-            <a
-              href={`mailto:${parl.email}`}
-              className="text-sm text-zil-green hover:underline mt-2 inline-block"
-            >
-              {parl.email}
-            </a>
-          )}
-        </div>
-      </div>
-
-      {/* UI-022: Frase de síntese interpretativa */}
-      {synthesis && (
-        <p className="font-body text-base text-zil-soft mb-6 max-w-xl">
-          {synthesis}
-        </p>
-      )}
-
-      {/* Hero Metric Block — UI-013 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zil-divider border border-zil-divider mb-10">
-
-        {/* Coluna esquerda: Score */}
-        <div className="bg-zil-white px-6 py-5 flex items-center gap-5">
-          <ScoreGauge score={parl.score_zil} size="lg" totalVotosZil={votos.length} hideVotosLabel />
-          <div>
-            <div className="font-mono text-2xs text-zil-muted uppercase tracking-wider mb-1">
-              Score ZIL
-            </div>
-            <div className="font-display text-lg text-zil-fg leading-snug mb-1">
-              {getScoreLabel(parl.score_zil)}
-            </div>
-            <div className="font-mono text-2xs text-zil-muted">
-              escala de −10 a +10
-            </div>
-            {parl.score_atualizado_em && (
-              <div className="font-mono text-2xs text-zil-muted opacity-60 mt-1">
-                atualizado {new Date(parl.score_atualizado_em).toLocaleDateString("pt-BR")}
-              </div>
+      {/* Hero — UI-013: score e síntese como protagonistas, ao lado da pessoa */}
+      <Card className="mt-6 grid gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-12 md:p-10">
+        <div className="flex items-start gap-5 md:gap-6">
+          <Avatar nome={parl.nome} fotoUrl={parl.foto_url} tamanho="xl" />
+          <div className="min-w-0 grid gap-2">
+            <h1 className="text-titulo-2 md:text-titulo-1">{parl.nome}</h1>
+            {parl.nome_civil && parl.nome_civil !== parl.nome && (
+              <p className="text-texto-s text-zil-texto-2">{parl.nome_civil}</p>
+            )}
+            <p className="text-texto-ui text-zil-texto-2">{meta}</p>
+            {parl.email && (
+              <a
+                href={`mailto:${parl.email}`}
+                className="text-texto-s text-zil-texto-2 underline underline-offset-4 decoration-1 transition-colors duration-toque hover:text-zil-texto break-all"
+              >
+                {parl.email}
+              </a>
             )}
           </div>
         </div>
 
-        {/* Coluna direita: Proporção de alinhamento */}
-        <div className="bg-zil-white px-6 py-5">
-          <div className="font-mono text-2xs text-zil-muted uppercase tracking-wider mb-3">
-            Alinhamento ZIL
-          </div>
-          {votos.length > 0 ? (
-            <>
-              <div className="flex items-baseline gap-2 mb-2">
-                <span className="font-display text-3xl text-zil-green leading-none">
-                  {alinhados}
-                </span>
-                <span className="font-mono text-sm text-zil-muted">
-                  de {votos.length} votos
-                </span>
-                <span className="font-mono text-sm text-zil-soft font-semibold">
-                  ({pctAlinhado}%)
-                </span>
-              </div>
-              <div className="h-2 bg-zil-divider rounded-full overflow-hidden mb-2">
-                <div
-                  className="h-full bg-zil-green rounded-full transition-all"
-                  style={{ width: `${pctAlinhado}%` }}
-                />
-              </div>
-              <div className="font-mono text-2xs text-zil-muted">
-                {contra > 0 && <span>{contra} contra · </span>}
-                {semDirecao > 0 && <span>{semDirecao} sem posição definida</span>}
-              </div>
-            </>
+        <div className="grid gap-5 content-start">
+          <span className="text-texto-ui text-zil-texto-2">
+            Score ZIL · escala de −10 a +10
+            {parl.score_atualizado_em && (
+              <> · atualizado {new Date(parl.score_atualizado_em).toLocaleDateString("pt-BR")}</>
+            )}
+          </span>
+
+          {/* UI-001: o número leva no title em quantos votos se apoia. */}
+          {parl.score_zil !== null ? (
+            <div title={tituloDoScore(votos.length)} className="grid gap-5">
+              <ScoreGrande valor={parl.score_zil} frase={getScoreLabel(parl.score_zil)} />
+              <Medidor valor={parl.score_zil} />
+            </div>
           ) : (
-            <p className="font-mono text-xs text-zil-muted">
-              Nenhuma votação ZIL registrada para este parlamentar.
-              <br />
-              <span className="opacity-70">
-                A cobertura atual inclui votações da Câmara dos Deputados.
-              </span>
+            <div title={tituloDoScore(votos.length)} className="grid gap-2 justify-items-start">
+              <ScorePilula valor={null} />
+              <span className="text-[18px] leading-6 font-semibold">{getScoreLabel(null)}</span>
+            </div>
+          )}
+
+          {/* UI-022 e UI-019: a frase de síntese é o único lugar da contagem de votos. */}
+          {votos.length > 0 ? (
+            <div className="grid gap-3">
+              <p className="text-texto" title={tituloDoScore(votos.length)}>
+                {synthesis}
+              </p>
+              <VotosBarra
+                sim={alinhados}
+                nao={contra}
+                ausentes={semDirecao}
+                rotulo={`${alinhados} alinhados, ${contra} contra${semDirecao ? `, ${semDirecao} sem posição definida` : ""}`}
+              />
+              {/* Legenda com os rótulos deste dado (alinhamento, não sim/não). */}
+              <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-[14px] leading-5 font-medium text-zil-texto-2 zil-num">
+                <span className="inline-flex items-center gap-1.5">
+                  <i className="w-2 h-2 rounded-full bg-zil-alinhado" />
+                  {alinhados} alinhados
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <i className="w-2 h-2 rounded-full bg-zil-contra" />
+                  {contra} contra
+                </span>
+                {semDirecao > 0 && (
+                  <span className="inline-flex items-center gap-1.5">
+                    <i className="w-2 h-2 rounded-full bg-zil-superficie-4" />
+                    {semDirecao} sem posição definida
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* UI-004: ausência de dado explicada pela cobertura, não pelo parlamentar */
+            <p className="text-texto-s text-zil-texto-2">
+              Nenhuma votação ZIL registrada para este parlamentar. A cobertura atual inclui
+              votações da Câmara dos Deputados.
             </p>
           )}
         </div>
-      </div>
+      </Card>
 
-      {/* Category breakdown */}
+      {/* Participação por pauta — UI-015: os chips são o filtro do histórico */}
       {breakdown.length > 0 && (
-        <div className="mb-10">
-          <h2 className="font-display text-base uppercase tracking-wide mb-1">
-            Participação por pauta
+        <section className="zil-secao grid gap-5">
+          <div className="grid gap-2">
+            <h2 className="text-titulo-3">Participação por pauta</h2>
+            <p className="text-texto-s text-zil-texto-2">
+              Escolha uma pauta para filtrar o histórico abaixo. O número é quantos votos foram
+              alinhados do total naquela pauta.
+            </p>
+          </div>
+          <Chips>
+            <Chip ativo={!filtroCategoria} n={votos.length} onClick={() => setFiltroCategoria("")}>
+              Todas as pautas
+            </Chip>
+            {breakdown.map(([cat, stats]) => (
+              <Chip
+                key={cat}
+                ativo={filtroCategoria === cat}
+                pontoClassName={CATEGORIA_COR[cat]}
+                n={`${stats.alinhados}/${stats.total}`}
+                // UI-021: o código interno fica no title, fora do texto público.
+                title={`${cat} — Filtrar histórico por ${CATEGORIA_LABELS[cat] ?? cat}`}
+                onClick={() => setFiltroCategoria(filtroCategoria === cat ? "" : cat)}
+              >
+                {CATEGORIA_LABELS[cat] ?? cat}
+              </Chip>
+            ))}
+          </Chips>
+        </section>
+      )}
+
+      {/* Histórico — UI-017: contagem sempre no título */}
+      <section className={`grid gap-5 ${breakdown.length > 0 ? "pb-16 md:pb-24" : "zil-secao"}`}>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <h2 className="text-titulo-3">
+            Histórico de votos em pautas ZIL
+            {filtroCategoria && <span className="text-zil-texto-2"> — {rotuloFiltro}</span>}
           </h2>
-          {/* UI-015: instrução de interatividade */}
-          <p className="font-mono text-2xs text-zil-muted mb-4">
-            Clique em uma pauta para filtrar o histórico abaixo
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {breakdown.map(([cat, stats]) => {
-              const pct = stats.total > 0
-                ? Math.round((stats.alinhados / stats.total) * 100)
-                : 0;
+          <span className="text-texto-s text-zil-texto-2 zil-num shrink-0">
+            {filtroCategoria ? `${votosFiltrados.length} de ${votos.length}` : votos.length} votações
+          </span>
+        </div>
+
+        {/* UI-014 e UI-020: legenda do duplo encoding, com um selo real de exemplo */}
+        {votos.length > 0 && (
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-texto-s text-zil-texto-2">
+            <span className="inline-flex items-center gap-2">
+              <PontoAlinhamento alinhado={true} />
+              alinhado com a posição ZIL
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <PontoAlinhamento alinhado={false} />
+              contra a posição ZIL
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <PontoAlinhamento alinhado={null} />
+              sem posição definida
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <Selo>Sim</Selo>
+              voto registrado
+            </span>
+          </div>
+        )}
+
+        {votosFiltrados.length === 0 ? (
+          <Vazio
+            icone="documento"
+            titulo={filtroCategoria ? "Nenhuma votação nessa pauta" : "Nenhuma votação ZIL registrada"}
+            acao={
+              filtroCategoria ? (
+                <Button variante="secundario" onClick={() => setFiltroCategoria("")}>
+                  Ver todas as pautas
+                </Button>
+              ) : undefined
+            }
+          >
+            {filtroCategoria
+              ? `Este parlamentar não votou em nenhuma votação monitorada de ${rotuloFiltro}.`
+              : "A cobertura atual inclui votações da Câmara dos Deputados; pode não haver votação monitorada com voto deste parlamentar."}
+          </Vazio>
+        ) : (
+          <Lista>
+            {votosFiltrados.map((v) => {
+              const data = v.data ? new Date(v.data).toLocaleDateString("pt-BR") : null;
+              const descricao = v.resumo_simples
+                ? v.resumo_simples.length > 200
+                  ? v.resumo_simples.slice(0, 200).trimEnd() + "..."
+                  : v.resumo_simples
+                : v.descricao || "Votação sem descrição";
               return (
-                <button
-                  key={cat}
-                  onClick={() => setFiltroCategoria(filtroCategoria === cat ? "" : cat)}
-                  title={`${cat} — Filtrar histórico por ${CATEGORIA_LABELS[cat] ?? cat}`}
-                  className={`text-left p-3 border transition-colors ${
-                    filtroCategoria === cat
-                      ? "border-zil-green bg-zil-green/5"
-                      : "border-zil-divider hover:border-zil-green"
-                  }`}
-                >
-                  <div className="font-display text-sm text-zil-fg">
-                    {CATEGORIA_LABELS[cat] ?? cat}
-                  </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex-1 h-1 bg-zil-divider rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-zil-green rounded-full"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <span className="font-mono text-xs text-zil-muted whitespace-nowrap">
-                      {stats.alinhados}/{stats.total}
+                <Linha
+                  key={v.votacao_id}
+                  icone={<PontoAlinhamento alinhado={v.alinhado} />}
+                  titulo={v.proposicao_label ?? descricao}
+                  sub={
+                    <span className="grid gap-1.5">
+                      {v.proposicao_label && <span>{descricao}</span>}
+                      <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        {data && <span className="zil-num">{data}</span>}
+                        {v.categorias_zil?.map((c) => (
+                          <CategoriaBadge key={c} codigo={c} />
+                        ))}
+                        <Link
+                          href={`/votacoes/${v.votacao_id}`}
+                          className="text-zil-texto underline underline-offset-4 decoration-1 transition-colors duration-toque hover:text-zil-texto-2"
+                        >
+                          Ver votação
+                        </Link>
+                        {v.proposicao_id && (
+                          <Link
+                            href={`/proposicoes/${v.proposicao_id}`}
+                            className="text-zil-texto underline underline-offset-4 decoration-1 transition-colors duration-toque hover:text-zil-texto-2"
+                          >
+                            Ver proposição
+                          </Link>
+                        )}
+                      </span>
                     </span>
-                  </div>
-                </button>
+                  }
+                  fim={
+                    <span className="flex flex-wrap items-center justify-end gap-1.5">
+                      <Selo>{VOTO_LABEL[v.voto] ?? v.voto}</Selo>
+                      <DirecaoBadge direcao={v.direcao_esperada} />
+                    </span>
+                  }
+                  className="items-start"
+                />
               );
             })}
-          </div>
-
-          {/* UI-015: filtro ativo com badge */}
-          {filtroCategoria && (
-            <div className="mt-3 flex items-center gap-2">
-              <span className="font-mono text-xs text-zil-soft border border-zil-green/40 px-2 py-0.5 bg-zil-green/5">
-                Filtrando: {CATEGORIA_LABELS[filtroCategoria] ?? filtroCategoria}
-              </span>
-              <button
-                onClick={() => setFiltroCategoria("")}
-                className="font-mono text-xs text-zil-muted hover:text-zil-fg"
-              >
-                × Limpar
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Vote history — UI-017: título com contagem */}
-      <div className="flex items-baseline justify-between mb-4">
-        <h2 className="font-display text-base uppercase tracking-wide">
-          Histórico de votos em pautas ZIL
-          {filtroCategoria && (
-            <span className="font-mono text-xs text-zil-muted normal-case tracking-normal ml-2">
-              — {CATEGORIA_LABELS[filtroCategoria] ?? filtroCategoria}
-            </span>
-          )}
-        </h2>
-        <span className="font-mono text-xs text-zil-muted shrink-0">
-          {filtroCategoria
-            ? `${votosFiltrados.length} de ${votos.length}`
-            : votos.length}{" "}
-          votações
-        </span>
-      </div>
-
-      {/* UI-014: Legenda do duplo encoding */}
-      {votos.length > 0 && (
-        <div className="flex flex-wrap gap-x-5 gap-y-1 mb-3 pb-3 border-b border-zil-divider">
-          <span className="font-mono text-2xs text-zil-muted flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-zil-green inline-block shrink-0" />
-            alinhado com ZIL
-          </span>
-          <span className="font-mono text-2xs text-zil-muted flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-zil-orange inline-block shrink-0" />
-            contra a posição ZIL
-          </span>
-          <span className="font-mono text-2xs text-zil-muted flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-zil-divider inline-block shrink-0" />
-            sem posição definida
-          </span>
-          <span className="font-mono text-2xs text-zil-muted flex items-center gap-1.5">
-            <span className="font-mono text-2xs px-1.5 py-0.5 bg-zil-green/10 text-zil-green rounded-sm leading-none">
-              SIM
-            </span>
-            = voto registrado
-          </span>
-        </div>
-      )}
-
-      {votosFiltrados.length === 0 ? (
-        <p className="text-sm text-zil-muted py-8">
-          {filtroCategoria
-            ? "Nenhuma votação nessa categoria."
-            : "Nenhuma votação ZIL registrada para este parlamentar."}
-        </p>
-      ) : (
-        <div>
-          {votosFiltrados.map((v) => (
-            <div
-              key={v.votacao_id}
-              className="py-4 border-b border-zil-divider flex items-start gap-4"
-            >
-              <div
-                className={`w-2 h-2 rounded-full mt-2 shrink-0 ${
-                  v.alinhado === true
-                    ? "bg-zil-green"
-                    : v.alinhado === false
-                    ? "bg-zil-orange"
-                    : "bg-zil-divider"
-                }`}
-              />
-
-              <div className="flex-1 min-w-0">
-                {v.proposicao_label && (
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-display text-sm text-zil-fg">
-                      {v.proposicao_label}
-                    </span>
-                    {v.proposicao_id && (
-                      <Link
-                        href={`/proposicoes/${v.proposicao_id}`}
-                        className="font-mono text-xs text-zil-muted hover:text-zil-green"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        ver proposição ↗
-                      </Link>
-                    )}
-                  </div>
-                )}
-                {v.resumo_simples ? (
-                  <p className="text-sm text-zil-fg leading-relaxed">
-                    {v.resumo_simples.length > 200
-                      ? v.resumo_simples.slice(0, 200).trimEnd() + "..."
-                      : v.resumo_simples}
-                  </p>
-                ) : (
-                  <p className={`leading-relaxed ${v.proposicao_label ? "text-xs text-zil-muted" : "text-sm text-zil-fg"}`}>
-                    {v.descricao || "Votação sem descrição"}
-                  </p>
-                )}
-                <div className="flex flex-wrap items-center gap-2 mt-2">
-                  {v.categorias_zil?.map((c) => (
-                    <CategoriaBadge key={c} codigo={c} />
-                  ))}
-                  {v.data && (
-                    <span className="font-mono text-xs text-zil-muted">
-                      {new Date(v.data).toLocaleDateString("pt-BR")}
-                    </span>
-                  )}
-                  <Link
-                    href={`/votacoes/${v.votacao_id}`}
-                    className="font-mono text-xs text-zil-green hover:underline"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    ver votação →
-                  </Link>
-                </div>
-              </div>
-
-              <span
-                className={`shrink-0 font-mono text-xs px-3 py-1 rounded-sm ${
-                  v.voto === "sim"
-                    ? "bg-zil-green/10 text-zil-green"
-                    : v.voto === "nao"
-                    ? "bg-zil-orange-light text-zil-orange"
-                    : "bg-zil-card text-zil-muted"
-                }`}
-              >
-                {VOTO_LABEL[v.voto] ?? v.voto.toUpperCase()}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+          </Lista>
+        )}
+      </section>
     </div>
   );
 }

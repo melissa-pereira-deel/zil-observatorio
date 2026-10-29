@@ -1,72 +1,147 @@
 import Link from "next/link";
 import { type ComponentPropsWithoutRef } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
-type ButtonSize = "sm" | "md" | "lg";
+import { Icone, type NomeIcone } from "./Icone";
 
-interface ButtonBaseProps {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  fullWidth?: boolean;
+/**
+ * Botão — pílula sem borda para toda ação (ZIL Interface › Botão).
+ *
+ * `primario` é o único bloco invertido da área: um por tela ou por cartão.
+ * `secundario` (padrão) fica ao lado dele; `fantasma` é terciário; `vidro`
+ * vai sobre fotos. O rótulo diz o que acontece: "Ver 18 parlamentares".
+ */
+
+type Variante = "primario" | "secundario" | "fantasma" | "vidro";
+type Tamanho = "s" | "m" | "l";
+
+interface Base {
+  variante?: Variante;
+  tamanho?: Tamanho;
+  bloco?: boolean;
+  carregando?: boolean;
+  className?: string;
 }
 
-type ButtonAsButton = ButtonBaseProps &
-  Omit<ComponentPropsWithoutRef<"button">, keyof ButtonBaseProps> & {
-    href?: never;
-  };
+type ComoBotao = Base & Omit<ComponentPropsWithoutRef<"button">, keyof Base> & { href?: never };
+type ComoLink = Base & Omit<ComponentPropsWithoutRef<typeof Link>, keyof Base> & { href: string };
 
-type ButtonAsLink = ButtonBaseProps &
-  Omit<ComponentPropsWithoutRef<typeof Link>, keyof ButtonBaseProps> & {
-    href: string;
-  };
+export type ButtonProps = ComoBotao | ComoLink;
 
-export type ButtonProps = ButtonAsButton | ButtonAsLink;
-
-const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    "bg-zil-green text-white border-zil-green hover:bg-zil-green-dark hover:border-zil-green-dark",
-  secondary:
-    "bg-transparent text-zil-fg border-zil-fg hover:bg-zil-fg hover:text-zil-bg",
-  ghost:
-    "bg-transparent text-zil-green border-zil-green hover:bg-zil-green hover:text-white",
+const VARIANTE: Record<Variante, string> = {
+  primario: "bg-zil-inverso text-zil-inverso-texto hover:bg-zil-inverso-hover",
+  secundario: "bg-zil-superficie-3 text-zil-texto hover:bg-zil-superficie-4",
+  fantasma: "bg-transparent text-zil-texto hover:bg-zil-superficie-2",
+  vidro: "zil-vidro text-zil-texto hover:bg-zil-vidro-forte",
 };
 
-const sizeClasses: Record<ButtonSize, string> = {
-  sm: "px-4 py-2 text-2xs tracking-[0.15em]",
-  md: "px-6 py-3 text-[11px] tracking-[0.15em]",
-  lg: "px-8 py-4 text-xs tracking-[0.2em]",
+const TAMANHO: Record<Tamanho, string> = {
+  s: "h-9 px-3.5 text-[15px]",
+  m: "h-11 px-5 text-[16px]",
+  l: "h-[52px] px-[26px] text-[17px]",
 };
 
 export function Button({
-  variant = "primary",
-  size = "md",
-  fullWidth = false,
+  variante = "secundario",
+  tamanho = "m",
+  bloco = false,
+  carregando = false,
   className = "",
   children,
   ...props
-}: ButtonProps & { className?: string }) {
+}: ButtonProps) {
   const classes = [
-    "inline-flex items-center justify-center font-display uppercase border-[1.5px] transition-all duration-150 cursor-pointer select-none",
-    variantClasses[variant],
-    sizeClasses[size],
-    fullWidth ? "w-full" : "",
+    "relative inline-flex items-center justify-center gap-2 rounded-pilula font-medium leading-none tracking-[-0.005em] whitespace-nowrap select-none cursor-pointer",
+    "transition-[background-color,transform,opacity] duration-toque ease-padrao active:scale-toque",
+    "disabled:opacity-40 disabled:pointer-events-none aria-disabled:opacity-40 aria-disabled:pointer-events-none",
+    VARIANTE[variante],
+    TAMANHO[tamanho],
+    bloco ? "flex w-full" : "",
+    carregando ? "text-transparent pointer-events-none" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const conteudo = (
+    <>
+      {children}
+      {carregando && (
+        <span
+          aria-hidden="true"
+          className={`absolute inset-0 m-auto h-[18px] w-[18px] rounded-full border-2 border-zil-texto-3 animate-zil-gira ${
+            variante === "primario" ? "border-t-zil-inverso-texto" : "border-t-zil-texto"
+          }`}
+        />
+      )}
+    </>
+  );
+
+  if ("href" in props && props.href) {
+    const { href, ...rest } = props as ComoLink;
+    return (
+      <Link href={href} className={classes} {...rest}>
+        {conteudo}
+      </Link>
+    );
+  }
+
+  return (
+    <button className={classes} aria-busy={carregando || undefined} {...(props as ComoBotao)}>
+      {conteudo}
+    </button>
+  );
+}
+
+/** Ação só com ícone: 44×44, cantos `raio-m` (squircle). `redondo` para fechar e compartilhar. */
+interface BotaoIconeBase {
+  icone: NomeIcone;
+  /** Obrigatório: o ícone sozinho não diz o que faz. */
+  rotulo: string;
+  variante?: "padrao" | "fantasma" | "vidro";
+  redondo?: boolean;
+  tamanho?: "s" | "m";
+  className?: string;
+}
+type BotaoIconeComoBotao = BotaoIconeBase & Omit<ComponentPropsWithoutRef<"button">, keyof BotaoIconeBase | "children"> & { href?: never };
+type BotaoIconeComoLink = BotaoIconeBase & Omit<ComponentPropsWithoutRef<typeof Link>, keyof BotaoIconeBase | "children"> & { href: string };
+
+const VARIANTE_ICONE = {
+  padrao: "bg-zil-superficie-2 hover:bg-zil-superficie-3",
+  fantasma: "bg-transparent hover:bg-zil-superficie-2",
+  vidro: "zil-vidro hover:bg-zil-vidro-forte",
+} as const;
+
+export function BotaoIcone({
+  icone,
+  rotulo,
+  variante = "padrao",
+  redondo = false,
+  tamanho = "m",
+  className = "",
+  ...props
+}: BotaoIconeComoBotao | BotaoIconeComoLink) {
+  const classes = [
+    "inline-grid place-items-center shrink-0 text-zil-texto cursor-pointer",
+    "transition-[background-color,transform] duration-toque ease-padrao active:scale-[.94]",
+    tamanho === "s" ? "w-9 h-9 rounded-s" : "w-11 h-11 rounded-m",
+    redondo ? "rounded-pilula" : "",
+    VARIANTE_ICONE[variante],
     className,
   ]
     .filter(Boolean)
     .join(" ");
 
   if ("href" in props && props.href) {
-    const { href, ...rest } = props as ButtonAsLink;
+    const { href, ...rest } = props as BotaoIconeComoLink;
     return (
-      <Link href={href} className={classes} {...rest}>
-        {children}
+      <Link href={href} className={classes} aria-label={rotulo} title={rotulo} {...rest}>
+        <Icone nome={icone} />
       </Link>
     );
   }
-
   return (
-    <button className={classes} {...(props as ButtonAsButton)}>
-      {children}
+    <button type="button" className={classes} aria-label={rotulo} title={rotulo} {...(props as BotaoIconeComoBotao)}>
+      <Icone nome={icone} />
     </button>
   );
 }

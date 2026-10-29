@@ -1,36 +1,38 @@
-import Link from "next/link";
+import { Card } from "@/components/ui";
+import { CATEGORIA_COR } from "@/lib/categorias";
 
-const CATEGORIES = [
-  { code: "ZIL-FER", name: "Fertilizantes", emoji: "\uD83C\uDF31" },
-  { code: "ZIL-MIN", name: "Minerais", emoji: "\u26CF\uFE0F" },
-  { code: "ZIL-SEM", name: "Semicondutores", emoji: "\uD83D\uDD2C" },
-  { code: "ZIL-ENE", name: "Energia", emoji: "\u26A1" },
-  { code: "ZIL-DIG", name: "Digital", emoji: "\uD83D\uDCE1" },
-  { code: "ZIL-DEF", name: "Defesa", emoji: "\uD83D\uDEE1\uFE0F" },
-  { code: "ZIL-EDU", name: "Capital Humano", emoji: "\uD83C\uDF93" },
-  { code: "ZIL-AGR", name: "Agro-Indústria", emoji: "\uD83C\uDFED" },
-  { code: "ZIL-COM", name: "Comércio", emoji: "\uD83C\uDF10" },
+/**
+ * As nove áreas estratégicas, como cartões-link para a lista filtrada. O
+ * ponto de cor é o mesmo do chip e do gráfico (CATEGORIA_COR); o código
+ * interno fica no `title`, fora do texto público (UI-021).
+ */
+
+const CATEGORIAS = [
+  { codigo: "ZIL-FER", nome: "Fertilizantes" },
+  { codigo: "ZIL-MIN", nome: "Minerais" },
+  { codigo: "ZIL-SEM", nome: "Semicondutores" },
+  { codigo: "ZIL-ENE", nome: "Energia" },
+  { codigo: "ZIL-DIG", nome: "Digital" },
+  { codigo: "ZIL-DEF", nome: "Defesa" },
+  { codigo: "ZIL-EDU", nome: "Capital Humano" },
+  { codigo: "ZIL-AGR", nome: "Agro-Indústria" },
+  { codigo: "ZIL-COM", nome: "Comércio" },
 ];
 
 export function CategoryGrid() {
   return (
-    <div className="grid grid-cols-3 gap-2 md:gap-3">
-      {CATEGORIES.map((cat) => (
-        <Link
-          key={cat.code}
-          href={`/proposicoes?categoria=${cat.code}`}
-          className="group flex flex-col items-center gap-2 p-4 md:p-5 border border-zil-divider hover:border-zil-green hover:bg-zil-green-light/30 transition-all duration-200 text-center"
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
+      {CATEGORIAS.map((cat) => (
+        <Card
+          key={cat.codigo}
+          href={`/proposicoes?categoria=${cat.codigo}`}
+          compacto
+          title={`Proposições em ${cat.nome} (${cat.codigo})`}
+          className="flex items-center gap-3"
         >
-          <span className="text-xl md:text-2xl" role="img" aria-label={cat.name}>
-            {cat.emoji}
-          </span>
-          <span className="text-xs md:text-sm font-medium text-zil-soft group-hover:text-zil-green transition-colors">
-            {cat.name}
-          </span>
-          <span className="font-mono text-2xs text-zil-muted tracking-wider">
-            {cat.code}
-          </span>
-        </Link>
+          <span aria-hidden="true" className={`w-2.5 h-2.5 rounded-full shrink-0 ${CATEGORIA_COR[cat.codigo] ?? "bg-zil-texto-3"}`} />
+          <span className="text-texto-ui">{cat.nome}</span>
+        </Card>
       ))}
     </div>
   );

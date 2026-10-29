@@ -1,23 +1,12 @@
-import { Badge } from "@/components/ui/Badge";
+import { Selo } from "@/components/ui";
 
-interface ContextoBadgeProps {
-  status: string | null | undefined;
-  confianca?: number | null;
-  className?: string;
-}
-
-export function ContextoBadge({ status, confianca, className = "" }: ContextoBadgeProps) {
+/** Só aparece quando a análise está pronta (UI-002); parcial quando a confiança é baixa. */
+export function ContextoBadge({ status, confianca }: { status: string | null | undefined; confianca?: number | null }) {
   if (status !== "pronto") return null;
-
-  const isPartial = confianca !== null && confianca !== undefined && confianca < 0.7;
-
+  const parcial = confianca !== null && confianca !== undefined && confianca < 0.7;
   return (
-    <Badge
-      variant="status"
-      color={isPartial ? "gold" : "green"}
-      className={className}
-    >
-      {isPartial ? "Análise parcial" : "Análise disponível"}
-    </Badge>
+    <Selo tom={parcial ? "neutro" : "alinhado"} ponto>
+      {parcial ? "Análise parcial" : "Análise disponível"}
+    </Selo>
   );
 }

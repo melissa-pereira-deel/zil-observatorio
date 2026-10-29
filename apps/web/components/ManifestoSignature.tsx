@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui";
+import { Aviso, Button, Campo } from "@/components/ui";
+
+/**
+ * Assinatura do manifesto: dois campos sem borda (ZIL Interface › Campo) e
+ * um primário em bloco. Depois de assinar, confirma em Aviso `alinhado` e
+ * oferece copiar o texto para compartilhar.
+ */
 
 export function ManifestoSignature() {
   const [signed, setSigned] = useState(false);
@@ -27,62 +33,36 @@ export function ManifestoSignature() {
 
   if (signed) {
     return (
-      <div className="max-w-md">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 bg-zil-green text-white flex items-center justify-center font-display text-sm">
-            &#10003;
-          </div>
-          <div>
-            <div className="font-semibold text-sm md:text-base">{name}</div>
-            <div className="font-mono text-xs text-zil-muted">
-              {city || "Brasil"} &middot; n&ordm;{" "}
-              {count.toLocaleString("pt-BR")}
-            </div>
-          </div>
-        </div>
-        <Button
-          variant="secondary"
-          fullWidth
-          onClick={handleShare}
-        >
-          {copied ? "\u2713 Copiado" : "Copiar para compartilhar"}
+      <div className="w-full max-w-md grid gap-4 text-left">
+        <Aviso tom="alinhado" titulo={name}>
+          <span className="zil-num">
+            {city || "Brasil"} &middot; n&ordm; {count.toLocaleString("pt-BR")}
+          </span>
+        </Aviso>
+        <Button variante="secundario" bloco onClick={handleShare}>
+          {copied ? "Copiado" : "Copiar para compartilhar"}
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-md">
-      <p className="text-xs md:text-sm text-zil-soft leading-relaxed mb-5">
-        Sua assinatura não é um voto em partido. É um compromisso com o método:
-        convergência por dados, transparência radical, e a recusa de aceitar que
-        polarização é destino.
+    <div className="w-full max-w-md grid gap-5 text-left">
+      <p className="text-texto text-zil-texto-2">
+        Sua assinatura não é um voto em partido. É um compromisso com o método: convergência por dados, transparência radical, e a recusa de
+        aceitar que polarização é destino.
       </p>
 
-      <div className="space-y-2 mb-4">
-        <input
-          type="text"
-          placeholder="Nome"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full px-4 py-3 bg-transparent border-[1.5px] border-zil-divider text-sm font-body text-zil-fg placeholder:text-zil-muted focus:outline-none focus:border-zil-green transition-colors"
-        />
-        <input
-          type="text"
-          placeholder="Cidade, Estado"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          className="w-full px-4 py-3 bg-transparent border-[1.5px] border-zil-divider text-sm font-body text-zil-fg placeholder:text-zil-muted focus:outline-none focus:border-zil-green transition-colors"
-        />
+      <div className="grid gap-3">
+        <Campo rotulo="Nome" type="text" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />
+        <Campo rotulo="Cidade, Estado" type="text" autoComplete="address-level2" value={city} onChange={(e) => setCity(e.target.value)} />
       </div>
 
-      <Button variant="primary" fullWidth onClick={handleSign}>
+      <Button variante="primario" bloco tamanho="l" onClick={handleSign}>
         Assinar o manifesto
       </Button>
 
-      <p className="font-mono text-xs text-zil-muted mt-3 tracking-wider">
-        {count.toLocaleString("pt-BR")} assinaturas
-      </p>
+      <p className="text-texto-s text-zil-texto-2 zil-num">{count.toLocaleString("pt-BR")} assinaturas</p>
     </div>
   );
 }
