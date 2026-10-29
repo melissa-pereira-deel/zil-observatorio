@@ -19,6 +19,23 @@ from packages.camara_client import CamaraClient
 
 _ID_DEPUTADO = re.compile(r"/deputados/(\d+)")
 _SIGLA = re.compile(r"^[A-ZÇ][A-ZÇ ]{1,20}$")
+# Como a Câmara escreve um parlamentar dentro de uma ementa ou de um despacho:
+# "pelo Relator, Dep. Arnaldo Jardim (CIDADANIA-SP)". Grupo 1 é o nome, 2 o
+# partido. É o único jeito de um relator entrar na ficha — ele não é autor.
+_PARLAMENTAR_NO_TEXTO = re.compile(
+    r"\bDep(?:utad[oa])?\.?\s+([A-ZÁÉÍÓÚÂÊÔÃÕÇ][\wÁ-ú]+(?:\s+(?:d[aeo]s?\s+)?[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\wÁ-ú]+){0,4})"
+    r"\s*\(([A-Za-zÇç]+)\s*-\s*[A-Z]{2}\)"
+)
+_PARTIDO_UF = re.compile(r"\(([A-Za-zÇç]+)\s*-\s*[A-Z]{2}\)")
+_ISO = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
+
+
+def data_br(data: str) -> str:
+    """Converte "2024-07-08" (ou com hora) → "08/07/2024". O resto passa intacto. A
+    ficha é lida por quem escreve para o público; data ISO no prompt virava
+    data ISO no resumo."""
+    m = _ISO.match(data or "")
+    return f"{m.group(3)}/{m.group(2)}/{m.group(1)}" if m else data
 
 
 @dataclass(frozen=True)
@@ -160,7 +177,7 @@ def ficha_para_prompt(ficha: FichaFatos, max_tramitacoes: int = 25) -> str:
     linhas = [f"[FICHA DE FATOS — {ficha.rotulo}]"]
     linhas.append(f"Ementa oficial: {ficha.ementa or '(não informada)'}")
     linhas.append(f"Situação: {ficha.situacao or '(não informada)'}")
-    linhas.append(f"Apresentada em: {ficha.data_apresentacao or '(não informada)'}")
+    linhas.append(f"Apresentada em: {data_br(ficha.data_apresentacao) or '(não informada)'}")
 
     if "autores" in ficha.origens:
         linhas.append(f"Autoria: {ficha.grupo_politico}")
@@ -176,7 +193,7 @@ def ficha_para_prompt(ficha: FichaFatos, max_tramitacoes: int = 25) -> str:
     if "tramitacoes" in ficha.origens:
         linhas.append(f"Cronologia ({len(ficha.tramitacoes)} eventos; mostrando até {max_tramitacoes}):")
         for t in ficha.tramitacoes[:max_tramitacoes]:
-            linhas.append(f"  - {t.data} {t.orgao}: {t.descricao[:120]}")
+            linhas.append(f"  - {data_br(t.data)} {t.orgao}: {t.descricao[:120]}")
     else:
         linhas.append("Cronologia: NÃO OBTIDA — não afirme datas de tramitação.")
 
@@ -201,9 +218,20 @@ def entidades_conhecidas(ficha: FichaFatos) -> dict[str, set[str]]:
     Usado pelo revisor (métrica 2). Conservador de propósito: compara nomes de
     autores, siglas de partido e datas — não tenta reconhecer entidade genérica,
     porque falso positivo aqui derrubaria explicações corretas.
+
+    Além dos autores, conta quem a própria Câmara nomeia nas relacionadas e na
+    cronologia, no formato "Dep. Nome (PARTIDO-UF)". O relator não é autor, e
+    sem isto a PNMCE foi reprovada por citar "Arnaldo Jardim (CIDADANIA-SP)",
+    que está nos pareceres de plenário da ficha (2026-10-28).
     """
+    textos = [r.ementa for r in ficha.relacionadas] + [t.descricao for t in ficha.tramitacoes]
+    nomes = {a.nome for a in ficha.autores if a.nome}
+    partidos = set(ficha.partidos)
+    for texto in textos:
+        nomes |= {m.group(1).strip() for m in _PARLAMENTAR_NO_TEXTO.finditer(texto or "")}
+        partidos |= {m.group(1) for m in _PARTIDO_UF.finditer(texto or "")}
     return {
-        "nomes": {a.nome for a in ficha.autores if a.nome},
-        "partidos": set(ficha.partidos),
+        "nomes": nomes,
+        "partidos": partidos,
         "datas": {t.data for t in ficha.tramitacoes if t.data} | ({ficha.data_apresentacao} if ficha.data_apresentacao else set()),
     }

@@ -23,7 +23,7 @@ for _p in (str(REPO_ROOT), str(REPO_ROOT / "apps" / "api")):
         sys.path.insert(0, _p)
 
 from apps.workers.agentes.blindagem import ABRE, FECHA  # noqa: E402
-from apps.workers.agentes.fronteira import consultar_com_ferramentas  # noqa: E402
+from apps.workers.agentes.fronteira import consultar_com_ferramentas, retirar_uso  # noqa: E402
 from apps.workers.explicacao import explicar  # noqa: E402
 from apps.workers.explicacao.agentes import carregar_proprios  # noqa: E402
 from apps.workers.explicacao.revisao import numeros, numeros_sem_origem  # noqa: E402
@@ -390,7 +390,8 @@ class _ClienteFalso:
 
     def create(self, **kw):
         self.mensagens.append([dict(m) for m in kw["messages"]])
-        return SimpleNamespace(content=self.roteiro.pop(0), stop_reason="end_turn")
+        return SimpleNamespace(content=self.roteiro.pop(0), stop_reason="end_turn",
+                               usage=SimpleNamespace(input_tokens=100, output_tokens=20))
 
 
 def _uso(i, nome, args):
@@ -407,6 +408,8 @@ class TestFronteiraComFerramentas:
         registro: list = []
         res = consultar_com_ferramentas("m", "s", "p", ferramentas=[], executor=lambda n, a: {"ok": a["ref"]},
                                         max_tokens=10, registro=registro, cliente=cliente)
+        # duas rodadas: o gasto é a soma das duas
+        assert retirar_uso(res) == {"entrada": 200, "saida": 40}
         assert res == {"veredito": "confirmada"}
         assert registro[0]["ferramenta"] == "consultar_serie" and registro[0]["rodada"] == 1
         devolvido = cliente.mensagens[1][-1]["content"][0]
@@ -466,13 +469,15 @@ def test_raciocinio_antes_do_texto_nao_esconde_a_resposta(monkeypatch):
     from apps.workers.agentes.fronteira import consultar
 
     def responde(self, **kw):
-        return SimpleNamespace(stop_reason="end_turn", content=[
+        return SimpleNamespace(stop_reason="end_turn", usage=SimpleNamespace(input_tokens=7, output_tokens=3), content=[
             SimpleNamespace(type="thinking", text=""),
             SimpleNamespace(type="text", text='{"nada_a_dizer": true, "afirmacoes": []}'),
         ])
 
     monkeypatch.setattr(anthropic.resources.messages.Messages, "create", responde)
-    assert consultar("m", "s", "p", max_tokens=10, api_key=_FICTICIA) == {"nada_a_dizer": True, "afirmacoes": []}
+    res = consultar("m", "s", "p", max_tokens=10, api_key=_FICTICIA)
+    assert retirar_uso(res) == {"entrada": 7, "saida": 3}
+    assert res == {"nada_a_dizer": True, "afirmacoes": []}
 
 
 def test_resposta_cortada_e_erro_declarado(monkeypatch):

@@ -106,8 +106,20 @@ _ESCALA = re.compile(r"\s*(mil|milh(?:ão|ões|ao|oes)|bilh(?:ão|ões|ao|oes)|t
 _FATOR = {"trilh": 1e12, "bilh": 1e9, "milh": 1e6, "mil": 1e3}
 # Na SAÍDA, datas e referências de proposição já são conferidas como entidade
 # (métrica 2) ou são rótulo ("PL 1001/2025"); ordinais são artigo de lei.
+# Referência a norma é endereço, não quantidade: "art. 61 da Constituição",
+# "art. 113 do ADCT", "Lei nº 14.300", "LC 140". Na PNMCE (2026-10-28) o
+# revisor acusou 61 e 113 como números sem origem.
+_REFERENCIA_LEGAL = (
+    r"\b(?:arts?\.|artigos?|par[áa]grafos?|incisos?|al[íi]neas?|"
+    r"Leis?(?:\s+Complementar(?:es)?)?|LC|Decretos?(?:-Lei)?|EC|Emendas?\s+Constitucion(?:al|ais)|"
+    r"MPs?|Medidas?\s+Provis[óo]rias?|Resolu[çc][ãa]o|Portaria)"
+    r"\s*(?:n[ºo°.]?\s*)?\d{1,3}(?:\.\d{3})*(?:\s?[ºª°])?(?:/\d{2,4})?"
+    r"|§\s*\d+"
+)
 _NAO_E_QUANTIDADE = re.compile(
-    r"\b\d{1,2}/\d{1,2}/\d{4}\b|\b\d{4}-\d{2}-\d{2}\b|\b\d+/\d{4}\b|\b\d+\s?[ºª°]"
+    r"\b\d{1,2}/\d{1,2}/\d{4}\b|\b\d{4}-\d{2}-\d{2}\b|\b\d+(?:\.\d{3})*/\d{4}\b|\b\d+\s?[ºª°]|"
+    + _REFERENCIA_LEGAL,
+    re.IGNORECASE,
 )
 
 
@@ -178,6 +190,7 @@ def revisar(
     numeros_do_contexto: Iterable[float] = (),
     verificacoes: Optional[list[Verificacao]] = None,
     contraditas_citadas: Iterable[str] = (),
+    contraditor: Optional[str] = None,
 ) -> Revisao:
     r = Revisao()
     verificacoes = verificacoes or []
@@ -208,13 +221,24 @@ def revisar(
     # afirmações sobre a MESMA dimensão são candidatas a dissenso; se existem
     # e a síntese não lista nenhum dissenso, isso precisa ser justificado por
     # um revisor-agente (Fase 2). Aqui, fica registrado como problema.
+    #
+    # O contraditor fica fora das duas contas. Ele existe para discordar e
+    # comenta toda dimensão: com ele dentro, quase toda dimensão "tem mais de
+    # uma lente", e o número de dissensos mede o trabalho dele, não o desacordo
+    # entre lentes (13 de 14 na PNMCE).
     por_dimensao: dict[str, set[str]] = {}
     for p in pareceres:
+        if p.lente == contraditor:
+            continue
         for a in p.afirmacoes:
             por_dimensao.setdefault(a.dimensao, set()).add(p.lente)
     sobrepostas = {d for d, ls in por_dimensao.items() if len(ls) >= 2}
+    dissensos = analise.dissensos if analise else []
+    com_contraditor = [d for d in dissensos if contraditor in (d.lente_a, d.lente_b)]
     r.metricas["dimensoes_com_mais_de_uma_lente"] = len(sobrepostas)
-    r.metricas["dissensos"] = len(analise.dissensos) if analise else 0
+    r.metricas["dissensos"] = len(dissensos)
+    r.metricas["dissensos_entre_lentes"] = len(dissensos) - len(com_contraditor)
+    r.metricas["dissensos_com_contraditor"] = len(com_contraditor)
     if analise is not None and sobrepostas and not analise.dissensos:
         r.problemas.append(
             f"síntese sem dissensos apesar de {len(sobrepostas)} dimensão(ões) com mais de uma lente: "

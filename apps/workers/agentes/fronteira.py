@@ -43,6 +43,34 @@ def extrair_json(bruto: str) -> dict:
         return {"error": f"json_parse_failed: {bruto[:200]}"}
 
 
+# Chave reservada no dict de resposta: tokens gastos na chamada. Quem
+# orquestra retira antes de ler o resto (`retirar_uso`). Fica no dict, e não
+# numa tupla de retorno, para que os consultores falsos dos testes — que não
+# gastam token nenhum — continuem válidos sem mudança.
+USO = "_uso"
+
+
+def _somar_uso(acumulado: Optional[dict], resposta) -> dict:
+    uso = getattr(resposta, "usage", None)
+    acumulado = dict(acumulado or {"entrada": 0, "saida": 0})
+    acumulado["entrada"] += int(getattr(uso, "input_tokens", 0) or 0)
+    acumulado["saida"] += int(getattr(uso, "output_tokens", 0) or 0)
+    return acumulado
+
+
+def _com_uso(resultado: dict, uso: Optional[dict]) -> dict:
+    if uso is not None and isinstance(resultado, dict):
+        resultado[USO] = uso
+    return resultado
+
+
+def retirar_uso(resultado: dict) -> dict:
+    """Tira e devolve os tokens de uma resposta; `{}` se não houver."""
+    if not isinstance(resultado, dict):
+        return {}
+    return resultado.pop(USO, None) or {}
+
+
 def texto_da_resposta(blocos) -> str:
     """Junta só os blocos de texto. O modelo pode pensar antes de responder,
     e o raciocínio chega como bloco próprio, antes do texto — no SDK 0.40
@@ -93,9 +121,10 @@ def consultar(
         return {"error": f"API respondeu {e.status_code}: {type(e).__name__}"}
     except anthropic.APIError as e:
         return {"error": f"chamada falhou: {type(e).__name__}"}
+    uso = _somar_uso(None, message)
     if message.stop_reason == "max_tokens":
-        return {"error": f"resposta cortada no limite de {max_tokens} tokens"}
-    return extrair_json(texto_da_resposta(message.content))
+        return _com_uso({"error": f"resposta cortada no limite de {max_tokens} tokens"}, uso)
+    return _com_uso(extrair_json(texto_da_resposta(message.content)), uso)
 
 
 # ── uso de ferramentas ────────────────────────────────────────────────────────
@@ -173,6 +202,7 @@ def consultar_com_ferramentas(
         cliente = anthropic.Anthropic(api_key=api_key)
 
     mensagens: list[dict] = [{"role": "user", "content": prompt}]
+    gasto: Optional[dict] = None
     for rodada in range(1, max_rodadas + 1):
         try:
             resposta = cliente.messages.create(
@@ -184,15 +214,16 @@ def consultar_com_ferramentas(
             )
         except Exception as e:  # noqa: BLE001 — erro de rede/API vira contrato de erro
             if type(e).__name__ == "AuthenticationError":
-                return {"error": "ANTHROPIC_API_KEY recusada pela API (401): chave inválida ou revogada"}
-            return {"error": f"chamada falhou na rodada {rodada}: {type(e).__name__}"}
+                return _com_uso({"error": "ANTHROPIC_API_KEY recusada pela API (401): chave inválida ou revogada"}, gasto)
+            return _com_uso({"error": f"chamada falhou na rodada {rodada}: {type(e).__name__}"}, gasto)
 
+        gasto = _somar_uso(gasto, resposta)
         blocos = list(resposta.content or [])
         usos = [b for b in blocos if getattr(b, "type", None) == "tool_use"]
         if not usos:
             if getattr(resposta, "stop_reason", None) == "max_tokens":
-                return {"error": f"resposta cortada no limite de {max_tokens} tokens"}
-            return extrair_json(texto_da_resposta(blocos))
+                return _com_uso({"error": f"resposta cortada no limite de {max_tokens} tokens"}, gasto)
+            return _com_uso(extrair_json(texto_da_resposta(blocos)), gasto)
 
         mensagens.append({"role": "assistant", "content": [d for d in (_bloco_para_dict(b) for b in blocos) if d]})
         resultados = []
@@ -215,4 +246,4 @@ def consultar_com_ferramentas(
             )
         mensagens.append({"role": "user", "content": resultados})
 
-    return {"error": f"ferramentas: limite de {max_rodadas} rodadas atingido sem resposta final"}
+    return _com_uso({"error": f"ferramentas: limite de {max_rodadas} rodadas atingido sem resposta final"}, gasto)

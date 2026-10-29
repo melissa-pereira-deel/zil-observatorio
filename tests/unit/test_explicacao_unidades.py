@@ -14,6 +14,7 @@ from apps.workers.agentes.meta import MetaExecucao  # noqa: E402
 from apps.workers.explicacao.coleta import (  # noqa: E402
     Autor,
     FichaFatos,
+    Relacionada,
     Tramitacao,
     entidades_conhecidas,
     ficha_para_prompt,
@@ -26,7 +27,7 @@ from apps.workers.explicacao.extracao import (  # noqa: E402
     separar_secoes,
 )
 from apps.workers.explicacao.persistencia import gravar, hash_texto  # noqa: E402
-from apps.workers.explicacao.revisao import entidades_fabricadas, revisar  # noqa: E402
+from apps.workers.explicacao.revisao import entidades_fabricadas, numeros, revisar  # noqa: E402
 from apps.workers.explicacao.schema import (  # noqa: E402
     Afirmacao,
     AnaliseSistemica,
@@ -144,6 +145,19 @@ class TestFicha:
         assert e["partidos"] == {"PSD", "PSDB"}
         assert "2025-03-10" in e["datas"]
 
+    def test_relator_nomeado_nas_relacionadas_e_conhecido(self):
+        """PNMCE (2026-10-28): o relator não é autor, mas a Câmara o nomeia
+        nos pareceres de plenário que a ficha traz."""
+        f = _ficha(relacionadas=[Relacionada("PPP", 1, 2025, "Parecer proferido em Plenário pelo Relator, "
+                                             "Dep. Arnaldo Jardim (CIDADANIA-SP), pela aprovação.")])
+        e = entidades_conhecidas(f)
+        assert "Arnaldo Jardim" in e["nomes"] and "CIDADANIA" in e["partidos"]
+
+    def test_prompt_mostra_datas_no_formato_brasileiro(self):
+        p = ficha_para_prompt(_ficha())
+        assert "Apresentada em: 10/03/2025" in p and "10/03/2025 MESA" in p
+        assert "2025-03-10" not in p
+
 
 # ── revisão ───────────────────────────────────────────────────────────────────
 
@@ -163,6 +177,46 @@ class TestRevisao:
         """O harness pegou: 'O PL 1001/2025' era acusado de inventar o Partido Liberal."""
         assert entidades_fabricadas("O PL 1001/2025 e a PEC 45 tramitam.", _ficha()) == []
         assert any("PL" in x for x in entidades_fabricadas("apoiado pelo PL e pelo PSD.", _ficha()))
+
+    def test_relator_das_relacionadas_nao_e_fabricado(self):
+        f = _ficha(relacionadas=[Relacionada("PEP", 1, 2025, "Parecer às Emendas de Plenário proferido pelo "
+                                             "Relator, Dep. Arnaldo Jardim (CIDADANIA-SP)")])
+        texto = "Relatada em Plenário pelo Deputado Arnaldo Jardim (CIDADANIA-SP)."
+        assert entidades_fabricadas(texto, f) == []
+        # sem a relacionada, o mesmo texto continua acusado
+        assert len(entidades_fabricadas(texto, _ficha())) == 2
+
+    @pytest.mark.parametrize("texto", [
+        "Exige iniciativa do Executivo (art. 61, §1º, da Constituição).",
+        "Viola o art. 113 do ADCT.",
+        "Altera a Lei nº 14.300/2022 e a LC 140.",
+        "Conforme os arts. 150 e § 6 da Constituição.",
+        "Altera o PL 2780/2024.",
+    ])
+    def test_referencia_legal_nao_e_quantidade(self, texto):
+        assert numeros(texto, so_quantidades=True) == []
+
+    def test_quantidade_ao_lado_de_referencia_legal_continua_contada(self):
+        assert numeros("O art. 3 prevê R$ 30 bilhões em 12 meses.", so_quantidades=True) == [30e9, 12.0]
+
+    def test_dissenso_com_contraditor_e_contado_a_parte(self):
+        ps = [
+            ParecerLente("economista", [Afirmacao("economista", "inferencia", "Custo alto.", "economica")]),
+            ParecerLente("ambiental", [Afirmacao("ambiental", "inferencia", "Licença frouxa.", "ambiental")]),
+            ParecerLente("contraditor", [Afirmacao("contraditor", "inferencia", "Discordo.", "economica")]),
+        ]
+        analise = AnaliseSistemica([], [], [], {}, [
+            Dissenso("economista", "ambiental", "prazo"),
+            Dissenso("contraditor", "economista", "custo"),
+            Dissenso("ambiental", "contraditor", "licença"),
+        ], lentes=["economista", "ambiental"])
+        r = revisar(ficha=_ficha(), texto_extraido="", pareceres=ps, lentes_roteadas=["economista", "ambiental"],
+                    resumo_didatico=None, resumo_detalhado=None, analise=analise, contraditor="contraditor")
+        assert r.metricas["dissensos"] == 3
+        assert r.metricas["dissensos_entre_lentes"] == 1
+        assert r.metricas["dissensos_com_contraditor"] == 2
+        # o contraditor comentando "economica" não faz da dimensão uma sobreposição
+        assert r.metricas["dimensoes_com_mais_de_uma_lente"] == 0
 
     def test_sigla_que_nao_e_partido_nao_conta(self):
         assert entidades_fabricadas("Conforme a ONU e a OMC.", _ficha()) == []

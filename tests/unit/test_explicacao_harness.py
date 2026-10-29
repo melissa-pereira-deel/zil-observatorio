@@ -101,6 +101,15 @@ class TestCarga:
             assert AGENTES[n].hash_instrucoes == painel[n].hash_instrucoes
             assert AGENTES[n].etapas == ("lente",)
 
+    def test_economista_e_publicas_leem_o_dispositivo_aqui_e_nao_no_painel(self):
+        """PNMCE (2026-10-28): só com a ementa, o economista não achou mecanismo econômico."""
+        from apps.workers.panel.agentes import carregar_painel
+        painel = {a.nome: a for a in carregar_painel()}
+        for n in ("economista", "publicas"):
+            assert "dispositivo" in AGENTES[n].insumos
+            assert "dispositivo" not in painel[n].insumos
+            assert set(painel[n].insumos) <= set(AGENTES[n].insumos)
+
     def test_industrial_nao_participa(self):
         assert "industrial" not in AGENTES
         assert "industrial" not in PIPELINE.todas_as_lentes
@@ -289,3 +298,36 @@ def test_meta_registra_modelo_e_hash_de_cada_agente_usado():
     assert set(res.meta.hashes_instrucoes) == usados
     assert set(res.meta.modelos) == usados
     assert res.meta.concluido_em is not None
+
+
+def test_tokens_somados_por_agente_e_retirados_da_resposta():
+    caso = CASOS["tema-ausente"]
+    base = _consultar_simulado(caso)
+
+    def consultar(agente, prompt):
+        return {**base(agente, prompt), "_uso": {"entrada": 1000, "saida": 50}}
+
+    res = explicar(_insumos(caso), PIPELINE, AGENTES, consultar)
+    t = res.metricas["tokens"]
+    n = len(base.chamadas)
+    assert t["entrada"] == 1000 * n and t["saida"] == 50 * n
+    assert t["por_agente"][PIPELINE.sintetizador]["chamadas"] == 1
+    assert res.status == "pronto"  # o "_uso" não chegou ao parse da síntese
+
+
+def test_dissenso_repetido_com_lentes_trocadas_conta_uma_vez():
+    caso = CASOS["tema-ausente"]
+    base = _consultar_simulado(caso)
+
+    def consultar(agente, prompt):
+        cru = base(agente, prompt)
+        if agente.participa("sintese"):
+            cru["dissensos"] = [
+                {"lente_a": "jurista", "lente_b": "economista", "ponto": "Quem paga a conta"},
+                {"lente_a": "economista", "lente_b": "jurista", "ponto": "quem  paga a conta"},
+                {"lente_a": "jurista", "lente_b": "jurista", "ponto": "consigo mesmo"},
+            ]
+        return cru
+
+    res = explicar(_insumos(caso), PIPELINE, AGENTES, consultar)
+    assert len(res.analise.dissensos) == 1

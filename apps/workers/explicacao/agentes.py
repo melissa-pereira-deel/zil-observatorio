@@ -42,6 +42,17 @@ _CEGAS = ("extracao", "verificacao")
 # Os três emprestados do painel, e em que etapa atuam aqui.
 HERDADOS = ("jurista", "economista", "publicas")
 
+# O que os herdados leem aqui além do que leem no painel. No painel o objeto é
+# uma votação, e a ementa basta para dizer do que se trata; aqui o objeto é o
+# texto da proposição, e a ementa omite o mecanismo. Na PNMCE (2026-10-28) o
+# economista, só com a ementa, concluiu que não havia mecanismo econômico — e
+# o contraditor o desmentiu citando o dispositivo. As instruções não mudam, e
+# o hash continua o do painel; o que muda é o que chega a eles.
+INSUMOS_ADICIONAIS = {
+    "economista": ("dispositivo",),
+    "publicas": ("dispositivo",),
+}
+
 
 def _sem_ancoragem_nas_lentes(bruto: dict, origem: Path) -> None:
     etapas = bruto.get("etapas") or ("lente",)
@@ -80,9 +91,14 @@ def carregar_proprios(diretorio: Optional[Path] = None) -> dict[str, Agente]:
 
 def carregar_herdados() -> dict[str, Agente]:
     """Jurista, economista e publicas, com as instruções do painel e as etapas
-    deste pipeline. `replace` mantém o hash das instruções idêntico ao de lá."""
+    e insumos deste pipeline. `replace` mantém o hash das instruções idêntico
+    ao de lá."""
     painel = {a.nome: a for a in carregar_painel()}
-    return {n: replace(painel[n], etapas=("lente",)) for n in HERDADOS}
+    herdados = {}
+    for n in HERDADOS:
+        extras = tuple(i for i in INSUMOS_ADICIONAIS.get(n, ()) if i not in painel[n].insumos)
+        herdados[n] = replace(painel[n], etapas=("lente",), insumos=painel[n].insumos + extras)
+    return herdados
 
 
 def carregar_agentes(diretorio: Optional[Path] = None) -> dict[str, Agente]:

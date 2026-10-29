@@ -16,6 +16,7 @@ from typing import Callable, Optional
 from ..agentes.blindagem import ABRE, FECHA, blindar, preambulo_seguranca
 from ..agentes.carga import Agente
 from ..agentes.fronteira import consultar as _consultar_api
+from ..agentes.fronteira import retirar_uso
 from ..agentes.meta import MetaExecucao
 from .coleta import FichaFatos, ficha_para_prompt
 from .extracao import TextoExtraido
@@ -98,6 +99,8 @@ texto da análise, nomeando as lentes. Não calcule média; não escolha um lado
 não omita. Dissenso é o achado, não o ruído.
 - "dissensos" vazio só é aceitável se as lentes de fato convergiram.
 - Separe o que o texto diz do que as lentes inferem.
+- Datas no formato dd/mm/aaaa (08/07/2024), nunca aaaa-mm-dd: o texto é para \
+o leitor, não para o banco.
 - Todo número que você escrever tem que estar na ficha, no texto, no contexto \
 econômico ou nas verificações. Número de memória é reprovado.
 - Se houver bloco de VERIFICAÇÕES, liste em "alegacoes_contraditas" o id de \
@@ -274,6 +277,27 @@ def _contraditas_citadas(cru: dict) -> list[str]:
     return [str(x) for x in (cru.get("alegacoes_contraditas") or [])]
 
 
+def _dissenso(d) -> Optional[Dissenso]:
+    try:
+        return Dissenso(str(d.get("lente_a")), str(d.get("lente_b")), str(d.get("ponto") or ""))
+    except (ValueError, AttributeError):
+        return None
+
+
+def _sem_repeticao(dissensos: list[Dissenso]) -> list[Dissenso]:
+    """O mesmo par de lentes sobre o mesmo ponto conta uma vez, em qualquer
+    ordem. Na primeira execução real a síntese listou o mesmo desacordo duas
+    vezes, com as lentes trocadas, e a métrica 4 contou dois."""
+    vistos: set[tuple] = set()
+    out: list[Dissenso] = []
+    for d in dissensos:
+        chave = (frozenset((d.lente_a, d.lente_b)), " ".join(d.ponto.lower().split()))
+        if chave not in vistos:
+            vistos.add(chave)
+            out.append(d)
+    return out
+
+
 def _parse_sintese(cru: dict, lentes: list[str]) -> tuple[ResumoDidatico, ResumoDetalhado, AnaliseSistemica, bool]:
     """Lança `TamanhoInvalido` para o loop de reformulação; outros erros, `ValueError`."""
     if "error" in cru:
@@ -281,12 +305,7 @@ def _parse_sintese(cru: dict, lentes: list[str]) -> tuple[ResumoDidatico, Resumo
     didatico = ResumoDidatico(str(cru.get("resumo_didatico") or ""))
     detalhado = ResumoDetalhado(str(cru.get("resumo_detalhado") or ""))
     an = cru.get("analise") or {}
-    dissensos = []
-    for d in cru.get("dissensos") or []:
-        try:
-            dissensos.append(Dissenso(str(d.get("lente_a")), str(d.get("lente_b")), str(d.get("ponto") or "")))
-        except ValueError:
-            continue
+    dissensos = _sem_repeticao([d for d in (_dissenso(x) for x in cru.get("dissensos") or []) if d])
     analise = AnaliseSistemica(
         causas_raizes=[str(x) for x in (an.get("causas_raizes") or [])],
         dependencias=[str(x) for x in (an.get("dependencias") or [])],
@@ -296,6 +315,14 @@ def _parse_sintese(cru: dict, lentes: list[str]) -> tuple[ResumoDidatico, Resumo
         lentes=lentes,
     )
     return didatico, detalhado, analise, bool(cru.get("injecao_detectada"))
+
+
+def _total_tokens(por_agente: dict[str, dict]) -> dict:
+    return {
+        "entrada": sum(t["entrada"] for t in por_agente.values()),
+        "saida": sum(t["saida"] for t in por_agente.values()),
+        "por_agente": por_agente,
+    }
 
 
 def consultar_agente(agente: Agente, prompt: str) -> dict:
@@ -319,6 +346,25 @@ def explicar(
 ) -> Explicacao:
     iniciado = datetime.now(timezone.utc).isoformat()
     erros: list[str] = []
+
+    # Tokens por agente. A fronteira devolve o gasto dentro da resposta; aqui
+    # ele é retirado antes de qualquer parse e somado. Consultores falsos não
+    # devolvem gasto, e a conta fica vazia.
+    tokens: dict[str, dict] = {}
+
+    def _contar(nome: str, cru: dict) -> dict:
+        uso = retirar_uso(cru)
+        if uso:
+            t = tokens.setdefault(nome, {"entrada": 0, "saida": 0, "chamadas": 0})
+            t["entrada"] += uso.get("entrada", 0)
+            t["saida"] += uso.get("saida", 0)
+            t["chamadas"] += 1
+        return cru
+
+    _consultar = consultar
+
+    def consultar(ag: Agente, prompt: str) -> dict:
+        return _contar(ag.nome, _consultar(ag, prompt))
 
     lentes, motivo_roteamento = rotear(insumos.ficha.temas_oficiais, insumos.categorias_zil, pipeline)
     verificadores = [pipeline.extrator, pipeline.verificador] if pipeline.verifica else []
@@ -351,7 +397,10 @@ def explicar(
             catalogo = carregar_catalogo()
         if consultar_dados is None:
             from ..fontes import consultar_serie as consultar_dados
-        consultar_ferramentas = consultar_ferramentas or vf.consultar_verificador
+        _ferramentas = consultar_ferramentas or vf.consultar_verificador
+
+        def consultar_ferramentas(ag: Agente, prompt: str, **kw) -> dict:
+            return _contar(ag.nome, _ferramentas(ag, prompt, **kw))
 
         ext = agentes[pipeline.extrator]
         trechos = vf.montar_trechos(pareceres, insumos.texto.justificacao)
@@ -386,7 +435,8 @@ def explicar(
         return Explicacao(
             fonte=insumos.ficha.fonte, fonte_id=insumos.ficha.fonte_id, pipeline_versao=pipeline.versao,
             resumo_didatico=None, resumo_detalhado=None, analise=None, pareceres=pareceres, meta=meta,
-            metricas={"roteamento": motivo_roteamento, "contexto_hash": insumos.contexto_hash or None},
+            metricas={"roteamento": motivo_roteamento, "contexto_hash": insumos.contexto_hash or None,
+                      "tokens": _total_tokens(tokens)},
             problemas=["nenhuma lente disponível"], status="lentes_indisponiveis",
             contexto=insumos.contexto_evidencias, verificacoes=verificacoes,
         )
@@ -427,6 +477,7 @@ def explicar(
         ficha=insumos.ficha, texto_extraido=insumos.texto.texto, pareceres=pareceres,
         lentes_roteadas=lentes, resumo_didatico=didatico, resumo_detalhado=detalhado, analise=analise,
         numeros_do_contexto=numeros_do_contexto, verificacoes=verificacoes, contraditas_citadas=contraditas_citadas,
+        contraditor=pipeline.contraditor,
     )
     if pipeline.verifica:
         rev.metricas["verificacao"] = vf.metricas_verificacao(verificacoes)
@@ -434,6 +485,7 @@ def explicar(
     rev.metricas["roteamento"] = motivo_roteamento
     rev.metricas["reformulacoes"] = sum(1 for e in erros if "/sintese tentativa" in e)
     rev.metricas["contexto_hash"] = insumos.contexto_hash or None
+    rev.metricas["tokens"] = _total_tokens(tokens)
     problemas.extend(rev.problemas)
     if problemas and status == "pronto":
         status = "invalido"

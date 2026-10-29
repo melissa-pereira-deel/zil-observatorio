@@ -10,6 +10,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Tokens por execução** (`agentes/fronteira.py`, `explicacao/pipeline.py`):
+  a fronteira devolve o gasto de cada chamada (somado entre as rodadas, no
+  laço com ferramentas) e a explicação registra
+  `metricas.tokens = {entrada, saida, por_agente}`. Não converte em reais de
+  propósito: preço muda, token não.
 - **Verificação de alegações — pipeline v2** (`apps/workers/explicacao/verificacao.py`,
   `data/explicacao/pipelines/v2.yml`, [ADR-008](decisions/008-fontes-curadas-e-verificacao.md)).
   O único agente com ferramenta é o `verificador`, e a ferramenta é fechada.
@@ -74,6 +79,16 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- `apps/workers/explicacao/agentes.py`: economista e publicas, herdados do
+  painel, leem também o **dispositivo** na explicação (`INSUMOS_ADICIONAIS`).
+  No painel o objeto é uma votação e a ementa basta; aqui é o texto, e a
+  ementa da PNMCE omite as medidas fiscais: só com ela, o economista concluiu
+  que não havia mecanismo econômico. As instruções e o hash continuam os do
+  painel.
+- `apps/workers/explicacao/revisao.py`: o contraditor fica fora da métrica 4.
+  Ele comenta toda dimensão, e com ele dentro 13 dos 14 dissensos da PNMCE
+  eram dele. `metricas.dissensos_entre_lentes` e
+  `metricas.dissensos_com_contraditor` separam as duas contas.
 - `apps/workers/explicacao/`: `Insumos` ganha `contexto_hash` e
   `contexto_evidencias`; `Explicacao.contexto` e `explicacoes.evidencias.contexto`
   carregam os números que as lentes leram, com fonte, data e URL — não um
@@ -139,6 +154,22 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+- **Revisor da explicação reprovava a PNMCE por dois alarmes falsos** (PL 2780/2024,
+  primeira execução real da v2, 2026-10-28):
+  - `coleta.entidades_conhecidas` só conhecia os autores. O relator, que a
+    Câmara nomeia como "Dep. Nome (PARTIDO-UF)" nas relacionadas e na
+    cronologia, era acusado de partido inventado. Passa a contar quem aparece
+    nesse formato.
+  - `revisao.numeros(so_quantidades=True)` lia "art. 61" e "art. 113 do ADCT"
+    como quantidades sem origem. Referências a norma (artigo, parágrafo,
+    inciso, lei, LC, decreto, EC, MP) saem da conta, e "Lei nº 14.300/2022"
+    não deixa mais um "14" solto.
+- **Dissenso repetido contava duas vezes:** a síntese listava o mesmo desacordo
+  com as lentes trocadas. `pipeline._parse_sintese` deduplica por par de
+  lentes e ponto, e descarta dissenso de uma lente consigo mesma.
+- **Datas ISO no resumo detalhado:** a ficha mostrava `2024-07-08` e a síntese
+  copiava. `ficha_para_prompt` passa a escrever dd/mm/aaaa, e a regra entra no
+  formato da síntese.
 - **`validar_direcoes.py --verificar-api` falhava na `main`:** três das sete
   entradas curadas são votações simbólicas e nenhuma declarava `processo`, então
   o validador marcava `2269745-73`, `2238434-154` e `2426923-22` com `✗`. As três
