@@ -1,7 +1,8 @@
 import Link from "next/link";
 
-import { Aviso, Button, Card, Chip, Chips, Lista, Linha, Painel, Selo } from "@/components/ui";
+import { Aviso, Button, Card, Chip, Chips, FAIXAS, Lista, Linha, Painel, Selo } from "@/components/ui";
 import { CATEGORIA_COR } from "@/lib/categorias";
+import { REPO_URL } from "@/lib/links";
 
 /**
  * Metodologia: leitura longa (.zil-leitura), com os números do
@@ -81,25 +82,32 @@ const PESOS = [
   ["Votação processual", "0,5"],
 ];
 
-const FAIXAS: { faixa: string; rotulo: string; tom: "alinhado" | "contra" | "neutro" }[] = [
-  { faixa: "+5 a +10", rotulo: "Fortemente pró-soberania", tom: "alinhado" },
-  { faixa: "+2 a +5", rotulo: "Majoritariamente favorável", tom: "alinhado" },
-  { faixa: "−2 a +2", rotulo: "Neutro / misto", tom: "neutro" },
-  { faixa: "−5 a −2", rotulo: "Majoritariamente contrário", tom: "contra" },
-  { faixa: "−10 a −5", rotulo: "Fortemente contra", tom: "contra" },
+
+// O critério que ordena as candidatas a classificação (`escore` em
+// scripts/candidatas.py). O ADR-004 exige publicá-lo junto com o resultado.
+const CRITERIO = [
+  { termo: "Keyword forte da taxonomia", peso: "+8,0", mede: "A votação é sobre pauta ZIL de verdade" },
+  { termo: "Só keyword fraca", peso: "−6,0", mede: "Sinal contrário: todo casamento fraco isolado que achamos era falso positivo" },
+  { termo: "Direção indecidível", peso: "−12,0", mede: "Voto sobre emenda ou destaque: 'sim' aprova a emenda, e o texto dela não vem na API" },
+  { termo: "Disputa", peso: "até +10,0", mede: "Quanto mais apertado o resultado, mais a votação separa parlamentares" },
+  { termo: "Voto sobre o texto", peso: "+4,0", mede: "Substitutivo global ou o projeto inteiro" },
+  { termo: "Pistas de plenário", peso: "+3,0", mede: "A API não distingue plenário de comissão; só o texto da descrição" },
+  { termo: "Requerimento de urgência", peso: "−1,0", mede: "Nomeia o objeto, mas mede intenção de pautar, não posição sobre o mérito" },
+  { termo: "Outro processual", peso: "−4,0", mede: "'Rejeitado o requerimento' não diz qual: sem saber o que se rejeitou, a direção é chute" },
 ];
 
 const LIMITACOES = [
   "O score reflete apenas votações classificadas. Parlamentares com poucos votos em pautas ZIL têm scores menos representativos.",
   "A direção esperada de cada votação é uma decisão editorial — razoável pessoas podem discordar. Todas as decisões estão documentadas no repositório.",
-  "O classificador automático de proposições usa palavras-chave, podendo incluir ou excluir proposições relevantes. A lista é revisada manualmente.",
-  "Ausências e obstruções são contabilizadas como alinhamento 0 (neutro), não como voto contra.",
-  "Dados do Senado Federal ainda não estão incluídos na v1.",
+  "O classificador de proposições usa palavras-chave fortes e fracas: só uma fraca não basta para incluir. Mesmo assim ele erra, e a lista é revisada manualmente.",
+  "Ausências, abstenções, obstruções e o art. 17 contam alinhamento 0, mas o peso da votação entra no denominador: ausência dilui o score, não pune.",
+  "Senadores e proposições do Senado estão no banco, mas nenhuma votação do Senado foi classificada. Por isso senadores não têm score.",
   "Todas as votações classificadas são matérias em que a posição pró-soberania é votar SIM. Não há, entre as votações com voto nominal de 2023–2026, uma matéria decidível em que ela seja votar NÃO — então o score mede alinhamento onde votar sim é o alinhamento, e nessa medida reflete também presença e disciplina partidária.",
 ];
 
 const SECOES = [
   { id: "score", rotulo: "O Score ZIL" },
+  { id: "selecao", rotulo: "Quais votações entram" },
   { id: "escala", rotulo: "Escala" },
   { id: "limitacoes", rotulo: "Limitações" },
   { id: "categorias", rotulo: "Categorias" },
@@ -113,7 +121,7 @@ export default function MetodologiaPage() {
         <p className="text-rotulo uppercase text-zil-texto-2">Metodologia</p>
         <h1 className="text-titulo-1 md:text-display-m">Como o Score ZIL é calculado</h1>
         <p className="text-texto-l text-zil-texto-2 max-w-[60ch]">
-          Como o Score ZIL é calculado, o que as categorias representam e como as classificações são definidas.
+          O placar mede alinhamento em votações escolhidas. Aqui está como escolhemos, como contamos e onde o método falha.
         </p>
         <Chips rolagem className="mt-4">
           {SECOES.map((s) => (
@@ -150,6 +158,35 @@ export default function MetodologiaPage() {
             <Linha key={tipo} titulo={tipo} fim={<span className="text-texto-ui text-zil-texto zil-num">{peso}</span>} />
           ))}
         </Lista>
+        <p className="text-texto-s text-zil-texto-2 zil-num">Hoje: 6 votações com peso 3,0 e 1 com peso 2,0.</p>
+      </section>
+
+      {/* ── Quais votações entram (ADR-004: o critério é publicado com o resultado) ── */}
+      <section id="selecao" className="zil-secao scroll-mt-20 grid gap-8">
+        <h2 className="text-titulo-2">Quais votações entram</h2>
+        <div className="zil-leitura">
+          <p>
+            A v1 é um <strong>placar focado</strong>: como cada parlamentar votou nas cerca de dez votações que mais importaram para a
+            soberania industrial, e não um índice de toda a atuação. Hoje são 7 classificadas, 4 delas com voto nominal.
+          </p>
+          <p>
+            Num placar focado, a escolha das votações é a decisão editorial mais carregada do projeto. Por isso o critério que ordena as
+            candidatas é público e está no código. Ele mede <strong>saliência, nunca mérito</strong>: diz onde vale gastar pesquisa, não
+            qual é a direção.
+          </p>
+        </div>
+        <Lista titulo="O que ordena as candidatas" className="max-w-3xl">
+          {CRITERIO.map((c) => (
+            <Linha key={c.termo} titulo={c.termo} sub={c.mede} fim={<span className="text-texto-ui text-zil-texto zil-num whitespace-nowrap">{c.peso}</span>} />
+          ))}
+        </Lista>
+        <div className="zil-leitura">
+          <p>
+            A seleção final e a direção esperada são decisões humanas, com justificativa escrita em arquivo versionado. Votação simbólica
+            não entra no score, com ou sem classificação: a Câmara proclama só o resultado e não registra quem votou o quê. Entre 2023 e 2026,
+            86% das votações foram simbólicas.
+          </p>
+        </div>
       </section>
 
       {/* ── Escala ── */}
@@ -199,7 +236,8 @@ export default function MetodologiaPage() {
         <div className="zil-leitura">
           <p>
             Os exemplos abaixo são <strong>hipotéticos</strong>, escritos para ilustrar o tipo de matéria que cada categoria abrange — não são
-            proposições reais em tramitação. As proposições de verdade estão em <Link href="/proposicoes">Proposições</Link>.
+            proposições reais em tramitação. As proposições de verdade estão em <Link href="/proposicoes">Proposições</Link>. Com o placar
+            focado em cerca de dez votações, o papel das nove categorias no score está em revisão; mudar a taxonomia exige uma RFC.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -251,7 +289,8 @@ export default function MetodologiaPage() {
           <Card className="grid content-start gap-2">
             <h3 className="text-titulo-4">Bússola ZIL</h3>
             <p className="text-texto text-zil-texto-2">
-              Indicadores estratégicos em data/bussula/marcos.yml, atualizados trimestralmente com link para a fonte oficial.
+              Quatro indicadores, em formação, em data/bussula/marcos.yml. Cada atualização entra por PR com link para a fonte oficial,
+              a cada trimestre ou quando sai dado novo.
             </p>
           </Card>
         </div>
@@ -280,7 +319,7 @@ export default function MetodologiaPage() {
             <Button href="/proposicoes" variante="primario">
               Ver proposições classificadas
             </Button>
-            <Button href="https://github.com/melissa-pereira-deel/zil-observatorio" target="_blank" rel="noopener noreferrer" variante="secundario">
+            <Button href={REPO_URL} target="_blank" rel="noopener noreferrer" variante="secundario">
               Abrir o repositório no GitHub
             </Button>
           </div>

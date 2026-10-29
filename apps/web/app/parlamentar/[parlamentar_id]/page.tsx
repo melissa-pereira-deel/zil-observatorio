@@ -7,7 +7,7 @@ import Link from "next/link";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
 import { DirecaoBadge } from "@/components/DirecaoBadge";
 import { tituloDoScore } from "@/components/ParlamentarCard";
-import {
+import { rotuloDoScore,
   Avatar,
   Aviso,
   Button,
@@ -121,16 +121,6 @@ export default function ParlamentarPage() {
   const contra = votos.filter((v) => v.alinhado === false).length;
   const semDirecao = votos.length - alinhados - contra;
 
-  function getScoreLabel(score: number | null): string {
-    if (score === null) return "Sem dados suficientes";
-    if (score >= 8) return "Alinhamento total";
-    if (score >= 4) return "Majoritariamente alinhado";
-    if (score >= 1) return "Parcialmente alinhado";
-    if (score >= -1) return "Posição neutra";
-    if (score >= -4) return "Parcialmente contrário";
-    if (score >= -8) return "Majoritariamente contrário";
-    return "Posição contrária";
-  }
 
   // UI-022: a frase conta só os votos com direção esperada. Quem votou em 9
   // pautas e só 4 tinham direção não "votou contra" nas outras 5 — elas não
@@ -268,13 +258,13 @@ export default function ParlamentarPage() {
           {/* UI-001: o número leva no title em quantos votos se apoia. */}
           {parl.score_zil !== null ? (
             <div title={tituloDoScore(votos.length)} className="grid gap-5">
-              <ScoreGrande valor={parl.score_zil} frase={getScoreLabel(parl.score_zil)} />
+              <ScoreGrande valor={parl.score_zil} frase={rotuloDoScore(parl.score_zil)} />
               <Medidor valor={parl.score_zil} />
             </div>
           ) : (
             <div title={tituloDoScore(votos.length)} className="grid gap-2 justify-items-start">
               <ScorePilula valor={null} />
-              <span className="text-[18px] leading-6 font-semibold">{getScoreLabel(null)}</span>
+              <span className="text-[18px] leading-6 font-semibold">{rotuloDoScore(null)}</span>
             </div>
           )}
 

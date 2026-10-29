@@ -3,6 +3,7 @@ import { Archivo } from "next/font/google";
 import "./globals.css";
 import { NavBar } from "@/components/NavBar";
 import { indexacaoPublica } from "@/lib/flags";
+import { REPO_ROTULO, REPO_URL } from "@/lib/links";
 
 export const metadata: Metadata = {
   // Segunda camada do noindex: o robots.txt pede para não rastrear, esta meta
@@ -53,12 +54,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="grid gap-1 md:text-right text-texto-s text-zil-texto-2 zil-num">
               <span>2026 · AGPL-3.0</span>
               <a
-                href="https://github.com/zil-observatorio/zil-observatorio"
+                href={REPO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-zil-texto-2 hover:text-zil-texto transition-colors duration-toque"
               >
-                github.com/zil-observatorio ↗
+                {REPO_ROTULO} ↗
               </a>
             </div>
           </div>

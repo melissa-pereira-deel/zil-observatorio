@@ -92,6 +92,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- `apps/web/app/metodologia/page.tsx`: conferida frase a frase contra
+  `scoring/`, `data/direcoes/`, `marcos.yml` e o ADR-004. Ganha a seção
+  "Quais votações entram", com o critério de saliência de `candidatas.py`
+  (exigência do ADR-004) e a regra sobre votações simbólicas. Uma escala só
+  de rótulos do score (`FAIXAS`/`rotuloDoScore` em `components/ui/Score.tsx`),
+  usada pela metodologia e pelo perfil, alinhada às cores (±3, ±8). Links
+  do repositório centralizados em `lib/links.ts` (`REPO_URL`).
 - `apps/web/app/page.tsx`: a home deixa de apresentar como mecanismo o que
   é v2/v3 no roadmap. "Como funciona hoje" lista só o que está no ar
   (score, proposições classificadas, Bússola, dados abertos), cada um
@@ -194,6 +201,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+- `apps/web/app/metodologia/page.tsx`: dizia que "dados do Senado ainda não
+  estão incluídos" — senadores e proposições do Senado estão no banco; o que
+  falta é votação do Senado classificada. Dizia que ausência conta zero sem
+  dizer que o peso entra no denominador. Site tinha três escalas de rótulo
+  diferentes (metodologia ±2/±5, perfil ±1/±4/±8, pílula ±3); agora é uma.
+  Rodapé e home apontavam para `zil-observatorio/zil-observatorio`, que não
+  é o remoto.
 - `apps/web`: lista de proposições alargava a página para 623px no celular —
   item de grid tem `min-width:auto` e a coluna implícita crescia até o
   conteúdo mínimo; `.grid > * { min-width: 0 }` no `globals.css`. Selos com

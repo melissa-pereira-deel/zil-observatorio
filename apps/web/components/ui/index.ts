@@ -6,7 +6,7 @@ export { Chip, Chips, BarraFiltros, Contador as ContadorFiltros } from "./Chip";
 export { Selo, type TomSelo } from "./Selo";
 export { Card, Estat, Painel } from "./Card";
 export { Avatar, iniciais } from "./Avatar";
-export { ScorePilula, ScoreGrande, Medidor, VotosBarra, VotosLegenda, tomDoScore, formatarScore, fraseDoScore, type TomScore } from "./Score";
+export { ScorePilula, ScoreGrande, Medidor, VotosBarra, VotosLegenda, tomDoScore, formatarScore, fraseDoScore, rotuloDoScore, FAIXAS, type TomScore } from "./Score";
 export { Lista, Linha, LinhaEsqueleto } from "./Lista";
 export { Placar, PlacarCabecalho, PlacarLinha, PlacarLinhaEsqueleto } from "./Placar";
 export { Busca } from "./Busca";

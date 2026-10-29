@@ -18,8 +18,30 @@ export function formatarScore(v: number): string {
   return sinal + Math.abs(v).toFixed(1).replace(".", ",");
 }
 
+/**
+ * A única escala de rótulos do site. As fronteiras externas (±3) são as
+ * mesmas das cores (`tomDoScore`); ±8 separa o total do majoritário. A
+ * metodologia publica esta tabela e o perfil a usa como frase.
+ */
+export const FAIXAS: { de: number; ate: number; faixa: string; rotulo: string; tom: TomScore }[] = [
+  { de: 8, ate: 10, faixa: "+8 a +10", rotulo: "Alinhamento total", tom: "alinhado" },
+  { de: 3, ate: 8, faixa: "+3 a +8", rotulo: "Majoritariamente alinhado", tom: "alinhado" },
+  { de: -3, ate: 3, faixa: "−3 a +3", rotulo: "Dividido ou com poucos votos", tom: "neutro" },
+  { de: -8, ate: -3, faixa: "−8 a −3", rotulo: "Majoritariamente contrário", tom: "contra" },
+  { de: -10, ate: -8, faixa: "−10 a −8", rotulo: "Posição contrária", tom: "contra" },
+];
+
+export function rotuloDoScore(v: number | null | undefined): string {
+  if (v === null || v === undefined) return "Sem dados suficientes";
+  if (v >= 8) return FAIXAS[0].rotulo;
+  if (v >= 3) return FAIXAS[1].rotulo;
+  if (v > -3) return FAIXAS[2].rotulo;
+  if (v > -8) return FAIXAS[3].rotulo;
+  return FAIXAS[4].rotulo;
+}
+
 export function fraseDoScore(v: number): string {
-  return { alinhado: "Majoritariamente alinhado", contra: "Majoritariamente contra", neutro: "Dividido" }[tomDoScore(v)];
+  return rotuloDoScore(v);
 }
 
 const PILULA: Record<TomScore, string> = {

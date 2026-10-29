@@ -4,6 +4,7 @@ import { RankingPreview } from "@/components/RankingPreview";
 import { rankingPublico } from "@/lib/flags";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { Newsletter } from "@/components/Newsletter";
+import { ROADMAP_URL } from "@/lib/links";
 
 /* ── Dados estáticos do manifesto ── */
 
@@ -53,7 +54,6 @@ const VISAO = [
   { titulo: "Compromissos públicos", desc: "Parlamentares registram posições verificáveis; a plataforma cruza promessa com voto." },
   { titulo: "Índice de continuidade", desc: "Quanto cada governo manteve, expandiu ou desmontou dos programas estratégicos." },
 ];
-const ROADMAP_URL = "https://github.com/zil-observatorio/zil-observatorio/blob/main/docs/ROADMAP.md";
 
 const O_QUE_E = ["Observatório de votos e proposições", "Bússola de longo prazo", "Dados verificáveis", "Apartidário por design", "Código aberto", "Método publicado"];
 
