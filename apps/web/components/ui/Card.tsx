@@ -53,7 +53,8 @@ export function Estat({
 }) {
   return (
     <div className={`grid gap-1.5 p-6 rounded-l bg-zil-superficie-1 ${className}`}>
-      <span className="text-numero-l zil-num">{n}</span>
+      {/* 36px no celular, onde dois cartões dividem 343px; 44px a partir de md. */}
+      <span className="text-[36px] leading-10 font-semibold tracking-[-0.03em] md:text-numero-l zil-num whitespace-nowrap">{n}</span>
       <span className="text-texto-ui">{rotulo}</span>
       {fonte && <span className="text-[14px] leading-5 text-zil-texto-2">{fonte}</span>}
     </div>

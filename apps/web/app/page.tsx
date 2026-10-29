@@ -8,11 +8,15 @@ import { Newsletter } from "@/components/Newsletter";
 /* ── Dados estáticos do manifesto ── */
 
 // Cada número leva a fonte ao lado (ZIL Interface: "números têm fonte").
-const NUMEROS = [
-  { ate: 94, sufixo: "%", rotulo: "do nióbio mundial", fonte: "USGS" },
-  { ate: 87, sufixo: "%", rotulo: "dos fertilizantes importados", fonte: "ANDA / MAPA" },
-  { ate: 83, sufixo: "%", rotulo: "da eletricidade renovável", fonte: "EPE, Balanço Energético" },
-  { ate: 177, sufixo: " mi", rotulo: "brasileiros no PIX", fonte: "Banco Central" },
+// Dois pares, que respondem às duas frases do título: o que já provamos e
+// o que ainda falta convergir.
+const PROVAS = [
+  { ate: 177, sufixo: " mi", rotulo: "brasileiros usam o Pix", fonte: "Banco Central" },
+  { ate: 83, sufixo: "%", rotulo: "da eletricidade vem de fontes renováveis", fonte: "EPE, Balanço Energético" },
+];
+const FALTAS = [
+  { ate: 87, sufixo: "%", rotulo: "dos fertilizantes são importados", fonte: "ANDA / MAPA" },
+  { ate: 94, sufixo: "%", rotulo: "das reservas de nióbio são nossas — e sai quase tudo bruto", fonte: "USGS" },
 ];
 
 const CONQUISTAS = [
@@ -83,48 +87,67 @@ export default function HomePage() {
   return (
     <div className="zil-container">
       {/* ═══════ ABERTURA ═══════ */}
+      {/* Ordem: quem fala (chapéu) → a tese (título e linha fina) → o convite
+          (botões) → a prova (números). A foto acompanha o texto no desktop. */}
       <header className="pt-10 md:pt-16 grid gap-10 md:gap-14">
-        <div className="grid gap-5 max-w-[22ch]">
-          <p className="text-rotulo uppercase text-zil-texto-2">Manifesto pela soberania industrial</p>
-          <h1 className="text-display-m md:text-display-xl">Falta convergir.</h1>
-          <p className="text-texto-l text-zil-texto-2 max-w-[60ch]">
-            Um país que venceu a hiperinflação, inventou o PIX, transformou cerrado em celeiro do mundo e construiu a Embraer pode fazer
-            qualquer coisa — se conseguir convergir.
-          </p>
-          <p className="text-texto-s text-zil-texto-2">ZIL — Zero Dependência, Indústria Nacional, Liderança Soberana</p>
-          <div className="flex flex-col sm:flex-row gap-3 pt-1">
-            <Button href={rankingPublico ? "/ranking" : "/proposicoes"} variante="primario" tamanho="l">
-              {rankingPublico ? "Ver ranking de parlamentares" : "Ver proposições monitoradas"}
-            </Button>
-            <Button href="#score" variante="secundario" tamanho="l">
-              Como funciona o score
-            </Button>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14 lg:items-center">
+          <div className="grid gap-6">
+            <p className="text-rotulo uppercase text-zil-texto-2">Manifesto pela soberania industrial</p>
+            <h1 className="text-titulo-1 md:text-display-m lg:text-display-l max-w-[16ch]">
+              O Brasil já provou que pode.
+              <br />
+              Falta convergir.
+            </h1>
+            <p className="text-texto-l text-zil-texto-2 max-w-[62ch]">
+              Vencemos a hiperinflação, inventamos o Pix, transformamos o cerrado no celeiro do mundo e construímos a Embraer. Nenhuma
+              dessas conquistas foi de um governo só, nem de um lado só: nasceu de décadas de continuidade. O ZIL Observatório existe
+              para mostrar, voto a voto, quem no Congresso trabalha pela próxima — e quem a desmonta.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <Button href={rankingPublico ? "/ranking" : "/proposicoes"} variante="primario" tamanho="l">
+                {rankingPublico ? "Ver o placar" : "Ver proposições monitoradas"}
+              </Button>
+              <Button href="#score" variante="secundario" tamanho="l">
+                Como funciona o score
+              </Button>
+            </div>
           </div>
+
+          {/* Foto de abertura (fotografia.md): pessoas construindo o país, ao
+              lado do texto no desktop. Ainda não há foto licenciada no
+              repositório. Candidatas: trabalhadores da construção de Brasília
+              (1957, Arquivo Nacional, domínio público) ou o primeiro voo do
+              Bandeirante (1968). Ao escolher, trocar o bloco abaixo por:
+              <Foto src="/fotos/..." alt="descrição da cena" titulo="…" credito="Autor · Acervo Arquivo Nacional" />
+              e baixar o original no acervo antes de publicar. */}
+          <div aria-hidden="true" className="aspect-[16/9] lg:aspect-[4/5] w-full rounded-xl bg-zil-superficie-1" />
         </div>
 
-        {/* Foto de abertura (fotografia.md): pessoas construindo o país, larga,
-            com o título fora da imagem. Ainda não há foto licenciada no
-            repositório. Candidatas: trabalhadores da construção de Brasília
-            (1957, Arquivo Nacional, domínio público) ou o primeiro voo do
-            Bandeirante (1968). Ao escolher, trocar o bloco abaixo por:
-            <Foto src="/fotos/..." alt="descrição da cena" titulo="…" credito="Autor · Acervo Arquivo Nacional" />
-            e baixar o original no acervo antes de publicar. */}
-        <div aria-hidden="true" className="aspect-[21/9] md:aspect-[3/1] w-full rounded-xl bg-zil-superficie-1" />
-
-        <Revelar className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {NUMEROS.map((n) => (
-            <Estat key={n.rotulo} n={<Contador ate={n.ate} sufixo={n.sufixo} />} rotulo={n.rotulo} fonte={n.fonte} />
-          ))}
+        {/* Os dois pares só ficam lado a lado a partir de lg: em 768px, quatro
+            cartões numa linha espremem "177 mi" em duas linhas. */}
+        <Revelar className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-3 content-start">
+            <p className="text-rotulo uppercase text-zil-texto-2">Já provou que pode</p>
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+              {PROVAS.map((n) => (
+                <Estat key={n.rotulo} n={<Contador ate={n.ate} sufixo={n.sufixo} />} rotulo={n.rotulo} fonte={n.fonte} />
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-3 content-start">
+            <p className="text-rotulo uppercase text-zil-texto-2">Falta convergir</p>
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+              {FALTAS.map((n) => (
+                <Estat key={n.rotulo} n={<Contador ate={n.ate} sufixo={n.sufixo} />} rotulo={n.rotulo} fonte={n.fonte} />
+              ))}
+            </div>
+          </div>
         </Revelar>
       </header>
 
       {/* ═══════ 01 — CONQUISTAS ═══════ */}
       <section className="zil-secao">
-        <TituloSecao
-          chapeu="01"
-          titulo="Já fizemos antes."
-          descricao="Toda vez que disseram que não conseguiríamos, provamos o contrário. Cada conquista nasceu da recusa coletiva de aceitar dependência."
-        />
+        <TituloSecao chapeu="01" titulo="Oito vezes em que provamos." descricao="Toda vez que disseram que não conseguiríamos, provamos o contrário." />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {CONQUISTAS.map((c, i) => (
             <Revelar key={c.ano} ordem={i}>
@@ -136,10 +159,6 @@ export default function HomePage() {
             </Revelar>
           ))}
         </div>
-        <p className="mt-8 md:mt-10 text-texto-l max-w-[60ch]">
-          <strong className="font-semibold">Nenhuma dessas conquistas nasceu de um lado só do espectro político.</strong>{" "}
-          <span className="text-zil-texto-2">Nasceu de convergência.</span>
-        </p>
       </section>
 
       {/* ═══════ 02 — POR QUE PARAMOS ═══════ */}

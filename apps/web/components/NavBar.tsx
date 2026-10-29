@@ -13,8 +13,8 @@ import { rankingPublico } from "@/lib/flags";
  * com até cinco destinos. A separação vem do desfoque, não de linha.
  */
 
+// A home (o manifesto) não está no menu: chega-se a ela pela marca "ZIL".
 const LINKS: { href: string; rotulo: string; icone: NomeIcone }[] = [
-  { href: "/", rotulo: "Manifesto", icone: "inicio" },
   // O placar só aparece quando a curadoria o sustenta (ver lib/flags.ts)
   ...(rankingPublico ? [{ href: "/ranking", rotulo: "Placar", icone: "placar" as const }] : []),
   { href: "/proposicoes", rotulo: "Proposições", icone: "documento" },
@@ -33,7 +33,7 @@ export function NavBar() {
     return () => window.removeEventListener("scroll", aoRolar);
   }, []);
 
-  const atual = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const atual = (href: string) => pathname.startsWith(href);
 
   return (
     <>

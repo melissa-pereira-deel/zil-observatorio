@@ -45,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 ZIL
                 <span aria-hidden="true" className="w-2.5 h-2.5 rounded-full bg-zil-brasil-amarelo" />
               </span>
+              <p className="text-texto-s text-zil-texto-2">Zero Dependência · Indústria Nacional · Liderança Soberana</p>
               <p className="text-texto-s text-zil-texto-2 max-w-[44ch]">
                 Plataforma aberta e apartidária. Código e dados livres. O Brasil é de todos — e a soberania também.
               </p>

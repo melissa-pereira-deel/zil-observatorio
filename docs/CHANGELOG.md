@@ -92,6 +92,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- `apps/web`: nova abertura da home. Título "O Brasil já provou que pode.
+  Falta convergir.", linha fina de três frases com a tese e o papel do
+  observatório, dois botões, foto ao lado do texto no desktop e quatro
+  números em dois pares que respondem ao título ("Já provou que pode":
+  Pix, renováveis; "Falta convergir": fertilizantes, nióbio). A sigla por
+  extenso sai da abertura e vai para o rodapé. "Manifesto" sai do menu: a
+  home se alcança pela marca. Seção 01 vira "Oito vezes em que provamos."
 - `apps/web`: a seção final da home deixa de ser um formulário de assinatura
   do manifesto (com contador fictício) e passa a ser a chamada para a
   newsletter no Substack (`components/Newsletter.tsx`). O endereço vem de
