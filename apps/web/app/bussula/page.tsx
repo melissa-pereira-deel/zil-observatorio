@@ -20,6 +20,7 @@ interface Marco {
   meta: number | null;
   prazo: number | null;
   meta_origem: { nome: string; url?: string | null } | null;
+  base: { valor: number; ano: number } | null;
   fonte: string;
   natureza_fonte: "estatal" | "autarquia" | "associacao_setorial" | "academia" | "imprensa";
   fonte_url: string;
@@ -88,8 +89,8 @@ function MarcoCard({ marco }: { marco: Marco }) {
       </div>
 
       {/* Meta e distância — calculadas no servidor, com a direção do indicador.
-          A barra só aparece quando há "caminho percorrido" calculável; para
-          "menor é melhor" sem valor de base, só a distância em texto. */}
+          A barra só aparece com valor de base declarado: sem base, nenhuma
+          razão mede "caminho percorrido", e a página mostra só a distância. */}
       {marco.meta !== null && (
         <div className="grid gap-2">
           <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-texto-s text-zil-texto-2 zil-num">
@@ -111,8 +112,8 @@ function MarcoCard({ marco }: { marco: Marco }) {
               aria-valuenow={marco.progresso_pct}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-label={`${marco.progresso_pct}% do caminho até a meta, estimado sem valor de base`}
-              title="Estimativa sem valor de base: valor atual sobre a meta"
+              aria-label={`${marco.progresso_pct}% do caminho entre a base de ${marco.base?.ano} e a meta`}
+              title={`Da base (${marco.base?.valor.toLocaleString("pt-BR")} em ${marco.base?.ano}) até a meta`}
               className="h-2 rounded-pilula bg-zil-superficie-3 overflow-hidden"
             >
               <div

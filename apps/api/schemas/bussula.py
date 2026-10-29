@@ -23,6 +23,13 @@ class MetaOrigem(BaseModel):
     url: Optional[str] = None
 
 
+class Base(BaseModel):
+    """Ponto de partida do caminho até a meta: o valor e o ano em que foi medido."""
+
+    valor: float
+    ano: int
+
+
 class Indicador(BaseModel):
     codigo: str = Field(pattern=r"^BUSSULA-[A-Z]{3}-\d{2}$")
     nome: str
@@ -36,6 +43,8 @@ class Indicador(BaseModel):
     meta: Optional[float] = None
     prazo: Optional[int] = None
     meta_origem: Optional[MetaOrigem] = None
+    # Sem base não há caminho percorrido a mostrar, só a distância até a meta.
+    base: Optional[Base] = None
     fonte: str
     natureza_fonte: NaturezaFonte
     fonte_url: str
@@ -47,20 +56,20 @@ class Indicador(BaseModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def progresso_pct(self) -> Optional[int]:
-        """Quanto do caminho até a meta já foi percorrido, de 0 a 100.
+        """Quanto do caminho da base até a meta já foi percorrido, de 0 a 100.
 
-        Sem valor de base no dado é uma aproximação, e só faz sentido para
-        "maior é melhor" (valor/meta, zero como base natural). Para "menor
-        é melhor" não há zero natural: 87% com meta 60% não é "69% do
-        caminho" — é 27 pontos acima da meta. Nesse caso devolve None, e a
-        interface mostra a distância em texto, sem barra. Ultrapassar a
-        meta dá 100. Sem meta, não há progresso a mostrar.
+        Só existe com base declarada: `(atual − base) / (meta − base)`, que
+        vale nos dois sentidos porque o sinal cancela. Sem base, nenhuma
+        razão é honesta — `valor/meta` trata zero como ponto de partida, e
+        para fertilizantes (87% com meta 60%) a primeira versão mostrava a
+        barra cheia; `meta/valor` dava 69% e ainda sugeria avanço. Nesse caso
+        devolve None e a interface mostra só a distância. Retrocesso abaixo
+        da base dá 0; ultrapassar a meta dá 100.
         """
-        if self.meta is None or self.meta <= 0 or self.valor_atual < 0:
+        if self.meta is None or self.base is None or self.meta == self.base.valor:
             return None
-        if self.direcao == "menor_melhor":
-            return 100 if self.valor_atual <= self.meta else None
-        return max(0, min(100, round(self.valor_atual / self.meta * 100)))
+        razao = (self.valor_atual - self.base.valor) / (self.meta - self.base.valor)
+        return max(0, min(100, round(razao * 100)))
 
     @computed_field  # type: ignore[prop-decorator]
     @property

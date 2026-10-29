@@ -132,10 +132,12 @@ nao-validado` entraram no YAML; a API valida o arquivo
 (`schemas/bussula.py`) e calcula `progresso_pct`, `meta_atingida` e
 `meta_provisoria` e `distancia_meta`; a página mostra o sentido do
 indicador, a meta como provisória, a natureza da fonte, a data do dado e
-"Não validado", e o aviso do topo resume o estado real do conjunto. Para
-"menor é melhor" sem valor de base não há barra: só "faltam 27 pontos" —
-os três engenheiros e as duas análises de dados concordaram que
-`meta/valor` (69%) ainda sugeria avanço. 16 testes. Isso torna a página
+"Não validado", e o aviso do topo resume o estado real do conjunto. A
+barra só aparece com `base` declarada, pela fórmula `(atual − base) ÷
+(meta − base)`; sem base — hoje, nos quatro — a página mostra só a
+distância ("faltam 27 pontos"). Os engenheiros e as duas análises de dados
+concordaram que nenhuma razão sem base (`valor/meta`, `meta/valor`) mede
+caminho percorrido. 16 testes. Isso torna a página
 honesta; não torna o dado melhor. O resto deste documento é sobre o dado.
 
 ---

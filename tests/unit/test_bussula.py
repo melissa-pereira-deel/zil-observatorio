@@ -66,14 +66,31 @@ class TestProgresso:
         assert i.progresso_pct is None
         assert i.distancia_meta == 27
 
-    def test_maior_melhor(self):
-        assert Indicador(**_base(direcao="maior_melhor", valor_atual=83, meta=90)).progresso_pct == 92
+    def test_maior_melhor_sem_base_nao_tem_barra(self):
+        # 83% com meta 90%: valor/meta (92%) tratava zero como ponto de partida.
+        i = Indicador(**_base(direcao="maior_melhor", valor_atual=83, meta=90))
+        assert i.progresso_pct is None
+        assert i.distancia_meta == 7
 
-    def test_meta_atingida_trava_em_100(self):
-        i = Indicador(**_base(direcao="maior_melhor", valor_atual=95, meta=90))
+    def test_com_base_mede_o_caminho_nos_dois_sentidos(self):
+        sobe = Indicador(**_base(direcao="maior_melhor", valor_atual=83, meta=90, base={"valor": 76, "ano": 2019}))
+        assert sobe.progresso_pct == 50
+        desce = Indicador(**_base(valor_atual=75, meta=50, base={"valor": 85, "ano": 2021}))
+        assert desce.progresso_pct == 29
+
+    def test_retrocesso_abaixo_da_base_da_zero(self):
+        # Fertilizantes com a base e a meta do PNF: 86,8% contra base 85%.
+        i = Indicador(**_base(valor_atual=86.8, meta=50, base={"valor": 85, "ano": 2021}))
+        assert i.progresso_pct == 0 and not i.meta_atingida
+
+    def test_meta_atingida(self):
+        i = Indicador(**_base(direcao="maior_melhor", valor_atual=95, meta=90, base={"valor": 80, "ano": 2020}))
         assert i.progresso_pct == 100 and i.meta_atingida
         j = Indicador(**_base(valor_atual=50, meta=60))
-        assert j.progresso_pct == 100 and j.meta_atingida
+        assert j.meta_atingida and j.distancia_meta == 0
+
+    def test_base_igual_a_meta_nao_divide_por_zero(self):
+        assert Indicador(**_base(meta=60, base={"valor": 60, "ano": 2020})).progresso_pct is None
 
     def test_sem_meta_sem_progresso(self):
         i = Indicador(**_base(meta=None, prazo=None))
@@ -94,7 +111,12 @@ class TestEndpoints:
         r = client.get("/bussula")
         assert r.status_code == 200
         fer = next(m for m in r.json() if m["codigo"] == "BUSSULA-FER-01")
-        assert fer["progresso_pct"] is None and fer["distancia_meta"] == 27 and fer["meta_provisoria"] is True
+        assert fer["distancia_meta"] == 27 and fer["meta_provisoria"] is True
+
+    def test_nenhum_indicador_publicado_tem_barra_sem_base(self, client):
+        for m in client.get("/bussula").json():
+            if m.get("base") is None:
+                assert m["progresso_pct"] is None, m["codigo"]
 
     def test_404(self, client):
         assert client.get("/bussula/BUSSULA-XXX-99").status_code == 404

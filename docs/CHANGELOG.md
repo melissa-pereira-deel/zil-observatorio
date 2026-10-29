@@ -222,7 +222,9 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ### Fixed
 - `/bussula`: a barra de progresso fazia `valor / meta` travado em 100% e
   aparecia cheia para a dependência de fertilizantes (87% com meta 60%), o
-  indicador mais distante da meta; sem valor de base não há barra, só a
+  indicador mais distante da meta. Agora a barra só existe com valor de
+  base declarado (`base` no YAML, `(atual − base) ÷ (meta − base)` nos dois
+  sentidos); sem base, nos quatro indicadores, a página mostra só a
   distância em texto ("faltam 27 pontos"). O selo de
   tendência quebrava em duas linhas (svg `display:block` dentro do span
   truncado); `Selo` ganhou `icone`. O fetch não conferia `r.ok`.
