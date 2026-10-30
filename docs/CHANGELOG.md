@@ -10,6 +10,17 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Cron de produção no GitHub Actions** (`scripts/agenda.py`,
+  `.github/workflows/dados.yml`, `direcoes.yml`, `acordar-api.yml`): os jobs
+  do Celery beat como subcomandos de linha de comando (`diario`, `cadastros`,
+  `enriquecer --limite N`, e cada passo isolado), registrando cada passo em
+  `ingestion_runs` pelo mesmo caminho das tasks (`apps/workers/execucoes.py`).
+  `dados` roda o sync diário, os cadastros às segundas e o enriquecimento com
+  LLM às quartas (até 30); `direcoes` aplica a curadoria a cada merge em
+  `data/direcoes/`; `acordar-api` mantém a API gratuita acordada quando a
+  variável `API_PUBLICA_URL` existe.
+- `scripts/sync_pipeline.py --limite N`: o enriquecimento processa só as N
+  proposições pendentes mais recentes.
 - **Filtro de proposições analisadas** (`apps/api/routers/legislativo.py`,
   `apps/web/app/proposicoes/page.tsx`): `GET /proposicoes?analise=analisada|pendente`
   e um segmentado "Todas · Analisadas · Sem análise" na lista. Sem filtro, as
@@ -107,6 +118,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+
+- **Postgres de produção no plano pago** (`render.yaml`, `basic-256mb`): o
+  gratuito do Render expira em 30 dias e é apagado sem backup. `docs/DEPLOY.md`
+  passa a popular o banco pelos workflows e ganha a seção "Cron"; "Quando
+  ligar os workers" sai, porque o Actions cobre o agendamento.
 - `apps/web/app/page.tsx`: a seção 09 da home deixa de ser "Acesso livre por
   design", que repetia valores (04, 08), o catálogo de "Como funciona hoje" e o
   futuro de "Para onde vamos", e passa a responder uma pergunta só: "O que dá
