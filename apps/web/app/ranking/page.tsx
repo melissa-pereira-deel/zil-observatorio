@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { ParlamentarCard } from "@/components/ParlamentarCard";
+import { ScorePorEstado } from "@/components/ScorePorEstado";
 import {
   Aviso,
   BarraFiltros,
@@ -17,13 +18,9 @@ import {
   Vazio,
 } from "@/components/ui";
 import type { Parlamentar } from "@/lib/api";
+import { UFS } from "@/lib/ufs";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-const UFS = [
-  "AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT",
-  "PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO",
-];
 
 type Fonte = "" | "camara" | "senado";
 type Ordem = "score_desc" | "score_asc" | "nome";
@@ -76,6 +73,18 @@ function Ranking() {
   const [partido, setPartido] = useState("");
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState<Ordem>(() => ordemDaUrl(params.get("ordem")));
+  // A casa inteira, sem filtro de UF nem partido: o mapa e o histograma
+  // precisam de todos os estados mesmo quando a tabela mostra um só.
+  const [todos, setTodos] = useState<Parlamentar[]>([]);
+
+  useEffect(() => {
+    const params = new URLSearchParams({ per_page: "600" });
+    if (fonte) params.set("fonte", fonte);
+    fetch(`${API_BASE}/parlamentares?${params}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then(setTodos)
+      .catch(() => setTodos([]));
+  }, [fonte, tentativa]);
 
   useEffect(() => {
     fetch(`${API_BASE}/parlamentares/partidos/ranking`)
@@ -169,6 +178,12 @@ function Ranking() {
         validadas nos arquivos do projeto, e poucas têm voto nominal registrado.
         Leia o número como um protótipo, não como um veredito.
       </Aviso>
+
+      {todos.length > 0 && (
+        <div className="pt-16 md:pt-24">
+          <ScorePorEstado parlamentares={todos} uf={uf} aoMudarUF={setUf} />
+        </div>
+      )}
 
       <section className="zil-secao grid gap-6">
         {/* Filtros — UI-005: busca na mesma linha dos filtros; ordenação separada, no fim */}

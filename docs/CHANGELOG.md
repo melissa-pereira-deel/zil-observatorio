@@ -10,6 +10,18 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Plenário das votações** (`components/ui/Hemiciclo.tsx`, `MapaUF.tsx`,
+  `Histograma.tsx`, `components/PlenarioVotacao.tsx`, `lib/votacao.ts`), do
+  artboard "Placar" do canvas de redesign:
+  - `/votacoes/[id]`: o placar vira hemiciclo de 513 cadeiras (Sim ·
+    Abstenção ou obstrução · Não votaram · Não) e mapa das bancadas por UF
+    com a parcela de sim. Hemiciclo, mapa e lista de votos dividem um filtro
+    só. Votação simbólica mostra aviso em vez de plenário vazio.
+  - Home, seção 06: a votação em destaque (PL 327/2021, PATEN, emendas do
+    Senado), com a ementa oficial. Some se a API não responder.
+  - `/ranking` (atrás de `rankingPublico`): score médio por UF, que filtra a
+    tabela, e histograma por faixa de score.
+- `GET /votacoes?fonte_id=`: acha uma votação pelo ID da Câmara.
 - **Filtro de proposições analisadas** (`apps/api/routers/legislativo.py`,
   `apps/web/app/proposicoes/page.tsx`): `GET /proposicoes?analise=analisada|pendente`
   e um segmentado "Todas · Analisadas · Sem análise" na lista. Sem filtro, as
@@ -244,6 +256,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+
+- Voto do presidente da sessão: a Câmara manda `"Artigo 17"`, e os três
+  syncs só conheciam `"Art. 17"` — o presidente virava ausente. Um mapa só
+  em `apps/workers/crawlers/camara.py`, e tipo desconhecido agora gera aviso
+  no log. O score não muda: a fórmula trata Art. 17 como ausência.
 - **Enriquecimento dizia ao modelo que leis vigentes estavam revogadas**
   (`apps/workers/enrichment/__init__.py`). A busca por "revogado" corria no
   HTML inteiro do Planalto, e toda lei consolidada tem algum dispositivo

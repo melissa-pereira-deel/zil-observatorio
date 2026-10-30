@@ -45,17 +45,8 @@ from packages.camara_client import CamaraClient
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-VOTO_MAP = {
-    "Sim": VotoEnum.SIM,
-    "Não": VotoEnum.NAO,
-    "Abstenção": VotoEnum.ABSTENCAO,
-    "Obstrução": VotoEnum.OBSTRUCAO,
-    "Art. 17": VotoEnum.ARTIGO_17,
-}
-
-
-def normalizar_voto(tipo_voto: str) -> VotoEnum:
-    return VOTO_MAP.get(tipo_voto, VotoEnum.AUSENTE)
+# O mapa de tipoVoto é um só para os três syncs da Câmara.
+from apps.workers.crawlers.camara import normalizar_voto  # noqa: E402
 
 
 def load_target_ids(data_dir: Path) -> list[dict]:

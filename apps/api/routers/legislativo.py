@@ -214,11 +214,17 @@ def votacoes_da_proposicao(proposicao_id: UUID, db: Session = Depends(get_db)):
 def listar_votacoes(
     categoria: Optional[str] = Query(None),
     ano: Optional[int] = Query(None),
+    fonte_id: Optional[str] = Query(None, description="ID da votação na Casa, ex. 2269745-144"),
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    """Lista votações classificadas por pauta ZIL."""
+    """Lista votações classificadas por pauta ZIL.
+
+    `fonte_id` acha uma votação pelo ID da Câmara ou do Senado — é como o
+    frontend chega a uma votação citada pela curadoria (a votação em
+    destaque da home), já que o `id` interno muda de banco para banco.
+    """
     query = (
         select(Votacao, Proposicao)
         .outerjoin(Proposicao, Votacao.proposicao_id == Proposicao.id)
@@ -229,6 +235,8 @@ def listar_votacoes(
         query = query.where(cast(Votacao.categorias_zil, Text).like(f'%"{categoria}"%'))
     if ano:
         query = query.where(func.extract("year", Votacao.data) == ano)
+    if fonte_id:
+        query = query.where(Votacao.fonte_id == fonte_id)
 
     query = query.order_by(Votacao.data.desc().nulls_last())
     query = query.offset((page - 1) * per_page).limit(per_page)
