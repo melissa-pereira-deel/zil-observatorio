@@ -39,7 +39,7 @@ def _votacao_to_read(v: Votacao, proposicao: Optional[Proposicao] = None) -> Vot
             numero=proposicao.numero,
             ano=proposicao.ano,
             ementa=proposicao.ementa,
-            resumo_simples=proposicao.resumo_simples,
+            resumo_simples=proposicao.resumo_publicavel,
         )
     return VotacaoRead(
         id=v.id,
@@ -117,13 +117,16 @@ def contexto_proposicao(proposicao_id: UUID, db: Session = Depends(get_db)):
         leis_ref = [LeiReferenciadaRead(**r) for r in p.leis_referenciadas]
         fontes = [r.get("url_planalto") for r in p.leis_referenciadas if r.get("url_planalto")]
 
+    # Glossário e impacto de uma recusa também são recusa ("não é possível
+    # avaliar o impacto…"): saem junto com o resumo.
+    pronta = p.contexto_status == "pronto"
     return ProposicaoContexto(
         proposicao_id=p.id,
         ementa_original=p.ementa,
         contexto_status=p.contexto_status,
-        resumo_simples=p.resumo_simples,
-        glossario=p.glossario,
-        impacto_zil=p.impacto_zil,
+        resumo_simples=p.resumo_publicavel,
+        glossario=p.glossario if pronta else None,
+        impacto_zil=p.impacto_zil if pronta else None,
         leis_referenciadas=leis_ref,
         confianca=float(p.confianca) if p.confianca is not None else None,
         enriquecido_em=p.enriquecido_em,
