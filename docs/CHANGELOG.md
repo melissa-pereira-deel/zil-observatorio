@@ -107,6 +107,14 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- `apps/web`: a abertura da home passa a ter vídeo de fundo de borda a borda,
+  sob a barra de navegação em vidro (`components/VideoAbertura.tsx`). Os
+  arquivos vão em `apps/web/public/abertura/` (especificação e cuidados no
+  README da pasta) e entram sem mudar código; enquanto não existem, um fundo
+  provisório nas cores da bandeira. O celular baixa só o arquivo de celular;
+  com movimento reduzido o vídeo não carrega; botão de pausa (WCAG 2.2.2). Um
+  véu escurece a base e a esquerda para o texto ser legível sobre qualquer
+  quadro. Sai o bloco reservado para foto.
 - `apps/web/app/page.tsx`: os quatro números soltos no fim da abertura saem.
   O único contraste que carrega o argumento, Pix × fertilizantes, passa para
   a seção 02, logo depois da frase que ele ilustra, com fertilizantes em 85%
