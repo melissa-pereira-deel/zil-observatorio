@@ -10,6 +10,15 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- `specs/013-tramitacao/`: backlog de evolução a partir do discovery de
+  tramitação, escrito por quatro especialistas (Product, Arquitetura, UI/UX,
+  Design System) com revisão cruzada. `spec.md` traz o índice de 43 tarefas
+  em ondas, o processo de revisão do mapa de fases e do glossário por agentes
+  e pela maintainer (lotes L0–L7, nada publicado sem aprovação), os gates de
+  UI e de Design System e DoR/DoD; `backlog-dados.md`,
+  `backlog-design-system.md` e `backlog-interface.md` detalham cada tarefa
+  (problema, solução, critérios de aceite, specs técnicas e de design,
+  testes, instruções para o agente); `revisoes/` guarda as revisões cruzadas.
 - `docs/DISCOVERY-TRAMITACAO.md`: levantamento de onde vem o status das
   proposições, do processo legislativo canônico por espécie (com prazos,
   quóruns e o que é determinístico ou discricionário), das APIs da Câmara e

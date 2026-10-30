@@ -99,7 +99,7 @@ As 16 situações distintas no banco, mais nulo:
 | Aguardando Parecer | 50 | Na comissão, com relator trabalhando |
 | Aguardando Designação de Relator(a) | 43 | Na comissão, sem relator |
 | Tramitando em Conjunto | 24 | Apensada; anda junto com a principal |
-| Arquivada | 22 | Parada; pode ser desarquivada (§2.2) |
+| Arquivada | 22 | Parada; o motivo (fim de legislatura, parecer terminativo, rejeição) está no despacho (§2.2) |
 | *(nula)* | 21 | Ver §1.2 |
 | Aguardando Despacho do Presidente da Câmara dos Deputados (Chancela) | 20 | Recém-apresentada, antes da distribuição |
 | Transformado em Norma Jurídica | 16 | Virou lei (ou decreto legislativo) |
@@ -239,7 +239,7 @@ LC 95/1998, LINDB, Decreto 12.002/2024. URLs no fim (§ Fontes).
 | Rejeição | Mesma matéria só volta na mesma sessão legislativa por maioria absoluta | D | CF 67 |
 | Tramitação em conjunto (apensação) | A mais antiga tem precedência; um só parecer para todas | X | RICD 142–143 |
 | Sustação de decreto | PDL contra ato do Executivo que exorbita a lei | X | CF 49 V |
-| Devolvida ao autor | Não admitida pela Presidência ⚠ (artigo não conferido) | X | — |
+| Devolvida ao autor | A Presidência devolve proposição mal formalizada, alheia à competência da Câmara, evidentemente inconstitucional ou antirregimental | X | RICD 137 §1º |
 
 ### 2.3 Variantes por espécie
 
@@ -471,7 +471,9 @@ autoaplicável parecer incompleta. A proposta separa três coisas:
 | `promulgacao` | Promulgação | PEC, PDL, veto derrubado, MPV sem alteração |
 | `norma` | Virou lei / emenda constitucional / decreto legislativo / "Convertida em lei" (MPV) | — |
 
-Desfechos: `arquivada` (com "pode ser desarquivada"), `retirada`,
+Desfechos: `arquivada` (com o motivo; desarquivamento por requerimento só existe no
+Senado, RISF 332 — na Câmara o antigo parágrafo único do RICD 105 foi revogado
+pela RCD 33/2022), `retirada`,
 `prejudicada`, `rejeitada`, `perdeu_eficacia`, `vetada` (veto total mantido),
 `devolvida`. Estado não terminal: `apensada` — "Tramita junto com X", herdando
 a fase da cabeça da cadeia. Fallback: `nao_sabemos`, sempre com um motivo
@@ -695,7 +697,7 @@ Esboço a 375px:
 | --- | --- |
 | Situação nula e recente | "Recém-apresentada, aguardando despacho. A Câmara ainda não informou situação." |
 | `nao_sabemos` | "Não sabemos em que fase está. A situação oficial é 'X', que ainda não está no nosso mapa (v1). Ver na Câmara ↗" |
-| Arquivada | "Arquivada em dd/mm. Proposições arquivadas podem ser desarquivadas." |
+| Arquivada | "Arquivada em dd/mm." + o motivo, quando o despacho o disser. Não prometer desarquivamento: na Câmara ele deixou de existir com a RCD 33/2022; no Senado depende de requerimento de 1/3 (RISF 332) |
 | Sem regulamentação conhecida | "Consultamos [Senado — vides; curadoria ZIL] em dd/mm/aaaa e não encontramos decreto vinculado. Isso não quer dizer que a lei não seja aplicada: muitos artigos valem sem regulamento." |
 | Regulamentação não verificada | "Ainda não verificamos a regulamentação desta lei." |
 
@@ -808,7 +810,7 @@ site. As outras dependem do PR #47 (o cron), porque o passo diário vive em
   anti-robô; INLABS exige login; a API de normas.leg.br não é documentada.
 - **Dias úteis:** sem calendário de feriados confiável, não calcular datas
   finais.
-- **Pontos ⚠ deste documento:** artigo da "devolução ao autor"; portarias da
+- **Pontos ⚠ deste documento:** portarias da
   Lei 14.871 (fonte secundária); comitê técnico do Paten (fonte de notícia);
   inexistência de decreto da Lei 15.103 (ausência nas fontes consultadas não
   prova ausência); presença da depreciação acelerada no painel da Receita;
