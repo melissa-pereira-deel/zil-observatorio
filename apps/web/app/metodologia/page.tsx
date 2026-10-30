@@ -268,15 +268,17 @@ export default function MetodologiaPage() {
 
         <Aviso tom="neutro" titulo="Quantas pessoas revisam: uma" className="max-w-leitura">
           O projeto tem hoje um único maintainer, e não há revisão editorial independente. Nossos documentos de governança descrevem um
-          processo com duas aprovações que nunca foi praticado; isso está registrado e corrigido em docs/GOVERNANCE.md em vez de mantido
+          processo com duas aprovações que nunca foi praticado; isso está registrado e corrigido em <code className="zil-caminho">docs/GOVERNANCE.md</code> em vez de mantido
           como promessa.
         </Aviso>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        {/* Três colunas só a partir de lg: entre 768 e 1024px cada cartão ficava
+            com ~200px, estreito demais para texto de 18px. */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           <Card className="grid content-start gap-2">
             <h3 className="text-titulo-4">Classificação automática</h3>
             <p className="text-texto text-zil-texto-2">
-              Keywords em data/taxonomia/categorias.yml determinam quais proposições são incluídas. As keywords são versionadas em git, então
+              Keywords em <code className="zil-caminho">data/taxonomia/categorias.yml</code> determinam quais proposições são incluídas. As keywords são versionadas em git, então
               toda inclusão e exclusão é rastreável.
             </p>
           </Card>
@@ -289,7 +291,7 @@ export default function MetodologiaPage() {
           <Card className="grid content-start gap-2">
             <h3 className="text-titulo-4">Bússola ZIL</h3>
             <p className="text-texto text-zil-texto-2">
-              Quatro indicadores, em formação, em data/bussula/marcos.yml. Nenhum passou por revisão e nenhuma meta tem plano oficial
+              Quatro indicadores, em formação, em <code className="zil-caminho">data/bussula/marcos.yml</code>. Nenhum passou por revisão e nenhuma meta tem plano oficial
               como origem; a página mostra isso em cada cartão. Cada atualização entra por PR com link para a fonte, a cada trimestre
               ou quando sai dado novo.
             </p>

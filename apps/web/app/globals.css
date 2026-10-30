@@ -104,6 +104,11 @@
   p {
     text-wrap: pretty;
   }
+  /* Uma "palavra" sem espaço (caminho de arquivo, URL) não pode alargar o
+     contêiner: quebra onde for preciso em vez de vazar do cartão. */
+  p, li, dd, figcaption, blockquote {
+    overflow-wrap: break-word;
+  }
   ::selection {
     background-color: var(--inverso-fundo);
     color: var(--inverso-texto);
@@ -144,6 +149,12 @@
   }
   .zil-num {
     font-variant-numeric: tabular-nums;
+  }
+  /* Caminho de arquivo ou código citado no texto corrido. Quebra em
+     qualquer ponto, porque não tem espaço onde quebrar. */
+  .zil-caminho {
+    @apply px-1 rounded-xs bg-zil-superficie-2 text-zil-texto text-[0.9em];
+    overflow-wrap: anywhere;
   }
 
   /* Vidro: só no que flutua sobre conteúdo. Sem backdrop-filter, vira

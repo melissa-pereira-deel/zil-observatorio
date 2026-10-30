@@ -254,7 +254,7 @@ export default function BussulaPage() {
           </div>
         ) : marcos.length === 0 ? (
           <Vazio icone="bussola" titulo="Nenhum indicador publicado ainda">
-            Os indicadores da Bússola são gerenciados via <code className="px-1 rounded-xs bg-zil-superficie-2 text-zil-texto">data/bussula/marcos.yml</code> no repositório.
+            Os indicadores da Bússola são gerenciados via <code className="zil-caminho">data/bussula/marcos.yml</code> no repositório.
           </Vazio>
         ) : (
           <>
