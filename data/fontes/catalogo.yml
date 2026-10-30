@@ -1,0 +1,178 @@
+# Catálogo de fontes externas de dados — ver apps/workers/fontes/catalogo.py.
+#
+# ESTE ARQUIVO É A ALLOWLIST. Nenhum agente consulta fonte que não esteja
+# aqui, e a restrição é aplicada na camada de rede (o transporte do httpx
+# recusa qualquer host fora desta lista antes de a requisição sair), não em
+# instrução ao modelo. Quem edita este arquivo decide de onde vêm os números
+# que o público vai ler — por isso ele está sob a mesma governança dos dados
+# editoriais: muda por PR, e o hash do arquivo vai para o meta de cada
+# execução.
+#
+# "Oficial" não é "neutro". A justificação de um projeto de lei é fonte
+# oficial e é a peça mais interessada do dossiê; a Bússola já cita uma
+# associação setorial (ANDA). Por isso toda fonte declara `natureza` e
+# `vies_declarado`, pelo mesmo motivo que os agentes declaram o deles.
+#
+# Campos por fonte:
+#   sigla           como a fonte aparece na linha de proveniência (opcional).
+#   natureza        estatal | autarquia | associacao_setorial | academia | imprensa
+#   primaria        true se a fonte MEDE ou DEFINE o dado; false se republica.
+#                   Fonte secundária serve para conferir transcrição e NUNCA
+#                   conta como evidência independente — duas fontes não são
+#                   duas evidências quando uma copia a outra.
+#   vies_declarado  o que esta fonte tem interesse em mostrar.
+#   adaptador       como se consulta (apps/workers/fontes/cliente.py).
+#   chave           NOME da variável de ambiente com a credencial, ou ausente.
+#                   O valor nunca entra aqui; a carga recusa o que não parecer
+#                   nome de variável.
+#   habilitada      false deixa a fonte catalogada, fora da allowlist de rede.
+#
+# Campos por série:
+#   parametros      o que o adaptador precisa (id da série, agregado...).
+#   conceitos       termos pelos quais uma alegação casa com a série. É a
+#                   ÚNICA forma de uma série ser escolhida — lista auditável.
+#   revisavel       true se o valor publicado muda depois (PIB, estimativas
+#                   de população, contas públicas); false se é definitivo
+#                   (IPCA, Selic). Define tolerância e aviso de vintage.
+#   primaria_de     quando a série republica outra fonte: para ESTE dado,
+#                   esta fonte não é independente daquela.
+#
+# Tudo abaixo foi verificado com consulta real em 2026-10-21, sem chave, só
+# leitura. O que não foi verificado não entrou — melhor catálogo curto e
+# certo que longo e suposto.
+
+versao: 1
+
+fontes:
+  bcb_sgs:
+    sigla: BCB SGS
+    nome: Banco Central do Brasil — Sistema Gerenciador de Séries Temporais (SGS)
+    host: api.bcb.gov.br
+    natureza: autarquia
+    primaria: true
+    vies_declarado: >
+      Autoridade monetária. Séries de política monetária (meta Selic) são
+      definição, não medição: o BCB publica o que decidiu. Republica o IPCA
+      do IBGE — para inflação, não é fonte independente do IBGE.
+    adaptador: bcb_sgs
+    habilitada: true
+    series:
+      selic_meta:
+        descricao: Meta para a taxa Selic definida pelo Copom
+        parametros: {id: "432"}
+        unidade: "% a.a."
+        frequencia: diaria
+        revisavel: false
+        conceitos: [selic, taxa básica de juros, juros básicos, taxa de juros, copom]
+        nota: >
+          Publicada com datas futuras até o próximo Copom. "Últimos N" devolve
+          datas à frente de hoje; consultar sempre por intervalo explícito.
+      ipca_12m:
+        descricao: IPCA acumulado em 12 meses
+        parametros: {id: "13522"}
+        unidade: "%"
+        frequencia: mensal
+        revisavel: false
+        primaria_de: ibge
+        conceitos: [ipca, inflação, inflação acumulada, custo de vida, índice de preços]
+      ipca_mensal:
+        descricao: IPCA — variação mensal
+        parametros: {id: "433"}
+        unidade: "% no mês"
+        frequencia: mensal
+        revisavel: false
+        primaria_de: ibge
+        conceitos: [ipca mensal, inflação mensal, inflação do mês]
+      cambio_usd_mensal:
+        descricao: Dólar comercial (venda) — média mensal
+        parametros: {id: "3698"}
+        unidade: "R$/US$"
+        frequencia: mensal
+        revisavel: false
+        conceitos: [câmbio, dólar, taxa de câmbio, cotação do dólar, desvalorização cambial]
+
+  ibge:
+    sigla: IBGE
+    nome: IBGE — Agregados (SIDRA)
+    host: servicodados.ibge.gov.br
+    natureza: estatal
+    primaria: true
+    vies_declarado: >
+      Órgão oficial de estatística. Mede; não decide. Estimativas
+      intercensitárias são revisadas após cada Censo — valor de população
+      "do ano" pode mudar anos depois.
+    adaptador: ibge_agregados
+    habilitada: true
+    series:
+      populacao:
+        descricao: População residente estimada (Brasil)
+        parametros: {agregado: "6579", variavel: "9324", localidade: "N1"}
+        unidade: pessoas
+        frequencia: anual
+        revisavel: true
+        conceitos: [população, habitantes, brasileiros, população brasileira, número de pessoas]
+        nota: >
+          A API v3 não aceita período "-1" de forma confiável e pula anos sem
+          estimativa (2022 e 2023 vazios em 2026-10-21). Anos explícitos
+          separados por "|" funcionam; ano vazio é "sem observação", não erro.
+
+  ipea:
+    sigla: IPEA Data
+    nome: IPEA Data
+    host: www.ipeadata.gov.br
+    natureza: estatal
+    primaria: false
+    uso: cruzamento_de_transcricao
+    vies_declarado: >
+      Republica séries do BCB, do IBGE e de outros órgãos. Serve para
+      conferir que um número foi transcrito certo, não para confirmar o fato
+      por uma segunda via.
+    adaptador: ipea_odata
+    habilitada: true
+    series:
+      selic_over_mensal:
+        descricao: Taxa de juros Over/Selic acumulada no mês (republicação do BCB)
+        parametros: {codigo: "BM12_TJOVER12"}
+        unidade: "% no mês"
+        frequencia: mensal
+        revisavel: false
+        primaria_de: bcb_sgs
+        conceitos: [selic over, selic efetiva, juros over]
+        nota: O servidor ignora `$filter` na API OData; o recorte por data é feito no cliente.
+
+  # ── catalogadas, não habilitadas: responderam em 2026-10-21, mas o
+  # ── adaptador e as séries ainda não foram escritos nem verificados.
+  tesouro_siconfi:
+    sigla: Tesouro SICONFI
+    nome: Tesouro Nacional — SICONFI (Tesouro Transparente)
+    host: apidatalake.tesouro.gov.br
+    natureza: estatal
+    primaria: true
+    vies_declarado: >
+      Contas públicas declaradas pelos próprios entes. Dados de execução
+      orçamentária são revisados; demonstrativos (RREO/RGF) seguem o
+      calendário fiscal.
+    habilitada: false
+
+  comex_stat:
+    sigla: Comex Stat
+    nome: MDIC — Comex Stat (exportações e importações por NCM)
+    host: api-comexstat.mdic.gov.br
+    natureza: estatal
+    primaria: true
+    vies_declarado: >
+      Registros aduaneiros. Mede fluxo declarado; subfaturamento e
+      triangulação não aparecem.
+    habilitada: false
+
+  portal_transparencia:
+    sigla: Portal da Transparência
+    nome: Portal da Transparência (CGU)
+    host: api.portaldatransparencia.gov.br
+    natureza: estatal
+    primaria: true
+    vies_declarado: >
+      Despesas, convênios e emendas do Executivo federal. Registra o que foi
+      pago, não o que foi entregue.
+    chave: PORTAL_TRANSPARENCIA_KEY
+    habilitada: false

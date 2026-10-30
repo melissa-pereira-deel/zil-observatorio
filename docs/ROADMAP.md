@@ -118,6 +118,8 @@ Catálogo filtrável de proposições e votações classificadas por pauta ZIL.
 ---
 
 #### 007 — Frontend: Bússola ZIL (`/bussula`)
+
+> Levantamento de proveniência, framework de qualidade e expansão: [DISCOVERY-BUSSOLA.md](DISCOVERY-BUSSOLA.md) (2026-10-29).
 Painel de indicadores estratégicos — o estado atual da soberania industrial brasileira.
 
 - [ ] Dados da API (`GET /bussula`)

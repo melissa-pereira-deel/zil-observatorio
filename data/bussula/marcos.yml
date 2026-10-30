@@ -6,6 +6,14 @@
 #
 # Processo: PR com link para a fonte no body + 1 aprovação de maintainer
 #
+# Estado em 2026-10-29: os quatro indicadores estão EM FORMAÇÃO. Nenhum
+# passou por revisão (validacao: nao-validado), nenhuma meta tem origem
+# declarada (meta_origem: null) e `fonte_url` aponta para a página inicial
+# do órgão, não para o dado (fonte_dataset: null). A interface mostra isso
+# como está, em vez de apresentar meta e fonte como se fossem conferidas.
+# O levantamento das fontes canônicas e do framework de qualidade está em
+# docs/DISCOVERY-BUSSOLA.md.
+#
 # Formato de cada indicador:
 #   codigo:           identificador único (BUSSULA-CAT-NN)
 #   nome:             nome legível
@@ -13,12 +21,23 @@
 #   descricao:        o que o indicador mede
 #   valor_atual:      valor numérico atual
 #   unidade:          unidade de medida
-#   tendencia:        avancando | retrocedendo | estavel
+#   direcao:          maior_melhor | menor_melhor — em que sentido o
+#                     indicador avança para a soberania. Sem isso a barra
+#                     de progresso não tem como ser calculada.
+#   tendencia:        avancando | retrocedendo | estavel — DECLARADA pelo
+#                     maintainer, não calculada: ainda não há histórico.
 #   meta:             valor alvo (se definido)
 #   prazo:            ano-alvo da meta (se definido)
-#   fonte:            nome da fonte oficial
-#   fonte_url:        URL da fonte
-#   ultima_atualizacao: YYYY-MM (mês do dado)
+#   meta_origem:      documento que define a meta (nome + URL), ou null
+#                     quando a meta é provisória, escolhida pelo projeto
+#   fonte:            nome da fonte do valor
+#   natureza_fonte:   estatal | autarquia | associacao_setorial | academia
+#                     (mesmo vocabulário de data/fontes/catalogo.yml)
+#   fonte_url:        URL da instituição
+#   fonte_dataset:    URL direta do dado (tabela, série, relatório), ou null
+#   ultima_atualizacao: YYYY-MM — período de referência do dado, não a
+#                     data em que o registro foi editado
+#   validacao:        nao-validado | revisado (como em data/direcoes/)
 #   governo_referencia: governo em que o dado foi medido
 
 marcos:
@@ -30,12 +49,17 @@ marcos:
       O Brasil importa principalmente ureia (nitrogênio), fosfato e cloreto de potássio.
     valor_atual: 87
     unidade: "% do consumo total importado"
+    direcao: menor_melhor
     tendencia: estavel
     meta: 60
     prazo: 2030
+    meta_origem: null
     fonte: ANDA (Associação Nacional para Difusão de Adubos)
+    natureza_fonte: associacao_setorial
     fonte_url: https://anda.org.br/
+    fonte_dataset: null
     ultima_atualizacao: "2024-12"
+    validacao: nao-validado
     governo_referencia: Lula III
 
   - codigo: BUSSULA-MIN-01
@@ -46,12 +70,17 @@ marcos:
       (ferroniobio, liga) vs. minério bruto. Brasil detém 94% das reservas globais.
     valor_atual: 95
     unidade: "% exportado como produto processado (ferroniobio)"
+    direcao: maior_melhor
     tendencia: estavel
     meta: 100
     prazo: 2028
+    meta_origem: null
     fonte: ANM (Agência Nacional de Mineração)
+    natureza_fonte: autarquia
     fonte_url: https://www.gov.br/anm/
+    fonte_dataset: null
     ultima_atualizacao: "2024-06"
+    validacao: nao-validado
     governo_referencia: Lula III
 
   - codigo: BUSSULA-ENE-01
@@ -62,12 +91,17 @@ marcos:
       de fontes renováveis (hidro, eólica, solar, biomassa).
     valor_atual: 83
     unidade: "% da matriz elétrica"
+    direcao: maior_melhor
     tendencia: avancando
     meta: 90
     prazo: 2030
+    meta_origem: null
     fonte: ANEEL (Agência Nacional de Energia Elétrica)
+    natureza_fonte: autarquia
     fonte_url: https://www.aneel.gov.br/
+    fonte_dataset: null
     ultima_atualizacao: "2024-12"
+    validacao: nao-validado
     governo_referencia: Lula III
 
   - codigo: BUSSULA-EDU-01
@@ -78,10 +112,15 @@ marcos:
       Referência: Coreia do Sul 4.9%, Alemanha 3.1%, Brasil historicamente ~1.2%.
     valor_atual: 1.2
     unidade: "% do PIB"
+    direcao: maior_melhor
     tendencia: estavel
     meta: 2.0
     prazo: 2030
+    meta_origem: null
     fonte: MCTI (Ministério da Ciência, Tecnologia e Inovação)
+    natureza_fonte: estatal
     fonte_url: https://www.gov.br/mcti/
+    fonte_dataset: null
     ultima_atualizacao: "2023-12"
+    validacao: nao-validado
     governo_referencia: Lula III

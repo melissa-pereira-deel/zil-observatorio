@@ -1,11 +1,11 @@
 """Endpoints for proposições and votações."""
 
 import secrets
-from typing import Optional
+from typing import Literal, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query, HTTPException
-from sqlalchemy import select, func, cast, Text
+from sqlalchemy import case, select, func, cast, Text
 from sqlalchemy.orm import Session
 
 from core.config import get_db, settings
@@ -67,11 +67,14 @@ def listar_proposicoes(
     categoria: Optional[str] = Query(None, description="Categoria ZIL (ex: ZIL-FER)"),
     tipo: Optional[str] = Query(None, description="Tipo (PL, PEC, PLP...)"),
     ano: Optional[int] = Query(None),
+    analise: Optional[Literal["analisada", "pendente"]] = Query(
+        None, description="analisada = enriquecimento pronto; pendente = o resto"
+    ),
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    """Lista proposições classificadas por pauta ZIL."""
+    """Lista proposições classificadas por pauta ZIL, com as analisadas primeiro."""
     query = select(Proposicao).where(Proposicao.categorias_zil.isnot(None))
 
     if categoria:
@@ -80,8 +83,14 @@ def listar_proposicoes(
         query = query.where(Proposicao.tipo == tipo.upper())
     if ano:
         query = query.where(Proposicao.ano == ano)
+    pronta = Proposicao.contexto_status == "pronto"
+    if analise == "analisada":
+        query = query.where(pronta)
+    elif analise == "pendente":
+        query = query.where((Proposicao.contexto_status.is_(None)) | (Proposicao.contexto_status != "pronto"))
 
-    query = query.order_by(Proposicao.data_apresentacao.desc().nulls_last())
+    # Analisadas primeiro: a lista não abre com uma parede de "sem análise".
+    query = query.order_by(case((pronta, 0), else_=1), Proposicao.data_apresentacao.desc().nulls_last())
     query = query.offset((page - 1) * per_page).limit(per_page)
 
     return db.execute(query).scalars().all()

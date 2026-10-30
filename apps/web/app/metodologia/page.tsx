@@ -1,10 +1,18 @@
 import Link from "next/link";
 
+import { Aviso, Button, Card, Chip, Chips, FAIXAS, Lista, Linha, Painel, Selo } from "@/components/ui";
+import { CATEGORIA_COR } from "@/lib/categorias";
+import { REPO_URL } from "@/lib/links";
+
+/**
+ * Metodologia: leitura longa (.zil-leitura), com os números do
+ * score em Lista/Card tabulares e os avisos sobre validação em Aviso neutro.
+ */
+
 const CATEGORIAS = [
   {
     codigo: "ZIL-FER",
     nome: "Fertilizantes",
-    emoji: "🌱",
     descricao:
       "Proposições sobre produção nacional de insumos agrícolas, redução da dependência de ureia, fosfato e potássio importados, e política de estoques estratégicos.",
     exemplo: "PL que cria reservas estratégicas de fertilizantes nitrogenados",
@@ -12,7 +20,6 @@ const CATEGORIAS = [
   {
     codigo: "ZIL-MIN",
     nome: "Minerais Estratégicos",
-    emoji: "⛏️",
     descricao:
       "Regras para mineração, exportação e beneficiamento de nióbio, lítio, terras-raras e outros minerais críticos para cadeias tecnológicas.",
     exemplo: "PEC que exige processamento mínimo antes da exportação de nióbio",
@@ -20,7 +27,6 @@ const CATEGORIAS = [
   {
     codigo: "ZIL-SEM",
     nome: "Semicondutores",
-    emoji: "💾",
     descricao:
       "Política industrial para chips, eletrônica e equipamentos de telecomunicação. Inclui incentivos para fabricação local e compras governamentais.",
     exemplo: "MP que cria crédito tributário para fabricantes nacionais de chips",
@@ -28,7 +34,6 @@ const CATEGORIAS = [
   {
     codigo: "ZIL-ENE",
     nome: "Energia",
-    emoji: "⚡",
     descricao:
       "Soberania energética: petróleo, gás, renováveis, redes de transmissão. Foco em capacidade nacional de produção e refino.",
     exemplo: "PL sobre obrigatoriedade de refino nacional do petróleo do pré-sal",
@@ -36,7 +41,6 @@ const CATEGORIAS = [
   {
     codigo: "ZIL-DIG",
     nome: "Soberania Digital",
-    emoji: "🔐",
     descricao:
       "Infraestrutura de internet, data centers, software de base, cabos submarinos, computação em nuvem e proteção de dados estratégicos.",
     exemplo: "PDL sobre armazenamento obrigatório de dados governamentais em servidores nacionais",
@@ -44,7 +48,6 @@ const CATEGORIAS = [
   {
     codigo: "ZIL-DEF",
     nome: "Defesa e Segurança",
-    emoji: "🛡️",
     descricao:
       "Base industrial de defesa, compras governamentais com transferência tecnológica, satélites e sistemas de comunicação estratégicos.",
     exemplo: "PL que exige componentes nacionais em 60% dos equipamentos militares",
@@ -52,7 +55,6 @@ const CATEGORIAS = [
   {
     codigo: "ZIL-EDU",
     nome: "Capital Humano",
-    emoji: "🎓",
     descricao:
       "Financiamento de C&T, formação de engenheiros e cientistas, programas de bolsas em áreas estratégicas, e retenção de talentos.",
     exemplo: "PEC que vincula 2% do PIB a investimentos em P&D",
@@ -60,7 +62,6 @@ const CATEGORIAS = [
   {
     codigo: "ZIL-AGR",
     nome: "Agro-Indústria",
-    emoji: "🌾",
     descricao:
       "Industrialização da produção agrícola: processamento, embalagem, logística e exportação de valor agregado em vez de commodities brutas.",
     exemplo: "PL sobre incentivos para frigoríficos exportadores de cortes processados",
@@ -68,245 +69,265 @@ const CATEGORIAS = [
   {
     codigo: "ZIL-COM",
     nome: "Comércio e Indústria",
-    emoji: "🏭",
     descricao:
       "Política industrial transversal: tarifas, compras governamentais, desindustrialização, reindustrialização e acordos comerciais com impacto produtivo.",
     exemplo: "PL que estabelece preferência nacional em licitações acima de R$50M",
   },
 ];
 
+const PESOS = [
+  ["Plenário — votação final", "3,0"],
+  ["Comissão — votação final", "2,0"],
+  ["Votação padrão", "1,0"],
+  ["Votação processual", "0,5"],
+];
+
+
+// O critério que ordena as candidatas a classificação (`escore` em
+// scripts/candidatas.py). O ADR-004 exige publicá-lo junto com o resultado.
+const CRITERIO = [
+  { termo: "Keyword forte da taxonomia", peso: "+8,0", mede: "A votação é sobre pauta ZIL de verdade" },
+  { termo: "Só keyword fraca", peso: "−6,0", mede: "Sinal contrário: todo casamento fraco isolado que achamos era falso positivo" },
+  { termo: "Direção indecidível", peso: "−12,0", mede: "Voto sobre emenda ou destaque: 'sim' aprova a emenda, e o texto dela não vem na API" },
+  { termo: "Disputa", peso: "até +10,0", mede: "Quanto mais apertado o resultado, mais a votação separa parlamentares" },
+  { termo: "Voto sobre o texto", peso: "+4,0", mede: "Substitutivo global ou o projeto inteiro" },
+  { termo: "Pistas de plenário", peso: "+3,0", mede: "A API não distingue plenário de comissão; só o texto da descrição" },
+  { termo: "Requerimento de urgência", peso: "−1,0", mede: "Nomeia o objeto, mas mede intenção de pautar, não posição sobre o mérito" },
+  { termo: "Outro processual", peso: "−4,0", mede: "'Rejeitado o requerimento' não diz qual: sem saber o que se rejeitou, a direção é chute" },
+];
+
+const LIMITACOES = [
+  "O score reflete apenas votações classificadas. Parlamentares com poucos votos em pautas ZIL têm scores menos representativos.",
+  "A direção esperada de cada votação é uma decisão editorial — razoável pessoas podem discordar. Todas as decisões estão documentadas no repositório.",
+  "O classificador de proposições usa palavras-chave fortes e fracas: só uma fraca não basta para incluir. Mesmo assim ele erra, e a lista é revisada manualmente.",
+  "Ausências, abstenções, obstruções e o art. 17 contam alinhamento 0, mas o peso da votação entra no denominador: ausência dilui o score, não pune.",
+  "Senadores e proposições do Senado estão no banco, mas nenhuma votação do Senado foi classificada. Por isso senadores não têm score.",
+  "Todas as votações classificadas são matérias em que a posição pró-soberania é votar SIM. Não há, entre as votações com voto nominal de 2023–2026, uma matéria decidível em que ela seja votar NÃO — então o score mede alinhamento onde votar sim é o alinhamento, e nessa medida reflete também presença e disciplina partidária.",
+];
+
+const SECOES = [
+  { id: "score", rotulo: "O Score ZIL" },
+  { id: "selecao", rotulo: "Quais votações entram" },
+  { id: "escala", rotulo: "Escala" },
+  { id: "limitacoes", rotulo: "Limitações" },
+  { id: "categorias", rotulo: "Categorias" },
+  { id: "processo", rotulo: "Processo editorial" },
+];
+
 export default function MetodologiaPage() {
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      {/* Header */}
-      <div className="flex items-baseline gap-4 mb-2">
-        <span className="font-display text-6xl text-zil-divider">M</span>
-        <h1 className="font-display text-2xl uppercase tracking-wide">
-          Metodologia
-        </h1>
-      </div>
-      <p className="text-sm text-zil-soft mb-12 max-w-xl">
-        Como o Score ZIL é calculado, o que as categorias representam e como as
-        classificações são definidas.
-      </p>
+    <div className="zil-container">
+      <header className="pt-10 md:pt-16 grid gap-4">
+        <p className="text-rotulo uppercase text-zil-texto-2">Metodologia</p>
+        <h1 className="text-titulo-1 md:text-display-m">Como o Score ZIL é calculado</h1>
+        <p className="text-texto-l text-zil-texto-2 max-w-[60ch]">
+          O placar mede alinhamento em votações escolhidas. Aqui está como escolhemos, como contamos e onde o método falha.
+        </p>
+        <Chips rolagem className="mt-4">
+          {SECOES.map((s) => (
+            <Chip key={s.id} href={`#${s.id}`} tamanho="s">
+              {s.rotulo}
+            </Chip>
+          ))}
+        </Chips>
+      </header>
 
-      {/* Score ZIL */}
-      <section className="mb-14">
-        <h2 className="font-display text-lg uppercase tracking-wide mb-4">
-          O Score ZIL
-        </h2>
-        <div className="max-w-3xl space-y-4 text-sm text-zil-soft leading-relaxed">
+      {/* ── O Score ZIL ── */}
+      <section id="score" className="zil-secao scroll-mt-20 grid gap-8">
+        <h2 className="text-titulo-2">O Score ZIL</h2>
+        <div className="zil-leitura">
           <p>
-            O Score ZIL mede como um parlamentar votou num{" "}
-            <strong className="text-zil-fg">conjunto selecionado de votações</strong>{" "}
-            decisivas para a soberania industrial, numa escala de{" "}
-            <strong className="text-zil-fg">−10 (contra) a +10 (a favor)</strong>.
+            O Score ZIL mede como um parlamentar votou num <strong>conjunto selecionado de votações</strong> decisivas para a soberania
+            industrial, numa escala de <strong>−10 (contra) a +10 (a favor)</strong>.
           </p>
           <p>
-            <strong className="text-zil-fg">Não é um índice de toda a atuação
-            parlamentar.</strong> É um placar de pautas escolhidas — o que
-            significa que a escolha das pautas importa tanto quanto a
-            aritmética. Cada votação tem um <em>peso</em> e uma{" "}
-            <em>direção esperada</em> (sim ou não), definidos editorialmente e
-            registrados em arquivo versionado.
+            <strong>Não é um índice de toda a atuação parlamentar.</strong> É um placar de pautas escolhidas — o que significa que a escolha
+            das pautas importa tanto quanto a aritmética. Cada votação tem um <em>peso</em> e uma <em>direção esperada</em> (sim ou não),
+            definidos editorialmente e registrados em arquivo versionado.
           </p>
         </div>
 
-        {/* Formula */}
-        <div className="mt-6 bg-zil-card border border-zil-divider p-6 max-w-2xl">
-          <p className="font-mono text-xs text-zil-muted mb-3">FÓRMULA</p>
-          <p className="font-mono text-sm text-zil-fg">
-            score = (Σ alinhamento_i × peso_i) / (Σ |peso_i|) × 10
+        <Card className="max-w-2xl grid gap-3">
+          <span className="text-rotulo uppercase text-zil-texto-2">Fórmula</span>
+          <p className="text-texto font-medium zil-num">score = (Σ alinhamento_i × peso_i) / (Σ |peso_i|) × 10</p>
+          <p className="text-texto-s text-zil-texto-2 zil-num">alinhamento_i = +1 se votou na direção esperada, −1 se votou contra, 0 se ausente</p>
+        </Card>
+
+        <Lista titulo="Pesos por tipo de votação" className="max-w-lg">
+          {PESOS.map(([tipo, peso]) => (
+            <Linha key={tipo} titulo={tipo} fim={<span className="text-texto-ui text-zil-texto zil-num">{peso}</span>} />
+          ))}
+        </Lista>
+        <p className="text-texto-s text-zil-texto-2 zil-num">Hoje: 6 votações com peso 3,0 e 1 com peso 2,0.</p>
+      </section>
+
+      {/* ── Quais votações entram (ADR-004: o critério é publicado com o resultado) ── */}
+      <section id="selecao" className="zil-secao scroll-mt-20 grid gap-8">
+        <h2 className="text-titulo-2">Quais votações entram</h2>
+        <div className="zil-leitura">
+          <p>
+            A v1 é um <strong>placar focado</strong>: como cada parlamentar votou nas cerca de dez votações que mais importaram para a
+            soberania industrial, e não um índice de toda a atuação. Hoje são 7 classificadas, 4 delas com voto nominal.
           </p>
-          <p className="font-mono text-xs text-zil-muted mt-4">
-            alinhamento_i = +1 se votou na direção esperada, −1 se votou contra,
-            0 se ausente
+          <p>
+            Num placar focado, a escolha das votações é a decisão editorial mais carregada do projeto. Por isso o critério que ordena as
+            candidatas é público e está no código. Ele mede <strong>saliência, nunca mérito</strong>: diz onde vale gastar pesquisa, não
+            qual é a direção.
           </p>
         </div>
-
-        {/* Weights */}
-        <div className="mt-6 max-w-lg">
-          <p className="font-mono text-xs text-zil-muted mb-3 uppercase tracking-wider">
-            Pesos por tipo de votação
+        <Lista titulo="O que ordena as candidatas" className="max-w-3xl">
+          {CRITERIO.map((c) => (
+            <Linha key={c.termo} titulo={c.termo} sub={c.mede} fim={<span className="text-texto-ui text-zil-texto zil-num whitespace-nowrap">{c.peso}</span>} />
+          ))}
+        </Lista>
+        <div className="zil-leitura">
+          <p>
+            A seleção final e a direção esperada são decisões humanas, com justificativa escrita em arquivo versionado. Votação simbólica
+            não entra no score, com ou sem classificação: a Câmara proclama só o resultado e não registra quem votou o quê. Entre 2023 e 2026,
+            86% das votações foram simbólicas.
           </p>
-          <table className="w-full text-sm border-collapse">
-            <tbody>
-              {[
-                ["Plenário — votação final", "3.0"],
-                ["Comissão — votação final", "2.0"],
-                ["Votação padrão", "1.0"],
-                ["Votação processual", "0.5"],
-              ].map(([tipo, peso]) => (
-                <tr key={tipo} className="border-b border-zil-divider">
-                  <td className="py-2 text-zil-soft">{tipo}</td>
-                  <td className="py-2 font-mono text-zil-fg text-right">{peso}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </section>
 
-      {/* Scale */}
-      <section className="mb-14">
-        <h2 className="font-display text-lg uppercase tracking-wide mb-4">
-          Escala do Score
-        </h2>
-        <div className="max-w-2xl">
-          <div className="h-3 rounded-full bg-gradient-to-r from-zil-red via-zil-gold to-zil-green mb-3" />
-          <div className="flex justify-between font-mono text-xs text-zil-muted">
-            <span>-10 (contra)</span>
+      {/* ── Escala ── */}
+      <section id="escala" className="zil-secao scroll-mt-20 grid gap-8">
+        <h2 className="text-titulo-2">Escala do Score</h2>
+        <div role="img" aria-label="Escala do score, de menos 10 contra a mais 10 a favor, com zero neutro no meio" className="max-w-2xl grid gap-2.5">
+          <div className="grid grid-cols-[2fr_1fr_2fr] gap-[3px] h-2">
+            <i className="rounded-pilula bg-zil-contra-fundo" />
+            <i className="rounded-pilula bg-zil-neutro-fundo" />
+            <i className="rounded-pilula bg-zil-alinhado-fundo" />
+          </div>
+          <div className="flex justify-between text-legenda text-zil-texto-2 zil-num">
+            <span>−10 (contra)</span>
             <span>0 (neutro)</span>
             <span>+10 (a favor)</span>
           </div>
-          <div className="mt-4 space-y-2 text-sm">
-            {[
-              { range: "+5 a +10", label: "Fortemente pró-soberania", color: "text-zil-green" },
-              { range: "+2 a +5", label: "Majoritariamente favorável", color: "text-zil-green" },
-              { range: "-2 a +2", label: "Neutro / misto", color: "text-zil-gold" },
-              { range: "-5 a -2", label: "Majoritariamente contrário", color: "text-zil-orange" },
-              { range: "-10 a -5", label: "Fortemente contra", color: "text-zil-red" },
-            ].map((r) => (
-              <div key={r.range} className="flex items-center gap-3">
-                <span className={`font-mono text-xs w-20 ${r.color}`}>{r.range}</span>
-                <span className="text-zil-soft">{r.label}</span>
-              </div>
-            ))}
-          </div>
         </div>
+        <Lista className="max-w-2xl">
+          {FAIXAS.map((f) => (
+            <Linha
+              key={f.faixa}
+              icone={<span aria-hidden="true" className={`w-2.5 h-2.5 rounded-full ${f.tom === "alinhado" ? "bg-zil-alinhado" : f.tom === "contra" ? "bg-zil-contra" : "bg-zil-neutro"}`} />}
+              titulo={f.rotulo}
+              fim={
+                <Selo tom={f.tom} className="zil-num">
+                  {f.faixa}
+                </Selo>
+              }
+            />
+          ))}
+        </Lista>
       </section>
 
-      {/* Limitations */}
-      <section className="mb-14">
-        <h2 className="font-display text-lg uppercase tracking-wide mb-4">
-          Limitações
-        </h2>
-        <ul className="max-w-2xl space-y-3 text-sm text-zil-soft leading-relaxed list-none">
-          {[
-            "O score reflete apenas votações classificadas. Parlamentares com poucos votos em pautas ZIL têm scores menos representativos.",
-            "A direção esperada de cada votação é uma decisão editorial — razoável pessoas podem discordar. Todas as decisões estão documentadas no repositório.",
-            "O classificador automático de proposições usa palavras-chave, podendo incluir ou excluir proposições relevantes. A lista é revisada manualmente.",
-            "Ausências e obstruções são contabilizadas como alinhamento 0 (neutro), não como voto contra.",
-            "Dados do Senado Federal ainda não estão incluídos na v1.",
-            "Todas as votações classificadas são matérias em que a posição pró-soberania é votar SIM. Não há, entre as votações com voto nominal de 2023–2026, uma matéria decidível em que ela seja votar NÃO — então o score mede alinhamento onde votar sim é o alinhamento, e nessa medida reflete também presença e disciplina partidária.",
-          ].map((item) => (
-            <li key={item} className="flex gap-3">
-              <span className="text-zil-divider mt-0.5">—</span>
-              <span>{item}</span>
-            </li>
+      {/* ── Limitações ── */}
+      <section id="limitacoes" className="zil-secao scroll-mt-20 grid gap-8">
+        <h2 className="text-titulo-2">Limitações</h2>
+        <ul className="zil-leitura grid gap-4 list-disc pl-6">
+          {LIMITACOES.map((item) => (
+            <li key={item}>{item}</li>
           ))}
         </ul>
       </section>
 
-      {/* Categories */}
-      <section className="mb-14">
-        <h2 className="font-display text-lg uppercase tracking-wide mb-4">
-          As 9 Categorias ZIL
-        </h2>
-        <p className="text-sm text-zil-soft leading-relaxed max-w-2xl mb-6">
-          Os exemplos abaixo são <strong className="text-zil-fg">hipotéticos</strong>,
-          escritos para ilustrar o tipo de matéria que cada categoria abrange —
-          não são proposições reais em tramitação. As proposições de verdade
-          estão em <a href="/proposicoes" className="underline">Proposições</a>.
-        </p>
-        <div className="space-y-6">
+      {/* ── Categorias ── */}
+      <section id="categorias" className="zil-secao scroll-mt-20 grid gap-8">
+        <h2 className="text-titulo-2">As 9 Categorias ZIL</h2>
+        <div className="zil-leitura">
+          <p>
+            Os exemplos abaixo são <strong>hipotéticos</strong>, escritos para ilustrar o tipo de matéria que cada categoria abrange — não são
+            proposições reais em tramitação. As proposições de verdade estão em <Link href="/proposicoes">Proposições</Link>. Com o placar
+            focado em cerca de dez votações, o papel das nove categorias no score está em revisão; mudar a taxonomia exige uma RFC.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {CATEGORIAS.map((cat) => (
-            <div
-              key={cat.codigo}
-              className="border-l-2 border-zil-divider pl-5"
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <span>{cat.emoji}</span>
-                <span className="font-display text-sm uppercase tracking-wide">
-                  {cat.nome}
-                </span>
-                <span className="font-mono text-xs text-zil-muted">{cat.codigo}</span>
+            <Card key={cat.codigo} className="grid content-start gap-3">
+              <div className="flex items-center gap-2.5">
+                <span aria-hidden="true" className={`w-2.5 h-2.5 rounded-full shrink-0 ${CATEGORIA_COR[cat.codigo] ?? "bg-zil-texto-3"}`} />
+                <h3 className="text-titulo-4">{cat.nome}</h3>
+                {/* O código é o nome da categoria em data/taxonomia/categorias.yml. */}
+                <span className="ml-auto text-legenda text-zil-texto-2 zil-num">{cat.codigo}</span>
               </div>
-              <p className="text-sm text-zil-soft leading-relaxed mb-1">
-                {cat.descricao}
-              </p>
-              <p className="text-xs font-mono text-zil-muted">
-                Exemplo hipotético: {cat.exemplo}
-              </p>
-            </div>
+              <p className="text-texto text-zil-texto-2">{cat.descricao}</p>
+              <p className="text-texto-s text-zil-texto-2">Exemplo hipotético: {cat.exemplo}</p>
+            </Card>
           ))}
         </div>
       </section>
 
-      {/* Editorial process */}
-      <section className="mb-14">
-        <h2 className="font-display text-lg uppercase tracking-wide mb-4">
-          Processo Editorial
-        </h2>
-        <div className="max-w-2xl space-y-4 text-sm text-zil-soft leading-relaxed">
+      {/* ── Processo editorial ── */}
+      <section id="processo" className="zil-secao scroll-mt-20 grid gap-8">
+        <h2 className="text-titulo-2">Processo Editorial</h2>
+        <div className="zil-leitura">
           <p>
-            As classificações são gerenciadas via código, sem interface admin —
-            toda mudança passa por Pull Request e fica registrada no histórico
-            do repositório.
+            As classificações são gerenciadas via código, sem interface admin — toda mudança passa por Pull Request e fica registrada no
+            histórico do repositório.
           </p>
+        </div>
+
+        <Aviso tom="neutro" titulo="Quantas pessoas revisam: uma" className="max-w-leitura">
+          O projeto tem hoje um único maintainer, e não há revisão editorial independente. Nossos documentos de governança descrevem um
+          processo com duas aprovações que nunca foi praticado; isso está registrado e corrigido em <code className="zil-caminho">docs/GOVERNANCE.md</code> em vez de mantido
+          como promessa.
+        </Aviso>
+
+        {/* Três colunas só a partir de lg: entre 768 e 1024px cada cartão ficava
+            com ~200px, estreito demais para texto de 18px. */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          <Card className="grid content-start gap-2">
+            <h3 className="text-titulo-4">Classificação automática</h3>
+            <p className="text-texto text-zil-texto-2">
+              Keywords em <code className="zil-caminho">data/taxonomia/categorias.yml</code> determinam quais proposições são incluídas. As keywords são versionadas em git, então
+              toda inclusão e exclusão é rastreável.
+            </p>
+          </Card>
+          <Card className="grid content-start gap-2">
+            <h3 className="text-titulo-4">Direção esperada</h3>
+            <p className="text-texto text-zil-texto-2">
+              Para cada votação relevante, define-se se votar SIM ou NÃO é pró-soberania industrial, com justificativa escrita.
+            </p>
+          </Card>
+          <Card className="grid content-start gap-2">
+            <h3 className="text-titulo-4">Bússola ZIL</h3>
+            <p className="text-texto text-zil-texto-2">
+              Quatro indicadores, em formação, em <code className="zil-caminho">data/bussula/marcos.yml</code>. Nenhum passou por revisão e nenhuma meta tem plano oficial
+              como origem; a página mostra isso em cada cartão. Cada atualização entra por PR com link para a fonte, a cada trimestre
+              ou quando sai dado novo.
+            </p>
+          </Card>
+        </div>
+
+        <Aviso tom="neutro" titulo="As 7 classificações existentes ainda não foram validadas" className="max-w-leitura">
+          Estão marcadas como não validadas nos próprios arquivos: foram criadas num único dia, por uma pessoa, e ainda não passaram por
+          revisão. Dessas 7, só 4 alimentam o score — as outras três foram decididas por votação simbólica, em que a Câmara proclama apenas o
+          resultado e não registra o voto individual de cada deputado.
+        </Aviso>
+
+        <div className="zil-leitura">
           <p>
-            <strong>Quantas pessoas revisam:</strong> uma. O projeto tem hoje um
-            único maintainer, e não há revisão editorial independente. Nossos
-            documentos de governança descrevem um processo com duas aprovações
-            que nunca foi praticado; isso está registrado e corrigido em
-            docs/GOVERNANCE.md em vez de mantido como promessa.
-          </p>
-          <div className="space-y-3">
-            {[
-              {
-                titulo: "Classificação automática",
-                desc: "Keywords em data/taxonomia/categorias.yml determinam quais proposições são incluídas. As keywords são versionadas em git, então toda inclusão e exclusão é rastreável.",
-              },
-              {
-                titulo: "Direção esperada",
-                desc: "Para cada votação relevante, define-se se votar SIM ou NÃO é pró-soberania industrial, com justificativa escrita. As 7 classificações existentes estão marcadas como não validadas nos próprios arquivos: foram criadas num único dia, por uma pessoa, e ainda não passaram por revisão. Dessas 7, só 4 alimentam o score — as outras três foram decididas por votação simbólica, em que a Câmara proclama apenas o resultado e não registra o voto individual de cada deputado.",
-              },
-              {
-                titulo: "Bússola ZIL",
-                desc: "Indicadores estratégicos em data/bussula/marcos.yml, atualizados trimestralmente com link para a fonte oficial.",
-              },
-            ].map((item) => (
-              <div key={item.titulo} className="border border-zil-divider p-4">
-                <p className="font-display text-sm uppercase tracking-wide mb-1">
-                  {item.titulo}
-                </p>
-                <p>{item.desc}</p>
-              </div>
-            ))}
-          </div>
-          <p>
-            <strong className="text-zil-fg">Princípio:</strong> na dúvida sobre
-            a direção esperada de uma votação, não classificar.
+            <strong>Princípio:</strong> na dúvida sobre a direção esperada de uma votação, não classificar.
           </p>
         </div>
       </section>
 
-      {/* CTA */}
-      <div className="border border-zil-divider p-6 max-w-2xl">
-        <p className="font-display text-sm uppercase tracking-wide mb-2">
-          Contribua com a metodologia
-        </p>
-        <p className="text-sm text-zil-soft mb-4">
-          Encontrou uma proposição relevante que não está classificada? Discorde
-          de uma direção esperada? Contribuições são bem-vindas.
-        </p>
-        <div className="flex gap-4">
-          <Link
-            href="https://github.com/melissa-pereira-deel/zil-observatorio"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-mono text-xs text-zil-green hover:underline"
-          >
-            GitHub ↗
-          </Link>
-          <Link
-            href="/proposicoes"
-            className="font-mono text-xs text-zil-green hover:underline"
-          >
-            Ver proposições classificadas →
-          </Link>
-        </div>
-      </div>
+      {/* ── Contribuir ── */}
+      <section className="zil-secao pt-0">
+        <Painel>
+          <h2 className="text-titulo-2">Contribua com a metodologia</h2>
+          <p className="text-texto text-zil-texto-2 max-w-[52ch]">
+            Encontrou uma proposição relevante que não está classificada? Discorde de uma direção esperada? Contribuições são bem-vindas.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 mt-2">
+            <Button href="/proposicoes" variante="primario">
+              Ver proposições classificadas
+            </Button>
+            <Button href={REPO_URL} target="_blank" rel="noopener noreferrer" variante="secundario">
+              Abrir o repositório no GitHub
+            </Button>
+          </div>
+        </Painel>
+      </section>
     </div>
   );
 }

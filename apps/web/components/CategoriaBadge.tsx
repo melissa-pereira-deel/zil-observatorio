@@ -1,15 +1,14 @@
-import { CATEGORIA_LABELS } from "@/lib/categorias";
+import { Selo } from "@/components/ui";
+import { CATEGORIA_LABELS, CATEGORIA_COR } from "@/lib/categorias";
 
-interface CategoriaBadgeProps {
-  codigo: string;
-}
-
-export function CategoriaBadge({ codigo }: CategoriaBadgeProps) {
+/** Selo de categoria ZIL, com o ponto na cor da pauta (a mesma dos gráficos). */
+export function CategoriaBadge({ codigo }: { codigo: string }) {
   const label = CATEGORIA_LABELS[codigo] || codigo;
-
+  const cor = CATEGORIA_COR[codigo];
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-mono tracking-wider bg-zil-green/8 text-zil-green border border-zil-green/20 rounded-sm">
+    <Selo title={codigo}>
+      {cor && <span aria-hidden="true" className={`w-1.5 h-1.5 rounded-full ${cor}`} />}
       {label}
-    </span>
+    </Selo>
   );
 }

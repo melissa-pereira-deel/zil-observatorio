@@ -13,6 +13,10 @@ httpx==0.28.1
 # rodar em ambiente nenhum.
 anthropic==0.40.0
 python-dotenv==1.0.1
+# Extração de texto do inteiro teor (PDF nativo) para o pipeline de
+# explicação. OCR não entra: de 2010 em diante os PDFs da Câmara têm camada
+# de texto (RFC-006, C3); o acervo antigo está fora da janela do projeto.
+pdfplumber==0.11.10
 pyyaml==6.0.2
 pytest==8.3.4
 pytest-asyncio==0.25.0

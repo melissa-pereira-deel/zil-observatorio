@@ -1,7 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+
 import { ParlamentarCard } from "@/components/ParlamentarCard";
+import {
+  Aviso,
+  BarraFiltros,
+  Busca,
+  Button,
+  Placar,
+  PlacarCabecalho,
+  PlacarLinhaEsqueleto,
+  Segmentado,
+  Seletor,
+  Vazio,
+} from "@/components/ui";
 import type { Parlamentar } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -11,30 +25,57 @@ const UFS = [
   "PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO",
 ];
 
-function SkeletonRow() {
+type Fonte = "" | "camara" | "senado";
+type Ordem = "score_desc" | "score_asc" | "nome";
+
+const FONTES: { valor: Fonte; rotulo: string }[] = [
+  { valor: "", rotulo: "Todas" },
+  { valor: "camara", rotulo: "Câmara" },
+  { valor: "senado", rotulo: "Senado" },
+];
+
+const ORDENS: { valor: Ordem; rotulo: string }[] = [
+  { valor: "score_desc", rotulo: "Maior score" },
+  { valor: "score_asc", rotulo: "Menor score" },
+  { valor: "nome", rotulo: "Nome A–Z" },
+];
+
+/** A coluna e a direção que o cabeçalho do placar mostra para cada ordenação da API. */
+const ORDEM_NO_CABECALHO: Record<Ordem, { coluna: "score" | "nome"; direcao: "ascending" | "descending" }> = {
+  score_desc: { coluna: "score", direcao: "descending" },
+  score_asc: { coluna: "score", direcao: "ascending" },
+  nome: { coluna: "nome", direcao: "ascending" },
+};
+
+function ordemDaUrl(valor: string | null): Ordem {
+  return ORDENS.some((o) => o.valor === valor) ? (valor as Ordem) : "score_desc";
+}
+
+// useSearchParams exige um limite de Suspense numa página pré-renderizada.
+export default function RankingPage() {
   return (
-    <div className="flex items-center gap-4 py-4 border-b border-zil-divider animate-pulse">
-      <div className="w-8 h-4 bg-zil-card rounded" />
-      <div className="w-10 h-10 rounded-full bg-zil-card shrink-0" />
-      <div className="flex-1 space-y-2">
-        <div className="h-4 bg-zil-card rounded w-48" />
-        <div className="h-3 bg-zil-card rounded w-32" />
-      </div>
-      <div className="w-12 h-12 rounded-full bg-zil-card shrink-0" />
-    </div>
+    <Suspense>
+      <Ranking />
+    </Suspense>
   );
 }
 
-export default function RankingPage() {
+function Ranking() {
+  // `?ordem=score_asc` abre o placar pelos menos alinhados: é para onde
+  // aponta "Menos alinhados" na home.
+  const params = useSearchParams();
   const [parlamentares, setParlamentares] = useState<Parlamentar[]>([]);
   const [partidos, setPartidos] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(false);
+  // Incrementar refaz o fetch: é o que "Tentar de novo" faz.
+  const [tentativa, setTentativa] = useState(0);
 
-  const [fonte, setFonte] = useState("");
+  const [fonte, setFonte] = useState<Fonte>("");
   const [uf, setUf] = useState("");
   const [partido, setPartido] = useState("");
   const [busca, setBusca] = useState("");
-  const [ordem, setOrdem] = useState("score_desc");
+  const [ordem, setOrdem] = useState<Ordem>(() => ordemDaUrl(params.get("ordem")));
 
   useEffect(() => {
     fetch(`${API_BASE}/parlamentares/partidos/ranking`)
@@ -48,21 +89,24 @@ export default function RankingPage() {
   useEffect(() => {
     async function load() {
       setLoading(true);
+      setErro(false);
       try {
         const params = new URLSearchParams({ ordem, per_page: "600" });
         if (fonte) params.set("fonte", fonte);
         if (uf) params.set("uf", uf);
         if (partido) params.set("partido", partido);
         const res = await fetch(`${API_BASE}/parlamentares?${params}`);
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
         setParlamentares(await res.json());
       } catch (err) {
         console.error("Erro ao carregar ranking:", err);
+        setErro(true);
       } finally {
         setLoading(false);
       }
     }
     load();
-  }, [fonte, uf, partido, ordem]);
+  }, [fonte, uf, partido, ordem, tentativa]);
 
   const filtered = busca
     ? parlamentares.filter((p) =>
@@ -82,132 +126,160 @@ export default function RankingPage() {
     setPartido("");
   }
 
+  // Clicar em "Score" inverte a direção; clicar em "Parlamentar" ordena por
+  // nome (a API só ordena nome em ordem crescente).
+  function ordenarPorScore() {
+    setOrdem(ordem === "score_desc" ? "score_asc" : "score_desc");
+  }
+  function ordenarPorNome() {
+    setOrdem("nome");
+  }
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      {/* Header — UI-006: sem letra decorativa */}
-      <h1 className="font-display text-2xl uppercase tracking-wide mb-2">
-        Placar ZIL
-      </h1>
-      <p className="text-sm text-zil-soft mb-10 max-w-lg">
-        Score de alinhamento com a soberania industrial do Brasil, de −10
-        (contra) a +10 (a favor), calculado a partir dos votos nas votações
-        selecionadas. Não é um índice de toda a atuação parlamentar — é um
-        placar de pautas escolhidas, e o critério de escolha está na{" "}
-        <a href="/metodologia" className="underline">metodologia</a>.
-      </p>
+    <div className="zil-container">
+      {/* Cabeçalho — UI-006: sem letra decorativa */}
+      <header className="pt-10 md:pt-16 grid gap-4">
+        <p className="text-rotulo uppercase text-zil-texto-2">Placar</p>
+        <h1 className="text-titulo-1 md:text-display-m">Placar ZIL</h1>
+        <p className="text-texto-l text-zil-texto-2 max-w-[60ch]">
+          Score de alinhamento com a soberania industrial do Brasil, de −10
+          (contra) a +10 (a favor), calculado a partir dos votos nas votações
+          selecionadas. Não é um índice de toda a atuação parlamentar — é um
+          placar de pautas escolhidas, e o critério de escolha está na{" "}
+          <a href="/metodologia" className="text-zil-texto underline underline-offset-4 decoration-1">
+            metodologia
+          </a>
+          .
+        </p>
+      </header>
 
-      {/* Filters — UI-005: filtros numa linha, ordenação separada */}
-      <div className="flex flex-wrap gap-3 mb-3">
-        <input
-          type="text"
-          placeholder="Buscar por nome..."
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          className="px-4 py-2 border border-zil-divider bg-transparent text-sm font-body focus:outline-none focus:border-zil-green w-56"
-        />
-        <select
-          value={fonte}
-          onChange={(e) => setFonte(e.target.value)}
-          className="px-3 py-2 border border-zil-divider bg-zil-bg text-sm font-body focus:outline-none focus:border-zil-green"
-        >
-          <option value="">Câmara + Senado</option>
-          <option value="camara">Deputados</option>
-          <option value="senado">Senadores</option>
-        </select>
-        <select
-          value={uf}
-          onChange={(e) => setUf(e.target.value)}
-          className="px-3 py-2 border border-zil-divider bg-zil-bg text-sm font-body focus:outline-none focus:border-zil-green"
-        >
-          <option value="">Todos os estados</option>
-          {UFS.map((u) => (
-            <option key={u} value={u}>{u}</option>
-          ))}
-        </select>
-        <select
-          value={partido}
-          onChange={(e) => setPartido(e.target.value)}
-          className="px-3 py-2 border border-zil-divider bg-zil-bg text-sm font-body focus:outline-none focus:border-zil-green"
-        >
-          <option value="">Todos os partidos</option>
-          {partidos.map((p) => (
-            <option key={p} value={p}>{p}</option>
-          ))}
-        </select>
-      </div>
+      {/* O placar só está no ar atrás da flag rankingPublico (lib/flags.ts);
+          mesmo assim, quem chega aqui precisa saber o que o número sustenta. */}
+      <Aviso
+        tom="neutro"
+        titulo="As votações deste placar ainda não foram validadas"
+        className="mt-8"
+        acao={
+          <Button href="/metodologia" variante="fantasma" tamanho="s">
+            Ver metodologia
+          </Button>
+        }
+      >
+        As classificações que alimentam o Score ZIL estão marcadas como não
+        validadas nos arquivos do projeto, e poucas têm voto nominal registrado.
+        Leia o número como um protótipo, não como um veredito.
+      </Aviso>
 
-      {/* Ordenação separada com label — UI-005 */}
-      <div className="flex items-center gap-2 mb-8">
-        <span className="font-mono text-2xs text-zil-muted uppercase tracking-wider">
-          Ordenar por
-        </span>
-        <select
-          value={ordem}
-          onChange={(e) => setOrdem(e.target.value)}
-          className="px-3 py-2 border border-zil-divider bg-zil-bg text-sm font-body focus:outline-none focus:border-zil-green"
+      <section className="zil-secao grid gap-6">
+        {/* Filtros — UI-005: busca na mesma linha dos filtros; ordenação separada, no fim */}
+        <BarraFiltros
+          fim={
+            <Seletor
+              variante="fantasma"
+              rotulo="Ordenar por"
+              valor={ordem}
+              onMudar={(v) => setOrdem(v as Ordem)}
+              opcoes={ORDENS}
+            />
+          }
         >
-          <option value="score_desc">Maior score</option>
-          <option value="score_asc">Menor score</option>
-          <option value="nome">Nome A-Z</option>
-        </select>
-      </div>
+          <Busca
+            valor={busca}
+            onMudar={setBusca}
+            rotulo="Buscar parlamentar"
+            placeholder="Buscar parlamentar, partido ou UF"
+            className="w-full sm:w-72"
+          />
+          <Segmentado opcoes={FONTES} valor={fonte} onMudar={setFonte} rotulo="Casa legislativa" />
+          <Seletor
+            rotulo="Estado"
+            valor={uf}
+            onMudar={setUf}
+            vazio="Todas as UFs"
+            opcoes={UFS.map((u) => ({ valor: u, rotulo: u }))}
+          />
+          <Seletor
+            rotulo="Partido"
+            valor={partido}
+            onMudar={setPartido}
+            vazio="Todos os partidos"
+            opcoes={partidos.map((p) => ({ valor: p, rotulo: p }))}
+          />
+        </BarraFiltros>
 
-      {/* Results */}
-      {loading ? (
-        <div className="border-t border-zil-divider">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <SkeletonRow key={i} />
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        /* UI-004: empty state com Limpar filtros */
-        <div className="py-16 text-center space-y-3">
-          <p className="font-mono text-sm text-zil-muted">
-            {hasFilters
-              ? "Nenhum resultado para esses filtros."
-              : "Nenhum parlamentar encontrado."}
-          </p>
-          {hasFilters && (
-            <button
-              onClick={clearFilters}
-              className="font-mono text-xs text-zil-green border border-zil-green/40 px-4 py-1.5 hover:bg-zil-green/5 transition-colors"
-            >
-              Limpar filtros
-            </button>
-          )}
-        </div>
-      ) : (
-        <>
-          {/* UI-003: contagem acima da lista */}
-          <div className="flex justify-end mb-2">
-            <span className="font-mono text-xs text-zil-muted">
-              {comScore.length} com score
-              {semScore.length > 0 && (
-                <span className="opacity-60"> · {semScore.length} sem votos ZIL suficientes</span>
-              )}
-            </span>
-          </div>
-
-          <div className="border-t border-zil-divider">
-            {comScore.map((p, i) => (
-              <ParlamentarCard key={p.id} parlamentar={p} rank={i + 1} />
+        {erro ? (
+          <Aviso
+            tom="contra"
+            titulo="Não foi possível carregar o placar"
+            acao={
+              <Button variante="secundario" tamanho="s" onClick={() => setTentativa((t) => t + 1)}>
+                Tentar de novo
+              </Button>
+            }
+          >
+            A API não respondeu. Confira a conexão e tente de novo; se persistir, o serviço pode estar fora do ar.
+          </Aviso>
+        ) : loading ? (
+          <Placar>
+            <PlacarCabecalho ordem={ORDEM_NO_CABECALHO[ordem]} colunaVotos={false} />
+            {Array.from({ length: 8 }).map((_, i) => (
+              <PlacarLinhaEsqueleto key={i} colunaVotos={false} />
             ))}
-          </div>
+          </Placar>
+        ) : filtered.length === 0 ? (
+          /* UI-004: vazio com motivo e ação que resolve */
+          <Vazio
+            icone="placar"
+            titulo={hasFilters ? "Nenhum parlamentar com esses filtros" : "Nenhum parlamentar encontrado"}
+            acao={
+              hasFilters ? (
+                <Button variante="secundario" onClick={clearFilters}>
+                  Limpar filtros
+                </Button>
+              ) : undefined
+            }
+          >
+            {hasFilters
+              ? "A combinação de busca, casa, UF e partido não devolveu ninguém."
+              : "A base ainda não tem parlamentares carregados."}
+          </Vazio>
+        ) : (
+          <>
+            {/* UI-003: contagem acima da lista, antes de rolar */}
+            <p className="text-texto-s text-zil-texto-2 zil-num">
+              {comScore.length} com score
+              {semScore.length > 0 && <> · {semScore.length} sem votos ZIL suficientes</>}
+            </p>
 
-          {semScore.length > 0 && (
-            <div className="mt-10">
-              <p className="font-mono text-xs text-zil-muted uppercase tracking-wider mb-4">
-                Sem votos ZIL suficientes para calcular score ({semScore.length})
-              </p>
-              <div className="border-t border-zil-divider opacity-50">
-                {semScore.map((p) => (
-                  <ParlamentarCard key={p.id} parlamentar={p} />
-                ))}
+            <Placar>
+              {/* Sem a coluna de votos alinhados: a API só traz o total (ver ParlamentarCard). */}
+              <PlacarCabecalho
+                ordem={ORDEM_NO_CABECALHO[ordem]}
+                ordenarScore={ordenarPorScore}
+                ordenarNome={ordenarPorNome}
+                colunaVotos={false}
+              />
+              {comScore.map((p, i) => (
+                <ParlamentarCard key={p.id} parlamentar={p} rank={i + 1} />
+              ))}
+            </Placar>
+
+            {semScore.length > 0 && (
+              <div className="grid gap-4 mt-10">
+                <h2 className="text-titulo-4">
+                  Sem votos ZIL suficientes para calcular score{" "}
+                  <span className="text-zil-texto-2 zil-num">({semScore.length})</span>
+                </h2>
+                <Placar rotulo="Parlamentares sem score">
+                  {semScore.map((p, i) => (
+                    <ParlamentarCard key={p.id} parlamentar={p} rank={comScore.length + i + 1} />
+                  ))}
+                </Placar>
               </div>
-            </div>
-          )}
-        </>
-      )}
+            )}
+          </>
+        )}
+      </section>
     </div>
   );
 }

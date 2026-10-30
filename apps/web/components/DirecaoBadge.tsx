@@ -1,31 +1,20 @@
-interface DirecaoBadgeProps {
-  direcao: string | null | undefined;
-}
+import { Selo } from "@/components/ui";
 
-export function DirecaoBadge({ direcao }: DirecaoBadgeProps) {
-  if (!direcao) return null;
-
+/** Direção esperada pelo ZIL numa votação: favorável ou contrária, com link para a metodologia no title. */
+export function DirecaoBadge({ direcao }: { direcao: string | null | undefined }) {
   if (direcao === "sim") {
     return (
-      <span
-        className="font-mono text-xs text-zil-green"
-        title="Posição ZIL nesta votação: favorável · ver /metodologia"
-      >
-        ● FAVORÁVEL
-      </span>
+      <Selo tom="alinhado" ponto title="Posição ZIL nesta votação: favorável · ver /metodologia">
+        Favorável
+      </Selo>
     );
   }
-
   if (direcao === "nao") {
     return (
-      <span
-        className="font-mono text-xs text-zil-orange"
-        title="Posição ZIL nesta votação: contrária · ver /metodologia"
-      >
-        ● CONTRÁRIA
-      </span>
+      <Selo tom="contra" ponto title="Posição ZIL nesta votação: contrária · ver /metodologia">
+        Contrária
+      </Selo>
     );
   }
-
   return null;
 }

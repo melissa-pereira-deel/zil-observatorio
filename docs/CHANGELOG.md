@@ -9,6 +9,225 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 
 ## [Unreleased]
 
+### Added
+- **Filtro de proposições analisadas** (`apps/api/routers/legislativo.py`,
+  `apps/web/app/proposicoes/page.tsx`): `GET /proposicoes?analise=analisada|pendente`
+  e um segmentado "Todas · Analisadas · Sem análise" na lista. Sem filtro, as
+  analisadas vêm primeiro.
+- `scripts/sync_pipeline.py --refazer-citacoes`: reprocessa só as proposições
+  prontas com confiança < 1 (as que citaram lei), para corrigir resumos gerados
+  com o falso "lei revogada".
+- `docs/DISCOVERY-BUSSOLA.md`: levantamento da Bússola por cinco agentes
+  (mapeamento, dados, engenharia de dados, software, UI/UX) mais a sessão
+  paralela da maintainer. Verifica os 4 indicadores contra fontes primárias
+  (três metas não existem em plano oficial; a quarta tem prazo errado;
+  dois valores não batem; duas tendências estão erradas), propõe o schema
+  v2 com proveniência e histórico em CSV versionado, o pipeline sobre
+  `apps/workers/fontes/`, validador e CI, a anatomia do cartão, 12
+  indicadores candidatos e um plano em fases com critérios de aceite.
+- **Site no design system ZIL Interface** (`apps/web`): tokens do sistema como
+  variáveis CSS em `app/globals.css` (dois temas; o escuro é o padrão, via
+  `data-theme` no `<html>`) e nomes Tailwind em `tailwind.config.js`
+  (`bg-zil-superficie-1`, `text-titulo-2`, `rounded-pilula`, `duration-toque`,
+  `ease-mola`). Kit em `components/ui/` com 20 componentes (botão, chips,
+  busca, segmentado, selo, cartão, lista, placar, score com medidor e barra
+  de votos, aviso, vazio/esqueleto, paginação, linha do tempo, etapas,
+  revelar ao rolar) e `README.md` com as regras. Dez páginas e a navegação
+  (barra em vidro; tab bar flutuante no celular) reescritas sobre o kit, sem
+  mudança de comportamento: filtros, flags (`rankingPublico`), rotas e
+  textos de dados preservados. Archivo é a única família, servida por
+  `next/font`. Verificado em 375px, 768px e desktop: nenhuma rota rola na
+  horizontal.
+- **Tokens por execução** (`agentes/fronteira.py`, `explicacao/pipeline.py`):
+  a fronteira devolve o gasto de cada chamada (somado entre as rodadas, no
+  laço com ferramentas) e a explicação registra
+  `metricas.tokens = {entrada, saida, por_agente}`. Não converte em reais de
+  propósito: preço muda, token não.
+- **Verificação de alegações — pipeline v2** (`apps/workers/explicacao/verificacao.py`,
+  `data/explicacao/pipelines/v2.yml`, [ADR-008](decisions/008-fontes-curadas-e-verificacao.md)).
+  O único agente com ferramenta é o `verificador`, e a ferramenta é fechada.
+  - Extração cega: afirmações das lentes e parágrafos da justificação viram
+    trechos anônimos, embaralhados por hash; o `extrator` não sabe de quem é
+    cada um. Assinaturas de `montar_prompt_extracao` e
+    `montar_prompt_verificacao` não aceitam parecer.
+  - `consultar_serie` só aceita as séries que o código resolveu como
+    candidatas; série fora do catálogo, fora das candidatas ou ferramenta
+    inexistente é recusada e registrada antes da rede.
+  - Para alegação numérica, o veredito é refeito pelo código a partir da
+    observação consultada, com tolerância de arredondamento; se o modelo
+    discordar, prevalece a conta (`divergencia_verificador`). Alegação causal
+    vira `nao_verificavel_por_dado`. Duas origens primárias que discordam viram
+    `fontes_divergentes`.
+  - Contradita e fontes divergentes vão para `data/fontes/fila/` (fora do git),
+    para decisão humana.
+  - `agentes/fronteira.py`: `consultar_com_ferramentas`, com o laço no harness,
+    teto de rodadas e registro de cada chamada.
+  - `revisao.py`: número sem origem nos textos finais reprova a execução
+    (métrica 10), inclusive na v1; síntese que omite contradita ou repete o
+    número contradito no resumo didático também.
+  - Agentes `extrator` e `verificador`; `sintetizador` passa à versão 2 com a
+    obrigação sobre números e verificações. Seis casos construídos em
+    `data/explicacao/casos/verificacao.yml`.
+  - Colunas `explicacoes.verificacoes` e `explicacoes.contexto_hash`
+    (migration `b81e4c07d2a9`).
+- **Fontes externas curadas e contexto pré-registrado** (`apps/workers/fontes/`,
+  `data/fontes/`, `scripts/fontes.py`). O slot `contexto_economico` que o
+  economista declara como insumo nunca tinha sido preenchido: as perguntas
+  "quem paga e por quanto tempo" eram respondidas de memória do modelo.
+  Agora ele é preenchido por séries de fontes catalogadas — e de um jeito que
+  **não devolve ao agente a escolha do que buscar**, porque escolha de busca
+  é o vetor de viés mais silencioso que há.
+  - `data/fontes/catalogo.yml` é a allowlist, sob a governança dos dados
+    editoriais: toda fonte declara `natureza` e `vies_declarado` ("oficial"
+    não é "neutro"); toda fonte diz se é `primaria`, e secundária (IPEA
+    republica BCB e IBGE) nunca conta como evidência independente; toda
+    série tem os `conceitos` pelos quais pode ser escolhida. `chave` é o
+    nome de uma variável de ambiente, nunca o valor — a carga recusa. Hash
+    do arquivo vai para a execução.
+  - `cliente.py`: a única função que toca a rede para dados. A allowlist é
+    aplicada **no transporte do httpx**, não em instrução; falha vira
+    `Observacoes(erro=...)`, nunca exceção (o BCB responde HTML com status
+    200 para série inexistente); consulta é sempre por intervalo explícito,
+    porque "último valor" não é "valor de hoje" — a meta Selic é publicada
+    com datas futuras até o próximo Copom. Cache em disco (`data/fontes/cache/`,
+    fora do git) torna duas execuções reproduzíveis.
+  - `contexto.py` + `data/fontes/planos/por_tema.yml`: o plano decide
+    **antes** de qualquer consulta quais séries entram, por tema oficial da
+    Câmara ou categoria ZIL, idênticas para todas as lentes e ancoradas na
+    data de apresentação da proposição. O hash do contexto cobre só o
+    conteúdo (séries, datas, valores), nunca a data da consulta.
+  - Verificado com consulta real em 2026-10-21: BCB SGS (Selic 432, IPCA
+    13522/433, câmbio 3698), IBGE agregados (população 6579/9324), IPEA.
+    Tesouro/SICONFI, Comex Stat e Portal da Transparência (exige chave)
+    ficam catalogados e **não habilitados**: responderam, mas os
+    adaptadores não foram escritos.
+  - `scripts/explicar.py --proposicao ID --contexto` imprime o bloco que as
+    lentes receberiam, sem chave da Anthropic; `--proposicao ID` monta o
+    contexto uma vez por execução e grava hash e evidências na explicação.
+  - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
+
+### Changed
+- `apps/web/app/page.tsx`: a seção 09 da home deixa de ser "Acesso livre por
+  design", que repetia valores (04, 08), o catálogo de "Como funciona hoje" e o
+  futuro de "Para onde vamos", e passa a responder uma pergunta só: "O que dá
+  para fazer agora". Três ações reais, numa superfície única, com o link
+  alinhado pela base: consultar os votos (placar), usar os dados (documentação
+  da API) e corrigir uma classificação (CONTRIBUTING, curadoria). Título no
+  imperativo, link no infinitivo, como no resto do site.
+- **Enriquecimento passa do Haiku 4.5 para o Sonnet 5.5 com esforço médio**
+  (`apps/api/core/config.py`: `ENRICHMENT_MODEL=claude-sonnet-5-5`,
+  `ENRICHMENT_EFFORT=medium`). `augment_with_llm` agora chama a fronteira
+  única (`agentes/fronteira.consultar`), que lê só os blocos de texto (o
+  Sonnet 5.5 responde com raciocínio antes do JSON; `content[0]` vinha
+  vazio), trata recusa e corte como erro declarado e conta tokens.
+  `max_tokens` sobe de 1.024 para 16.000, porque o raciocínio conta no
+  limite. A fronteira ganha `esforco` (`output_config.effort`) e `fallback`
+  (fallback do servidor para recusas, `fallbacks: "default"`), ambos por
+  `extra_body`, já que o SDK pinado é o 0.40.
+- **Bússola diz o que sabe e o que não sabe.** `data/bussula/marcos.yml`
+  ganha metadados sem mudar valores: `direcao` (maior/menor é melhor),
+  `meta_origem` (nulo nos quatro: nenhuma meta cita plano oficial),
+  `natureza_fonte`, `fonte_dataset` (nulo nos quatro: os links são a home do
+  órgão) e `validacao: nao-validado`. `schemas/bussula.py` valida o YAML na
+  API e calcula `progresso_pct`, `meta_atingida` e `meta_provisoria` no
+  servidor; arquivo ausente passa a logar aviso. A página mostra o sentido
+  do indicador, a meta como provisória, a natureza da fonte, a data do dado
+  e o selo "Não validado"; o aviso do topo resume o estado real do conjunto.
+  16 testes novos em `tests/unit/test_bussula.py`. Levantamento completo em
+  `docs/DISCOVERY-BUSSOLA.md`.
+- `apps/web/app/metodologia/page.tsx`: conferida frase a frase contra
+  `scoring/`, `data/direcoes/`, `marcos.yml` e o ADR-004. Ganha a seção
+  "Quais votações entram", com o critério de saliência de `candidatas.py`
+  (exigência do ADR-004) e a regra sobre votações simbólicas. Uma escala só
+  de rótulos do score (`FAIXAS`/`rotuloDoScore` em `components/ui/Score.tsx`),
+  usada pela metodologia e pelo perfil, alinhada às cores (±3, ±8). Links
+  do repositório centralizados em `lib/links.ts` (`REPO_URL`).
+- `apps/web/app/page.tsx`: a home deixa de apresentar como mecanismo o que
+  é v2/v3 no roadmap. "Como funciona hoje" lista só o que está no ar
+  (score, proposições classificadas, Bússola, dados abertos), cada um
+  ligando à sua página; deliberação por consenso, compromissos públicos e
+  índice de continuidade vão para um bloco "Para onde vamos" com selo
+  "Visão de longo prazo" e link para o roadmap. Título da seção 04 passa de
+  "tecnologia para consenso" para "um observatório"; princípios reescritos
+  sem descrever o Polis como existente.
+- `apps/web`: nova abertura da home. Título "O Brasil já provou que pode.
+  Falta convergir.", linha fina de três frases com a tese e o papel do
+  observatório, dois botões, foto ao lado do texto no desktop e quatro
+  números em dois pares que respondem ao título ("Já provou que pode":
+  Pix, renováveis; "Falta convergir": fertilizantes, nióbio). A sigla por
+  extenso sai da abertura e vai para o rodapé. "Manifesto" sai do menu: a
+  home se alcança pela marca. Seção 01 vira "Oito vezes em que provamos."
+- `apps/web`: a seção final da home deixa de ser um formulário de assinatura
+  do manifesto (com contador fictício) e passa a ser a chamada para a
+  newsletter no Substack (`components/Newsletter.tsx`). O endereço vem de
+  `NEXT_PUBLIC_NEWSLETTER_URL`; vazio, a seção diz que a newsletter abre em
+  breve. O botão da nav vira "Newsletter" e aponta para `/#newsletter`.
+- `apps/web`: superfícies por preenchimento, sem borda, em todo o site;
+  botões e controles em pílula; um primário por área; rótulos de voto e
+  direção saem da caixa alta ("Favorável", "Sim"). `/parlamentar/[id]`: a
+  frase de síntese (UI-022) conta só votos com direção esperada e diz quantos
+  ainda não têm. `/ranking`: a coluna "Votos alinhados" fica oculta enquanto
+  a API só traz o total. Estado de erro visível, com "Tentar de novo", em
+  todas as páginas que buscam dados.
+- `apps/workers/explicacao/agentes.py`: economista e publicas, herdados do
+  painel, leem também o **dispositivo** na explicação (`INSUMOS_ADICIONAIS`).
+  No painel o objeto é uma votação e a ementa basta; aqui é o texto, e a
+  ementa da PNMCE omite as medidas fiscais: só com ela, o economista concluiu
+  que não havia mecanismo econômico. As instruções e o hash continuam os do
+  painel.
+- `apps/workers/explicacao/revisao.py`: o contraditor fica fora da métrica 4.
+  Ele comenta toda dimensão, e com ele dentro 13 dos 14 dissensos da PNMCE
+  eram dele. `metricas.dissensos_entre_lentes` e
+  `metricas.dissensos_com_contraditor` separam as duas contas.
+- `apps/workers/explicacao/`: `Insumos` ganha `contexto_hash` e
+  `contexto_evidencias`; `Explicacao.contexto` e `explicacoes.evidencias.contexto`
+  carregam os números que as lentes leram, com fonte, data e URL — não um
+  ponteiro para séries que serão revisadas. `metricas.contexto_hash` registra
+  o que entrou.
+
+- **Pipeline de explicação de proposições — Fase 1, o harness**
+  (`apps/workers/explicacao/`, `data/explicacao/`, `scripts/explicar.py`).
+  Produz, por proposição, três sínteses sem veredito: resumo didático
+  (240–640 caracteres), resumo detalhado (480–2480) e análise crítica
+  sistêmica. O que difere do painel: **síntese não tem consenso a apurar** —
+  divergência entre lentes sobrevive no texto final em `dissensos[]`, e uma
+  síntese que a apaga falha na validação. O agente `industrial` fica de fora
+  de propósito: a explicação é para o público entender a proposição, não para
+  defender a tese.
+  - `coleta.py`: ficha de fatos pela API — autores com partido/UF,
+    cronologia, relacionadas, temas oficiais — com origem por campo. Entra
+    como contexto confiável; é a referência contra a qual o revisor confere
+    nomes, partidos e datas.
+  - `extracao.py`: inteiro teor via `pdfplumber` (dependência nova), separado
+    em dispositivo e justificação. OCR fica como gancho explícito
+    (`insuficiente`), fora do caminho principal.
+  - `roteamento.py` + `data/explicacao/pipelines/v1.yml`: lentes fixas
+    (leitor, jurista, economista, publicas) e condicionais (ambiental, saude,
+    pesquisa_cti, civel_consumidor, federativo) roteadas por tema oficial da
+    Câmara ou categoria ZIL; sem tema, todas. `pipeline_versao` é o hash do
+    YAML — duas abordagens coexistem na tabela, comparáveis.
+  - `revisao.py`: entidades fabricadas (zero é a meta), citações literais
+    conferidas contra o texto, dissenso preservado, cobertura de lentes.
+  - Tabela `explicacoes`, versionada por execução, com migration
+    `7f3c2e9a1b04`; `persistencia.py` idempotente em (proposição, versão do
+    pipeline, hash do texto).
+  - Nove agentes próprios em `data/explicacao/agentes/`; jurista, economista
+    e publicas vêm do painel **por referência**, com o mesmo hash.
+  - Seis casos construídos (`data/explicacao/casos/construidos.yml`) com
+    resposta conhecida por construção; **57 testes** sem rede.
+  - Experimento S5, medido: o inteiro teor de 2010+ é texto nativo e **traz a
+    justificação do autor** quando é a proposição original da Câmara (PNMCE,
+    PL 2583/2020, PL 9543/2018). **Não traz** quando é autógrafo do Senado ou
+    texto final após emendas (PL 1847/2024) — ter ou não justificação depende
+    da origem e do estágio, não do ano. A extração marca `origem_senado` e o
+    prompt explica a ausência em vez de só constatá-la.
+  - O harness já pegou dois erros antes de qualquer chamada real: "PL
+    1001/2025" era lido como o Partido Liberal pelo revisor (sigla seguida de
+    número agora é referência a proposição), e a cobertura de lentes
+    reprovava execuções quando é sinal sobre a tabela de roteamento, por lote.
+- `packages/camara_client`: `obter_autores`, `obter_tramitacoes`,
+  `obter_relacionadas`, `obter_temas` — nenhum era buscado antes.
+
 ### Changed
 - **Núcleo comum dos pipelines de agentes** extraído para
   `apps/workers/agentes/` — carga de definições em YAML com hash de
@@ -25,6 +244,62 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+- **Enriquecimento dizia ao modelo que leis vigentes estavam revogadas**
+  (`apps/workers/enrichment/__init__.py`). A busca por "revogado" corria no
+  HTML inteiro do Planalto, e toda lei consolidada tem algum dispositivo
+  revogado: a Lei do Petróleo, a da Política Agrícola e a da PPSA saíam
+  "revogada", a confiança ia a zero e o prompt mandava o Haiku citar a
+  revogação no resumo. Agora só o cabeçalho (antes do art. 1º) decide se a
+  norma caiu; artigo citado revogado em lei vigente vira `artigo_revogado`,
+  com o texto enviado ao modelo. Também: leis que só existem na página
+  consolidada (`l9427cons.htm`) eram "não encontradas"; o cache de
+  `lei_artigos` guardava os status errados; e `_extract_article_text` não
+  achava "Art. 7º Fica…", porque `\b` falha depois de "º". E as leis de 2001
+  a 2006 estavam todas "não encontradas": o Planalto guarda 2001 em
+  `leis/leis_2001`, 2002–2003 em `leis/<ano>` e o primeiro bloco `_ato` é
+  2004-2006, não 2003-2006; algumas usam o número com ponto (`l10.848.htm`).
+  Decretos-leis eram lidos como leis ("Decreto-Lei nº 227/1967", o Código de
+  Mineração, virava "Lei nº 227") e nunca eram achados; agora têm tipo
+  próprio, com os diretórios `decreto-lei/` e `decreto-lei/1965-1988/`. Leis
+  de 1989 a 1994 ganham o diretório `leis/1989_1994/`.
+- `/bussula`: a barra de progresso fazia `valor / meta` travado em 100% e
+  aparecia cheia para a dependência de fertilizantes (87% com meta 60%), o
+  indicador mais distante da meta. Agora a barra só existe com valor de
+  base declarado (`base` no YAML, `(atual − base) ÷ (meta − base)` nos dois
+  sentidos); sem base, nos quatro indicadores, a página mostra só a
+  distância em texto ("faltam 27 pontos"). O selo de
+  tendência quebrava em duas linhas (svg `display:block` dentro do span
+  truncado); `Selo` ganhou `icone`. O fetch não conferia `r.ok`.
+- `apps/web/app/metodologia/page.tsx`: dizia que "dados do Senado ainda não
+  estão incluídos" — senadores e proposições do Senado estão no banco; o que
+  falta é votação do Senado classificada. Dizia que ausência conta zero sem
+  dizer que o peso entra no denominador. Site tinha três escalas de rótulo
+  diferentes (metodologia ±2/±5, perfil ±1/±4/±8, pílula ±3); agora é uma.
+  Rodapé e home apontavam para `zil-observatorio/zil-observatorio`, que não
+  é o remoto.
+- `apps/web`: lista de proposições alargava a página para 623px no celular —
+  item de grid tem `min-width:auto` e a coluna implícita crescia até o
+  conteúdo mínimo; `.grid > * { min-width: 0 }` no `globals.css`. Selos com
+  texto longo ("Aguardando Despacho do Presidente…") truncam com o texto
+  inteiro no `title` em vez de vazar.
+- **Revisor da explicação reprovava a PNMCE por dois alarmes falsos** (PL 2780/2024,
+  primeira execução real da v2, 2026-10-28):
+  - `coleta.entidades_conhecidas` só conhecia os autores. O relator, que a
+    Câmara nomeia como "Dep. Nome (PARTIDO-UF)" nas relacionadas e na
+    cronologia, era acusado de partido inventado. Passa a contar quem aparece
+    nesse formato.
+  - `revisao.numeros(so_quantidades=True)` lia "art. 61" e "art. 113 do ADCT"
+    como quantidades sem origem. Referências a norma (artigo, parágrafo,
+    inciso, lei, LC, decreto, EC, MP) e a precedente (Tema, Súmula, RE, ADI,
+    ADPF, REsp, HC, MS) saem da conta, e "Lei nº 14.300/2022" não deixa mais
+    um "14" solto. A segunda rodada da PNMCE (2026-10-29) caiu só pelo
+    "Tema 682" do STF citado pelo contraditor.
+- **Dissenso repetido contava duas vezes:** a síntese listava o mesmo desacordo
+  com as lentes trocadas. `pipeline._parse_sintese` deduplica por par de
+  lentes e ponto, e descarta dissenso de uma lente consigo mesma.
+- **Datas ISO no resumo detalhado:** a ficha mostrava `2024-07-08` e a síntese
+  copiava. `ficha_para_prompt` passa a escrever dd/mm/aaaa, e a regra entra no
+  formato da síntese.
 - **`validar_direcoes.py --verificar-api` falhava na `main`:** três das sete
   entradas curadas são votações simbólicas e nenhuma declarava `processo`, então
   o validador marcava `2269745-73`, `2238434-154` e `2426923-22` com `✗`. As três

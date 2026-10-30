@@ -1,0 +1,238 @@
+# Casos construídos para a verificação de alegações (pipeline v2).
+#
+# Mesma lógica de construidos.yml: cada caso tem resposta conhecida POR
+# CONSTRUÇÃO. Uma justificação que afirma "Selic de 25% em 2024", com a série
+# dizendo 12,25%, tem que produzir `contradita` — isso decorre dos dados, não
+# do julgamento de ninguém.
+#
+# `dados` é o que a fronteira de dados devolve por série (data, valor). Os
+# valores imitam os reais (BCB e IBGE, consultados em 2026-10-21), mas o
+# caso é SINTÉTICO e nada aqui deve ser usado como dado do site.
+#
+# `respostas_simuladas`:
+#   extrator.alegacoes[].trecho_contem — o teste acha o id opaco do trecho
+#       cujo texto contém isto (o extrator real veria só o id);
+#   verificador[] — por alegação (`alegacao_contem`): as chamadas de
+#       ferramenta que o modelo faria, na ordem, e a resposta final.
+#
+# Detectam: número plantado que passa, verificador que confirma sem dado,
+# série inventada que chega à rede, alegação causal tratada como fato,
+# conceito sem fonte tratado como verificado, e síntese que apaga ou
+# "corrige em silêncio" o que foi contradito.
+
+casos:
+  # ── 1. número plantado na justificação → contradita, fila humana ──
+  - id: numero-plantado
+    ficha:
+      tipo: PL
+      numero: 2001
+      ano: 2025
+      ementa: Institui o Programa Nacional de Crédito para a Indústria de Base.
+      situacao: Aguardando parecer
+      data_apresentacao: "2025-04-02"
+      autores: [{nome: Ana Exemplo, tipo: Deputado(a), partido: PSD, uf: SP}]
+      tramitacoes: [{data: "2025-04-02", orgao: MESA, descricao: Apresentação de Proposição}]
+      temas_oficiais: ["Indústria, Comércio e Serviços"]
+    dispositivo: >
+      Art. 1º Fica instituído o Programa Nacional de Crédito para a Indústria
+      de Base. Art. 2º O programa concederá equalização de juros de até 5
+      pontos percentuais ao ano.
+    justificacao: >
+      Com a Selic de 25% ao ano em 2024, nenhuma indústria de base consegue
+      financiar investimento de longo prazo no Brasil.
+    dados:
+      bcb_sgs.selic_meta: [["2024-06-19", 10.5], ["2024-12-12", 12.25], ["2024-12-31", 12.25]]
+    respostas_simuladas:
+      extrator:
+        alegacoes:
+          - {trecho_contem: "Selic de 25%", texto: "A Selic era de 25% ao ano em 2024.", tipo: quantitativa, conceito: taxa Selic, valor: 25, unidade: "% a.a.", periodo: "2024-12"}
+      verificador:
+        - alegacao_contem: "Selic era de 25%"
+          chamadas:
+            - {ferramenta: consultar_serie, argumentos: {ref: bcb_sgs.selic_meta, inicio: "2024-01-01", fim: "2024-12-31"}}
+          resposta: {veredito: contradita, ref: bcb_sgs.selic_meta, data_referencia: "2024-12-31", valor_encontrado: 12.25, justificativa: "A meta Selic terminou 2024 em 12,25% a.a."}
+      sintetizador:
+        resumo_didatico: >-
+          A proposição cria um programa federal de crédito para a indústria de base e autoriza a
+          União a pagar parte dos juros desses empréstimos, até um limite anual fixado no texto.
+          A ideia é baratear o investimento de longo prazo em fábricas de insumos básicos, que
+          hoje dependem de crédito caro.
+        resumo_detalhado: >-
+          O PL 2001/2025 foi apresentado pela Deputada Ana Exemplo (PSD-SP) e aguarda parecer.
+          O dispositivo institui o Programa Nacional de Crédito para a Indústria de Base, com
+          equalização de juros de até 5 pontos percentuais ao ano. A autora justifica que, com a
+          Selic de 25% ao ano em 2024, a indústria de base não consegue financiar investimento de
+          longo prazo. Essa alegação foi contradita: a meta Selic registrada pelo Banco Central
+          (BCB SGS, meta Selic) terminou 2024 em 12,25% ao ano. O argumento sobre o custo do crédito pode
+          se sustentar com o valor correto, mas não com o número citado na justificação.
+        analise:
+          causas_raizes: [Custo do crédito de longo prazo para a indústria de base]
+          dependencias: [Espaço fiscal para a equalização]
+          fatores_limitantes: [Limite de 5 pontos percentuais fixado no dispositivo]
+          dimensoes: {economica: "Equalização de até 5 pontos sobre uma Selic de 12,25% ao fim de 2024."}
+        dissensos: []
+        alegacoes_contraditas: [A01]
+    esperado:
+      vereditos: {A01: contradita}
+      fila_humana: 1
+      status: pronto
+
+  # ── 2. número correto, série definitiva → confirmada pelo código ──
+  - id: numero-correto
+    ficha:
+      tipo: PL
+      numero: 2002
+      ano: 2025
+      ementa: Dispõe sobre a correção anual de limites de enquadramento de microempresas.
+      situacao: Aguardando parecer
+      data_apresentacao: "2025-02-10"
+      autores: [{nome: Bruno Exemplo, tipo: Deputado(a), partido: MDB, uf: RS}]
+      tramitacoes: [{data: "2025-02-10", orgao: MESA, descricao: Apresentação de Proposição}]
+      temas_oficiais: ["Economia"]
+    dispositivo: >
+      Art. 1º Os limites de enquadramento serão corrigidos anualmente pelo
+      IPCA acumulado em doze meses.
+    justificacao: >
+      A inflação de 2024 fechou em 4,83%, corroendo os limites de
+      enquadramento que não são corrigidos desde 2018.
+    dados:
+      bcb_sgs.ipca_12m: [["2024-11-01", 4.87], ["2024-12-01", 4.83]]
+    respostas_simuladas:
+      extrator:
+        alegacoes:
+          - {trecho_contem: "4,83%", texto: "A inflação de 2024 fechou em 4,83%.", tipo: quantitativa, conceito: inflação acumulada IPCA, valor: 4.83, unidade: "%", periodo: "2024-12"}
+      verificador:
+        - alegacao_contem: "4,83%"
+          chamadas:
+            - {ferramenta: consultar_serie, argumentos: {ref: bcb_sgs.ipca_12m, inicio: "2024-12-01", fim: "2024-12-31"}}
+          resposta: {veredito: confirmada, ref: bcb_sgs.ipca_12m, data_referencia: "2024-12-01", valor_encontrado: 4.83}
+    esperado:
+      vereditos: {A01: confirmada}
+      fila_humana: 0
+      status: pronto
+
+  # ── 3. conceito sem série no catálogo → sem_fonte_curada, sem chamada ──
+  - id: conceito-sem-fonte
+    ficha:
+      tipo: PL
+      numero: 2003
+      ano: 2025
+      ementa: Cria cadastro nacional de fornecedores da indústria de defesa.
+      situacao: Aguardando parecer
+      data_apresentacao: "2025-05-05"
+      autores: [{nome: Carla Exemplo, tipo: Deputado(a), partido: PT, uf: BA}]
+      tramitacoes: [{data: "2025-05-05", orgao: MESA, descricao: Apresentação de Proposição}]
+      temas_oficiais: ["Defesa e Segurança"]
+    dispositivo: >
+      Art. 1º Fica criado o Cadastro Nacional de Fornecedores da Indústria de
+      Defesa.
+    justificacao: >
+      Mais de 4 mil empresas fornecem para as Forças Armadas sem qualquer
+      cadastro unificado que permita planejar compras.
+    respostas_simuladas:
+      extrator:
+        alegacoes:
+          - {trecho_contem: "4 mil empresas", texto: "Mais de 4 mil empresas fornecem para as Forças Armadas.", tipo: quantitativa, conceito: número de fornecedores de defesa, valor: 4000, unidade: empresas, periodo: ""}
+    esperado:
+      vereditos: {A01: sem_fonte_curada}
+      chamadas_verificador: 0
+      status: pronto
+
+  # ── 4. alegação causal → não verificável por dado, permanece argumento ──
+  - id: alegacao-causal
+    ficha:
+      tipo: PL
+      numero: 2004
+      ano: 2025
+      ementa: Concede incentivo à instalação de fábricas de semicondutores.
+      situacao: Aguardando parecer
+      data_apresentacao: "2025-06-01"
+      autores: [{nome: Davi Exemplo, tipo: Deputado(a), partido: PP, uf: MG}]
+      tramitacoes: [{data: "2025-06-01", orgao: MESA, descricao: Apresentação de Proposição}]
+      temas_oficiais: ["Ciência, Tecnologia e Inovação"]
+    dispositivo: >
+      Art. 1º Fica concedido crédito fiscal às fábricas de semicondutores
+      instaladas no País.
+    justificacao: >
+      O incentivo vai gerar 300 mil empregos qualificados na próxima década e
+      reduzir a dependência de chips importados.
+    respostas_simuladas:
+      extrator:
+        alegacoes:
+          - {trecho_contem: "300 mil empregos", texto: "O incentivo vai gerar 300 mil empregos qualificados.", tipo: causal, conceito: empregos gerados, valor: 300000, unidade: empregos, periodo: ""}
+    esperado:
+      vereditos: {A01: nao_verificavel_por_dado}
+      chamadas_verificador: 0
+      status: pronto
+
+  # ── 5. verificador tenta série inventada e série não candidata → recusas ──
+  - id: serie-inventada
+    ficha:
+      tipo: PL
+      numero: 2005
+      ano: 2025
+      ementa: Altera regras do crédito rural.
+      situacao: Aguardando parecer
+      data_apresentacao: "2025-03-03"
+      autores: [{nome: Eva Exemplo, tipo: Deputado(a), partido: PSB, uf: PE}]
+      tramitacoes: [{data: "2025-03-03", orgao: MESA, descricao: Apresentação de Proposição}]
+      temas_oficiais: ["Agricultura, Pecuária, Pesca e Extrativismo"]
+    dispositivo: >
+      Art. 1º As taxas do crédito rural passam a ser fixadas em função da
+      taxa básica de juros.
+    justificacao: >
+      A Selic chegou a 12,25% ao ano em dezembro de 2024, o que encareceu o
+      crédito rural de forma inédita.
+    dados:
+      bcb_sgs.selic_meta: [["2024-12-12", 12.25], ["2024-12-31", 12.25]]
+      ibge.populacao: [["2024-01-01", 212583750]]
+    respostas_simuladas:
+      extrator:
+        alegacoes:
+          - {trecho_contem: "12,25%", texto: "A Selic chegou a 12,25% ao ano em dezembro de 2024.", tipo: quantitativa, conceito: taxa Selic, valor: 12.25, unidade: "% a.a.", periodo: "2024-12"}
+      verificador:
+        - alegacao_contem: "12,25%"
+          chamadas:
+            - {ferramenta: consultar_serie, argumentos: {ref: bcb_sgs.serie_9999, inicio: "2024-12-01", fim: "2024-12-31"}}
+            - {ferramenta: consultar_serie, argumentos: {ref: ibge.populacao, inicio: "2024-01-01", fim: "2024-12-31"}}
+            - {ferramenta: buscar_na_web, argumentos: {q: "selic dezembro 2024"}}
+            - {ferramenta: consultar_serie, argumentos: {ref: bcb_sgs.selic_meta, inicio: "2024-12-01", fim: "2024-12-31"}}
+          resposta: {veredito: confirmada, ref: bcb_sgs.selic_meta, data_referencia: "2024-12-31", valor_encontrado: 12.25}
+    esperado:
+      vereditos: {A01: confirmada}
+      recusas: 3
+      consultas_de_dados: [bcb_sgs.selic_meta]
+      status: pronto
+
+  # ── 6. série revisável → confirmada com aviso de vintage ──
+  - id: vintage
+    ficha:
+      tipo: PL
+      numero: 2006
+      ano: 2025
+      ementa: Dispõe sobre a distribuição de recursos por número de habitantes.
+      situacao: Aguardando parecer
+      data_apresentacao: "2025-07-07"
+      autores: [{nome: Fábio Exemplo, tipo: Deputado(a), partido: PDT, uf: CE}]
+      tramitacoes: [{data: "2025-07-07", orgao: MESA, descricao: Apresentação de Proposição}]
+      temas_oficiais: ["Finanças Públicas e Orçamento"]
+    dispositivo: >
+      Art. 1º A distribuição observará a população estimada pelo IBGE.
+    justificacao: >
+      Em 2021 o Brasil tinha 213 milhões de habitantes, e a fórmula atual
+      ainda usa a contagem de mais de uma década antes.
+    dados:
+      ibge.populacao: [["2021-01-01", 213317639]]
+    respostas_simuladas:
+      extrator:
+        alegacoes:
+          - {trecho_contem: "213 milhões", texto: "Em 2021 o Brasil tinha 213 milhões de habitantes.", tipo: quantitativa, conceito: população, valor: 213000000, unidade: pessoas, periodo: "2021"}
+      verificador:
+        - alegacao_contem: "213 milhões"
+          chamadas:
+            - {ferramenta: consultar_serie, argumentos: {ref: ibge.populacao, inicio: "2021-01-01", fim: "2021-12-31"}}
+          resposta: {veredito: confirmada, ref: ibge.populacao, data_referencia: "2021-01-01", valor_encontrado: 213317639}
+    esperado:
+      vereditos: {A01: confirmada}
+      nota_vintage: true
+      status: pronto

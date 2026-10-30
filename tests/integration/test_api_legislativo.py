@@ -243,3 +243,38 @@ def test_enriquecer_com_token_valido_passa_da_autenticacao(client, db_session, a
         headers={"Authorization": f"Bearer {admin_token}"},
     )
     assert resp.status_code == 404
+
+
+def _analisada(db_session, numero):
+    p = make_proposicao(db_session, numero=numero, categorias_zil=["ZIL-MIN"])
+    p.contexto_status = "pronto"
+    db_session.flush()
+    return p
+
+
+def test_filtro_analisadas(client, db_session):
+    _analisada(db_session, 1)
+    make_proposicao(db_session, numero=2, categorias_zil=["ZIL-MIN"])
+    resp = client.get("/proposicoes?analise=analisada")
+    assert [p["numero"] for p in resp.json()] == [1]
+
+
+def test_filtro_sem_analise_inclui_status_nulo_e_falhas(client, db_session):
+    _analisada(db_session, 1)
+    make_proposicao(db_session, numero=2, categorias_zil=["ZIL-MIN"])
+    falhou = make_proposicao(db_session, numero=3, categorias_zil=["ZIL-MIN"])
+    falhou.contexto_status = "llm_falhou"
+    db_session.flush()
+    resp = client.get("/proposicoes?analise=pendente")
+    assert sorted(p["numero"] for p in resp.json()) == [2, 3]
+
+
+def test_analisadas_vem_primeiro(client, db_session):
+    make_proposicao(db_session, numero=2, categorias_zil=["ZIL-MIN"])
+    _analisada(db_session, 1)
+    resp = client.get("/proposicoes")
+    assert resp.json()[0]["numero"] == 1
+
+
+def test_filtro_analise_invalido_e_422(client):
+    assert client.get("/proposicoes?analise=talvez").status_code == 422

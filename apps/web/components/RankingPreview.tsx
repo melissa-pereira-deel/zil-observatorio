@@ -2,22 +2,53 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ParlamentarCard } from "@/components/ParlamentarCard";
-import { Button, Badge } from "@/components/ui";
+import { Aviso, Button, Icone, Placar, PlacarLinha, PlacarLinhaEsqueleto, Selo } from "@/components/ui";
 import type { Parlamentar } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-function SkeletonCard() {
+/** Partido, UF e casa, como no placar completo. */
+function metaDe(p: Parlamentar): string {
+  const partes = [p.partido, p.uf].filter(Boolean) as string[];
+  if (p.fonte) partes.push(p.fonte === "camara" ? "Dep." : "Sen.");
+  return partes.join(" · ");
+}
+
+/** Âncora de credibilidade do score (UI-001): em quantos votos ele se baseia. */
+function tituloDoScore(p: Parlamentar): string {
+  return `Baseado em ${p.total_votos_zil} ${p.total_votos_zil === 1 ? "voto" : "votos"} · ver metodologia`;
+}
+
+function Coluna({ titulo, href, lista, carregando }: { titulo: string; href: string; lista: Parlamentar[]; carregando: boolean }) {
   return (
-    <div className="flex items-center gap-4 py-4 px-4 border-b border-zil-divider animate-pulse">
-      <div className="w-8 h-4 bg-zil-divider rounded" />
-      <div className="w-12 h-12 rounded-full bg-zil-divider" />
-      <div className="flex-1 space-y-2">
-        <div className="h-4 bg-zil-divider rounded w-3/4" />
-        <div className="h-3 bg-zil-divider rounded w-1/2" />
-      </div>
-      <div className="w-10 h-10 rounded-full bg-zil-divider" />
+    <div className="grid content-start gap-4">
+      {/* O título leva ao placar já na ordem daquela coluna. */}
+      <h3 className="text-titulo-4">
+        <Link
+          href={href}
+          className="group inline-flex items-center gap-1 text-zil-texto no-underline transition-colors duration-toque hover:text-zil-texto-2"
+        >
+          {titulo}
+          <Icone nome="chevron-direita" className="text-zil-texto-3 transition-transform duration-padrao ease-padrao group-hover:translate-x-[3px]" />
+        </Link>
+      </h3>
+      <Placar rotulo={titulo}>
+        {carregando
+          ? Array.from({ length: 5 }).map((_, i) => <PlacarLinhaEsqueleto key={i} compacto />)
+          : lista.map((p, i) => (
+              <PlacarLinha
+                key={p.id}
+                posicao={i + 1}
+                href={`/parlamentar/${p.id}`}
+                nome={p.nome}
+                fotoUrl={p.foto_url}
+                meta={metaDe(p)}
+                score={p.score_zil}
+                scoreTitle={tituloDoScore(p)}
+                compacto
+              />
+            ))}
+      </Placar>
     </div>
   );
 }
@@ -38,10 +69,7 @@ export function RankingPreview() {
 
         if (!topRes.ok || !bottomRes.ok) throw new Error("API error");
 
-        const [topData, bottomData] = await Promise.all([
-          topRes.json(),
-          bottomRes.json(),
-        ]);
+        const [topData, bottomData] = await Promise.all([topRes.json(), bottomRes.json()]);
 
         setTop(topData);
         setBottom(bottomData);
@@ -56,76 +84,42 @@ export function RankingPreview() {
 
   if (error) {
     return (
-      <div className="text-center py-12 space-y-4">
-        <p className="text-sm text-zil-muted">
-          Os dados estão sendo carregados pela primeira vez ou a API ainda não
-          está disponível.
-        </p>
-        <Button href="/ranking" variant="ghost" size="sm">
-          Ver o placar completo
-        </Button>
-      </div>
+      <Aviso
+        tom="contra"
+        titulo="Não foi possível carregar a prévia do placar"
+        acao={
+          <Button href="/ranking" variante="secundario" tamanho="s">
+            Ver o placar completo
+          </Button>
+        }
+      >
+        Os dados estão sendo carregados pela primeira vez ou a API ainda não está disponível. Tente de novo em instantes.
+      </Aviso>
     );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Open data badge */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <Badge color="green">Dados públicos</Badge>
-        <span className="text-xs text-zil-muted">
-          Acesso livre. Nenhuma conta necessária para consultar.
-        </span>
+    <div className="grid gap-8">
+      {/* Dados abertos */}
+      <div className="flex flex-wrap items-center gap-3">
+        <Selo tom="alinhado" ponto>
+          Dados públicos
+        </Selo>
+        <span className="text-texto-s text-zil-texto-2">Acesso livre. Nenhuma conta necessária para consultar.</span>
       </div>
 
-      {/* Two-column ranking */}
+      {/* Duas colunas: mais e menos alinhados */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-        {/* Top aligned */}
-        <div>
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b-2 border-zil-green">
-            <div className="w-2 h-2 rounded-full bg-zil-green" />
-            <h3 className="font-display text-sm uppercase tracking-wide text-zil-green">
-              Mais alinhados
-            </h3>
-          </div>
-          <div className="border-t border-zil-divider">
-            {loading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <SkeletonCard key={i} />
-                ))
-              : top.map((p, i) => (
-                  <ParlamentarCard key={p.id} parlamentar={p} rank={i + 1} />
-                ))}
-          </div>
-        </div>
-
-        {/* Least aligned */}
-        <div>
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b-2 border-zil-orange">
-            <div className="w-2 h-2 rounded-full bg-zil-orange" />
-            <h3 className="font-display text-sm uppercase tracking-wide text-zil-orange">
-              Menos alinhados
-            </h3>
-          </div>
-          <div className="border-t border-zil-divider">
-            {loading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <SkeletonCard key={i} />
-                ))
-              : bottom.map((p, i) => (
-                  <ParlamentarCard key={p.id} parlamentar={p} rank={i + 1} />
-                ))}
-          </div>
-        </div>
+        <Coluna titulo="Mais alinhados" href="/ranking" lista={top} carregando={loading} />
+        <Coluna titulo="Menos alinhados" href="/ranking?ordem=score_asc" lista={bottom} carregando={loading} />
       </div>
 
-      {/* CTAs */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <Button href="/ranking" variant="primary" className="flex-1">
-          Ver o placar completo
-        </Button>
-        <Button href="/proposicoes" variant="secondary" className="flex-1">
-          Ver proposições
+      {/* Um link de texto, não dois botões: a seção é uma prévia, e o primário
+          da página está na abertura. */}
+      <div>
+        <Button href="/ranking" variante="fantasma" tamanho="s" className="-ml-3.5">
+          Ver todos os parlamentares
+          <Icone nome="chevron-direita" tamanho="s" />
         </Button>
       </div>
     </div>

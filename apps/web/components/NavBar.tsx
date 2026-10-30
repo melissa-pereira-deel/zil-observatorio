@@ -1,95 +1,97 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { BotaoIcone, Button, Icone, type NomeIcone } from "@/components/ui";
 import { rankingPublico } from "@/lib/flags";
 
-const NAV_LINKS = [
-  // O ranking só aparece quando a curadoria o sustenta (ver lib/flags.ts)
-  ...(rankingPublico ? [{ href: "/ranking", label: "Ranking" }] : []),
-  { href: "/proposicoes", label: "Proposições" },
-  { href: "/", label: "Manifesto" },
-  { href: "/metodologia", label: "Metodologia" },
+/**
+ * Navegação (ZIL Interface › Navegação): barra superior em vidro, sem borda
+ * inferior, com links em pílula; no celular, tab bar flutuante em cápsula
+ * com até cinco destinos. A separação vem do desfoque, não de linha.
+ */
+
+// A home (o manifesto) não está no menu: chega-se a ela pela marca "ZIL".
+const LINKS: { href: string; rotulo: string; icone: NomeIcone }[] = [
+  // O placar só aparece quando a curadoria o sustenta (ver lib/flags.ts)
+  ...(rankingPublico ? [{ href: "/ranking", rotulo: "Placar", icone: "placar" as const }] : []),
+  { href: "/proposicoes", rotulo: "Proposições", icone: "documento" },
+  { href: "/bussula", rotulo: "Bússola", icone: "bussola" },
+  { href: "/metodologia", rotulo: "Metodologia", icone: "info" },
 ];
 
 export function NavBar() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [compacta, setCompacta] = useState(false);
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
+  useEffect(() => {
+    const aoRolar = () => setCompacta(window.scrollY > 24);
+    aoRolar();
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    return () => window.removeEventListener("scroll", aoRolar);
+  }, []);
+
+  const atual = (href: string) => pathname.startsWith(href);
 
   return (
-    <nav className="border-b border-zil-divider bg-zil-bg sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto px-5 md:px-8 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
-          <span className="font-display text-2xl tracking-wider">ZIL</span>
-          <div className="flex gap-0.5">
-            <div className="w-5 h-1 bg-zil-gold skew-x-[-12deg]" />
-            <div className="w-2 h-1 bg-zil-green skew-x-[-12deg]" />
-          </div>
+    <>
+      <nav
+        aria-label="Principal"
+        className={`zil-vidro sticky top-0 z-20 flex items-center gap-4 px-4 md:px-6 transition-[min-height] duration-padrao ease-padrao ${
+          compacta ? "min-h-[52px]" : "min-h-16"
+        }`}
+      >
+        <Link href="/" className="inline-flex items-center gap-2 text-[20px] font-bold leading-none tracking-[-0.02em] text-zil-texto no-underline">
+          ZIL
+          <span aria-hidden="true" className="w-2.5 h-2.5 rounded-full bg-zil-brasil-amarelo" />
         </Link>
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-          {NAV_LINKS.map((link) => (
+        <div className="hidden md:flex gap-0.5">
+          {LINKS.map((l) => (
             <Link
-              key={link.href}
-              href={link.href}
-              className={`transition-colors ${
-                isActive(link.href)
-                  ? "text-zil-green"
-                  : "text-zil-soft hover:text-zil-green"
+              key={l.href}
+              href={l.href}
+              aria-current={atual(l.href) ? "page" : undefined}
+              className={`inline-flex items-center h-9 px-3.5 rounded-pilula text-[15px] font-medium leading-none no-underline transition-colors duration-toque hover:bg-zil-vidro-hover hover:text-zil-texto ${
+                atual(l.href) ? "bg-zil-vidro-ativo text-zil-texto" : "text-zil-texto-2"
               }`}
             >
-              {link.label}
+              {l.rotulo}
             </Link>
           ))}
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden flex flex-col gap-1.5 p-2 -mr-2"
-          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-        >
-          <span
-            className={`w-5 h-0.5 bg-zil-fg transition-all duration-200 ${
-              menuOpen ? "rotate-45 translate-y-[4px]" : ""
-            }`}
-          />
-          <span
-            className={`w-5 h-0.5 bg-zil-fg transition-all duration-200 ${
-              menuOpen ? "-rotate-45 -translate-y-[4px]" : ""
-            }`}
-          />
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="md:hidden border-t border-zil-divider bg-zil-bg animate-fade-in">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className={`block px-5 py-3 text-sm font-medium border-b border-zil-divider transition-colors ${
-                isActive(link.href)
-                  ? "text-zil-green bg-zil-green-light/30"
-                  : "text-zil-soft hover:bg-zil-card"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <div className="ml-auto flex items-center gap-2">
+          <BotaoIcone icone="busca" rotulo="Buscar proposições" variante="fantasma" redondo href="/proposicoes" />
+          <Button href="/#newsletter" variante="primario" tamanho="s" className="hidden sm:inline-flex">
+            Newsletter
+          </Button>
         </div>
-      )}
-    </nav>
+      </nav>
+
+      {/* Tab bar: cápsula flutuante no celular, 16px da base mais a área segura. */}
+      <nav
+        aria-label="Atalhos"
+        className="zil-vidro md:hidden fixed left-1/2 -translate-x-1/2 z-20 flex gap-0.5 p-1.5 rounded-pilula shadow-elevada"
+        // Distância da base soma a área segura do aparelho; não há classe para env().
+        style={{ bottom: "calc(16px + env(safe-area-inset-bottom))" }}
+      >
+        {LINKS.slice(0, 5).map((l) => (
+          <Link
+            key={l.href}
+            href={l.href}
+            aria-current={atual(l.href) ? "page" : undefined}
+            className={`grid justify-items-center gap-0.5 min-w-14 px-3 py-2 rounded-pilula text-[11px] leading-[14px] font-semibold no-underline transition-colors duration-padrao ease-padrao ${
+              atual(l.href) ? "bg-zil-vidro-ativo text-zil-texto" : "text-zil-texto-2"
+            }`}
+          >
+            <Icone nome={l.icone} className="!w-[22px] !h-[22px]" />
+            {l.rotulo}
+          </Link>
+        ))}
+      </nav>
+    </>
   );
 }

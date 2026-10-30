@@ -14,7 +14,6 @@ ADR-002: adds apps/api to sys.path explicitly
 
 import hashlib
 import html as _html
-import json
 import logging
 import re
 import sys
@@ -44,14 +43,14 @@ MAX_EMENTA_CHARS = 2_000
 
 @dataclass
 class Citacao:
-    tipo: str           # "lei" | "lc" | "mp"
+    tipo: str           # "lei" | "lc" | "mp" | "dl" (decreto-lei)
     numero: str         # digits only, e.g. "14744"
     ano: int
     artigo: Optional[str] = None
     lei_id: str = field(init=False)
 
     def __post_init__(self):
-        prefix = {"lei": "", "lc": "lc-", "mp": "mp-"}[self.tipo]
+        prefix = {"lei": "", "lc": "lc-", "mp": "mp-", "dl": "dl-"}[self.tipo]
         self.lei_id = f"{prefix}{self.numero}-{self.ano}"
 
 
@@ -61,7 +60,10 @@ class ArtigoResolvido:
     numero_artigo: str
     texto: Optional[str]
     url: str
-    status: str  # resolvido | revogada | nao_encontrada | pdf_nao_parseavel | timeout
+    # resolvido | artigo_revogado | revogada | nao_encontrada | pdf_nao_parseavel | timeout
+    # `revogada` é a norma inteira; `artigo_revogado` é só o dispositivo citado,
+    # numa lei que segue vigente.
+    status: str
 
 
 # ── Stage 1 — EXTRACT ─────────────────────────────────────────────────────────
@@ -82,8 +84,14 @@ _LEI_PATTERNS: list[tuple[str, str]] = [
         r"Medida\s+Provis[oó]ria\s+n[oº°]?\.?\s*(\d[\d.]+)" + _YEAR_SUFFIX,
         "mp",
     ),
+    # Decreto-lei antes de lei: "Decreto-Lei nº 227, de 1967" é o Código de
+    # Mineração, não a "Lei nº 227". O lookbehind da lei impede a dupla leitura.
     (
-        r"Lei\s+n[oº°]?\.?\s*(\d[\d.]+)" + _YEAR_SUFFIX,
+        r"Decreto[-\s]Lei\s+n[oº°]?\.?\s*(\d[\d.]+)" + _YEAR_SUFFIX,
+        "dl",
+    ),
+    (
+        r"(?<!-)(?<!Decreto\s)Lei\s+n[oº°]?\.?\s*(\d[\d.]+)" + _YEAR_SUFFIX,
         "lei",
     ),
 ]
@@ -135,16 +143,70 @@ def build_planalto_url(tipo: str, numero: str, ano: int) -> str:
     num = numero.lstrip("0") or "0"
     if tipo == "lc":
         return f"https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp{num}.htm"
+    if tipo == "dl":
+        return f"https://www.planalto.gov.br/ccivil_03/decreto-lei/del{int(num):04d}.htm"
     if tipo == "mp":
         if ano < 2003:
             return f"https://www.planalto.gov.br/ccivil_03/mpv/Antigas/mpv{num}.htm"
         s, e = _year_range(ano)
         return f"https://www.planalto.gov.br/ccivil_03/_ato{s}-{e}/{ano}/mpv/mpv{num}.htm"
-    # lei ordinária
-    if ano < 2003:
+    # lei ordinária. 2001 a 2006 não seguem o padrão dos blocos de quatro anos:
+    # 2001 fica em leis/leis_2001, 2002 e 2003 em leis/<ano>, e o primeiro
+    # bloco "_ato" é 2004-2006 (conferido no Planalto em 2026-10-29; antes
+    # disso as leis desses anos saíam todas "não encontradas").
+    if ano < 2001:
         return f"https://www.planalto.gov.br/ccivil_03/leis/l{num}.htm"
+    if ano == 2001:
+        return f"https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l{num}.htm"
+    if ano <= 2003:
+        return f"https://www.planalto.gov.br/ccivil_03/leis/{ano}/l{num}.htm"
+    if ano <= 2006:
+        return f"https://www.planalto.gov.br/ccivil_03/_ato2004-2006/{ano}/lei/l{num}.htm"
     s, e = _year_range(ano)
     return f"https://www.planalto.gov.br/ccivil_03/_ato{s}-{e}/{ano}/lei/l{num}.htm"
+
+
+def _urls_planalto(tipo: str, numero: str, ano: int) -> list[str]:
+    """A URL canônica e, no mesmo diretório, as variantes que o Planalto usa
+    para leis alteradas: o texto consolidado (`cons`) e o compilado. A Lei
+    9.427/1996 (ANEEL), por exemplo, só existe em `l9427cons.htm`; sem isto ela
+    saía `nao_encontrada`."""
+    canonica = build_planalto_url(tipo, numero, ano)
+    base, arquivo = canonica.rsplit("/", 1)
+    nome = arquivo.removesuffix(".htm")
+    variantes = [f"{nome}cons.htm", f"{nome}compilado.htm", f"{nome[:1].upper()}{nome[1:]}compilado.htm"]
+    urls = [canonica] + [f"{base}/{v}" for v in variantes]
+    num = numero.lstrip("0") or "0"
+    # Algumas leis usam o número com ponto de milhar no arquivo: l10.848.htm.
+    if tipo == "lei" and len(num) > 3:
+        urls.append(f"{base}/l{int(num):,}.htm".replace(",", "."))
+    # Leis de 1989 a 1994 e decretos-leis de 1965 a 1988 têm diretório próprio.
+    if tipo == "lei" and 1989 <= ano <= 1994:
+        urls.append(f"https://www.planalto.gov.br/ccivil_03/leis/1989_1994/L{num}.htm")
+    if tipo == "dl" and 1965 <= ano <= 1988:
+        urls.append(f"https://www.planalto.gov.br/ccivil_03/decreto-lei/1965-1988/Del{num}.htm")
+    return urls
+
+
+# A norma inteira está revogada quando o aviso aparece no cabeçalho, entre a
+# epígrafe e o art. 1º: "Revogada pela Lei nº 14.133, de 2021". No corpo, o
+# Planalto marca cada dispositivo revogado — "(Revogado pela Lei nº ...)" —, e
+# quase toda lei consolidada tem algum. Procurar no HTML inteiro, como se fazia
+# até 2026-10-29, marcava como revogadas a Lei do Petróleo, a da Política
+# Agrícola e a da PPSA, e o prompt dizia isso ao modelo.
+_PRIMEIRO_ARTIGO = re.compile(r"\bArt\.?\s*1\s*[ºo°]?(?!\d)", re.IGNORECASE)
+_NORMA_REVOGADA = re.compile(r"Revogad[ao]\s+pel[ao]|\bSEM EFIC[ÁA]CIA\b", re.IGNORECASE)
+_DISPOSITIVO_REVOGADO = re.compile(r"\(\s*Revogad[oa]", re.IGNORECASE)
+
+
+def _cabecalho(texto: str) -> str:
+    m = _PRIMEIRO_ARTIGO.search(texto)
+    return texto[: m.start()] if m else texto[:3_000]
+
+
+def norma_revogada(html: str) -> bool:
+    """A norma inteira foi revogada? Só o cabeçalho decide."""
+    return bool(_NORMA_REVOGADA.search(_cabecalho(_strip_tags(html))))
 
 
 def _strip_tags(html: str) -> str:
@@ -166,7 +228,10 @@ def _extract_article_text(html: str, numero_artigo: str) -> Optional[str]:
     for pattern in (
         rf"Art\.?\s*{re.escape(num)}\s*[°oº]?\s*[.\u2013\-]",
         rf"Art\.?\s*{re.escape(num)}\s*[°oº]?\s*\n",
-        rf"\bArt\.?\s*{re.escape(num)}\b",
+        # "º" é letra para o regex, então `\b` depois de "7" falha em "Art. 7º
+        # Fica…" — o caso comum, de 1º a 9º. O lookahead de dígito evita que
+        # "Art. 1" case com "Art. 10".
+        rf"\bArt\.?\s*{re.escape(num)}(?:\s*[°oº])?(?!\d)",
     ):
         m = re.search(pattern, html, re.IGNORECASE)
         if not m:
@@ -220,7 +285,7 @@ def _fetch_planalto(url: str) -> tuple[str, str]:
 
         html = resp.text
 
-        if re.search(r"\bREVOGAD[AO]\b|\bSEM EFICÁCIA\b", html, re.IGNORECASE):
+        if norma_revogada(html):
             return html, "revogada"
 
         return html, "resolvido"
@@ -233,6 +298,22 @@ def _fetch_planalto(url: str) -> tuple[str, str]:
         return "", "nao_encontrada"
 
 
+def _buscar_lei(urls: list[str]) -> tuple[str, str, str]:
+    """Tenta as URLs em ordem e para na primeira que não for 404.
+    Devolve (html, status, url que respondeu)."""
+    for url in urls:
+        html, status = _fetch_planalto(url)
+        if status != "nao_encontrada":
+            return html, status, url
+    return "", "nao_encontrada", urls[0]
+
+
+# Só estes status são confiáveis no cache. `revogada` e `nao_encontrada`
+# gravados antes da correção da detecção estavam errados com frequência;
+# rebuscá-los é barato e corrige o histórico sem migração.
+_CACHE_CONFIAVEL = ("resolvido", "artigo_revogado")
+
+
 def resolve_citacoes(citacoes: list[Citacao], db) -> list[ArtigoResolvido]:
     """
     Stage 2 — RESOLVE: fetch article texts from Planalto with DB cache.
@@ -242,11 +323,12 @@ def resolve_citacoes(citacoes: list[Citacao], db) -> list[ArtigoResolvido]:
     from models import LeiArtigo
 
     resolved: list[ArtigoResolvido] = []
-    html_cache: dict[str, tuple[str, str]] = {}  # lei_id → (html, status)
+    html_cache: dict[str, tuple[str, str, str]] = {}  # lei_id → (html, status, url)
 
     for c in citacoes:
         numero_artigo = c.artigo or "1"
-        url = build_planalto_url(c.tipo, c.numero, c.ano)
+        urls = _urls_planalto(c.tipo, c.numero, c.ano)
+        url = urls[0]
 
         # Check DB cache (TTL still valid)
         cached = db.execute(
@@ -254,6 +336,7 @@ def resolve_citacoes(citacoes: list[Citacao], db) -> list[ArtigoResolvido]:
                 LeiArtigo.lei_id == c.lei_id,
                 LeiArtigo.numero_artigo == numero_artigo,
                 LeiArtigo.expira_em > datetime.utcnow(),
+                LeiArtigo.status.in_(_CACHE_CONFIAVEL),
             )
         ).scalar_one_or_none()
 
@@ -269,14 +352,18 @@ def resolve_citacoes(citacoes: list[Citacao], db) -> list[ArtigoResolvido]:
 
         # Fetch HTML — reuse within same pipeline run
         if c.lei_id not in html_cache:
-            html, status = _fetch_planalto(url)
-            html_cache[c.lei_id] = (html, status)
+            html, status, url = _buscar_lei(urls)
+            html_cache[c.lei_id] = (html, status, url)
         else:
-            html, status = html_cache[c.lei_id]
+            html, status, url = html_cache[c.lei_id]
 
         texto: Optional[str] = None
         if status == "resolvido" and html:
             texto = _extract_article_text(html, numero_artigo)
+            # Lei vigente, dispositivo citado revogado: o modelo precisa
+            # saber disso, e a lei não vira "revogada" por causa dele.
+            if texto and _DISPOSITIVO_REVOGADO.search(texto[:300]):
+                status = "artigo_revogado"
 
         # Upsert lei_artigos cache
         now = datetime.utcnow()
@@ -331,6 +418,10 @@ def _build_user_prompt(ementa: str, artigos: list[ArtigoResolvido]) -> str:
     for a in artigos:
         if a.status == "resolvido" and a.texto:
             context_parts.append(f"[{a.lei_id} — Art. {a.numero_artigo}]\n{a.texto}")
+        elif a.status == "artigo_revogado":
+            context_parts.append(
+                f"[{a.lei_id} — Art. {a.numero_artigo}]\nNOTA: este artigo foi revogado; a lei segue vigente.\n{a.texto or ''}"
+            )
         elif a.status == "revogada":
             context_parts.append(
                 f"[{a.lei_id} — Art. {a.numero_artigo}]\nNOTA: Esta lei foi REVOGADA."
@@ -359,45 +450,35 @@ Regras:
 - resumo_simples: máximo 5 frases, linguagem acessível (nível ensino médio)
 - glossario: máximo 10 termos técnicos presentes na proposição, cada definição em 1 frase simples
 - impacto_zil: foco em semicondutores, energia, minerais, defesa, fertilizantes, digital ou comércio exterior
-- Se uma lei foi revogada, mencione isso no resumo_simples
+- Se uma lei inteira foi revogada, mencione isso no resumo_simples; artigo revogado não torna a lei revogada
 - Responda APENAS com o JSON, sem markdown ou texto adicional"""
 
 
 def augment_with_llm(ementa: str, artigos: list[ArtigoResolvido], modelo: str) -> dict:
-    """Stage 3 — AUGMENT: generate enrichment via Claude API with injected context."""
-    try:
-        import anthropic
-    except ImportError:
-        return {"error": "anthropic não instalado — execute: pip install anthropic"}
+    """Stage 3 — AUGMENT: generate enrichment via Claude API with injected context.
 
+    Passa pela fronteira única (`agentes.fronteira.consultar`), que lê só os
+    blocos de texto — o Sonnet 5.5 responde com um bloco de raciocínio antes do
+    JSON, e ler `content[0]` devolvia vazio —, trata recusa, corte por
+    `max_tokens` e chave inválida como erro declarado, e conta tokens.
+    """
     from core.config import settings
-    api_key = settings.ANTHROPIC_API_KEY
-    if not api_key:
-        return {"error": "ANTHROPIC_API_KEY não configurado"}
 
-    client = anthropic.Anthropic(api_key=api_key)
-    user_prompt = _build_user_prompt(ementa, artigos)
+    from ..agentes.fronteira import consultar, retirar_uso
 
-    message = client.messages.create(
-        model=modelo,
-        max_tokens=1_024,
-        system=_SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_prompt}],
+    resultado = consultar(
+        modelo,
+        _SYSTEM_PROMPT,
+        _build_user_prompt(ementa, artigos),
+        # O raciocínio conta aqui: 1.024, que bastava ao Haiku, cortaria a resposta.
+        max_tokens=16_000,
+        esforco=settings.ENRICHMENT_EFFORT or None,
+        fallback=True,
     )
-
-    raw = message.content[0].text.strip()
-
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError:
-        # Try extracting JSON block from response
-        m = re.search(r"\{.*\}", raw, re.DOTALL)
-        if m:
-            try:
-                return json.loads(m.group())
-            except json.JSONDecodeError:
-                pass
-        return {"error": f"json_parse_failed: {raw[:200]}"}
+    uso = retirar_uso(resultado)
+    if uso:
+        logger.info(f"[AUGMENT] tokens entrada={uso.get('entrada')} saida={uso.get('saida')}")
+    return resultado
 
 
 # ── Stage 4 — VALIDATE ────────────────────────────────────────────────────────
@@ -412,7 +493,7 @@ def validate_enrichment(
     confianca = resolved_articles / max(cited_laws, 1)
     """
     citados = len(citacoes)
-    resolvidos = sum(1 for a in artigos if a.status == "resolvido")
+    resolvidos = sum(1 for a in artigos if a.status in ("resolvido", "artigo_revogado"))
     confianca = round(resolvidos / max(citados, 1), 2) if citados > 0 else 1.0
 
     validated = {
@@ -517,7 +598,7 @@ def enriquecer_proposicao(
             "status": "pronto",
             "confianca": confianca,
             "citacoes": len(citacoes),
-            "artigos_resolvidos": sum(1 for a in artigos if a.status == "resolvido"),
+            "artigos_resolvidos": sum(1 for a in artigos if a.status in ("resolvido", "artigo_revogado")),
         }
 
     except Exception as exc:
