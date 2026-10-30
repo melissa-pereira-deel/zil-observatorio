@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { ParlamentarCard } from "@/components/ParlamentarCard";
 import {
@@ -46,7 +47,23 @@ const ORDEM_NO_CABECALHO: Record<Ordem, { coluna: "score" | "nome"; direcao: "as
   nome: { coluna: "nome", direcao: "ascending" },
 };
 
+function ordemDaUrl(valor: string | null): Ordem {
+  return ORDENS.some((o) => o.valor === valor) ? (valor as Ordem) : "score_desc";
+}
+
+// useSearchParams exige um limite de Suspense numa página pré-renderizada.
 export default function RankingPage() {
+  return (
+    <Suspense>
+      <Ranking />
+    </Suspense>
+  );
+}
+
+function Ranking() {
+  // `?ordem=score_asc` abre o placar pelos menos alinhados: é para onde
+  // aponta "Menos alinhados" na home.
+  const params = useSearchParams();
   const [parlamentares, setParlamentares] = useState<Parlamentar[]>([]);
   const [partidos, setPartidos] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +75,7 @@ export default function RankingPage() {
   const [uf, setUf] = useState("");
   const [partido, setPartido] = useState("");
   const [busca, setBusca] = useState("");
-  const [ordem, setOrdem] = useState<Ordem>("score_desc");
+  const [ordem, setOrdem] = useState<Ordem>(() => ordemDaUrl(params.get("ordem")));
 
   useEffect(() => {
     fetch(`${API_BASE}/parlamentares/partidos/ranking`)

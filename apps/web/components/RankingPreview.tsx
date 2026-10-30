@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Aviso, Button, Placar, PlacarLinha, PlacarLinhaEsqueleto, Selo } from "@/components/ui";
+import Link from "next/link";
+import { Aviso, Button, Icone, Placar, PlacarLinha, PlacarLinhaEsqueleto, Selo } from "@/components/ui";
 import type { Parlamentar } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -18,10 +19,19 @@ function tituloDoScore(p: Parlamentar): string {
   return `Baseado em ${p.total_votos_zil} ${p.total_votos_zil === 1 ? "voto" : "votos"} · ver metodologia`;
 }
 
-function Coluna({ titulo, lista, carregando }: { titulo: string; lista: Parlamentar[]; carregando: boolean }) {
+function Coluna({ titulo, href, lista, carregando }: { titulo: string; href: string; lista: Parlamentar[]; carregando: boolean }) {
   return (
     <div className="grid content-start gap-4">
-      <h3 className="text-titulo-4">{titulo}</h3>
+      {/* O título leva ao placar já na ordem daquela coluna. */}
+      <h3 className="text-titulo-4">
+        <Link
+          href={href}
+          className="group inline-flex items-center gap-1 text-zil-texto no-underline transition-colors duration-toque hover:text-zil-texto-2"
+        >
+          {titulo}
+          <Icone nome="chevron-direita" className="text-zil-texto-3 transition-transform duration-padrao ease-padrao group-hover:translate-x-[3px]" />
+        </Link>
+      </h3>
       <Placar rotulo={titulo}>
         {carregando
           ? Array.from({ length: 5 }).map((_, i) => <PlacarLinhaEsqueleto key={i} compacto />)
@@ -100,17 +110,16 @@ export function RankingPreview() {
 
       {/* Duas colunas: mais e menos alinhados */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-        <Coluna titulo="Mais alinhados" lista={top} carregando={loading} />
-        <Coluna titulo="Menos alinhados" lista={bottom} carregando={loading} />
+        <Coluna titulo="Mais alinhados" href="/ranking" lista={top} carregando={loading} />
+        <Coluna titulo="Menos alinhados" href="/ranking?ordem=score_asc" lista={bottom} carregando={loading} />
       </div>
 
-      {/* Ações */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <Button href="/ranking" variante="primario" className="flex-1">
-          Ver o placar completo
-        </Button>
-        <Button href="/proposicoes" variante="secundario" className="flex-1">
-          Ver proposições
+      {/* Um link de texto, não dois botões: a seção é uma prévia, e o primário
+          da página está na abertura. */}
+      <div>
+        <Button href="/ranking" variante="fantasma" tamanho="s" className="-ml-3.5">
+          Ver todos os parlamentares
+          <Icone nome="chevron-direita" tamanho="s" />
         </Button>
       </div>
     </div>
