@@ -1,10 +1,10 @@
-import { Button, Card, Citacao, Contador, Estat, Icone, Lista, Linha, Painel, Revelar, Selo, TituloSecao } from "@/components/ui";
+import { Button, Card, Citacao, Contador, Estat, Icone, Lista, Linha, Painel, Revelar, Selo, TituloSecao, type NomeIcone } from "@/components/ui";
 import { ScoreExplainer } from "@/components/ScoreExplainer";
 import { RankingPreview } from "@/components/RankingPreview";
 import { rankingPublico } from "@/lib/flags";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { Newsletter } from "@/components/Newsletter";
-import { ROADMAP_URL } from "@/lib/links";
+import { API_DOCS_URL, CONTRIBUIR_URL, ROADMAP_URL } from "@/lib/links";
 
 /* ── Dados estáticos do manifesto ── */
 
@@ -76,17 +76,15 @@ const PARA_QUEM = [
   "A quem acredita que tecnologia pode servir à democracia",
 ];
 
-const EXPLORAR = [
-  "Placar das votações monitoradas",
-  "Histórico de votações por pauta",
-  "Proposições classificadas por categoria",
-  "API aberta para jornalistas e pesquisadores",
-];
-
-const PARTICIPAR = [
-  "Propor classificações de votações (via Pull Request)",
-  "Revisar as classificações já existentes",
-  "Planejado: contas, alertas e deliberação por consenso",
+// Seção 09: o que o leitor pode fazer agora, só com o que existe hoje.
+// Título no imperativo (convite); link no infinitivo (nome da ação, como
+// em todo o site). O futuro fica em "Para onde vamos"; os valores, em 04 e 08.
+const ACOES: { icone: NomeIcone; titulo: string; texto: string; link: string; href: string; externo?: boolean }[] = [
+  rankingPublico
+    ? { icone: "placar", titulo: "Consulte os votos", texto: "Veja como cada parlamentar votou nas pautas monitoradas e de onde vem cada número.", link: "Ver o placar", href: "/ranking" }
+    : { icone: "documento", titulo: "Consulte as pautas", texto: "Veja as proposições monitoradas, o que cada uma muda e como cada votação terminou.", link: "Ver proposições", href: "/proposicoes" },
+  { icone: "download", titulo: "Use os dados", texto: "Toda a base sai por uma API aberta, sem chave: proposições, votações, votos e scores.", link: "Ver a documentação da API", href: API_DOCS_URL, externo: true },
+  { icone: "filtros", titulo: "Corrija uma classificação", texto: "Cada direção esperada é um arquivo com justificativa. Discordou? Proponha a mudança no repositório: revisar classificações é o trabalho que mais falta hoje.", link: "Como contribuir", href: CONTRIBUIR_URL, externo: true },
 ];
 
 /* ── Página ── */
@@ -303,60 +301,39 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════ 09 — ACESSO LIVRE ═══════ */}
+      {/* ═══════ 09 — O QUE DÁ PARA FAZER AGORA ═══════ */}
+      {/* Uma superfície só, não três cartões: são três saídas para a mesma
+          pergunta. A grade de linhas alinha os links pela base mesmo com
+          frases de tamanhos diferentes. */}
       <section className="zil-secao">
-        <TituloSecao chapeu="09" titulo="Acesso livre por design" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          {/* Dados públicos */}
-          <div className="grid content-start gap-5">
-            <h3 className="text-titulo-3">Explorar dados</h3>
-            <p className="text-texto text-zil-texto-2">
-              O ranking, os scores, as proposições e todos os votos são dados públicos. Sem paywall, sem login obrigatório.
-            </p>
-            <Lista>
-              {EXPLORAR.map((item) => (
-                <Linha key={item} icone={<Icone nome="check" tamanho="s" />} titulo={item} />
-              ))}
-            </Lista>
-            <div className="flex flex-wrap gap-2">
-              {rankingPublico ? (
-                <>
-                  <Button href="/ranking" variante="primario" tamanho="s">
-                    Ver o placar
-                  </Button>
-                  <Button href="/proposicoes" variante="secundario" tamanho="s">
-                    Ver proposições
-                  </Button>
-                </>
-              ) : (
-                <Button href="/proposicoes" variante="primario" tamanho="s">
-                  Ver proposições
+        <TituloSecao
+          chapeu="09"
+          titulo="O que dá para fazer agora"
+          descricao="Nada aqui pede cadastro. Os dados são públicos, o código é aberto e cada decisão editorial fica registrada."
+        />
+        <ul className="grid gap-10 lg:grid-cols-3 lg:gap-12 list-none m-0 p-6 md:p-10 rounded-xl bg-zil-superficie-1">
+          {ACOES.map((a) => (
+            <li key={a.titulo} className="grid grid-rows-[auto_auto_1fr_auto] gap-3 content-start">
+              <span className="inline-grid place-items-center w-10 h-10 rounded-m bg-zil-superficie-2 text-zil-texto">
+                <Icone nome={a.icone} />
+              </span>
+              <h3 className="text-titulo-4 mt-1">{a.titulo}</h3>
+              <p className="text-texto text-zil-texto-2">{a.texto}</p>
+              <div className="pt-1">
+                <Button
+                  href={a.href}
+                  variante="fantasma"
+                  tamanho="s"
+                  className="-ml-3.5"
+                  {...(a.externo ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
+                  {a.link}
+                  <Icone nome={a.externo ? "externo" : "chevron-direita"} tamanho="s" />
                 </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Participação */}
-          <div className="grid content-start gap-5">
-            <h3 className="text-titulo-3">Participar</h3>
-            <p className="text-texto text-zil-texto-2">
-              Não há contas de usuário nem deliberação na plataforma — isto é visão de longo prazo, não o que existe hoje. Quem quiser
-              participar agora contribui pelo repositório: a curadoria das classificações é o trabalho de maior impacto no momento.
-            </p>
-            <Lista>
-              {PARTICIPAR.map((item) => (
-                <Linha key={item} icone={<Icone nome="documento" tamanho="s" />} titulo={item} />
-              ))}
-            </Lista>
-            <div className="flex flex-wrap gap-2">
-              {["Apartidário", "Código aberto", "Sem ads ou tracking"].map((t) => (
-                <Selo key={t} ponto>
-                  {t}
-                </Selo>
-              ))}
-            </div>
-          </div>
-        </div>
+              </div>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* ═══════ 10 — BÚSSOLA + PARA QUEM ═══════ */}

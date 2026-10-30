@@ -12,3 +12,7 @@ export const NEWSLETTER_URL = process.env.NEXT_PUBLIC_NEWSLETTER_URL ?? "";
 export const REPO_URL = "https://github.com/melissa-pereira-deel/zil-observatorio";
 export const REPO_ROTULO = "github.com/melissa-pereira-deel/zil-observatorio";
 export const ROADMAP_URL = `${REPO_URL}/blob/main/docs/ROADMAP.md`;
+export const CONTRIBUIR_URL = `${REPO_URL}/blob/main/CONTRIBUTING.md#curadoria-de-dados`;
+
+/** Documentação da API aberta (FastAPI expõe em /docs). */
+export const API_DOCS_URL = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/docs`;

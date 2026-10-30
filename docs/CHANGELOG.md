@@ -107,6 +107,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- `apps/web/app/page.tsx`: a seção 09 da home deixa de ser "Acesso livre por
+  design", que repetia valores (04, 08), o catálogo de "Como funciona hoje" e o
+  futuro de "Para onde vamos", e passa a responder uma pergunta só: "O que dá
+  para fazer agora". Três ações reais, numa superfície única, com o link
+  alinhado pela base: consultar os votos (placar), usar os dados (documentação
+  da API) e corrigir uma classificação (CONTRIBUTING, curadoria). Título no
+  imperativo, link no infinitivo, como no resto do site.
 - **Enriquecimento passa do Haiku 4.5 para o Sonnet 5.5 com esforço médio**
   (`apps/api/core/config.py`: `ENRICHMENT_MODEL=claude-sonnet-5-5`,
   `ENRICHMENT_EFFORT=medium`). `augment_with_llm` agora chama a fronteira
