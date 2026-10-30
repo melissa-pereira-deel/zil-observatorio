@@ -176,6 +176,32 @@
     }
   }
 
+  /* Abertura da home: véu que garante leitura sobre qualquer vídeo. Escurece
+     a base (onde fica o texto) até a cor de fundo, para emendar sem corte
+     com a seção seguinte, e a metade esquerda, onde o texto começa. */
+  .zil-abertura-veu {
+    background:
+      linear-gradient(to top, var(--fundo) 0%, rgb(20 20 20 / 0.8) 30%, rgb(20 20 20 / 0.35) 65%, rgb(20 20 20 / 0.45) 100%),
+      linear-gradient(to right, rgb(20 20 20 / 0.6) 0%, transparent 70%);
+  }
+  :root[data-theme="claro"] .zil-abertura-veu {
+    background:
+      linear-gradient(to top, var(--fundo) 0%, rgb(245 244 240 / 0.85) 30%, rgb(245 244 240 / 0.4) 65%, rgb(245 244 240 / 0.5) 100%),
+      linear-gradient(to right, rgb(245 244 240 / 0.6) 0%, transparent 70%);
+  }
+
+  /* Fundo provisório da abertura, enquanto o vídeo não existe: as cores da
+     bandeira, baixas e em deriva lenta. Parado com movimento reduzido. */
+  .zil-abertura-provisoria {
+    background:
+      radial-gradient(60% 70% at 78% 30%, rgb(47 179 107 / 0.34), transparent 70%),
+      radial-gradient(45% 55% at 92% 75%, rgb(76 125 255 / 0.3), transparent 70%),
+      radial-gradient(35% 40% at 60% 10%, rgb(247 198 0 / 0.2), transparent 70%),
+      var(--superficie-1);
+    background-size: 140% 140%;
+    animation: zil-deriva 24s ease-in-out infinite alternate;
+  }
+
   /* Esqueleto de carregamento: brilho que atravessa em 1,4s. */
   .zil-esqueleto {
     @apply block rounded-s bg-zil-superficie-2 animate-zil-brilho;
@@ -232,6 +258,11 @@
   .zil-desenha.is-visivel {
     stroke-dashoffset: 0;
   }
+}
+
+@keyframes zil-deriva {
+  from { background-position: 0% 0%; }
+  to { background-position: 100% 60%; }
 }
 
 /* Movimento reduzido é modo de primeira classe: tudo vira corte seco. */
