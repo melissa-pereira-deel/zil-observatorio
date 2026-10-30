@@ -1,0 +1,100 @@
+# Sync de dados contra o banco de produção — o agendador que substitui o
+# Celery beat em produção. Cada job é um subcomando de scripts/agenda.py, que
+# registra cada passo em `ingestion_runs`.
+#
+# Segredos (Settings → Secrets and variables → Actions):
+#   PRODUCAO_DATABASE_URL  External Database URL do Postgres no Render
+#   ANTHROPIC_API_KEY      só o job `enriquecer` usa
+#
+# Uma execução que falha fica vermelha em Actions e o GitHub avisa por
+# e-mail quem fez o último commit no workflow. Para desligar: Actions →
+# dados → "Disable workflow".
+#
+# Limites do agendador do GitHub: horários em UTC, atrasos de minutos em
+# horário de pico, e workflows agendados em repositório público são
+# desligados após 60 dias sem commit no repositório.
+
+name: dados
+
+on:
+  schedule:
+    - cron: "15 7 * * *"  # todo dia, 04:15 BRT — votações, Senado, proposições, scores
+    - cron: "30 6 * * 1"  # segunda, 03:30 BRT — deputados e senadores
+    - cron: "0 9 * * 3"   # quarta, 06:00 BRT — enriquecimento com LLM, até 30
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "Job de scripts/agenda.py"
+        type: choice
+        options: [diario, cadastros, enriquecer, scores]
+        default: diario
+      limite:
+        description: "Só para enriquecer: quantas proposições, no máximo"
+        type: number
+        default: 30
+
+# Dois syncs simultâneos no mesmo banco disputariam as mesmas linhas. O
+# segundo espera o primeiro terminar em vez de cancelá-lo.
+concurrency:
+  group: dados-producao
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: ${{ inputs.job || 'agendado' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DATABASE_URL: ${{ secrets.PRODUCAO_DATABASE_URL }}
+      # Nem "production" (exigiria ADMIN_TOKEN, que só a API usa) nem
+      # "development" (liga o eco de SQL no log).
+      ENV: automacao
+    steps:
+      - name: Escolher o job
+        id: job
+        env:
+          AGENDA: ${{ github.event.schedule }}
+          MANUAL: ${{ inputs.job }}
+          LIMITE: ${{ inputs.limite || 30 }}
+        run: |
+          case "$AGENDA" in
+            "15 7 * * *") job=diario ;;
+            "30 6 * * 1") job=cadastros ;;
+            "0 9 * * 3")  job=enriquecer ;;
+            *)            job="$MANUAL" ;;
+          esac
+          if [ -z "$job" ]; then echo "::error::nenhum job para '$AGENDA'"; exit 1; fi
+          args="$job"
+          if [ "$job" = enriquecer ]; then args="$job --limite $LIMITE"; fi
+          echo "args=$args" >> "$GITHUB_OUTPUT"
+          echo "Job: $args"
+
+      - name: Conferir o segredo do banco
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::segredo PRODUCAO_DATABASE_URL não configurado"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: apps/api/requirements.txt
+      - run: pip install -r apps/api/requirements.txt
+
+      - name: Rodar
+        if: ${{ !startsWith(steps.job.outputs.args, 'enriquecer') }}
+        run: python scripts/agenda.py ${{ steps.job.outputs.args }}
+
+      # O único passo que recebe a chave da Anthropic e liga o enriquecimento.
+      - name: Rodar (enriquecimento)
+        if: ${{ startsWith(steps.job.outputs.args, 'enriquecer') }}
+        env:
+          ENRICHMENT_ENABLED: "true"
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/agenda.py ${{ steps.job.outputs.args }}
