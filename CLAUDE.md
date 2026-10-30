@@ -44,7 +44,7 @@ scripts/           curadoria: candidatas.py | dossie.py | validar_direcoes.py | 
                    painel: painel.py (calibração da Fase 1)
                    sync: sync_votacoes_zil.py | sync_votacoes_proposicoes.py
                          discover_proposicoes.py | sync_pipeline.py
-                   infra: migrate_enrichment.py | seed.py | start-dev.sh
+                   infra: migrate_enrichment.py | seed.py | start-dev.sh | marcar_recusas.py
                    backlog: recalcular_scores.py (não existe — ver o one-liner em "Comandos")
 tests/             unit/ (242) integration/ (52) contract/ (7) + 19 na raiz = 320
 specs/             001-camara-api-ingestao | 002-legislative-enrichment-pipeline
@@ -119,6 +119,10 @@ python3 scripts/sync_pipeline.py                                   # discovery �
 python3 scripts/sync_pipeline.py --dry-run                         # preview completo
 python3 scripts/sync_pipeline.py --skip-enrichment --skip-scores   # só discovery + votações
 python3 scripts/sync_pipeline.py --skip-discovery --skip-votacoes  # só enrichment + scores
+
+# Recusas do modelo gravadas como resumo `pronto` antes de 2026-10-30 → `llm_recusou`
+python3 scripts/marcar_recusas.py --dry-run   # lista
+python3 scripts/marcar_recusas.py             # re-marca (só o status; o texto fica)
 
 # Descoberta de proposições (busca na API da Câmara por keywords ZIL)
 python3 scripts/discover_proposicoes.py --dry-run              # apenas mostra o que seria descoberto

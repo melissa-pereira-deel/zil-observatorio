@@ -221,8 +221,11 @@ export default function ProposicoesPage() {
                     <h2 className="text-titulo-4">
                       {p.tipo} {p.numero}/{p.ano}
                     </h2>
-                    {/* Resumo em linguagem simples quando existe; senão, a ementa */}
-                    <p className="text-texto-s text-zil-texto-2 line-clamp-3">{p.resumo_simples || p.ementa}</p>
+                    {/* Resumo em linguagem simples quando a análise está pronta; senão, a ementa.
+                        A API já omite o resumo fora de `pronto` — o teste aqui é a mesma regra da página da proposição. */}
+                    <p className="text-texto-s text-zil-texto-2 line-clamp-3">
+                      {(p.contexto_status === "pronto" && p.resumo_simples) || p.ementa}
+                    </p>
                     {p.data_apresentacao && (
                       <p className="text-texto-s text-zil-texto-2 zil-num">
                         Apresentada em {new Date(p.data_apresentacao).toLocaleDateString("pt-BR")}

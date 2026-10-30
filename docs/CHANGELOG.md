@@ -244,6 +244,20 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+- **Recusas do modelo apareciam como resumo** (`apps/workers/enrichment/__init__.py`,
+  `apps/api/schemas/__init__.py`, `apps/api/routers/`, `apps/web/app/proposicoes/page.tsx`).
+  O system prompt mandava o modelo "dizer que não sabe" sem lhe dar onde, e a
+  validação só truncava o texto: "Não tenho informações suficientes para
+  explicar esta proposição…" ia para o `resumo_simples` como JSON válido,
+  gravado `pronto`, e aparecia em `/proposicoes` e `/proposicoes/[id]`. Eram 56
+  das 240 proposições do banco de desenvolvimento, quase todas sem lei citada.
+  Agora o prompt tem a saída declarada `informacao_suficiente: false`, o
+  detector `eh_recusa` pega quem escreve a recusa mesmo assim, e a recusa grava
+  o status novo `llm_recusou` — não `pendente`, que a task horária refaria com
+  o mesmo resultado. O texto fica para auditoria; a API só expõe resumo,
+  glossário e impacto de proposição `pronto`.
+- `scripts/marcar_recusas.py`: re-marca como `llm_recusou` as recusas já
+  gravadas como `pronto` (`--dry-run` para listar). Só muda o status.
 - **Enriquecimento dizia ao modelo que leis vigentes estavam revogadas**
   (`apps/workers/enrichment/__init__.py`). A busca por "revogado" corria no
   HTML inteiro do Planalto, e toda lei consolidada tem algum dispositivo
