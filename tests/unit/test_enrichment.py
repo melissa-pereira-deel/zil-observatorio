@@ -454,3 +454,70 @@ class TestEnriquecerProposicao:
 
         assert result["status"] == "llm_falhou"
         assert prop.contexto_status == "llm_falhou"
+
+
+# ── Stage 3 — AUGMENT: Sonnet 5.5 pela fronteira única ──────────────────────
+
+_FICTICIA = "valor-ficticio"
+
+
+class TestAugment:
+    def test_usa_modelo_esforco_e_fallback_da_configuracao(self):
+        from apps.workers.enrichment import augment_with_llm
+
+        chamadas = []
+
+        def falso(modelo, system, prompt, **kw):
+            chamadas.append((modelo, kw))
+            return {"resumo_simples": "ok", "_uso": {"entrada": 10, "saida": 5}}
+
+        with patch("apps.workers.agentes.fronteira.consultar", side_effect=falso):
+            res = augment_with_llm("Institui X.", [], "claude-sonnet-5-5")
+
+        modelo, kw = chamadas[0]
+        assert modelo == "claude-sonnet-5-5"
+        assert kw["esforco"] == "medium" and kw["fallback"] is True
+        # o raciocínio conta no limite: 1.024 cortaria a resposta
+        assert kw["max_tokens"] >= 8_000
+        assert res == {"resumo_simples": "ok"}  # `_uso` retirado antes de validar
+
+    def test_fronteira_envia_effort_e_fallback_e_le_o_texto_depois_do_raciocinio(self, monkeypatch):
+        import anthropic
+        from types import SimpleNamespace
+
+        from apps.workers.agentes.fronteira import consultar
+
+        recebido = {}
+
+        def responde(self, **kw):
+            recebido.update(kw)
+            return SimpleNamespace(
+                stop_reason="end_turn",
+                usage=SimpleNamespace(input_tokens=1, output_tokens=1),
+                content=[SimpleNamespace(type="thinking", text=""), SimpleNamespace(type="text", text='{"resumo_simples": "x"}')],
+            )
+
+        monkeypatch.setattr(anthropic.resources.messages.Messages, "create", responde)
+        res = consultar("claude-sonnet-5-5", "s", "p", max_tokens=16_000, api_key=_FICTICIA, esforco="medium", fallback=True)
+        assert res["resumo_simples"] == "x"
+        assert recebido["extra_body"] == {"output_config": {"effort": "medium"}, "fallbacks": "default"}
+        assert recebido["extra_headers"] == {"anthropic-beta": "server-side-fallback-2026-07-01"}
+
+    def test_recusa_vira_erro_declarado(self, monkeypatch):
+        import anthropic
+        from types import SimpleNamespace
+
+        from apps.workers.agentes.fronteira import consultar
+
+        monkeypatch.setattr(
+            anthropic.resources.messages.Messages,
+            "create",
+            lambda self, **kw: SimpleNamespace(
+                stop_reason="refusal",
+                stop_details=SimpleNamespace(category="cyber"),
+                usage=SimpleNamespace(input_tokens=1, output_tokens=0),
+                content=[],
+            ),
+        )
+        res = consultar("claude-sonnet-5-5", "s", "p", max_tokens=100, api_key=_FICTICIA)
+        assert res["error"] == "recusa do modelo (cyber)"

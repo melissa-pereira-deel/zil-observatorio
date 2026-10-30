@@ -22,7 +22,11 @@ class Settings(BaseSettings):
     # Enrichment pipeline (Feature 002)
     ANTHROPIC_API_KEY: str = ""
     ADMIN_TOKEN: str = ""
-    ENRICHMENT_MODEL: str = "claude-haiku-4-5-20251001"
+    # Sonnet com esforço médio desde 2026-10-29: o Haiku errava mais nos
+    # resumos. O Sonnet 5.5 sempre pensa antes de responder; o esforço regula
+    # quanto, e o raciocínio conta no max_tokens do enriquecimento.
+    ENRICHMENT_MODEL: str = "claude-sonnet-5-5"
+    ENRICHMENT_EFFORT: str = "medium"
     # O pipeline de enriquecimento só roda onde for explicitamente ligado.
     # Num deploy público somente-leitura ele não roda, e exigir a chave da
     # Anthropic ali seria manter um segredo sem uso em produção.

@@ -107,6 +107,16 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- **Enriquecimento passa do Haiku 4.5 para o Sonnet 5.5 com esforço médio**
+  (`apps/api/core/config.py`: `ENRICHMENT_MODEL=claude-sonnet-5-5`,
+  `ENRICHMENT_EFFORT=medium`). `augment_with_llm` agora chama a fronteira
+  única (`agentes/fronteira.consultar`), que lê só os blocos de texto (o
+  Sonnet 5.5 responde com raciocínio antes do JSON; `content[0]` vinha
+  vazio), trata recusa e corte como erro declarado e conta tokens.
+  `max_tokens` sobe de 1.024 para 16.000, porque o raciocínio conta no
+  limite. A fronteira ganha `esforco` (`output_config.effort`) e `fallback`
+  (fallback do servidor para recusas, `fallbacks: "default"`), ambos por
+  `extra_body`, já que o SDK pinado é o 0.40.
 - **Bússola diz o que sabe e o que não sabe.** `data/bussula/marcos.yml`
   ganha metadados sem mudar valores: `direcao` (maior/menor é melhor),
   `meta_origem` (nulo nos quatro: nenhuma meta cita plano oficial),

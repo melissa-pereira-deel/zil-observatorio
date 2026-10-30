@@ -87,12 +87,20 @@ def consultar(
     *,
     max_tokens: int,
     api_key: Optional[str] = None,
+    esforco: Optional[str] = None,
+    fallback: bool = False,
 ) -> dict:
     """Uma chamada ao modelo; devolve o JSON da resposta ou `{"error": ...}`.
 
     `api_key` existe para testes e para rodar fora do `settings`; o padrão é
     `settings.ANTHROPIC_API_KEY`, importado tarde para que importar este
     módulo não exija o `apps/api` no path.
+
+    `esforco` (`low` a `max`) vai em `output_config.effort`. `fallback` liga o
+    fallback do servidor para recusas (`fallbacks: "default"`): se o
+    classificador de segurança recusar, a API refaz a chamada noutro modelo em
+    vez de devolver vazio. O SDK pinado (0.40) não tem esses parâmetros, então
+    os dois vão por `extra_body`/`extra_headers`.
     """
     try:
         import anthropic
@@ -106,6 +114,14 @@ def consultar(
     if not api_key:
         return {"error": "ANTHROPIC_API_KEY não configurado"}
 
+    extra_body: dict = {}
+    extra_headers: dict = {}
+    if esforco:
+        extra_body["output_config"] = {"effort": esforco}
+    if fallback:
+        extra_body["fallbacks"] = "default"
+        extra_headers["anthropic-beta"] = "server-side-fallback-2026-07-01"
+
     client = anthropic.Anthropic(api_key=api_key)
     try:
         message = client.messages.create(
@@ -113,6 +129,8 @@ def consultar(
             max_tokens=max_tokens,
             system=system,
             messages=[{"role": "user", "content": prompt}],
+            extra_body=extra_body or None,
+            extra_headers=extra_headers or None,
         )
     except anthropic.AuthenticationError:
         # Nunca inclui a chave na mensagem — nem parte dela.
@@ -124,6 +142,12 @@ def consultar(
     uso = _somar_uso(None, message)
     if message.stop_reason == "max_tokens":
         return _com_uso({"error": f"resposta cortada no limite de {max_tokens} tokens"}, uso)
+    if message.stop_reason == "refusal":
+        # Sem fallback, ou com o fallback também recusando: erro declarado, não
+        # texto vazio que o parser transformaria em json_parse_failed.
+        detalhe = getattr(message, "stop_details", None)
+        categoria = getattr(detalhe, "category", None) if detalhe else None
+        return _com_uso({"error": f"recusa do modelo ({categoria or 'sem categoria'})"}, uso)
     return _com_uso(extrair_json(texto_da_resposta(message.content)), uso)
 
 

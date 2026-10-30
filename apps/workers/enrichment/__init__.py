@@ -14,7 +14,6 @@ ADR-002: adds apps/api to sys.path explicitly
 
 import hashlib
 import html as _html
-import json
 import logging
 import re
 import sys
@@ -456,40 +455,30 @@ Regras:
 
 
 def augment_with_llm(ementa: str, artigos: list[ArtigoResolvido], modelo: str) -> dict:
-    """Stage 3 — AUGMENT: generate enrichment via Claude API with injected context."""
-    try:
-        import anthropic
-    except ImportError:
-        return {"error": "anthropic não instalado — execute: pip install anthropic"}
+    """Stage 3 — AUGMENT: generate enrichment via Claude API with injected context.
 
+    Passa pela fronteira única (`agentes.fronteira.consultar`), que lê só os
+    blocos de texto — o Sonnet 5.5 responde com um bloco de raciocínio antes do
+    JSON, e ler `content[0]` devolvia vazio —, trata recusa, corte por
+    `max_tokens` e chave inválida como erro declarado, e conta tokens.
+    """
     from core.config import settings
-    api_key = settings.ANTHROPIC_API_KEY
-    if not api_key:
-        return {"error": "ANTHROPIC_API_KEY não configurado"}
 
-    client = anthropic.Anthropic(api_key=api_key)
-    user_prompt = _build_user_prompt(ementa, artigos)
+    from ..agentes.fronteira import consultar, retirar_uso
 
-    message = client.messages.create(
-        model=modelo,
-        max_tokens=1_024,
-        system=_SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_prompt}],
+    resultado = consultar(
+        modelo,
+        _SYSTEM_PROMPT,
+        _build_user_prompt(ementa, artigos),
+        # O raciocínio conta aqui: 1.024, que bastava ao Haiku, cortaria a resposta.
+        max_tokens=16_000,
+        esforco=settings.ENRICHMENT_EFFORT or None,
+        fallback=True,
     )
-
-    raw = message.content[0].text.strip()
-
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError:
-        # Try extracting JSON block from response
-        m = re.search(r"\{.*\}", raw, re.DOTALL)
-        if m:
-            try:
-                return json.loads(m.group())
-            except json.JSONDecodeError:
-                pass
-        return {"error": f"json_parse_failed: {raw[:200]}"}
+    uso = retirar_uso(resultado)
+    if uso:
+        logger.info(f"[AUGMENT] tokens entrada={uso.get('entrada')} saida={uso.get('saida')}")
+    return resultado
 
 
 # ── Stage 4 — VALIDATE ────────────────────────────────────────────────────────
