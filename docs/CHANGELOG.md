@@ -10,6 +10,14 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- `docs/DISCOVERY-TRAMITACAO.md`: levantamento de onde vem o status das
+  proposições, do processo legislativo canônico por espécie (com prazos,
+  quóruns e o que é determinístico ou discricionário), das APIs da Câmara e
+  do Senado (o que usamos, o que não usamos, armadilhas), das fontes de
+  regulamentação e impacto, e dos MCPs existentes. Propõe um modelo de fases
+  auditável, a nova página da proposição, o modelo de dados e um plano em
+  fases (F0–F5). Achados: as 5 proposições do placar estão sem status (4
+  viraram lei) e o cliente do Senado está quebrado.
 - **Filtro de proposições analisadas** (`apps/api/routers/legislativo.py`,
   `apps/web/app/proposicoes/page.tsx`): `GET /proposicoes?analise=analisada|pendente`
   e um segmentado "Todas · Analisadas · Sem análise" na lista. Sem filtro, as
