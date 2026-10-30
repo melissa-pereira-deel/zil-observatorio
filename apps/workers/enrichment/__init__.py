@@ -44,14 +44,14 @@ MAX_EMENTA_CHARS = 2_000
 
 @dataclass
 class Citacao:
-    tipo: str           # "lei" | "lc" | "mp"
+    tipo: str           # "lei" | "lc" | "mp" | "dl" (decreto-lei)
     numero: str         # digits only, e.g. "14744"
     ano: int
     artigo: Optional[str] = None
     lei_id: str = field(init=False)
 
     def __post_init__(self):
-        prefix = {"lei": "", "lc": "lc-", "mp": "mp-"}[self.tipo]
+        prefix = {"lei": "", "lc": "lc-", "mp": "mp-", "dl": "dl-"}[self.tipo]
         self.lei_id = f"{prefix}{self.numero}-{self.ano}"
 
 
@@ -85,8 +85,14 @@ _LEI_PATTERNS: list[tuple[str, str]] = [
         r"Medida\s+Provis[oó]ria\s+n[oº°]?\.?\s*(\d[\d.]+)" + _YEAR_SUFFIX,
         "mp",
     ),
+    # Decreto-lei antes de lei: "Decreto-Lei nº 227, de 1967" é o Código de
+    # Mineração, não a "Lei nº 227". O lookbehind da lei impede a dupla leitura.
     (
-        r"Lei\s+n[oº°]?\.?\s*(\d[\d.]+)" + _YEAR_SUFFIX,
+        r"Decreto[-\s]Lei\s+n[oº°]?\.?\s*(\d[\d.]+)" + _YEAR_SUFFIX,
+        "dl",
+    ),
+    (
+        r"(?<!-)(?<!Decreto\s)Lei\s+n[oº°]?\.?\s*(\d[\d.]+)" + _YEAR_SUFFIX,
         "lei",
     ),
 ]
@@ -138,6 +144,8 @@ def build_planalto_url(tipo: str, numero: str, ano: int) -> str:
     num = numero.lstrip("0") or "0"
     if tipo == "lc":
         return f"https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp{num}.htm"
+    if tipo == "dl":
+        return f"https://www.planalto.gov.br/ccivil_03/decreto-lei/del{int(num):04d}.htm"
     if tipo == "mp":
         if ano < 2003:
             return f"https://www.planalto.gov.br/ccivil_03/mpv/Antigas/mpv{num}.htm"
@@ -168,11 +176,17 @@ def _urls_planalto(tipo: str, numero: str, ano: int) -> list[str]:
     base, arquivo = canonica.rsplit("/", 1)
     nome = arquivo.removesuffix(".htm")
     variantes = [f"{nome}cons.htm", f"{nome}compilado.htm", f"{nome[:1].upper()}{nome[1:]}compilado.htm"]
-    # Algumas leis usam o número com ponto de milhar no arquivo: l10.848.htm.
+    urls = [canonica] + [f"{base}/{v}" for v in variantes]
     num = numero.lstrip("0") or "0"
+    # Algumas leis usam o número com ponto de milhar no arquivo: l10.848.htm.
     if tipo == "lei" and len(num) > 3:
-        variantes.append(f"l{int(num):,}.htm".replace(",", "."))
-    return [canonica] + [f"{base}/{v}" for v in variantes]
+        urls.append(f"{base}/l{int(num):,}.htm".replace(",", "."))
+    # Leis de 1989 a 1994 e decretos-leis de 1965 a 1988 têm diretório próprio.
+    if tipo == "lei" and 1989 <= ano <= 1994:
+        urls.append(f"https://www.planalto.gov.br/ccivil_03/leis/1989_1994/L{num}.htm")
+    if tipo == "dl" and 1965 <= ano <= 1988:
+        urls.append(f"https://www.planalto.gov.br/ccivil_03/decreto-lei/1965-1988/Del{num}.htm")
+    return urls
 
 
 # A norma inteira está revogada quando o aviso aparece no cabeçalho, entre a

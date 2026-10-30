@@ -241,6 +241,10 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   a 2006 estavam todas "não encontradas": o Planalto guarda 2001 em
   `leis/leis_2001`, 2002–2003 em `leis/<ano>` e o primeiro bloco `_ato` é
   2004-2006, não 2003-2006; algumas usam o número com ponto (`l10.848.htm`).
+  Decretos-leis eram lidos como leis ("Decreto-Lei nº 227/1967", o Código de
+  Mineração, virava "Lei nº 227") e nunca eram achados; agora têm tipo
+  próprio, com os diretórios `decreto-lei/` e `decreto-lei/1965-1988/`. Leis
+  de 1989 a 1994 ganham o diretório `leis/1989_1994/`.
 - `/bussula`: a barra de progresso fazia `valor / meta` travado em 100% e
   aparecia cheia para a dependência de fertilizantes (87% com meta 60%), o
   indicador mais distante da meta. Agora a barra só existe com valor de

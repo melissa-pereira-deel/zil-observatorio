@@ -283,9 +283,20 @@ class TestUrlConsolidada:
             html, status, url = _buscar_lei(_urls_planalto("lei", "9427", 1996))
         assert status == "resolvido" and url.endswith("l9427cons.htm")
 
+    def test_decreto_lei_nao_e_lei(self):
+        [c] = extract_citacoes("Altera o Decreto-Lei nº 227, de 28 de fevereiro de 1967.")
+        assert c.tipo == "dl" and c.lei_id == "dl-227-1967"
+        assert build_planalto_url("dl", "227", 1967).endswith("/decreto-lei/del0227.htm")
+
+    def test_decreto_lei_de_1965_a_1988_tem_diretorio_proprio(self):
+        assert _urls_planalto("dl", "1804", 1980)[-1].endswith("/decreto-lei/1965-1988/Del1804.htm")
+
+    def test_lei_de_1989_a_1994_tem_diretorio_proprio(self):
+        assert _urls_planalto("lei", "8970", 1994)[-1].endswith("/leis/1989_1994/L8970.htm")
+
     def test_variante_com_ponto_de_milhar(self):
         urls = _urls_planalto("lei", "10848", 2004)
-        assert urls[-1].endswith("/_ato2004-2006/2004/lei/l10.848.htm")
+        assert any(u.endswith("/_ato2004-2006/2004/lei/l10.848.htm") for u in urls)
 
     def test_todas_404_e_nao_encontrada_com_a_canonica(self):
         with patch("apps.workers.enrichment._fetch_planalto", return_value=("", "nao_encontrada")):
