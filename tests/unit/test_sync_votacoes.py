@@ -200,3 +200,32 @@ class TestSyncVotacoesPorProposicao:
             Votacao.fonte_id == "new-1"
         ).count()
         assert count == 0
+
+
+class TestNormalizarVoto:
+    """O mapa de tipoVoto da Câmara, compartilhado pelos três syncs."""
+
+    @pytest.mark.parametrize("tipo, esperado", [
+        ("Sim", VotoEnum.SIM),
+        ("Não", VotoEnum.NAO),
+        ("Abstenção", VotoEnum.ABSTENCAO),
+        ("Obstrução", VotoEnum.OBSTRUCAO),
+        # O presidente da sessão vem assim da API, e não como "Art. 17".
+        ("Artigo 17", VotoEnum.ARTIGO_17),
+        ("Art. 17", VotoEnum.ARTIGO_17),
+    ])
+    def test_tipos_conhecidos(self, tipo, esperado):
+        from apps.workers.crawlers.camara import normalizar_voto
+        assert normalizar_voto(tipo) == esperado
+
+    def test_desconhecido_vira_ausente_e_avisa(self, caplog):
+        from apps.workers.crawlers.camara import normalizar_voto
+        assert normalizar_voto("Voto inventado") == VotoEnum.AUSENTE
+        assert "Voto inventado" in caplog.text
+
+    def test_scripts_usam_o_mesmo_mapa(self):
+        import scripts.sync_votacoes_proposicoes as proposicoes
+        import scripts.sync_votacoes_zil as zil
+        from apps.workers.crawlers.camara import normalizar_voto
+        assert proposicoes.normalizar_voto is normalizar_voto
+        assert zil.normalizar_voto is normalizar_voto

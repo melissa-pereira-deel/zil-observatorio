@@ -95,6 +95,18 @@ def test_schema_votacao_read(client, db_session):
     assert item["peso"] is None or isinstance(item["peso"], (int, float))
 
 
+
+def test_votacoes_filtra_por_fonte_id(client, db_session):
+    """A home acha a votação em destaque pelo ID da Câmara."""
+    make_votacao(db_session, categorias_zil=["ZIL-SEM"], fonte_id="2269745-144")
+    make_votacao(db_session, categorias_zil=["ZIL-SEM"], fonte_id="2416804-43")
+    db_session.commit()
+
+    resp = client.get("/votacoes", params={"fonte_id": "2269745-144"})
+    assert resp.status_code == 200
+    assert [v["fonte_id"] for v in resp.json()] == ["2269745-144"]
+    assert client.get("/votacoes", params={"fonte_id": "nao-existe"}).json() == []
+
 def test_schema_voto_read(client, db_session):
     """VotoRead deve ter todos os campos do contrato."""
     p = make_parlamentar(db_session, partido="PT", uf="SP")

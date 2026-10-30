@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { CategoriaBadge } from "@/components/CategoriaBadge";
 import { DirecaoBadge } from "@/components/DirecaoBadge";
+import { BancadasVotacao, HemicicloVotacao } from "@/components/PlenarioVotacao";
 import {
   Avatar,
   Aviso,
@@ -22,10 +23,18 @@ import {
   PlacarLinhaEsqueleto,
   Selo,
   Vazio,
-  VotosBarra,
-  VotosLegenda,
   type TomSelo,
 } from "@/components/ui";
+import {
+  CADEIRAS,
+  GRUPOS,
+  ROTULO_GRUPO,
+  ROTULO_VOTO,
+  contarGrupos,
+  grupoDoVoto,
+  type GrupoVoto,
+  type VotoIndividual,
+} from "@/lib/votacao";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -38,17 +47,9 @@ interface ProposicaoSnippet {
   resumo_simples: string | null;
 }
 
-interface VotoIndividual {
-  parlamentar_id: string;
-  parlamentar_nome: string;
-  parlamentar_partido: string | null;
-  parlamentar_uf: string | null;
-  voto: string;
-  orientacao_partido: string | null;
-}
-
 interface VotacaoDetail {
   id: string;
+  fonte: string;
   descricao: string | null;
   data: string | null;
   resultado: string | null;
@@ -59,15 +60,6 @@ interface VotacaoDetail {
   peso: number | null;
   proposicao: ProposicaoSnippet | null;
 }
-
-const VOTO_LABEL: Record<string, string> = {
-  sim: "Sim",
-  nao: "Não",
-  abstencao: "Abstenção",
-  ausente: "Ausente",
-  obstrucao: "Obstrução",
-  artigo_17: "Art. 17",
-};
 
 /**
  * Tom do selo de voto: `alinhado` quando bate com a direção esperada pelo
@@ -94,7 +86,10 @@ export default function VotacaoDetailPage() {
   const [votos, setVotos] = useState<VotoIndividual[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(false);
-  const [filtroVoto, setFiltroVoto] = useState("");
+  // Um filtro só para o hemiciclo, o mapa e a lista: tocar "Não" no
+  // plenário acende as cadeiras e filtra os nomes abaixo.
+  const [filtroGrupo, setFiltroGrupo] = useState<GrupoVoto | "">("");
+  const [filtroUF, setFiltroUF] = useState("");
   const [busca, setBusca] = useState("");
   // Incrementa para refazer a busca depois de um erro.
   const [tentativa, setTentativa] = useState(0);
@@ -121,9 +116,9 @@ export default function VotacaoDetailPage() {
     load();
   }, [id, tentativa]);
 
-  const porVoto = filtroVoto
-    ? votos.filter((v) => v.voto === filtroVoto)
-    : votos;
+  const porVoto = votos.filter(
+    (v) => (!filtroGrupo || grupoDoVoto(v.voto) === filtroGrupo) && (!filtroUF || v.parlamentar_uf === filtroUF),
+  );
 
   const termo = busca.trim().toLowerCase();
   const filtered = termo
@@ -135,20 +130,15 @@ export default function VotacaoDetailPage() {
       )
     : porVoto;
 
-  const contagem = votos.reduce<Record<string, number>>((acc, v) => {
-    acc[v.voto] = (acc[v.voto] ?? 0) + 1;
-    return acc;
-  }, {});
+  const cadeiras = CADEIRAS[votacao?.fonte ?? "camara"] ?? 513;
+  const grupos = contarGrupos(votos, cadeiras);
+  const semRegistro = Math.max(0, cadeiras - votos.length);
 
   const prop = votacao?.proposicao;
   const propLabel = prop
     ? `${prop.tipo ?? ""} ${prop.numero ?? ""}/${prop.ano ?? ""}`.trim()
     : null;
   const propDescricao = prop?.resumo_simples || prop?.ementa;
-
-  // Placar oficial da Casa; sem ele, o que foi contado nos votos individuais.
-  const sim = votacao?.votos_sim ?? contagem.sim ?? 0;
-  const nao = votacao?.votos_nao ?? contagem.nao ?? 0;
 
   const voltar = prop ? { href: `/proposicoes/${prop.id}`, rotulo: "Voltar à proposição" } : { href: "/proposicoes", rotulo: "Todas as proposições" };
 
@@ -265,76 +255,109 @@ export default function VotacaoDetailPage() {
           </Lista>
         )}
 
-        {/* Placar */}
-        <Card className="grid gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-titulo-4">Placar</h2>
-            {votacao?.resultado && <Selo tom={tomDoResultado(votacao.resultado)}>{votacao.resultado}</Selo>}
-          </div>
-          <VotosBarra sim={sim} nao={nao} />
-          <VotosLegenda sim={sim} nao={nao} />
-        </Card>
-      </section>
-
-      {/* Votos por parlamentar */}
-      <section className="pb-16 md:pb-24 grid gap-4">
-        <h2 className="text-titulo-3">
-          Como cada parlamentar votou <span className="text-zil-texto-2 zil-num">({votos.length})</span>
-        </h2>
-
-        <BarraFiltros>
-          <Busca valor={busca} onMudar={setBusca} rotulo="Buscar parlamentar" placeholder="Buscar parlamentar, partido ou UF" className="w-full sm:w-72" />
-          <Chips>
-            <Chip ativo={!filtroVoto} onClick={() => setFiltroVoto("")}>
-              Todos
-            </Chip>
-            {Object.entries(contagem)
-              .sort((a, b) => b[1] - a[1])
-              .map(([voto, count]) => (
-                <Chip key={voto} ativo={filtroVoto === voto} n={count} onClick={() => setFiltroVoto(filtroVoto === voto ? "" : voto)}>
-                  {VOTO_LABEL[voto] ?? voto}
-                </Chip>
-              ))}
-          </Chips>
-        </BarraFiltros>
-
-        <p className="text-texto-s text-zil-texto-2 zil-num">
-          {filtered.length} {filtered.length === 1 ? "voto" : "votos"}
-          {filtroVoto ? ` — ${VOTO_LABEL[filtroVoto] ?? filtroVoto}` : ""}
-        </p>
-
-        {filtered.length === 0 ? (
-          <Vazio
-            titulo="Nenhum parlamentar com esse filtro"
-            acao={
-              <Button
-                variante="secundario"
-                onClick={() => {
-                  setBusca("");
-                  setFiltroVoto("");
-                }}
-              >
-                Limpar filtros
-              </Button>
-            }
-          >
-            Tente outro nome, partido ou UF, ou volte a ver todos os votos.
-          </Vazio>
+        {/* Plenário: hemiciclo e bancadas por UF */}
+        {votos.length === 0 ? (
+          <Aviso titulo="Votação sem voto individual">
+            Esta votação não tem registro de voto por parlamentar — em geral é uma votação simbólica, em que o
+            plenário decide sem painel (RICD art. 185). Por isso não há plenário para mostrar nem lista de nomes.
+          </Aviso>
         ) : (
-          <Lista separada>
-            {filtered.map((v) => (
-              <Linha
-                key={v.parlamentar_id}
-                href={`/parlamentar/${v.parlamentar_id}`}
-                icone={<Avatar nome={v.parlamentar_nome} tamanho="s" />}
-                titulo={v.parlamentar_nome}
-                sub={`${v.parlamentar_partido ?? "—"} · ${v.parlamentar_uf ?? "—"}`}
-                fim={<Selo tom={tomDoVoto(v.voto, votacao?.direcao_esperada)}>{VOTO_LABEL[v.voto] ?? v.voto.toUpperCase()}</Selo>}
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="grid gap-4 content-start">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-titulo-4">Plenário</h2>
+                {votacao?.resultado && <Selo tom={tomDoResultado(votacao.resultado)}>{votacao.resultado}</Selo>}
+              </div>
+              <HemicicloVotacao
+                votos={votos}
+                cadeiras={cadeiras}
+                direcao={votacao?.direcao_esperada}
+                grupo={filtroGrupo}
+                aoMudarGrupo={setFiltroGrupo}
+                uf={filtroUF}
               />
-            ))}
-          </Lista>
+            </Card>
+            <Card className="grid gap-4 content-start">
+              <div className="grid gap-1">
+                <h2 className="text-titulo-4">Como cada estado votou</h2>
+                <p className="text-texto-s text-zil-texto-2">
+                  {filtroUF ? `Filtrando por ${filtroUF} · toque de novo para tirar` : "Parcela de sim em cada bancada. Toque num estado para filtrar."}
+                </p>
+              </div>
+              <BancadasVotacao votos={votos} direcao={votacao?.direcao_esperada} uf={filtroUF} aoMudarUF={setFiltroUF} />
+            </Card>
+          </div>
         )}
       </section>
+
+      {/* Votos por parlamentar — não existe em votação simbólica (ver o aviso acima). */}
+      {votos.length > 0 && (
+        <section className="pb-16 md:pb-24 grid gap-4">
+          <h2 className="text-titulo-3">
+            Como cada parlamentar votou <span className="text-zil-texto-2 zil-num">({votos.length})</span>
+          </h2>
+
+          <BarraFiltros>
+            <Busca valor={busca} onMudar={setBusca} rotulo="Buscar parlamentar" placeholder="Buscar parlamentar, partido ou UF" className="w-full sm:w-72" />
+            <Chips>
+              <Chip ativo={!filtroGrupo} onClick={() => setFiltroGrupo("")}>
+                Todos
+              </Chip>
+              {GRUPOS.filter((g) => grupos[g] > 0).map((g) => (
+                <Chip key={g} ativo={filtroGrupo === g} n={grupos[g]} onClick={() => setFiltroGrupo(filtroGrupo === g ? "" : g)}>
+                  {ROTULO_GRUPO[g]}
+                </Chip>
+              ))}
+              {filtroUF && (
+                <Chip ativo removivel onClick={() => setFiltroUF("")} aria-label={`Tirar o filtro ${filtroUF}`}>
+                  {filtroUF}
+                </Chip>
+              )}
+            </Chips>
+          </BarraFiltros>
+
+          <p className="text-texto-s text-zil-texto-2 zil-num">
+            {filtered.length} {filtered.length === 1 ? "voto registrado" : "votos registrados"}
+            {filtroGrupo ? ` — ${ROTULO_GRUPO[filtroGrupo]}` : ""}
+            {filtroUF ? ` · ${filtroUF}` : ""}
+            {filtroGrupo === "nao_votou" && semRegistro > 0 &&
+              `. Outros ${semRegistro} não registraram voto e não aparecem na lista da Câmara.`}
+          </p>
+
+          {filtered.length === 0 ? (
+            <Vazio
+              titulo="Nenhum parlamentar com esse filtro"
+              acao={
+                <Button
+                  variante="secundario"
+                  onClick={() => {
+                    setBusca("");
+                    setFiltroGrupo("");
+                    setFiltroUF("");
+                  }}
+                >
+                  Limpar filtros
+                </Button>
+              }
+            >
+              Tente outro nome, partido ou UF, ou volte a ver todos os votos.
+            </Vazio>
+          ) : (
+            <Lista separada>
+              {filtered.map((v) => (
+                <Linha
+                  key={v.parlamentar_id}
+                  href={`/parlamentar/${v.parlamentar_id}`}
+                  icone={<Avatar nome={v.parlamentar_nome} tamanho="s" />}
+                  titulo={v.parlamentar_nome}
+                  sub={`${v.parlamentar_partido ?? "—"} · ${v.parlamentar_uf ?? "—"}`}
+                  fim={<Selo tom={tomDoVoto(v.voto, votacao?.direcao_esperada)}>{ROTULO_VOTO[v.voto] ?? v.voto.toUpperCase()}</Selo>}
+                />
+              ))}
+            </Lista>
+          )}
+        </section>
+      )}
     </div>
   );
 }

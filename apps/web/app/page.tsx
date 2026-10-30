@@ -1,6 +1,7 @@
 import { Button, Card, Citacao, Contador, Estat, Icone, Lista, Linha, Painel, Revelar, Selo, TituloSecao, type NomeIcone } from "@/components/ui";
 import { ScoreExplainer } from "@/components/ScoreExplainer";
 import { RankingPreview } from "@/components/RankingPreview";
+import { VotacaoDestaque } from "@/components/VotacaoDestaque";
 import { rankingPublico } from "@/lib/flags";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { Newsletter } from "@/components/Newsletter";
@@ -223,14 +224,19 @@ export default function HomePage() {
         <ScoreExplainer />
       </section>
 
-      {/* ═══════ 06 — PRÉVIA DO RANKING ═══════ */}
-      {/* A seção inteira sai enquanto o ranking não for público: manter só o
-          cabeçalho anunciaria um conteúdo que não está lá. */}
+      {/* ═══════ 06 — VOTAÇÃO EM DESTAQUE ═══════ */}
+      {/* Vale com o ranking fechado: é o que aconteceu no plenário, não um
+          score. Some sozinha se a API não responder. */}
+      <VotacaoDestaque />
+
+      {/* Prévia do ranking, continuação da 06. A seção inteira sai enquanto
+          o ranking não for público: manter só o cabeçalho anunciaria um
+          conteúdo que não está lá. */}
       {rankingPublico && (
-        <section className="zil-secao">
+        <section className="pb-16 md:pb-24">
           <TituloSecao
-            chapeu="06"
             titulo="Como votaram nas pautas que mais importam"
+            tamanho="titulo-3"
             descricao="Score de alinhamento calculado a partir de votos reais em pautas de soberania industrial."
           />
           <RankingPreview />

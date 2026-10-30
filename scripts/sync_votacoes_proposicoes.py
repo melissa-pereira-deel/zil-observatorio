@@ -43,18 +43,8 @@ from apps.workers.classifiers import classificar_votacao
 
 logger = logging.getLogger(__name__)
 
-VOTO_MAP = {
-    "Sim": VotoEnum.SIM,
-    "Não": VotoEnum.NAO,
-    "Abstenção": VotoEnum.ABSTENCAO,
-    "Obstrução": VotoEnum.OBSTRUCAO,
-    "Art. 17": VotoEnum.ARTIGO_17,
-}
-
-
-def normalizar_voto(tipo_voto: str) -> VotoEnum:
-    """Converte string de voto da API para enum interno."""
-    return VOTO_MAP.get(tipo_voto, VotoEnum.AUSENTE)
+# O mapa de tipoVoto é um só para os três syncs da Câmara.
+from apps.workers.crawlers.camara import normalizar_voto  # noqa: E402
 
 
 def sync_votacoes_por_proposicao(
