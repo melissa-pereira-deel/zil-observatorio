@@ -1,5 +1,11 @@
 # 012 — Enriquecimento de Dados de Proposicoes
 
+> **F-001, F-003, F-007 e F-008 foram revistos em
+> [`docs/DISCOVERY-TRAMITACAO.md`](../../docs/DISCOVERY-TRAMITACAO.md)
+> (2026-10-30)**: lei resultante não sai de `urnFinal` (sempre nulo), e cores
+> verde/vermelho por situação conflitam com o kit, onde essas cores dizem
+> alinhamento. F-002, F-004, F-005 e F-006 continuam valendo.
+
 ## Overview
 
 O ZIL Observatorio utiliza apenas 25% dos dados disponiveis na API da Camara dos Deputados para proposicoes legislativas. Campos de alto valor como autoria, temas oficiais, regime legislativo, situacao estruturada, cadeia legislativa e resultado de votacao nao sao persistidos nem exibidos. Este feature enriquece o modelo de dados, o pipeline de ingestao e a UI para fornecer ao cidadao uma visao completa do ciclo de vida legislativo.
