@@ -107,6 +107,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- `apps/web/app/page.tsx`: os quatro números soltos no fim da abertura saem.
+  O único contraste que carrega o argumento, Pix × fertilizantes, passa para
+  a seção 02, logo depois da frase que ele ilustra, com fertilizantes em 85%
+  (linha de base oficial do PNF, a mesma da Bússola) em vez de 87%. Nióbio e
+  renováveis (este desatualizado: BEN 2026 dá 86,8%) ficam só na Bússola. O
+  rodapé mostra `github/zil-observatorio`, com o link para o repositório real
+  e o endereço completo no `title`.
 - `apps/web/app/page.tsx`: a seção 09 da home deixa de ser "Acesso livre por
   design", que repetia valores (04, 08), o catálogo de "Como funciona hoje" e o
   futuro de "Para onde vamos", e passa a responder uma pergunta só: "O que dá

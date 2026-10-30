@@ -8,16 +8,12 @@ import { API_DOCS_URL, CONTRIBUIR_URL, ROADMAP_URL } from "@/lib/links";
 
 /* ── Dados estáticos do manifesto ── */
 
-// Cada número leva a fonte ao lado (ZIL Interface: "números têm fonte").
-// Dois pares, que respondem às duas frases do título: o que já provamos e
-// o que ainda falta convergir.
-const PROVAS = [
+// O contraste da seção 02, em dois números com fonte: o que o país sabe
+// fazer e o que ainda depende de fora. Fertilizantes usa a linha de base
+// oficial do Plano Nacional de Fertilizantes, a mesma da Bússola.
+const CONTRASTE = [
   { ate: 177, sufixo: " mi", rotulo: "brasileiros usam o Pix", fonte: "Banco Central" },
-  { ate: 83, sufixo: "%", rotulo: "da eletricidade vem de fontes renováveis", fonte: "EPE, Balanço Energético" },
-];
-const FALTAS = [
-  { ate: 87, sufixo: "%", rotulo: "dos fertilizantes são importados", fonte: "ANDA / MAPA" },
-  { ate: 94, sufixo: "%", rotulo: "das reservas de nióbio são nossas — e sai quase tudo bruto", fonte: "USGS" },
+  { ate: 85, sufixo: "%", rotulo: "do fertilizante usado no campo vem de fora", fonte: "MAPA, Plano Nacional de Fertilizantes" },
 ];
 
 const CONQUISTAS = [
@@ -129,26 +125,6 @@ export default function HomePage() {
           <div aria-hidden="true" className="aspect-[16/9] lg:aspect-[4/5] w-full rounded-xl bg-zil-superficie-1" />
         </div>
 
-        {/* Os dois pares só ficam lado a lado a partir de lg: em 768px, quatro
-            cartões numa linha espremem "177 mi" em duas linhas. */}
-        <Revelar className="grid gap-6 lg:grid-cols-2">
-          <div className="grid gap-3 content-start">
-            <p className="text-rotulo uppercase text-zil-texto-2">Já provou que pode</p>
-            <div className="grid grid-cols-2 gap-4 md:gap-6">
-              {PROVAS.map((n) => (
-                <Estat key={n.rotulo} n={<Contador ate={n.ate} sufixo={n.sufixo} />} rotulo={n.rotulo} fonte={n.fonte} />
-              ))}
-            </div>
-          </div>
-          <div className="grid gap-3 content-start">
-            <p className="text-rotulo uppercase text-zil-texto-2">Falta convergir</p>
-            <div className="grid grid-cols-2 gap-4 md:gap-6">
-              {FALTAS.map((n) => (
-                <Estat key={n.rotulo} n={<Contador ate={n.ate} sufixo={n.sufixo} />} rotulo={n.rotulo} fonte={n.fonte} />
-              ))}
-            </div>
-          </div>
-        </Revelar>
       </header>
 
       {/* ═══════ 01 — CONQUISTAS ═══════ */}
@@ -171,10 +147,15 @@ export default function HomePage() {
       <section className="zil-secao">
         <TituloSecao chapeu="02" titulo="Por que paramos?" />
         <div className="zil-leitura">
-          <p>
-            O mesmo país que criou o PIX — US$4,6 trilhões processados em 2024 — importa 87% dos fertilizantes. Exporta petróleo e importa
-            gasolina.
-          </p>
+          <p>O mesmo país que criou o Pix importa quase todo o fertilizante que usa. Exporta petróleo e importa gasolina.</p>
+        </div>
+        {/* O par ilustra a frase de cima; vem depois dela, não antes. */}
+        <Revelar className="grid grid-cols-2 gap-4 md:gap-6 max-w-leitura my-8 md:my-10">
+          {CONTRASTE.map((n) => (
+            <Estat key={n.rotulo} n={<Contador ate={n.ate} sufixo={n.sufixo} />} rotulo={n.rotulo} fonte={n.fonte} />
+          ))}
+        </Revelar>
+        <div className="zil-leitura">
           <p>
             Em três décadas, desmontamos capacidade que levou gerações para construir. A Petrobras fechou fábricas de fertilizantes. A Vale foi
             privatizada por fração do valor. A estatal de chips, liquidada.
