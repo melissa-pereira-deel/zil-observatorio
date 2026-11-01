@@ -36,13 +36,26 @@ VOTO_MAP = {
     "Não": VotoEnum.NAO,
     "Abstenção": VotoEnum.ABSTENCAO,
     "Obstrução": VotoEnum.OBSTRUCAO,
+    # A API escreve "Artigo 17" (conferido em 2026-10-30 na votação
+    # 2269745-144). "Art. 17" fica por precaução. Sem isso o presidente da
+    # sessão, que não vota (RICD art. 17), virava ausente — e ausente entra
+    # no denominador do score.
+    "Artigo 17": VotoEnum.ARTIGO_17,
     "Art. 17": VotoEnum.ARTIGO_17,
 }
 
 
 def normalizar_voto(tipo_voto: str) -> VotoEnum:
-    """Converte string de voto da API para enum interno."""
-    return VOTO_MAP.get(tipo_voto, VotoEnum.AUSENTE)
+    """Converte string de voto da API para enum interno.
+
+    Usada também por scripts/sync_votacoes_zil.py e
+    scripts/sync_votacoes_proposicoes.py: um mapa só para os três syncs.
+    """
+    voto = VOTO_MAP.get(tipo_voto)
+    if voto is None:
+        logger.warning(f"tipoVoto desconhecido da Câmara: {tipo_voto!r} — gravado como ausente")
+        return VotoEnum.AUSENTE
+    return voto
 
 
 def _upsert_proposicao(db: Session, client: CamaraClient, prop_data: dict) -> Optional[Proposicao]:
