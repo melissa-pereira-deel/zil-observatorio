@@ -6,15 +6,20 @@
 # Não constam neste blueprint, deliberadamente:
 #   - Typesense: declarado no docker-compose mas não usado em linha nenhuma
 #     de código. Subir em produção seria pagar por um serviço morto.
-#   - Redis + workers Celery: só fazem sync agendado. Enquanto o volume for
-#     baixo, rodar o pipeline manualmente da máquina da maintainer é suficiente
-#     e evita dois serviços. Ver "Quando ligar os workers" em docs/DEPLOY.md.
+#   - Redis + workers Celery: só fazem sync agendado, e o agendamento roda
+#     no GitHub Actions (.github/workflows/dados.yml, scripts/agenda.py),
+#     de graça porque o repositório é público. Ver "Cron" em docs/DEPLOY.md.
 
 databases:
   - name: zil-db
     databaseName: zil
     user: zil
-    plan: free
+    # Pago de propósito. O Postgres gratuito do Render expira 30 dias depois
+    # de criado e é apagado após 14 de carência, sem backup: publicaria um
+    # banco com data para morrer. O basic-256mb é o menor plano pago e, ao
+    # contrário do gratuito, tem backup. Confira o preço no resumo do
+    # blueprint antes de aplicar.
+    plan: basic-256mb
     region: virginia
 
 services:

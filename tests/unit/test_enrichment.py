@@ -521,3 +521,83 @@ class TestAugment:
         )
         res = consultar("claude-sonnet-5-5", "s", "p", max_tokens=100, api_key=_FICTICIA)
         assert res["error"] == "recusa do modelo (cyber)"
+
+
+# ── Recusa do modelo no lugar do resumo ───────────────────────────────────────
+
+class TestEhRecusa:
+    """Textos reais do banco de desenvolvimento, gravados como `pronto` até 2026-10-30."""
+
+    @pytest.mark.parametrize("resumo", [
+        "Não tenho informações suficientes para explicar esta proposição. O contexto fornecido apenas menciona que a lei institui o Programa de Aceleração da Transição Energética.",
+        "Não tenho informação suficiente nos documentos fornecidos para explicar adequadamente esta proposição.",
+        "Não posso explicar esta proposição porque não recebi o contexto das leis referenciadas.",
+        "Não há contexto legal disponível para explicar esta proposição. O sistema não recebeu o texto da lei.",
+        "Não é possível fornecer um resumo desta proposição. O contexto disponibilizado não contém o texto da lei.",
+        "Não consigo fornecer um resumo adequado porque o contexto fornecido está vazio — não há nenhum artigo.",
+        "Não foi fornecido o texto completo da proposição no contexto.",
+        "Não tenho informações suficientes para explicar esta proposição. O contexto fornecido não contém o texto da Lei nº 6.894, de 16 de dezembro de 1980.",
+        "",
+        "   ",
+        None,
+    ])
+    def test_recusas(self, resumo):
+        from apps.workers.enrichment import eh_recusa
+        assert eh_recusa(resumo)
+
+    @pytest.mark.parametrize("resumo", [
+        # MPV 1.198/2023: resumo bom com uma ressalva no fim — a query de
+        # diagnóstico por "informações suficientes" pegava este também.
+        "Esta proposição cria um programa de poupança para estudantes do ensino médio. "
+        "Não há informações suficientes no contexto fornecido para detalhar o funcionamento específico ou valores envolvidos.",
+        "Não há hoje regra federal para o descarte de baterias de lítio; esta proposição cria uma.",
+        "Esta proposição modifica o Código Brasileiro de Aeronáutica para melhorar a resposta a incêndios florestais.",
+    ])
+    def test_resumos_legitimos(self, resumo):
+        from apps.workers.enrichment import eh_recusa
+        assert not eh_recusa(resumo)
+
+    def test_prompt_da_saida_declarada_para_a_recusa(self):
+        from apps.workers.enrichment import _SYSTEM_PROMPT
+        assert "informacao_suficiente" in _build_user_prompt("Institui o PATEN.", [])
+        assert "informacao_suficiente" in _SYSTEM_PROMPT
+
+
+class TestEnriquecerRecusa:
+    def _rodar(self, llm_response):
+        from apps.workers.enrichment import enriquecer_proposicao
+        from uuid import uuid4
+
+        prop = MagicMock()
+        prop.ementa = "Institui o Programa de Aceleração da Transição Energética (Paten)."
+        prop.ementa_hash = None
+        prop.contexto_status = None
+        db = TestEnriquecerProposicao()._make_db(prop)
+
+        with patch("apps.workers.enrichment.augment_with_llm", return_value=llm_response):
+            result = enriquecer_proposicao(uuid4(), db)
+        return prop, result
+
+    def test_recusa_declarada_vira_llm_recusou(self):
+        prop, result = self._rodar({"resumo_simples": "", "glossario": {}, "impacto_zil": "", "informacao_suficiente": False})
+        assert result["status"] == "llm_recusou"
+        assert prop.contexto_status == "llm_recusou"
+
+    def test_recusa_escrita_no_resumo_vira_llm_recusou(self):
+        prop, result = self._rodar({
+            "resumo_simples": "Não tenho informações suficientes para explicar esta proposição. O contexto fornecido apenas menciona o Paten.",
+            "glossario": {"Paten": "Sigla do programa"},
+            "impacto_zil": "Não posso avaliar o impacto.",
+        })
+        assert result["status"] == "llm_recusou"
+        assert prop.contexto_status == "llm_recusou"
+
+    def test_resumo_de_verdade_continua_pronto(self):
+        prop, result = self._rodar({
+            "resumo_simples": "Cria um programa para financiar projetos de energia limpa.",
+            "glossario": {},
+            "impacto_zil": "Energia.",
+            "informacao_suficiente": True,
+        })
+        assert result["status"] == "pronto"
+        assert prop.contexto_status == "pronto"

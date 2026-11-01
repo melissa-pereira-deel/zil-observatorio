@@ -22,7 +22,8 @@
 | Enriquecimento | Claude Haiku 4.5 via `ANTHROPIC_API_KEY` (opcional em dev) |
 | Testes | pytest 8 (320 testes, todos passando) |
 | Linting | ruff 0.8.6 (Python), ESLint + `next/core-web-vitals` (TypeScript) |
-| CI | GitHub Actions — 4 jobs, todos verdes |
+| CI | GitHub Actions — 4 jobs, todos verdes. Repositório público: minutos de Actions não custam nada |
+| Cron de produção | GitHub Actions (`dados`, `direcoes`, `acordar-api`) rodando `scripts/agenda.py` — ver "Cron" em [docs/DEPLOY.md](docs/DEPLOY.md) |
 
 ---
 
@@ -44,7 +45,7 @@ scripts/           curadoria: candidatas.py | dossie.py | validar_direcoes.py | 
                    painel: painel.py (calibração da Fase 1)
                    sync: sync_votacoes_zil.py | sync_votacoes_proposicoes.py
                          discover_proposicoes.py | sync_pipeline.py
-                   infra: migrate_enrichment.py | seed.py | start-dev.sh
+                   infra: migrate_enrichment.py | seed.py | start-dev.sh | marcar_recusas.py
                    backlog: recalcular_scores.py (não existe — ver o one-liner em "Comandos")
 tests/             unit/ (242) integration/ (52) contract/ (7) + 19 na raiz = 320
 specs/             001-camara-api-ingestao | 002-legislative-enrichment-pipeline
@@ -119,6 +120,10 @@ python3 scripts/sync_pipeline.py                                   # discovery �
 python3 scripts/sync_pipeline.py --dry-run                         # preview completo
 python3 scripts/sync_pipeline.py --skip-enrichment --skip-scores   # só discovery + votações
 python3 scripts/sync_pipeline.py --skip-discovery --skip-votacoes  # só enrichment + scores
+
+# Recusas do modelo gravadas como resumo `pronto` antes de 2026-10-30 → `llm_recusou`
+python3 scripts/marcar_recusas.py --dry-run   # lista
+python3 scripts/marcar_recusas.py             # re-marca (só o status; o texto fica)
 
 # Descoberta de proposições (busca na API da Câmara por keywords ZIL)
 python3 scripts/discover_proposicoes.py --dry-run              # apenas mostra o que seria descoberto
@@ -292,7 +297,7 @@ Resolvidas, mas entender o porquê evita reintroduzi-las:
 
 | Item | Problema |
 |------|----------|
-| Deploy em produção | **Preparado, não executado.** `render.yaml` (API + Postgres) e o runbook em [docs/DEPLOY.md](docs/DEPLOY.md) existem; o que falta é rodar o blueprint no Render e conectar o frontend na Vercel. Não há `vercel.json` (a Vercel detecta Next.js sozinha) nem workflow de deploy — as duas plataformas fazem build no push. Typesense e os workers Celery ficam deliberadamente fora de produção; o porquê está no `render.yaml`. |
+| Deploy em produção | **Preparado, não executado.** `render.yaml` (API no plano gratuito, Postgres no `basic-256mb` — o gratuito expira em 30 dias), o cron em `.github/workflows/` e o runbook em [docs/DEPLOY.md](docs/DEPLOY.md) existem; o que falta é rodar o blueprint no Render, cadastrar os segredos `PRODUCAO_DATABASE_URL` e `ANTHROPIC_API_KEY` no GitHub, popular o banco pelos workflows e conectar o frontend na Vercel. Não há `vercel.json` (a Vercel detecta Next.js sozinha) nem workflow de deploy — as duas plataformas fazem build no push. Typesense e os workers Celery ficam fora de produção; o agendamento é do Actions. |
 | Código dormente | Tabela `Financiamento` e enums `TipoAlerta`, `CanalAlerta`, `TipoFinanciamento` declarados e sem uso — resquícios de v2/v3. Conferido: nenhum uso fora de `apps/api/models/`. |
 | Lint em `tests/` | 56 erros de ruff em `tests/`, fora do escopo da CI (que cobre só `apps/` e `packages/`, e passa limpo). |
 

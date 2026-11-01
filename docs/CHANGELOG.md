@@ -10,6 +10,17 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Cron de produção no GitHub Actions** (`scripts/agenda.py`,
+  `.github/workflows/dados.yml`, `direcoes.yml`, `acordar-api.yml`): os jobs
+  do Celery beat como subcomandos de linha de comando (`diario`, `cadastros`,
+  `enriquecer --limite N`, e cada passo isolado), registrando cada passo em
+  `ingestion_runs` pelo mesmo caminho das tasks (`apps/workers/execucoes.py`).
+  `dados` roda o sync diário, os cadastros às segundas e o enriquecimento com
+  LLM às quartas (até 30); `direcoes` aplica a curadoria a cada merge em
+  `data/direcoes/`; `acordar-api` mantém a API gratuita acordada quando a
+  variável `API_PUBLICA_URL` existe.
+- `scripts/sync_pipeline.py --limite N`: o enriquecimento processa só as N
+  proposições pendentes mais recentes.
 - **Plenário das votações** (`components/ui/Hemiciclo.tsx`, `MapaUF.tsx`,
   `Histograma.tsx`, `components/PlenarioVotacao.tsx`, `lib/votacao.ts`), do
   artboard "Placar" do canvas de redesign:
@@ -135,6 +146,10 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   renováveis (este desatualizado: BEN 2026 dá 86,8%) ficam só na Bússola. O
   rodapé mostra `github/zil-observatorio`, com o link para o repositório real
   e o endereço completo no `title`.
+- **Postgres de produção no plano pago** (`render.yaml`, `basic-256mb`): o
+  gratuito do Render expira em 30 dias e é apagado sem backup. `docs/DEPLOY.md`
+  passa a popular o banco pelos workflows e ganha a seção "Cron"; "Quando
+  ligar os workers" sai, porque o Actions cobre o agendamento.
 - `apps/web/app/page.tsx`: a seção 09 da home deixa de ser "Acesso livre por
   design", que repetia valores (04, 08), o catálogo de "Como funciona hoje" e o
   futuro de "Para onde vamos", e passa a responder uma pergunta só: "O que dá
@@ -272,7 +287,20 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
-
+- **Recusas do modelo apareciam como resumo** (`apps/workers/enrichment/__init__.py`,
+  `apps/api/schemas/__init__.py`, `apps/api/routers/`, `apps/web/app/proposicoes/page.tsx`).
+  O system prompt mandava o modelo "dizer que não sabe" sem lhe dar onde, e a
+  validação só truncava o texto: "Não tenho informações suficientes para
+  explicar esta proposição…" ia para o `resumo_simples` como JSON válido,
+  gravado `pronto`, e aparecia em `/proposicoes` e `/proposicoes/[id]`. Eram 56
+  das 240 proposições do banco de desenvolvimento, quase todas sem lei citada.
+  Agora o prompt tem a saída declarada `informacao_suficiente: false`, o
+  detector `eh_recusa` pega quem escreve a recusa mesmo assim, e a recusa grava
+  o status novo `llm_recusou` — não `pendente`, que a task horária refaria com
+  o mesmo resultado. O texto fica para auditoria; a API só expõe resumo,
+  glossário e impacto de proposição `pronto`.
+- `scripts/marcar_recusas.py`: re-marca como `llm_recusou` as recusas já
+  gravadas como `pronto` (`--dry-run` para listar). Só muda o status.
 - Voto do presidente da sessão: a Câmara manda `"Artigo 17"`, e os três
   syncs só conheciam `"Art. 17"` — o presidente virava ausente. Um mapa só
   em `apps/workers/crawlers/camara.py`, e tipo desconhecido agora gera aviso

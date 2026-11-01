@@ -79,13 +79,16 @@ def step2_sync_votacoes(db: Session, dry_run: bool) -> dict:
     return result
 
 
-def step3_enrich(db: Session, dry_run: bool, refazer_citacoes: bool = False) -> dict:
+def step3_enrich(db: Session, dry_run: bool, refazer_citacoes: bool = False, limite: int | None = None) -> dict:
     """Step 3: Enrich pending proposições via LLM.
 
     Com `refazer_citacoes`, reprocessa (force) as prontas com confiança < 1:
     até 2026-10-29 toda lei citada com algum dispositivo revogado saía como
     "revogada", a confiança ia a zero e o prompt dizia ao modelo que a lei
     estava revogada. As que não citam lei têm confiança 1 e não mudam.
+
+    Com `limite`, processa só as N mais recentes por data de apresentação —
+    é o que o cron semanal usa para o custo do LLM ser previsível.
     """
     from models import Proposicao
     from apps.workers.enrichment import enriquecer_proposicao
@@ -103,9 +106,10 @@ def step3_enrich(db: Session, dry_run: bool, refazer_citacoes: bool = False) -> 
         )
         descricao = "pendentes de enriquecimento"
 
-    ids = db.execute(
-        select(Proposicao.id).where(*filtro, Proposicao.categorias_zil.isnot(None))
-    ).scalars().all()
+    consulta = select(Proposicao.id).where(*filtro, Proposicao.categorias_zil.isnot(None))
+    if limite is not None:
+        consulta = consulta.order_by(Proposicao.data_apresentacao.desc().nullslast()).limit(limite)
+    ids = db.execute(consulta).scalars().all()
 
     if not ids:
         print(f"  Nenhuma proposição {descricao}.")
@@ -212,6 +216,12 @@ def main():
         help="Step 3 reprocessa só as prontas com confiança < 1 (lei citada)",
     )
     parser.add_argument(
+        "--limite",
+        type=int,
+        default=None,
+        help="Step 3 processa só as N proposições mais recentes",
+    )
+    parser.add_argument(
         "--ano-inicio",
         type=int,
         default=2020,
@@ -261,7 +271,7 @@ def main():
         # Step 3: Enrichment
         if not args.skip_enrichment:
             try:
-                results["enrichment"] = step3_enrich(db, args.dry_run, args.refazer_citacoes)
+                results["enrichment"] = step3_enrich(db, args.dry_run, args.refazer_citacoes, limite=args.limite)
             except Exception as e:
                 logger.error(f"Step 3 falhou: {e}")
                 traceback.print_exc()

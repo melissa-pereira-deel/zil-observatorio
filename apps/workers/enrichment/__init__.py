@@ -409,7 +409,8 @@ _SYSTEM_PROMPT = (
     "Você é um especialista em legislação brasileira que explica leis em linguagem "
     "acessível para cidadãos sem formação jurídica. "
     "Use APENAS o contexto fornecido — nunca use conhecimento externo. "
-    "Se não tiver informação suficiente, diga que não sabe."
+    "Se não tiver informação suficiente, diga isso no campo informacao_suficiente, "
+    "nunca no texto do resumo."
 )
 
 
@@ -443,10 +444,12 @@ Responda em JSON com exatamente estes campos:
 {{
   "resumo_simples": "3 a 5 frases em português simples explicando o que esta proposição faz e seu impacto prático",
   "glossario": {{"termo1": "definição em 1 frase", "termo2": "definição em 1 frase"}},
-  "impacto_zil": "1 a 2 frases sobre por que esta proposição é relevante para soberania industrial brasileira"
+  "impacto_zil": "1 a 2 frases sobre por que esta proposição é relevante para soberania industrial brasileira",
+  "informacao_suficiente": true
 }}
 
 Regras:
+- Se o contexto e a ementa não bastarem para explicar a proposição, responda "informacao_suficiente": false e deixe os outros campos vazios; nunca escreva a recusa dentro do resumo_simples
 - resumo_simples: máximo 5 frases, linguagem acessível (nível ensino médio)
 - glossario: máximo 10 termos técnicos presentes na proposição, cada definição em 1 frase simples
 - impacto_zil: foco em semicondutores, energia, minerais, defesa, fertilizantes, digital ou comércio exterior
@@ -482,6 +485,30 @@ def augment_with_llm(ementa: str, artigos: list[ArtigoResolvido], modelo: str) -
 
 
 # ── Stage 4 — VALIDATE ────────────────────────────────────────────────────────
+
+# Recusa escrita no lugar do resumo. Até 2026-10-30 o system prompt mandava o
+# modelo "dizer que não sabe" sem lhe dar onde dizer, e a recusa ia para o
+# `resumo_simples` como JSON válido, gravada como `pronto`: 56 das 240
+# proposições do banco de desenvolvimento, quase todas sem lei citada, em que o
+# bloco de contexto chega como "(nenhum artigo resolvido com sucesso)". O
+# campo `informacao_suficiente` é a saída declarada; este padrão cobre quem
+# escreve a recusa mesmo assim, e os registros gravados antes dele.
+#
+# Só a primeira frase decide, e ela precisa negar e dar o motivo: um resumo
+# bom que termina com "não há informações suficientes para detalhar os
+# valores" (MPV 1.198/2023) não é recusa.
+_RECUSA = re.compile(
+    r"^\W*n[ãa]o\s+(?:tenho|h[áa]|posso|consigo|[ée]\s+poss[íi]vel|sei|recebi|foi)\b"
+    r"[^.]*?"
+    r"(?:contexto|informa[çc](?:[ãa]o|[õo]es)\s+suficientes?|fornec|disponibiliz|nenhum\s+artigo|texto\s+d[ao])",
+    re.IGNORECASE,
+)
+
+
+def eh_recusa(resumo: Optional[str]) -> bool:
+    """O resumo é uma recusa do modelo, e não um resumo? Vazio também conta."""
+    return not (resumo or "").strip() or bool(_RECUSA.search(resumo))
+
 
 def validate_enrichment(
     llm_result: dict,
@@ -573,6 +600,14 @@ def enriquecer_proposicao(
         # Stage 4
         validated, confianca = validate_enrichment(llm_result, citacoes, artigos)
         logger.info(f"[VALIDATE] confianca={confianca}")
+        recusou = llm_result.get("informacao_suficiente") is False or eh_recusa(validated["resumo_simples"])
+        # A recusa fica gravada para auditoria; o status é o que a impede de
+        # ser publicada (a API só expõe o resumo de quem está `pronto`). Não é
+        # `pendente` de propósito: a task horária refaria a chamada, com o
+        # mesmo contexto e a mesma recusa.
+        status = "llm_recusou" if recusou else "pronto"
+        if recusou:
+            logger.warning(f"[VALIDATE] recusa do modelo proposicao={proposicao_id}")
 
         # Stage 5 — atomic persist
         proposicao.resumo_simples = validated["resumo_simples"]
@@ -590,12 +625,12 @@ def enriquecer_proposicao(
         ] or None
         proposicao.confianca = confianca
         proposicao.enriquecido_em = datetime.utcnow()
-        proposicao.contexto_status = "pronto"
+        proposicao.contexto_status = status
         db.commit()
 
-        logger.info(f"[SERVE] done proposicao={proposicao_id} confianca={confianca}")
+        logger.info(f"[SERVE] done proposicao={proposicao_id} status={status} confianca={confianca}")
         return {
-            "status": "pronto",
+            "status": status,
             "confianca": confianca,
             "citacoes": len(citacoes),
             "artigos_resolvidos": sum(1 for a in artigos if a.status in ("resolvido", "artigo_revogado")),

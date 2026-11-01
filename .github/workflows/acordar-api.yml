@@ -1,0 +1,41 @@
+# Mantém a API acordada. No plano gratuito do Render ela dorme após 15
+# minutos sem tráfego e leva cerca de um minuto para acordar; como o site
+# busca os dados do navegador, o primeiro visitante depois de um intervalo
+# veria esqueleto por esse minuto. Um ping a cada 14 minutos evita isso.
+#
+# Ligado 24/7, o serviço gasta ~744 das 750 horas gratuitas do mês do
+# Render — cabe, mas não sobra para um segundo serviço gratuito.
+#
+# Limites honestos:
+#   - o agendador do GitHub atrasa ou pula execuções em horário de pico,
+#     então um acordar lento ainda acontece de vez em quando;
+#   - workflows agendados em repositório público são desligados após 60
+#     dias sem commit no repositório (o `dados` diário não conta). O GitHub
+#     avisa por e-mail antes; reative em Actions.
+# Se isso incomodar, troque a API para `plan: starter` no render.yaml e
+# apague este arquivo.
+#
+# Só roda quando a variável de repositório API_PUBLICA_URL existe
+# (Settings → Secrets and variables → Actions → Variables), por exemplo
+# https://api.zilobservatorio.com.br. Sem ela, cada execução termina sem
+# fazer nada — assim o merge deste arquivo não gera falha a cada 14 minutos
+# antes do deploy.
+
+name: acordar-api
+
+on:
+  schedule:
+    - cron: "*/14 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    if: ${{ vars.API_PUBLICA_URL != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - env:
+          API: ${{ vars.API_PUBLICA_URL }}
+        run: curl -fsS --max-time 90 --retry 2 "$API/health"
