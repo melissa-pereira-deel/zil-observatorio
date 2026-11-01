@@ -4,7 +4,7 @@ from datetime import datetime, date
 from uuid import UUID
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 
 # ── Parlamentar ──
@@ -65,6 +65,14 @@ class ProposicaoRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+    @model_validator(mode="after")
+    def _resumo_so_quando_pronto(self):
+        # Mesma regra de `Proposicao.resumo_publicavel`: uma recusa do modelo
+        # (`llm_recusou`) não pode chegar à lista como se fosse resumo.
+        if self.contexto_status != "pronto":
+            self.resumo_simples = None
+        return self
 
 
 # ── Enrichment / Contexto (Feature 002) ──

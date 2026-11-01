@@ -62,31 +62,11 @@ def _get_db():
     return SessionLocal()
 
 
-def _open_ingestion_run(db, tipo: str, ano: int | None = None):
-    """Create an IngestionRun record and return it."""
-    from apps.api.models import IngestionRun
-    run = IngestionRun(
-        tipo=tipo,
-        ano=ano,
-        status="running",
-        iniciado_em=datetime.utcnow(),
-    )
-    db.add(run)
-    db.commit()
-    db.refresh(run)
-    return run
-
-
-def _close_ingestion_run(db, run, *, status: str, processados: int, criados: int, atualizados: int, erros: int, erro_detalhes: list | None = None) -> None:
-    run.status = status
-    run.finalizado_em = datetime.utcnow()
-    run.registros_processados = processados
-    run.registros_criados = criados
-    run.registros_atualizados = atualizados
-    run.erros_count = erros
-    if erro_detalhes:
-        run.erro_detalhes = erro_detalhes
-    db.commit()
+# O registro de execuções vive em execucoes.py, compartilhado com
+# scripts/agenda.py (o cron do GitHub Actions). Os nomes antigos ficam como
+# apelidos para as tasks abaixo.
+from apps.workers.execucoes import abrir_execucao as _open_ingestion_run  # noqa: E402
+from apps.workers.execucoes import fechar_execucao as _close_ingestion_run  # noqa: E402
 
 
 @app.task(

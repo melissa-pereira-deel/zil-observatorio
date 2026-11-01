@@ -105,7 +105,11 @@ class Proposicao(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     # ── Enrichment fields (Feature 002) ──
-    contexto_status: Mapped[Optional[str]] = mapped_column(String(20))  # pendente|processando|pronto|falhou|llm_falhou
+    # pendente|processando|pronto|falhou|llm_falhou|llm_recusou — `llm_recusou`:
+    # o modelo respondeu, mas com uma recusa ("não tenho informações
+    # suficientes…") em vez de resumo. O texto fica para auditoria, não para
+    # exibição — ver `resumo_publicavel`.
+    contexto_status: Mapped[Optional[str]] = mapped_column(String(20))
     resumo_simples: Mapped[Optional[str]] = mapped_column(Text)
     glossario: Mapped[Optional[dict]] = mapped_column(JSON)
     impacto_zil: Mapped[Optional[str]] = mapped_column(Text)
@@ -122,6 +126,11 @@ class Proposicao(Base):
         Index("ix_proposicao_tipo_ano", "tipo", "ano"),
         Index("ix_proposicao_contexto_status", "contexto_status"),
     )
+
+    @property
+    def resumo_publicavel(self) -> Optional[str]:
+        """O resumo só vai a público com a análise `pronto`."""
+        return self.resumo_simples if self.contexto_status == "pronto" else None
 
 
 class Votacao(Base):
