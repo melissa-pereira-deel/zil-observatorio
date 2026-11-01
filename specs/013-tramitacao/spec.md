@@ -198,10 +198,11 @@ spec.
 | 0 | TRM-020 | Snapshots das tabelas de referência + script de atualização com diff + `nao_mapeados.yml` | E2 | P0 | Agora | P | Arquitetura | — | dados |
 | 0 | TRM-021a | Mapa, parte a: esquema, carga, `packages/tramitacao/revisao.py` (`hash_entrada`, `entradas_publicaveis`), esqueleto | E2 | P0 | Agora | M | Arquitetura | — (só esquema) | dados |
 | 0 | TRM-046-A | Matriz de estados e textos, parte A: `textos.ts`, espécies, campos de F0 de `Proposicao` | E4 | P1 | Agora | P | UI/UX | contratos do brief | interface |
-| 1 | TRM-010 | `registrar_proposicao` único, sempre com detalhe | E1 | P0 | Agora | M | Arquitetura | 011, 002 | dados |
-| 1 | TRM-013 | Norma resultante pelo despacho + URN e links | E1 | P0 | Agora | P | Arquitetura | 011, 002 | dados |
+| 1 | TRM-012a | Cliente da Câmara: `Retry-After`, contador, exceções, métodos estritos | E1 | P0 | Agora | P | Arquitetura | 002 | dados |
+| 1 | TRM-010 | `registrar_proposicao` único, sempre com detalhe | E1 | P0 | Agora | M | Arquitetura | 011, 002, 012a | dados |
+| 1 | TRM-013 | Norma resultante pelo despacho + URN e links | E1 | P0 | Agora | P | Arquitetura | 011, 002, 010 (`aplicar_norma` em `registro.py`) | dados |
 | 1 | TRM-021b | Mapa, parte b: conteúdo-rascunho v0 com base legal (fases, marcos, ritos) | E2 | P0 | Agora | M | Arquitetura | 020, 021a | dados |
-| 1 | TRM-023 | Processo e pipeline de revisão do mapa e do glossário | E2 | P0 | Agora | M | Product | 021a, 003 | spec §6 |
+| 1 | TRM-023 | Processo e pipeline de revisão do mapa e do glossário | E2 | P0 | Agora | G (dois PRs: a, revisores, pipeline, consolidador e `aprovar_tramitacao.py`; b, harness com recorte de dispositivo e relatório) | Product | 021a, 003 | spec §6 |
 | 1 | **TRM-037** | `Recolhivel` (o `<details>` do kit) + `scroll-padding` global | E3 | P1 | Agora | P | Design System | 001-B, 003 | ds |
 | 1 | TRM-031-A | `FaseSelo`, parte A: `lib/tramitacao/tipos.ts` | E3 | P1 | Agora | P | Design System | 001-A, 003 | ds |
 | 1 | TRM-030 | `Etapas` v2 | E3 | P1 | Agora | M | Design System | 001-B, 003, D6, PR #48 | ds |
@@ -209,8 +210,8 @@ spec.
 | 1 | TRM-035 | `TermoGlossario` + `GlossarioLista` | E3 | P1 | Agora | M | Design System | 001-B, 003, 031-A | ds |
 | 1 | TRM-032 | `LinhaDoTempo`/`Marco` v2 + `TodosOsRegistros` | E3 | P1 | Agora | M | Design System | 001-B, 003, 037, 031-A | ds |
 | 1 | TRM-033 | `ComoSabemos` + `dataBR` | E3 | P1 | Agora | P | Design System | 001-B, 003, 037, 031-A | ds |
-| 2 | TRM-012 | `scripts/sync_tramitacao.py` (D-7 ∩ acompanhadas + reconciliação) | E1 | P0 | Agora | M | Arquitetura | 010, 011, 013; PR #47 só para ligar ao `agenda.py` | dados |
-| 2 | TRM-014 | API: `ProposicaoRead` com os campos novos, `url_camara`, órgão efetivo, `X-Total-Count` | E1 | P0 | Agora | P | Arquitetura | 011, 013, 021a (carregador do glossário, textos de regime); PR #49 | dados |
+| 2 | TRM-012b | `scripts/sync_tramitacao.py` (D-7 ∩ acompanhadas + reconciliação) | E1 | P0 | Agora | M | Arquitetura | 010, 011, 012a, 013; PR #47 (mergeado) para ligar ao `agenda.py` | dados |
+| 2 | TRM-014 | API: `ProposicaoRead` com os campos novos, `url_camara`, órgão efetivo, `X-Total-Count` | E1 | P0 | Agora | P | Arquitetura | 010, 011, 013, 021a (carregador do glossário, textos de regime); PR #49 (mergeado) | dados |
 | 2 | TRM-024 | `validar_tramitacao.py` + cobertura + CI (V-E, V-C; V-R de §6.9) | E2 | P0 | Agora | M | Arquitetura | 020, 021a; 023 (formato, para V-R) | dados |
 | 2 | TRM-022 | Glossário v0 + guia de redação — PR 1: L0 (10 regimes e apreciações) | E2 | P0 | Agora | M (dois PRs) | UI/UX | 020, 021a, 023; merge depois de 024 | interface |
 | 2 | TRM-034-A | `RitoDiagrama`: componente + vitrine + testes, com dados de exemplo | E3 | P1 | Agora | M | Design System | 001-B, 003, 030, 031-B, 037 | ds |
@@ -223,9 +224,9 @@ spec.
 | 3 | TRM-026 | Tabela `tramitacoes` + ingestão do histórico + marcos | E2 | P1 | Agora | M | Arquitetura | 011, 012, 021b | dados |
 | 3 | TRM-022 | Glossário v0 — PR 2: L4 (18 situações) e entradas `fase_*`, `desfecho_*`, `apensada`, `especie_*` | E2 | P0 | Agora | (incl. acima) | UI/UX | PR 1 de 022 | interface |
 | 3 | **TRM-029** | Rodadas de revisão do mapa e glossário v1 (lotes L0–L7) até a aprovação | E2 | P0 | Agora | M (+ ≤ 8 h da maintainer) | Product | 021b, 022, 023, 024; 025 para L2–L3; D1 para L1 e L7 | spec §6.13 |
-| 4 | TRM-027 | Fase persistida + cadeia de apensação + recálculo | E2 | P1 | Agora | M | Arquitetura | 025b, 026, D2; PR #47 só para o workflow de recálculo | dados |
-| 4 | **TRM-047** | `/metodologia#tramitacao`: como derivamos a fase e revisamos o mapa | E4 | P1 | Agora | P | Product | 023, 025a, 001-B, 003, D9 | spec §9.3 |
-| 5 | TRM-028 | API: `/proposicoes/{id}/tramitacao`, `/eventos`, `/tramitacao/mapa`, contagem, filtro `fase`, gerador de fixtures do frontend | E2 | P1 | Agora | M | Arquitetura | 027, 022, 002 | dados |
+| 4 | TRM-027 | Fase persistida + cadeia de apensação + recálculo | E2 | P1 | Agora | G (dois PRs: a, migration, casa iniciadora, cadeia, recalcular; b, relatório, simulação, gatilhos) | Arquitetura | 025b, 026, D2; PR #47 só para o workflow de recálculo | dados |
+| 4 | **TRM-047** | `/metodologia#tramitacao`: como derivamos a fase e revisamos o mapa | E4 | P1 | Agora | P | Product | 023, 025a, 046-A, 001-B, 003, D9 | spec §9.3 |
+| 5 | TRM-028 | API: `/proposicoes/{id}/tramitacao`, `/eventos`, `/tramitacao/mapa`, contagem, filtro `fase`, gerador de fixtures do frontend | E2 | P1 | Agora | G (dois PRs: a, funções puras, endpoints e filtros; b, gerador de fixtures e teste de regeneração) | Arquitetura | 027, 014, 022, 002 | dados |
 | 5 | TRM-034-B | `RitoDiagrama`: tipos do mapa e adaptador `ritoParaDiagrama` | E3 | P1 | Agora | P–M | Design System | 034-A, 028, 031-A | ds |
 | 5 | TRM-036 | Documentação do kit + proposta ao ZIL Interface | E3 | P2 | Em seguida | M | Design System | 003, 030–035 (034-B incluída), 037 | ds |
 | 6 | TRM-040 | "Onde está agora" v1 | E4 | P1 | Agora | M | UI/UX | 028, 027, 030, 031-B, 033, 035, 037, 046-B, 047, 015. **Pub.:** L1–L3 | interface |
@@ -242,7 +243,8 @@ spec.
 | D | TRM-054 | Escada de impacto (execução e avaliação) | E5 | P3 | Depois | G (quebrar por degrau) | Product | 053, 050, D4, ADR-008 | spec §9.4 |
 
 Total: 43 tarefas (37 do esqueleto + 003, 017, 029, 047 deste arquivo +
-037, 038 do Design System), em 51 linhas de PR.
+037, 038 do Design System), em 52 linhas do índice. Com as quebras da segunda revisão de Arquitetura
+(2026-11-01: 012 em 012a e 012b; 023, 027 e 028 em dois PRs cada), são 55 PRs.
 
 ---
 
@@ -257,27 +259,27 @@ própria (§8.3).
 | Onda | Em paralelo (→ = em sequência no mesmo agente) | Agentes | Entrega visível ao fim da onda |
 | --- | --- | --- | --- |
 | 0 | 001-A → 001-B; 002; 003; 011; 020; 021a; 046-A + decisões D1, D2, D6–D9, D12, D13 | 1 DS, 2 Arquitetura, 1 Product, 1 UI/UX | Nenhuma; fundações e decisões |
-| 1 | 010 → 013; 021b; 023; DS agente 1: 037 → 030 → 032; DS agente 2: 031-A → 031-B → 035 → 033 | 2 Arquitetura, 1 Product, 2 DS | Proposições do placar com situação (via `registrar_proposicao`) |
-| 2 | 012; 014; 024; 022 (PR 1, L0); 034-A; 046-B | 2 Arquitetura, 1 UI/UX, 1 DS | API F0 completa (situação, órgão efetivo, `url_camara`); mapa validado na CI |
-| 3 | 015 e 016 (dois agentes); 017; 025a → 025b; 026; 022 (PR 2, L4 e textos de fase); 029 (L0 já; L1 e L7 com D1; L4 com o PR 2 de 022; L2–L3 depois de 025) | 2 UI/UX, 2 Arquitetura, 1 Product + maintainer | **F0 no ar** quando 012 rodar em produção (`completo`, 5 do placar conferidas) |
-| 4 | 027; 047; 029 (L2–L3) | 1 Arquitetura, 1 Product + maintainer | Fases recalculadas no banco; metodologia explica o método |
-| 5 | 028; 034-B → 036 | 1 Arquitetura, 1 DS | API de tramitação e fixtures geradas para o frontend; troca de fixtures de 046-B |
+| 1 | 012a → 010 → 013; 021b; 023 (PR a); DS agente 1: 037 → 030 → 032; DS agente 2: 031-A → 031-B → 035 → 033 | 2 Arquitetura, 1 Product, 2 DS | Proposições do placar com situação (via `registrar_proposicao`) |
+| 2 | 012b; 014; 024; 022 (PR 1, L0); 034-A; 046-B; 023 (PR b) | 2 Arquitetura, 1 UI/UX, 1 DS, 1 Product | API F0 completa (situação, órgão efetivo, `url_camara`); mapa validado na CI |
+| 3 | 015 e 016 (dois agentes); 017; 025a → 025b; 026; 022 (PR 2, L4 e textos de fase); 029 (L0 já; L1 e L7 com D1; L4 com o PR 2 de 022; L2–L3 depois de 025) | 2 UI/UX, 2 Arquitetura, 1 Product + maintainer | **F0 no ar** quando 012b rodar em produção (`completo`, 5 do placar conferidas) |
+| 4 | 027 (PR a → PR b); 047; 029 (L2–L3) | 1 Arquitetura, 1 Product + maintainer | Fases recalculadas no banco; metodologia explica o método |
+| 5 | 028 (PR a → PR b); 034-B → 036 | 1 Arquitetura, 1 DS | API de tramitação e fixtures geradas para o frontend; troca de fixtures de 046-B |
 | 6 | Agente A: 040 → 041 → 042; agente B: 043 → 044 → 045; 038 depois de 043 | 2 UI/UX, 1 DS | **F1 no ar** (fase, etapas, linha do tempo), conforme os lotes; depois `/como-vira-lei` |
 | D | 050 → 053 → 054; 052; 051 | Arquitetura, Product | F2–F5 do discovery |
 
 ### 5.2 Caminho crítico
 
-- **Até F0 (o erro mais visível):** dados — 011 → 010 → 012 e
-  011 → 013 → 014 (com 021a, que dá o carregador dos textos de regime);
+- **Até F0 (o erro mais visível):** dados — 002 → 012a → 010 → 013 → 012b e
+  011 → 010 → 014 (com 013 e 021a, que dá o carregador dos textos de regime);
   interface — 001-A → 001-B → 037 → 033 (`dataBR`) e 001-B → 046-B, que
-  convergem em 015 e 016. **Gate de publicação:** 012 executado em produção
+  convergem em 015 e 016. **Gate de publicação:** 012b executado em produção
   (`completo`, as 5 do placar conferidas); sem isso as 240 sairiam
   `nao_sincronizada` e a página v0 iria ao ar sem resolver o erro (D10). Se
   a interface atrasar, 010–014 vão ao ar sozinhos: o Selo atual passa a
   mostrar a situação correta, ainda que truncada.
 - **Até a fase publicada (F1):** 020 → 021b → 024 → 025a → 025b → 027 →
-  028 → 040, com 011 → 012 → 026 → 027 juntando-se em 027. É a cadeia mais
-  longa (P + M + M + M + M + M + M + M). Do lado do kit, 037 → 033 e
+  028 → 040, com 011 → 012b → 026 → 027 juntando-se em 027. É a cadeia mais
+  longa (P + M + M + M + M + M + G + G: 027 e 028 viraram dois PRs cada). Do lado do kit, 037 → 033 e
   031-A → 035 chegam bem antes.
 - **O gargalo de calendário é humano, não técnico:** TRM-029. A fase só
   aparece quando L1–L3 estiverem aprovados, e a meta M5 só pode ser medida
@@ -291,9 +293,9 @@ própria (§8.3).
 
 | PR | O que muda aqui | Regra |
 | --- | --- | --- |
-| #47 `047-deploy-cron` | `scripts/agenda.py` e `dados.yml` | TRM-012 e TRM-020 funcionam como script próprio; ligar ao `agenda.py` é o último passo, depois do merge do #47. TRM-017 vira passo semanal depois do #47 |
+| #47 `047-deploy-cron` (mergeado em 2026-11-01) | `scripts/agenda.py` e `dados.yml` | TRM-012b e TRM-020 funcionam como script próprio; ligar ao `agenda.py` é o último passo, depois do merge do #47. TRM-017 vira passo semanal depois do #47 |
 | #48 `048-hemiciclo` | Componentes novos no kit, `index.ts` e README do kit | Mergear antes de 030–035, ou rebasear neles: conflito garantido em `components/ui/index.ts` e no README |
-| #49 `049-recusa-resumo` | `proposicoes/[id]/page.tsx`, `ProposicaoRead` | Mergear antes de TRM-014 (mesmo schema; preservar o `model_validator`) e de TRM-015 (mesmo arquivo) |
+| #49 `049-recusa-resumo` (mergeado em 2026-11-01) | `proposicoes/[id]/page.tsx`, `ProposicaoRead` | Mergear antes de TRM-014 (mesmo schema; preservar o `model_validator`) e de TRM-015 (mesmo arquivo) |
 | #50 (este discovery) | `docs/DISCOVERY-TRAMITACAO.md`, este diretório | Branch base de todas as tarefas é `main` depois do merge do #50 |
 
 ### 5.4 Arquivos quentes (uma tarefa por vez)
@@ -303,8 +305,9 @@ própria (§8.3).
 | Migrations Alembic (cadeia linear de heads) | 011 → 026 → 027 (→ 050 → 053) |
 | `apps/api/models/__init__.py`, `apps/api/schemas/__init__.py` | #49 → 011 → 014 → 026 → 027 → 028 |
 | `apps/api/routers/legislativo.py` | #48/#49 → 014 → 028 |
-| `packages/camara_client/__init__.py` | 002 → 012 |
-| `apps/workers/tramitacao/sincronizacao.py` | 012 → 013 → 026 → 027 |
+| `packages/camara_client/__init__.py` | 002 → 012a |
+| `apps/workers/tramitacao/registro.py` | 010 → 013 (`aplicar_norma`) |
+| `apps/workers/tramitacao/sincronizacao.py` | 012b → 026 → 027 |
 | `apps/web/app/proposicoes/[id]/page.tsx` | #49 → 015 → 040 |
 | `apps/web/components/tramitacao/TramitacaoProposicao.tsx` | 040 → 041 → 042 |
 | `apps/web/components/tramitacao/OndeEsta.tsx` | 040 → 045 |
@@ -348,10 +351,11 @@ flowchart LR
     T046A["046-A textos"]
   end
   subgraph O1["Onda 1"]
+    T012a["012a cliente estrito"]:::critico
     T010["010 registrar_proposicao"]:::critico
     T013["013 norma pelo despacho"]
     T021b["021b mapa v0"]:::critico
-    T023["023 pipeline de revisão"]
+    T023["023 pipeline de revisão (a, b)"]
     T037["037 Recolhivel"]
     T031A["031-A tipos.ts"]
     T030["030 Etapas v2"]
@@ -361,7 +365,7 @@ flowchart LR
     T033["033 ComoSabemos"]
   end
   subgraph O2["Onda 2"]
-    T012["012 sync diário"]:::critico
+    T012["012b sync diário"]:::critico
     T014["014 API F0"]
     T024["024 validador + CI"]:::critico
     T022["022 glossário v0"]
@@ -377,11 +381,11 @@ flowchart LR
     T029["029 lotes L0–L7"]:::humano
   end
   subgraph O4["Onda 4"]
-    T027["027 fase + apensação"]:::critico
+    T027["027 fase + apensação (a, b)"]:::critico
     T047["047 metodologia"]
   end
   subgraph O5["Onda 5"]
-    T028["028 API tramitação"]:::critico
+    T028["028 API tramitação (a, b)"]:::critico
     T034B["034-B adaptador do rito"]
     T036["036 docs do kit"]
   end
@@ -405,6 +409,9 @@ flowchart LR
   T001A --> T001B
   T011 --> T010
   T002 --> T010
+  T002 --> T012a
+  T012a --> T010
+  T010 --> T013
   T011 --> T013
   T002 --> T013
   T020 --> T021b
@@ -427,6 +434,7 @@ flowchart LR
   T011 --> T014
   T013 --> T014
   T021a --> T014
+  T010 --> T014
   PR49 -.-> T014
   T020 --> T024
   T021a --> T024
@@ -468,9 +476,11 @@ flowchart LR
   T026 --> T027
   D2 -.-> T027
   T023 --> T047
+  T046A --> T047
   T025 --> T047
   D9 -.-> T047
   T027 --> T028
+  T014 --> T028
   T022 --> T028
   T002 --> T028
   T028 --> T034B
@@ -524,7 +534,7 @@ TRM-022, TRM-024, TRM-025 e TRM-028 as implementam do lado deles.
 
 ### TRM-023 — Processo e pipeline de revisão do mapa e do glossário
 
-**Épico:** E2 Mapa e glossário · **Prioridade:** P0 · **Horizonte:** Agora · **Estimativa:** M
+**Épico:** E2 Mapa e glossário · **Prioridade:** P0 · **Horizonte:** Agora · **Estimativa:** G — em dois PRs: (a) revisores, pipeline, consolidador e `aprovar_tramitacao.py`; (b) harness com recorte de dispositivo e relatório
 **Dono da spec:** Product · **Revisões obrigatórias:** Arquitetura (pipeline, scripts, regras do validador); Maintainer (é norma editorial)
 **Depende de:** TRM-021a (esquema, chaves e `packages/tramitacao/revisao.py`), TRM-003 (template de PR) · **Desbloqueia:** TRM-022, TRM-024 (regras V-R), TRM-029, TRM-047; publicação de TRM-040 a TRM-045
 
@@ -756,7 +766,9 @@ pelo agente de TRM-029, com o conteúdo, os registros e
    revisores com versão e hash; modelo; tokens gastos; data da consolidação.
 2. **Por entrada**, divergências primeiro:
    - **Como aparece no site** — rótulo e texto exatamente como o leitor verá;
-     para regra, a frase de template aplicada a um caso real;
+     para regra, a frase de template aplicada a um caso real. Antes de TRM-028 (que cria
+     `frase.py` e `rotulos.py`), a frase aparece como o `modelo` com os marcadores, sem
+     preenchimento, marcada "pré-visualização";
    - **Situação oficial** que a entrada explica, com `descricao_oficial`;
    - **Base legal** com links;
    - **Antes → depois**, quando a entrada já foi aprovada antes;
@@ -965,7 +977,7 @@ estiver pronto, ele sai do L0 por `--excluir`, sem bloquear o lote.
   fora do harness:
   - `INSUMOS = frozenset({"entrada", "trechos_base_legal", "guia_redacao", "rotulos_aprovados", "snapshots", "cobertura", "golden", "amostra_situacoes", "casos_reais"})`
   - `carregar_revisores(dir: Path) -> list[Agente]`
-  - `montar_lote(lote_id: str, mapa: Mapa, revisao: Revisao) -> Lote`
+  - `montar_lote(lote_id: str, mapa: Mapa, revisao: ArquivoRevisao) -> Lote`
   - `preparar_insumos(revisor: Agente, lote: Lote, *, rede: Rede) -> dict[str, dict]` (por chave; a única função que baixa)
   - `montar_prompt(revisor: Agente, lote: Lote, insumos: dict[str, dict]) -> tuple[str, str]` (system, prompt)
   - `parse_pareceres(bruto: dict, lote: Lote) -> list[Parecer]`
@@ -1288,7 +1300,7 @@ Copie os itens de §7.2, §7.3 e A1–A8 sem reescrever. Não comente no PR #48
 
 **Épico:** E1 Status honesto · **Prioridade:** P1 · **Horizonte:** Agora · **Estimativa:** P
 **Dono da spec:** Product · **Revisões obrigatórias:** Arquitetura
-**Depende de:** TRM-012, TRM-014 (métricas de F0); TRM-027 (métricas de fase); PR #47 (só para virar passo semanal) · **Desbloqueia:** verificação de §2 e do mapa v1 (§6.11, item 9)
+**Depende de:** TRM-012b (e o cliente estrito de 012a), TRM-014 (métricas de F0); TRM-027 (métricas de fase); PR #47 (mergeado; só para virar passo semanal) · **Desbloqueia:** verificação de §2 e do mapa v1 (§6.11, item 9)
 
 **Problema** — As metas de §2 só são verificáveis se alguém as medir. Hoje,
 contar proposições sem situação exigiu consulta manual ao banco (disc. §1.1).
@@ -1318,14 +1330,20 @@ painel visual; gravar métricas no banco; alertas.
    ou M7 > 0.
 6. A seção `nao_sabemos` lista id, sigla-número-ano, situação oficial e motivo,
    ordenada por motivo e depois por movimentação.
-7. M12 lê os últimos 7 `IngestionRun` com `tipo = "tramitacao"` e mostra
+7. M12 lê os últimos 7 `IngestionRun` com `tipo = "tramitacao_diaria"` e mostra
    mediana e máximo.
+8. M13 = acompanhadas com `ultima_movimentacao_em` ≥ hoje − 7 dias que têm
+   `detalhe_sincronizado_em` ≥ agora − 24 h.
 
 **Specs técnicas** — `scripts/relatorio_tramitacao.py` com
 `calcular_metricas(db: Session, *, placar: bool, api: CamaraClient | None) -> dict`
-separado da impressão; reusa `packages.camara_client`; nunca imprime a URL
-do banco (como `scripts/agenda.py`). Depois do #47: subcomando `relatorio`
-no job semanal (`cadastros`) com `--json` salvo como artefato.
+separado da impressão; usa `CamaraClient.obter_proposicao_estrito` (TRM-012a),
+e `FonteIndisponivel` conta como "indisponível", nunca como divergência; nunca
+imprime a URL do banco (como `scripts/agenda.py`). M5, M6 e "situações sem
+mapa" vêm de `apps/workers/tramitacao/relatorio.py::relatorio` (TRM-027), sem
+recálculo próprio. No cron: passo separado no `dados.yml`, depois do
+`agenda.py cadastros`, com `continue-on-error: true` e `actions/upload-artifact`
+do `--json` (sair com código 1 não pode deixar o job `cadastros` vermelho).
 
 **Testes** — `tests/unit/test_relatorio_tramitacao.py` com SQLite em memória
 e fábricas `make_*`: cada métrica num banco montado (com e sem colunas
@@ -1344,7 +1362,12 @@ desenvolvimento.
 
 **Épico:** E4 Experiência · **Prioridade:** P1 · **Horizonte:** Agora · **Estimativa:** P
 **Dono da spec:** Product · **Revisões obrigatórias:** UI/UX + Design System; Maintainer (texto editorial)
-**Depende de:** TRM-023, TRM-025a, TRM-001-B, TRM-003, D9 · **Desbloqueia:** TRM-040 ("Como sabemos" precisa de destino), TRM-044 (link)
+**Depende de:** TRM-023, TRM-025a, TRM-046-A (rótulos N00, N01, N06 e C01, que o texto cita e o teste compara), TRM-001-B, TRM-003, D9 · **Desbloqueia:** TRM-040 ("Como sabemos" precisa de destino), TRM-044 (link)
+
+> **Revisão UI/UX de 2026-11-01** (`revisoes/uiux-sobre-047.md`): solução,
+> escopo, critérios, specs de design e testes reescritos com as correções
+> 1–8 do revisor. **Os textos abaixo são proposta**: os textos exatos
+> continuam dependendo da aprovação da maintainer (§11.3, item 8).
 
 **Problema** — "Como sabemos" (TRM-033) mostra regra e versão do mapa, mas
 nenhuma página explica o método, nem que o mapa é do ZIL, nem como é
@@ -1356,81 +1379,137 @@ revisado. Sem isso, o site sugeriria uma autoridade que o processo não tem
 dizer o que é feito e o que não é.
 
 **Solução** — Nova `<section id="tramitacao" className="zil-secao scroll-mt-20 grid gap-8">`
-em `apps/web/app/metodologia/page.tsx`, depois de `#processo`, com estes
-textos exatos:
+em `apps/web/app/metodologia/page.tsx`, depois de `#processo` e antes do
+painel "Contribua", com estes textos (proposta):
 
-> **Onde a proposição está** (h2)
+> **Como chegamos à fase de uma proposição** (h2)
 >
-> A situação de cada proposição vem da API de Dados Abertos da Câmara dos
-> Deputados. Mostramos sempre a situação oficial com o texto completo, a
-> data em que a conferimos e o link para a página da proposição na Câmara.
+> A fase é uma leitura do ZIL: nós a calculamos, com regras fixas, a partir
+> da situação oficial que a Câmara dos Deputados publica.
 >
-> A Câmara usa centenas de códigos de situação e de tramitação, sem uma
-> ordem oficial entre eles. Para dizer em que fase a proposição está — nas
-> comissões, no Plenário, no Senado, com o Presidente da República —, o ZIL
-> mantém um mapa próprio, público e versionado, que liga esses códigos às
-> etapas previstas na Constituição e nos regimentos da Câmara e do Senado.
+> A situação oficial vem do portal de Dados Abertos da Câmara. Mostramos a
+> situação inteira, como a Câmara a escreve, com a data da nossa conferência
+> e o link para a Câmara.
 >
-> A fase é calculada por regras fixas, aplicadas sempre na mesma ordem. Cada
-> resultado guarda a regra usada e a versão do mapa; você vê isso em "Como
-> sabemos", ao lado da fase.
+> A Câmara usa centenas de códigos de situação e de tramitação, sem uma ordem
+> oficial entre eles. Por isso o ZIL mantém um mapa próprio e público, com o
+> histórico de cada mudança. O mapa liga esses códigos às etapas previstas na
+> Constituição e nos regimentos da Câmara e do Senado. São etapas como as
+> comissões, o Plenário, o Senado e a decisão do Presidente da República.
 >
-> Quando as regras não bastam — uma situação que ainda não está no mapa,
-> sinais que se contradizem, a fonte fora do ar —, dizemos "Não sabemos em
-> que fase está" e explicamos o motivo. Não damos palpite.
+> As regras são aplicadas sempre na mesma ordem. Cada fase calculada guarda a
+> regra usada e a versão do mapa, que aparecem em "Como sabemos", logo abaixo
+> da fase.
+>
+> Às vezes as regras não bastam. Por exemplo: a situação ainda não está no
+> mapa, os sinais se contradizem ou a fonte está fora do ar. Nesses casos, o
+> selo diz "Fase não identificada", e um aviso explica o motivo. Preferimos
+> não adivinhar.
+>
+> O mapa vai ao ar por partes, conforme cada parte é revisada e aprovada.
+> Enquanto a parte que vale para uma proposição não foi aprovada, a página
+> dela mostra só a situação oficial, com o aviso "Fase em revisão".
 >
 > Não estimamos datas. A ordem das etapas está nas normas; quando cada uma
 > acontece depende, quase sempre, de decisões da presidência das comissões e
-> das Casas. Datas futuras só aparecem quando há reunião já marcada pela
-> própria Casa ou um prazo fixado em norma, sempre com a fonte.
+> das Casas. Por isso, não mostramos datas futuras.
 >
 > As cores das fases são neutras. No ZIL, verde e vermelho indicam
 > alinhamento com a soberania industrial nas votações do placar — nunca a
 > situação de uma proposição.
 
-Seguido de `Aviso tom="padrao"` (nota do ZIL; o âmbar `neutro` fica para
-"não validado", S4) com título **"Como o mapa e o glossário são
-revisados"** e corpo:
+Quando TRM-051 for ao ar, o mesmo PR troca a última frase do parágrafo
+sobre datas.
 
-> Os textos do mapa e do glossário são do ZIL, não da Câmara. Cada entrada é
-> escrita com auxílio de IA a partir da Constituição e dos regimentos,
-> revisada por quatro agentes de IA com instruções públicas — correção
-> jurídica, linguagem simples, cobertura dos dados e busca de casos em que a
-> regra erra — e só é publicada depois de aprovada pela maintainer do
-> projeto. Não há, por enquanto, revisão de especialista independente.
+Seguido de `h3` (`text-titulo-4`) **"Como o mapa e as explicações são
+revisados"** e de um parágrafo em `.zil-leitura`:
 
-E dois links: "Ver o mapa e as revisões no GitHub ↗"
-(`${REPO_URL}/tree/main/data/tramitacao`) e "Encontrou um erro? Abra uma
-issue ↗" (`${REPO_URL}/issues/new`), usando a constante `REPO_URL` que a
-página já usa no botão de "Contribua com a metodologia".
+> Os textos do mapa e as explicações das situações são do ZIL, não da Câmara.
+> Cada entrada é escrita com auxílio de IA, a partir da Constituição e dos
+> regimentos. Depois, agentes de IA com instruções públicas revisam cada
+> entrada. Cada agente confere uma coisa: correção jurídica, linguagem
+> simples, cobertura dos dados ou casos em que a regra erra. Só vai ao ar o
+> que a maintainer do projeto aprova.
 
-**Escopo** — Dentro: a seção, os links, o item no sumário da página se houver.
-Fora: explicar o rito (é `/como-vira-lei`, TRM-044).
+E de `Aviso tom="padrao"` (o âmbar `neutro` fica para "não validado", S4)
+com título **"Ainda não há revisão de especialista independente"** e corpo:
+"A revisão por agentes de IA reduz erros, mas não substitui a leitura de
+alguém com formação legislativa." O texto longo fica fora do corpo do
+`Aviso` (S7: o corpo tem 15 px); o `Aviso` guarda só a ressalva, como faz
+"Quantas pessoas revisam: uma".
+
+Abaixo do `Aviso`, numa linha `flex flex-wrap gap-3`, dois
+`Button variante="fantasma" tamanho="s"` externos, no padrão de
+backlog-interface §0.5-6: texto visível,
+`<span className="sr-only"> (abre em nova aba)</span>`, `Icone nome="externo"`
+com `aria-hidden`, `target="_blank" rel="noopener noreferrer"`. Nada de "↗"
+no texto e nada de `aria-label`.
+
+- "Mapa e revisões no GitHub" → `${REPO_URL}/tree/main/data/tramitacao`
+- "Apontar um erro no GitHub" → `${REPO_URL}/issues/new`
+
+`REPO_URL` vem de `@/lib/links`, como no botão de "Contribua com a
+metodologia".
+
+**Escopo** — Dentro: a seção; os links; o chip
+`{ id: "tramitacao", rotulo: "Fase da tramitação" }` no fim de `SECOES`
+(o sumário da página). Fora: explicar o rito (é `/como-vira-lei`, TRM-044);
+o link da seção para `/como-vira-lei`, que entra no PR de TRM-044, quando a
+rota existir (backlog-interface §1.2); mudar o `h1` (pergunta à maintainer
+em §11.3).
 
 **Critérios de aceite**
 
-1. `/metodologia#tramitacao` existe e os textos são idênticos aos acima.
-2. "Como sabemos" (TRM-033/040) aponta para `/metodologia#tramitacao`.
-3. Nenhuma contagem fixa no texto (os códigos mudam; por isso "centenas").
-4. Gates de §7 cumpridos; 0 violações axe nos 3 breakpoints × 2 temas.
+1. `section#tramitacao` existe em `/metodologia`, depois de `#processo` e
+   antes do painel "Contribua"; o `h2` é "Como chegamos à fase de uma
+   proposição"; `SECOES` tem o chip "Fase da tramitação" com
+   `href="#tramitacao"` (Vitest).
+2. O `textContent` normalizado da seção é igual a
+   `tests/fixtures/metodologia-tramitacao.txt`, copiado desta spec depois da
+   aprovação dos textos, e contém `TEXTOS` de N00 ("Fase não identificada") e
+   de N06 ("Fase em revisão"), importados de `lib/tramitacao/textos.ts`
+   (Vitest).
+3. Sem contagem fixa: nenhum casamento de
+   `\b(\d+|duas?|três|quatro|cinco|seis|sete|oito|nove|dez)\b` no texto da
+   seção (Vitest).
+4. Nenhum padrão V-E1 a V-E9 de backlog-interface §2.4 casa com o texto da
+   seção (Vitest, com os mesmos regex). V-E10 fica de fora porque "ZIL"
+   casaria.
+5. Cada link externo tem `target="_blank"`, `rel="noopener noreferrer"`,
+   nome acessível igual ao texto visível + "(abre em nova aba)", ícone
+   `aria-hidden` e `href` derivado de `REPO_URL` (Vitest).
+6. Todo `href` literal `/metodologia#<id>` em `apps/web/{app,components,lib}`
+   aponta para um `id` que existe na página (Vitest que varre os fontes).
+7. Playwright em `/metodologia#tramitacao`, 375/768/1280 × escuro/claro: axe
+   com 0 violações (`wcag2a`…`wcag22aa`); depois da navegação pela âncora, o
+   topo do `h2` fica abaixo da NavBar; `expectPaletaNeutra(page, "#tramitacao")`;
+   `focoVisivelENaoEncoberto` nos dois links; screenshot da seção;
+   `semRolagemHorizontal` marcado `@reflow` (projeto `reflow-320`).
+8. Gates de §7 cumpridos, com N/A justificado para U2–U4, U7, U12, U13, S2,
+   S6, S8, S10–S12.
 
-**Specs técnicas** — Só `apps/web/app/metodologia/page.tsx`, com `Aviso` e
-estilos de texto do kit; a URL do repositório vem de `REPO_URL`, já usada
-na página.
+**Specs técnicas** — Só `apps/web/app/metodologia/page.tsx`, com `Aviso`,
+`Button`, `Icone` e estilos de texto do kit; a URL do repositório vem de
+`REPO_URL` (`@/lib/links`).
 
-**Specs de design** — Mesma anatomia das seções vizinhas (`h2` +
-parágrafos em `max-w-leitura` + `Aviso`). Não usa `ComoSabemos` nem
-`TermoGlossario` (a tabela §4 do backlog-design-system os lista como
-possíveis para esta tarefa; aqui a seção é texto corrido, e é ela o destino
-de "Como sabemos", não uma instância dele). Links externos com "↗" e
-`aria-label` que inclui "abre em nova aba".
+**Specs de design** — Mesma anatomia das seções vizinhas: `h2` + parágrafos
+em `.zil-leitura` + `h3` + parágrafo + `Aviso` + linha de links. Não usa
+`ComoSabemos` nem `TermoGlossario`: a seção é texto corrido, e é ela o
+destino de "Como sabemos", não uma instância dele. Links externos no padrão
+de backlog-interface §0.5-6, com `Button fantasma s`, rótulos curtos e
+`flex-wrap`, sem estourar a 320 px.
 
-**Testes** — Vitest: a seção renderiza com o `id` e o título; Playwright +
-axe: rota `/metodologia` nos 3 breakpoints × 2 temas, rolando até a âncora.
+**Testes** — `tests/paginas/metodologia.test.tsx` (Vitest + Testing Library
++ `jest-axe`): critérios 1–6. `tests/e2e/metodologia.spec.ts` (Playwright):
+critério 7.
 
-**Riscos e perguntas em aberto** — O parágrafo sobre IA depende de D9. Se a
-maintainer recusar D9, o texto do `Aviso` precisa ser reescrito e voltar a
-este arquivo — não omitir sem decisão registrada.
+**Riscos e perguntas em aberto** — D9 aceita (2026-10-31): a IA é declarada
+aqui, não em cada termo. Se a decisão mudar, o parágrafo de revisão precisa
+ser reescrito e voltar a este arquivo — não omitir sem decisão registrada.
+Pendentes de verificação (⚠ do revisor): se o `Button` com `whitespace-nowrap`
+cabe a 320 px com os rótulos curtos (medir no navegador); se a frase sobre os
+regimentos precisa citar o Regimento Comum (MPV, veto), o que afeta também a
+entrada V01 do glossário.
 
 **Instruções para o agente implementador** — Branch
 `trm-047-metodologia-tramitacao`. Não reescreva os textos; divergência de
@@ -1616,25 +1695,25 @@ especialista; **—** não revisada por esse especialista.
 | Tarefa | Dono | UI/UX | DS | Arquitetura | Pendência restante |
 | --- | --- | --- | --- | --- | --- |
 | 001 (A, B) | DS | ✓ (UX-DS-23–26) | dono | ✓ (itens 1, 15, 16) | Maintainer: Node 22.x nas configurações da Vercel antes do merge de 001-A |
-| 002 | Arquitetura | — | ◐ (fixtures geradas, conflito 10) | dono | Maintainer: lista de casos e `esperado` de cada golden; achar os 4 casos "a descobrir" |
+| 002 | Arquitetura | — | ◐ (fixtures geradas, conflito 10) | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | Maintainer: lista de casos e `esperado` de cada golden; achar os 4 casos "a descobrir" |
 | 003 | Product | — | ◐ (pediu S2, S3, S4, S11, S12 — aplicados aqui) | — | Revisão da maintainer; `como-verificar.md` depende de UI/UX e de 036 |
-| 010 | Arquitetura | — | — | dono | Nenhuma revisão cruzada |
-| 011 | Arquitetura | ◐ (órgão efetivo) | — | dono | Nenhuma revisão cruzada |
-| 012 | Arquitetura | ◐ (gate de publicação de 015/016) | — | dono | Maintainer: ligar ao cron depois do #47 e confirmar a primeira execução `completo` em produção |
-| 013 | Arquitetura | — | — | dono | Nenhuma revisão cruzada |
-| 014 | Arquitetura | ◐ (pedidos 1–4 atendidos) | ◐ (`lib/api.ts`) | dono | Rebase sobre o #49 |
+| 010 | Arquitetura | — | — | dono; revisor independente em 2026-11-01: ✗ → corrigido (dependia do cliente estrito), ajustes aplicados | — |
+| 011 | Arquitetura | ◐ (órgão efetivo) | — | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | — |
+| 012 (a, b) | Arquitetura | ◐ (gate de publicação de 015/016) | — | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | Maintainer: ligar ao cron depois do #47 e confirmar a primeira execução `completo` em produção |
+| 013 | Arquitetura | — | — | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | — |
+| 014 | Arquitetura | ◐ (pedidos 1–4 atendidos) | ◐ (`lib/api.ts`) | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | #49 mergeado; rebase no `main` |
 | 015 | UI/UX | dono | ✓ (DS-UI-06, 08) | ✓ (itens 2, 8, 9) | Maintainer: textos novos de `textos.ts` |
 | 016 | UI/UX | dono | ✓ (DS-UI-08, 09) | ✓ (itens 9, 11) | Maintainer: textos |
-| 017 | Product | — | — | — | Nenhuma revisão cruzada; Arquitetura deve revisar o PR |
-| 020 | Arquitetura | — | — | dono | Nenhuma revisão cruzada |
-| 021 (a, b) | Arquitetura | ◐ (chaves do glossário, âncora) | ◐ (forma do mapa, conflito 5) | dono | Conteúdo passa por TRM-029 |
+| 017 | Product | — | — | ◐ 2026-11-01, ajustes aplicados | Arquitetura revisa também o PR |
+| 020 | Arquitetura | — | — | dono; revisor independente em 2026-11-01: ✓, ajustes aplicados | — |
+| 021 (a, b) | Arquitetura | ◐ (chaves do glossário, âncora) | ◐ (forma do mapa, conflito 5) | dono; revisor independente em 2026-11-01: ◐ 021a, ✓ 021b, ajustes aplicados | Conteúdo passa por TRM-029 |
 | 022 | UI/UX | dono | ✓ (DS-UI-28 opcional) | ✓ (item 13) | Frase do desarquivamento no Senado com `pendente` (RISF 332); conflito de L0 (§11.2, item 3) |
-| 023 | Product | ◐ (pediu L0 = 10 e o caminho do guia — aplicados) | — | ◐ (adotou D8, com `revisado_por` e `packages/`) | Revisão da maintainer (é norma editorial); D8 |
-| 024 | Arquitetura | ◐ (V-R7 ampliada, V-E1–V-E10) | — | dono | Nenhuma revisão cruzada |
-| 025 (a, b) | Arquitetura | — | — | dono | Maintainer: `esperado` dos golden; R7/R9 novas entram no L2 |
-| 026 | Arquitetura | — | — | dono | Nenhuma revisão cruzada |
-| 027 | Arquitetura | — | — | dono | D2; maintainer: workflow de recálculo em produção |
-| 028 | Arquitetura | ◐ (contrato) | ◐ (contrato, conflitos 1–6) | dono | Nenhuma revisão cruzada formal |
+| 023 | Product | ◐ (pediu L0 = 10 e o caminho do guia — aplicados) | — | ◐ (adotou D8, com `revisado_por` e `packages/`); ◐ revisor independente em 2026-11-01, ajustes aplicados (vira G em dois PRs) | Revisão da maintainer (é norma editorial); D8 |
+| 024 | Arquitetura | ◐ (V-R7 ampliada, V-E1–V-E10) | — | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | — |
+| 025 (a, b) | Arquitetura | — | — | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | Maintainer: `esperado` dos golden; R7/R9 novas entram no L2 |
+| 026 | Arquitetura | — | — | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | — |
+| 027 | Arquitetura | — | — | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | D2; maintainer: workflow de recálculo em produção |
+| 028 | Arquitetura | ◐ (contrato) | ◐ (contrato, conflitos 1–6) | dono; revisor independente em 2026-11-01: ◐, ajustes aplicados | Nenhuma revisão cruzada formal |
 | 029 | Product | — | — | — | Execução; maintainer aprova os 8 lotes |
 | 030 | DS | ✓ (UX-DS-11, 12) | dono | — | D6 |
 | 031 (A, B) | DS | ✓ (UX-DS-03, 27) | dono | ✓ (itens 6, 14) | — |
@@ -1652,23 +1731,27 @@ especialista; **—** não revisada por esse especialista.
 | 044 | UI/UX | dono | ✓ (DS-UI-16, 19) | ✓ (contagem por etapa) | Maintainer: textos fixos |
 | 045 | UI/UX | dono | ✓ (bloqueio DS-UI-21 corrigido) | ✓ (item 7) | Maintainer: textos fixos |
 | 046 (A, B) | UI/UX | dono | ✓ (DS-UI-12, 24–26) | ✓ (itens 10, 17) | Maintainer: todos os textos de `textos.ts`; troca de fixtures depois de 028 |
-| 047 | Product | — | ◐ (lista componentes que esta spec não usa) | — | D9; maintainer: textos exatos |
-| 050–053 | Arquitetura | — | — | dono | Horizonte Depois; sem revisão cruzada |
+| 047 | Product | ◐ 2026-11-01, ajustes aplicados (`revisoes/uiux-sobre-047.md`) | ◐ (lista componentes que esta spec não usa) | — | D9 aceita; maintainer: textos exatos (a proposta está em §9.3) |
+| 050–053 | Arquitetura | — | — | dono; revisor independente em 2026-11-01: ✓ 050–052, ◐ 053, ajustes aplicados | Horizonte Depois; sem revisão cruzada |
 | 054 | Product | — | — | — | Horizonte Depois; sem revisão cruzada |
 
-**Lacuna de revisão:** nenhum especialista revisou formalmente
-`backlog-dados.md` (só o consumiram como contrato) nem as tarefas de
-Product (003, 017, 023, 029, 047, 054). Antes da onda 1, recomenda-se uma
-passada do revisor de Arquitetura (TRM-003) sobre 017 e 023 e da UI/UX
-sobre 047.
+**Lacuna de revisão — fechada em 2026-11-01.** Um revisor de Arquitetura
+independente leu `backlog-dados.md` inteiro, TRM-017 e TRM-023, e um revisor
+de UI/UX leu TRM-047 (`revisoes/arquitetura-sobre-dados-017-023.md`,
+`revisoes/uiux-sobre-047.md`). Consequências na ordem: TRM-012 foi quebrada
+em 012a (cliente estrito, onda 1, antes de 010) e 012b (sync, onda 2);
+TRM-013 passou a depender de 010 (`aplicar_norma` em `registro.py`), o que
+desfaz a dependência circular 012 ↔ 013; 014 ← 010, 028 ← 014, 047 ← 046-A;
+023, 027 e 028 viraram G em dois PRs cada. Continuam sem revisão formal
+de outro especialista: 003, 029 e 054.
 
 ### 11.2 Checagem de consistência entre os quatro arquivos
 
 | Verificação | Resultado |
 | --- | --- |
 | Todo ID citado existe | **Sim.** Os 43 IDs citados nos quatro arquivos e em `revisoes/` estão no índice; "TRM-018" aparece só como "não criei TRM-018" em backlog-dados |
-| Nenhum ID duplicado com títulos diferentes | **Sim.** As variações de título são da mesma tarefa (ex.: TRM-021 "esquema, carga e conteúdo-rascunho"); as quebras usam sufixo do mesmo ID (001-A/B, 021a/b, 025a/b, 031-A/B, 034-A/B, 046-A/B) |
-| Dependências sem ciclo | **Sim**, no grafo de §5.5 (110 arestas, verificado por script), **com uma condição**: a troca das fixtures de 046-B pelas geradas por 028 é passo de acompanhamento, não dependência de 046-B (senão 046-B → 015 esperaria 028) |
+| Nenhum ID duplicado com títulos diferentes | **Sim.** As variações de título são da mesma tarefa (ex.: TRM-021 "esquema, carga e conteúdo-rascunho"); as quebras usam sufixo do mesmo ID (001-A/B, 012a/b, 021a/b, 025a/b, 031-A/B, 034-A/B, 046-A/B) |
+| Dependências sem ciclo | **Sim**, no grafo de §5.5 (117 arestas depois da segunda revisão, verificado por script), **com uma condição**: a troca das fixtures de 046-B pelas geradas por 028 é passo de acompanhamento, não dependência de 046-B (senão 046-B → 015 esperaria 028) |
 | Nomes de contrato iguais | **Sim** para `versao_publicada` (int, substitui `mapa_versao`), `fase_motivo`, `como_sabemos.fontes[{rotulo, url}]`, âncora `#termo-<chave>`, `orgao_efetivo_sigla/nome`, `herdada_de.acompanhada`, `situacao_glossario`, `recem_apresentada` como fase `apresentada` |
 | Critérios de aceite verificáveis | Varredura por termos subjetivos nos quatro arquivos sem ocorrência; critérios de UI amarrados a helpers de TRM-001 |
 
@@ -1694,6 +1777,21 @@ Ainda em aberto, sem efeito na ordem: recíprocas de "Desbloqueia" (o DS diz
 que 030 e 032 desbloqueiam 046, que não os lista; dados diz que 012 depende
 de 013, que não lista 012 em "Desbloqueia").
 
+Pendentes de verificação depois da segunda revisão (os revisores marcaram
+⚠; nada disso foi aplicado como fato):
+
+- Os códigos `"13000"` e `"81002"` em `TIPOS_ORGAO_COMISSAO` (TRM-012a/012b) — conferir em
+  `/referencias/orgaos/codTipoOrgao` com rede.
+- O formato JSON de `/processo/tipos-situacao` do Senado sem cabeçalho `Accept` (TRM-020).
+- Se paginar a janela D-7 (cerca de 23 páginas) enquanto ela muda dispara `ListagemIncompleta` com
+  frequência. Sugestão do revisor, só com teste no pacote `janela-d7`: deduplicar por id e tolerar
+  ±1% antes de levantar (TRM-012a).
+- O total de linhas do pacote `pl-2-2024` (o critério 1 de TRM-026 passou a dizer `len(pacote)`).
+- TRM-047: se o `Button` (`whitespace-nowrap`) cabe a 320 px com os rótulos curtos; se a frase
+  sobre os regimentos precisa citar o Regimento Comum (MPV, veto), o que afeta também V01.
+- TRM-011: o `dados.yml` do #47 não roda `alembic upgrade`. Enquanto não houver esse passo, a
+  migration de produção depende do deploy da API no Render ter rodado antes do cron.
+
 ### 11.3 O que precisa de decisão ou revisão humana da Melissa
 
 Em ordem de quando bloqueia:
@@ -1712,3 +1810,6 @@ Em ordem de quando bloqueia:
 | 10 | Proposta ao design system ZIL Interface | 036 | aplicação da proposta fora deste backlog | — |
 | 11 | `Histograma` do #48 com cor de alinhamento (D14) | revisão do PR #48 | — | — |
 | 13 | Opcional: validação com 5 leigos antes de anunciar F1; issue convidando revisão especializada (D5) | §2, §10.2 | — | — |
+| 14 | Acrescentar à linha fina de `/metodologia` "… e como lemos a fase de cada proposição"? (revisão UI/UX de TRM-047) | `apps/web/app/metodologia/page.tsx:124` | escopo de TRM-047 | minutos |
+| 15 | Trocar "um único maintainer" por "uma única maintainer" na metodologia, alinhando com GOVERNANCE.md:38 e o texto novo de TRM-047 | `apps/web/app/metodologia/page.tsx:270` | — | minutos |
+| 16 | Passo `alembic upgrade head` no `dados.yml` antes do `agenda.py`, ou conferir no Render que a migration de TRM-011 rodou antes do próximo cron | `.github/workflows/dados.yml`; TRM-011 | cron depois do merge de 011 | minutos |

@@ -30,6 +30,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   `backlog-design-system.md` e `backlog-interface.md` detalham cada tarefa
   (problema, solução, critérios de aceite, specs técnicas e de design,
   testes, instruções para o agente); `revisoes/` guarda as revisões cruzadas.
+  Numa segunda rodada (2026-11-01), um revisor de Arquitetura independente
+  leu o backlog de dados, TRM-017 e TRM-023, e um de UI/UX leu TRM-047: o
+  cliente estrito da Câmara virou TRM-012a, antes de TRM-010 (que dependia
+  dele), a dependência circular entre 012 e 013 saiu, e 023, 027 e 028
+  foram reestimadas como G, em dois PRs cada.
 - `docs/DISCOVERY-TRAMITACAO.md`: levantamento de onde vem o status das
   proposições, do processo legislativo canônico por espécie (com prazos,
   quóruns e o que é determinístico ou discricionário), das APIs da Câmara e

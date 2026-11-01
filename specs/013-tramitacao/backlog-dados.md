@@ -106,7 +106,7 @@ como o PM já registrou (spec §5.3).
 | `packages/tramitacao/mapa.py` | modelos Pydantic dos arquivos (§2), `Mapa`, `carregar_mapa`, `MapaIndisponivel`, `MapaInvalido` | 021 |
 | `packages/tramitacao/revisao.py` | `hash_entrada`, `entradas_publicaveis`, modelo de `revisao.yml` — **implementação única** | 021 (usada por 024, 025, 028) |
 | `apps/workers/tramitacao/revisao.py` | só reexporta `packages.tramitacao.revisao` (o caminho que a spec §6.2 cita para os scripts de TRM-023) | 021 |
-| `packages/tramitacao/status.py` | `normalizar_regime`, `normalizar_apreciacao`, `id_da_uri`, `situacao_estado` | 010/014 |
+| `packages/tramitacao/status.py` | `normalizar_regime`, `normalizar_apreciacao`, `id_da_uri`, `situacao_estado`, `orgao_efetivo`, `TIPOS_ORGAO_COMISSAO`, `SIGLAS_PLENARIO` | 010/012b/014 |
 | `packages/tramitacao/normas.py` | regex da norma, URN, links, rótulo | 013 |
 | `packages/tramitacao/marcos.py` | `classificar_linha` (linha de tramitação → marco) | 026 |
 | `packages/tramitacao/motor.py` | `EntradaFase`, `FaseDerivada`, `derivar_fase` | 025 |
@@ -116,10 +116,10 @@ como o PM já registrou (spec §5.3).
 | `packages/tramitacao/rotulos.py` | `ROTULO_NAO_SABEMOS`, `rotulo_fase`, `rotulo_desfecho` | 028 |
 | `packages/tramitacao/referencias.py` | snapshots das tabelas de código e diff | 020 |
 | `apps/workers/tramitacao/__init__.py` | vazio | 010 |
-| `apps/workers/tramitacao/registro.py` | `registrar_proposicao`, `aplicar_detalhe`, `CacheConsultas` | 010 |
+| `apps/workers/tramitacao/registro.py` | `registrar_proposicao`, `aplicar_detalhe`, `CacheConsultas`; `aplicar_norma` (013) | 010 (+013) |
 | `apps/workers/tramitacao/sincronizacao.py` | seleção de alvos, `sincronizar_proposicao`, `executar`, `Orcamento` | 012 |
 | `apps/workers/tramitacao/eventos.py` | upsert da tabela `tramitacoes` | 026 |
-| `apps/workers/tramitacao/fases.py` | `entrada_do_banco`, `orgao_efetivo`, `resolver_cadeia`, `recalcular_fases` | 027 |
+| `apps/workers/tramitacao/fases.py` | `entrada_do_banco`, `resolver_cadeia`, `recalcular_fases` | 027 |
 | `apps/workers/tramitacao/relatorio.py` | `relatorio`, `simular_fases` (projeção sem gravar) | 027 |
 | `scripts/sync_tramitacao.py` | CLI `diario`, `completo`, `uma`, `recalcular`, `relatorio` | 012 (+026/027) |
 | `scripts/atualizar_referencias_tramitacao.py` | snapshots das tabelas de código, com diff | 020 |
@@ -154,7 +154,7 @@ como o PM já registrou (spec §5.3).
 | `orgao_efetivo_sigla` | `String(30)` | órgão efetivo (A19): o do status se for Plenário ou comissão; senão o do registro mais recente nesses órgãos (TRM-012 calcula das tramitações já baixadas) | "Órgão atual" de F0 — evita "Mesa Diretora" em 23 das 240 |
 | `orgao_efetivo_nome` | `String(255)` | nome do órgão efetivo | |
 | `detalhe_sincronizado_em` | `DateTime` | hora da última leitura **bem-sucedida** do detalhe | nula = nunca lido |
-| `origem_registro` | `String(30)` | quem criou: `descoberta`, `votacao`, `votacao_zil`, `cadeia_apensacao`, `manual` | auditoria |
+| `origem_registro` | `String(30)` | quem criou: `descoberta`, `votacao`, `votacao_zil`, `sync`, `cadeia_apensacao`, `manual` | auditoria |
 | `norma_tipo` | `String(30)` | regex do despacho (TRM-013) | `lei_ordinaria`, `lei_complementar`, `lei`, `decreto_legislativo`, `emenda_constitucional`, `resolucao` |
 | `norma_numero` | `Integer` | idem | |
 | `norma_ano` | `Integer` | idem | |
@@ -238,6 +238,7 @@ class Tramitacao(Base):
     removido_na_fonte_em: Mapped[Optional[datetime]] = mapped_column(DateTime)
     criado_em: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
     atualizado_em: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    proposicao: Mapped["Proposicao"] = relationship(back_populates="eventos_tramitacao")
 
     __table_args__ = (
         UniqueConstraint("proposicao_id", "casa", "chave", name="uq_tramitacao_chave"),
@@ -650,7 +651,9 @@ devolver o cabeçalho `X-Total-Count` com o total filtrado (TRM-014), e o `CORSM
 9. **Só `aprovado` vai a produção** — garantido por construção em três pontos: (a) `Mapa.publicavel(id)`
    é a única porta usada por `derivar_fase`, pela API e pelo sync; (b) `Mapa.com_tudo_publicavel()`
    (para testes de lógica, para o validador e para a projeção de TRM-027) é proibido fora de `tests/`,
-   `scripts/validar_tramitacao.py` e `apps/workers/tramitacao/relatorio.py::simular_fases` (que não grava)
+   `scripts/validar_tramitacao.py`, `apps/workers/tramitacao/relatorio.py::simular_fases` (que não grava)
+   e `apps/workers/revisao_tramitacao/` (pipeline de TRM-023: só leitura, sem banco; o teste de AST confere
+   que o pacote não importa `sqlalchemy`)
    — teste de árvore sintática em TRM-024; (c) `/tramitacao/mapa` devolve texto nulo para o não
    publicável (teste de contrato em TRM-028).
 
@@ -1446,7 +1449,7 @@ class EstadoEntrada(Estrito):
     hash: str = Field(pattern=r"^[0-9a-f]{12}$")
     registros: list[str] = []                    # lotes: ["L0"]
     aprovado_em: Optional[date] = None
-    revisado_por: list[str] = []                 # escrito pelos scripts: "agente:juridico@<hash8 das instruções>",
+    revisado_por: list[str] = []                 # escrito pelos scripts: "agente:juridico@<8 primeiros hex de Agente.hash_instrucoes>",
                                                  # "maintainer:<git user.name>", "especialista:<nome>"
 
 class ArquivoRevisao(Estrito):
@@ -1457,8 +1460,16 @@ class ArquivoRevisao(Estrito):
 
 `revisado_por` é acréscimo desta spec ao exemplo do PM (o brief pede o campo); os scripts de TRM-023
 o preenchem a partir de `consolidado.yml` e `decisao.yml`. O formato de `revisoes/<lote>/…`
-(rodadas, `consolidado.yml`, `decisao.yml`, `relatorio.md`) é do PM; TRM-024 só os lê para as regras
-V-R4 a V-R6 e tolera campos extras neles (são escritos por script e podem evoluir — o validador lê
+fica fixado por modelos `Consolidado` e `Decisao` em `packages/tramitacao/revisao.py` (TRM-021a), com os
+campos lidos por V-R4–V-R6:
+
+- `Consolidado{lote, rodada, consolidado_em: date, entradas: {id: {hash, estado_resultante,
+  bloqueia_abertos: list[str], divergencia: bool}}}`;
+- `Decisao{lote, aprovado_em: date, aprovado_por, minutos, aprovadas: list[str], excluidas: {id: motivo},
+  sobreposicoes: {id: justificativa}}`.
+
+TRM-023 escreve exatamente esses campos (extras permitidos); TRM-024 lê. As rodadas e o `relatorio.md`
+são formato do PM. TRM-024 tolera campos extras (são escritos por script e podem evoluir — o validador lê
 os campos que usa e ignora o resto).
 
 ### 2.9 Carga em tempo de execução
@@ -1491,7 +1502,7 @@ class Mapa:
     conteudo_bruto: Mapping[str, dict]           # id → mapeamento do YAML (para hash e para o validador)
 
     def publicavel(self, id_entrada: str) -> bool: ...
-    def com_tudo_publicavel(self) -> "Mapa": ...  # SÓ testes e validador (teste de AST em TRM-024)
+    def com_tudo_publicavel(self) -> "Mapa": ...  # SÓ testes, validador, simular_fases e pipeline de TRM-023 (teste de AST em TRM-024)
 
 def carregar_mapa(diretorio: Optional[Path] = None) -> Mapa: ...
 @functools.lru_cache(maxsize=1)
@@ -1530,8 +1541,8 @@ trabalho: regex da norma, marcos, motor, sync e idempotência rodam offline, em 
 mesmo cliente de produção, as respostas de uma lista de casos e grava um "pacote" JSON por caso.
 (3) Um replay serve esses pacotes por `httpx.MockTransport` e falha alto em requisição não gravada.
 
-**Escopo** — Dentro: transporte injetável na Câmara e no Senado; gravador; replay; 16 casos +
-sintéticos; fixture pytest. Fora: tabelas de referência (TRM-020, moram em `data/`); `esperado` dos
+**Escopo** — Dentro: transporte injetável na Câmara e no Senado; gravador; replay; 18 casos +
+`janela-d7` + sintéticos; fixture pytest. Fora: tabelas de referência (TRM-020, moram em `data/`); `esperado` dos
 casos (TRM-025); bloquear rede em testes antigos.
 
 **Critérios de aceite**
@@ -1542,7 +1553,11 @@ casos (TRM-025); bloquear rede em testes antigos.
 3. Dado um pacote carregado, quando o cliente pede um caminho gravado com os mesmos parâmetros em
    qualquer ordem, então recebe exatamente o corpo e os cabeçalhos gravados.
 4. Dado um pacote carregado, quando o cliente pede algo não gravado, então o teste falha com
-   `RequisicaoNaoGravada("GET camara /proposicoes/123 {}")` — nunca acessa a rede.
+   `RequisicaoNaoGravada("GET camara /proposicoes/123 {}")` — nunca acessa a rede. `Gravacoes` também
+   acumula as requisições não gravadas em `nao_gravadas`, e a fixture `gravacoes` faz
+   `assert g.nao_gravadas == []` no teardown (os chamadores com `except Exception` engoliriam a exceção:
+   `apps/workers/crawlers/camara.py:181`, `apps/workers/explicacao/coleta.py:135-169`,
+   `scripts/discover_proposicoes.py:178`).
 5. Dois envelopes para a mesma requisição são servidos em ordem (o último se repete), o que permite
    simular 429 → 200.
 6. `.venv/bin/python scripts/gravar_respostas.py --caso pl-327-2021` regrava o pacote; `--todos`
@@ -1748,7 +1763,7 @@ colunas (TRM-010/013); colunas de fase (TRM-027).
 API_DIR = REPO_ROOT / "apps" / "api"
 
 def _config(db_url: str) -> Config:
-    cfg = Config(str(API_DIR / "alembic.ini"))
+    cfg = Config()  # sem .ini: fileConfig não roda e não desliga os loggers dos outros testes
     cfg.set_main_option("script_location", str(API_DIR / "data" / "migrations"))
     cfg.set_main_option("sqlalchemy.url", db_url)
     return cfg
@@ -1772,7 +1787,11 @@ def test_modelo_bate_com_migrations(tmp_path, monkeypatch): ...   # compare_meta
 
 **Riscos e perguntas em aberto** — Nunca rodamos as migrations em SQLite; se a inicial
 (`6d2a71d15687`) falhar em SQLite, corrigir só o necessário para SQLite sem mudar o efeito em
-Postgres, e registrar no PR. `env.py` chama `fileConfig`: inofensivo nos testes.
+Postgres, e registrar no PR. `env.py` chama `fileConfig` quando há arquivo `.ini`, e isso **desliga os loggers existentes** (quebra o
+`caplog` de `tests/unit/test_bussula.py`). O teste monta `Config()` **sem** arquivo (`config_file_name
+is None`), e `fileConfig` não roda. Produção: o `dados.yml` (#47) não migra. Até ele ganhar um passo
+`alembic upgrade head` antes de `agenda.py`, confirmar no Render que a migration rodou antes do próximo
+cron.
 
 **Instruções para o agente implementador** — Branch `trm-011-colunas-status`. Ordem: teste de
 migration contra o head atual (deve passar) → migration → modelo → teste de bater modelo e banco.
@@ -1787,7 +1806,7 @@ Prova: saída do pytest. **Não** rodar contra o Postgres de desenvolvimento; **
 
 **Épico:** E1 Status honesto (F0) · **Prioridade:** P0 · **Horizonte:** Agora · **Estimativa:** M
 **Dono da spec:** Arquitetura · **Revisões obrigatórias:** Arquitetura
-**Depende de:** TRM-011, TRM-002 · **Desbloqueia:** TRM-012, TRM-026, TRM-027
+**Depende de:** TRM-011, TRM-002, TRM-012a (cliente estrito: `FonteIndisponivel`, `obter_proposicao_estrito`, `obter_orgao`, `obter_deputado_estrito`) · **Desbloqueia:** TRM-012b, TRM-013 (`aplicar_norma` mora em `registro.py`), TRM-014 (critério 9), TRM-026, TRM-027
 
 **Problema** — Há três caminhos que criam `Proposicao` na Câmara, e dois não leem o detalhe:
 `scripts/sync_votacoes_zil.py:128-154` (cria a partir da votação; **as 5 do placar estão sem status,
@@ -1876,7 +1895,7 @@ toca `categorias_zil`, `relevancia_zil`, `classificacao_automatica`, campos de e
 `packages/tramitacao/status.py::id_da_uri(uri: str | None) -> str | None` — último segmento numérico
 de `…/orgaos/2010`, `…/deputados/220572`, `…/proposicoes/2417912`.
 
-Órgão: `cache.orgaos` ou `client.obter_orgao(id)` (TRM-012 cria o método; até lá, `client._get(f"/orgaos/{id}")`).
+Órgão: `cache.orgaos` ou `client.obter_orgao(id)` (criado em TRM-012a).
 Falha na consulta do órgão não derruba o registro: `orgao_nome`/`orgao_tipo_cod` ficam como estavam
 e o aviso vai para o log. Relator: `Parlamentar` com `fonte_id` e `fonte == CAMARA`; senão
 `GET /deputados/{id}` → `dados.ultimoStatus.nome`; cacheado.
@@ -1924,7 +1943,7 @@ existente; **não** inventar situação quando a API devolve nula.
 
 **Épico:** E1 Status honesto (F0) · **Prioridade:** P0 · **Horizonte:** Agora · **Estimativa:** P
 **Dono da spec:** Arquitetura · **Revisões obrigatórias:** Arquitetura
-**Depende de:** TRM-011, TRM-002 · **Desbloqueia:** TRM-014, TRM-053
+**Depende de:** TRM-011, TRM-002, TRM-010 (`aplicar_norma` entra em `registro.py`, arquivo de TRM-010) · **Desbloqueia:** TRM-012b, TRM-014, TRM-053
 
 **Problema** — A lei resultante não está em lugar nenhum do ZIL. `urnFinal` vem sempre nulo (disc.
 §1.6; conferido em 2269745: `"urnFinal": null`); o número da lei só aparece no texto do despacho do
@@ -1955,6 +1974,8 @@ nas colunas de norma (§1.3).
    → `None`; "Vetado totalmente" → `None`; linha com código ≠ 251/1012 nunca é lida.
 5. Uma norma gravada com `norma_fonte = "despacho_camara"` não é apagada por uma leitura posterior
    que não ache nada; norma de fonte `senado_norma_gerada` ou `curadoria` nunca é sobrescrita.
+   `norma_verificada_em` não conta como alteração no retorno (senão a segunda execução de TRM-012b
+   teria `atualizados > 0`).
 
 **Specs técnicas**
 
@@ -2006,15 +2027,15 @@ def url_planalto(tipo: TipoNorma, numero: int, ano: int) -> str | None: ...
 Os links são **montados por padrão, não conferidos** (Planalto dá timeout fora do Brasil, A15):
 a API devolve `links_verificados: false`.
 
-Gravação (`apps/workers/tramitacao/sincronizacao.py::aplicar_norma(prop, norma, agora) -> list[str]`,
-chamada por TRM-012 com as tramitações já baixadas): regras do critério 5; grava
+Gravação (`apps/workers/tramitacao/registro.py::aplicar_norma(prop, norma, agora) -> list[str]`
+(arquivo de TRM-010, que já está mergeado), chamada por TRM-012b com as tramitações já baixadas): regras do critério 5; grava
 `norma_tipo/numero/ano/data/veto`, `norma_fonte = "despacho_camara"`, `norma_tramitacao_sequencia`,
 `norma_verificada_em = agora`. Se a extração nova difere da gravada (mesma fonte), sobrescreve e
 registra aviso em `erro_detalhes` com `etapa: "norma_mudou"` (não conta como erro).
 
 **Testes** — `tests/unit/test_normas.py`: critérios 1–4 com os despachos dos pacotes (lidos por
 `gravacoes.corpo`), mais strings literais copiadas dos pacotes para formas raras (`Lei nº 14.871/2024`,
-`14.871/2024` com ponto, "Transformada na Lei"); critério 5 em `tests/unit/test_sync_tramitacao.py`.
+`14.871/2024` com ponto, "Transformada na Lei"); critério 5 em `tests/unit/test_aplicar_norma.py`.
 Comando: `.venv/bin/python -m pytest tests/unit/test_normas.py -v`.
 
 **Riscos e perguntas em aberto** — A data do marco pode não ser a da assinatura em algum caso
@@ -2025,19 +2046,25 @@ TRM-002 não trouxer exemplo real, o teste de EC/DL cobre só a regex com texto 
 TRM-017.
 
 **Instruções para o agente implementador** — Branch `trm-013-norma-despacho`. Funções puras primeiro,
-com testes; `aplicar_norma` entra no PR de TRM-012 se este ainda não existir (ou vice-versa — o que
-mergear depois chama o outro). **Não** usar `urnFinal`; **não** chamar Planalto nem normas.leg.br;
+com testes; `aplicar_norma` em `registro.py` (TRM-010 já mergeado); TRM-012b só a chama. **Não** usar `urnFinal`; **não** chamar Planalto nem normas.leg.br;
 **não** aplicar a regex fora das linhas 251/1012; **não** inferir norma de veto total.
 
 ---
 
-### TRM-012 — `scripts/sync_tramitacao.py`: diário (D-7 ∩ acompanhadas) + reconciliação; `Retry-After`; `IngestionRun`
+### TRM-012 — (a) cliente estrito; (b) `scripts/sync_tramitacao.py`: diário (D-7 ∩ acompanhadas) + reconciliação; `Retry-After`; `IngestionRun`
+
+> **Quebra em dois PRs (revisão de Arquitetura, 2026-11-01).** **TRM-012a** — cliente da Câmara: `Retry-After`, contador,
+> intervalo mínimo, exceções (`FonteIndisponivel`, `ListagemIncompleta`, `RecursoNaoEncontrado`) e métodos estritos
+> (`obter_proposicao_estrito`, `obter_tramitacoes_estrito`, `obter_orgao`, `obter_deputado_estrito`, `listar_movimentadas`);
+> estimativa P; depende só de TRM-002; critérios 1, 2 e 10. TRM-010 usa esses métodos, por isso 012a vem antes dele.
+> **TRM-012b** — o resto desta spec (`sincronizacao.py`, CLI, IngestionRun, norma, cron); estimativa M; depende de
+> TRM-010, TRM-011, TRM-012a e TRM-013.
 
 **Revisão:** PM (processo) pendente · UI/UX e DS consultados
 
 **Épico:** E1 Status honesto (F0) · **Prioridade:** P0 · **Horizonte:** Agora · **Estimativa:** M
 **Dono da spec:** Arquitetura · **Revisões obrigatórias:** Arquitetura; Maintainer (ligação ao cron de produção)
-**Depende de:** TRM-010, TRM-011, TRM-013; PR #47 só para o último passo (ligar ao `agenda.py`) · **Desbloqueia:** TRM-014 (dados reais), TRM-016, TRM-017, TRM-026, TRM-027
+**Depende de:** 012a: TRM-002. 012b: TRM-010, TRM-011, TRM-012a, TRM-013; PR #47 só para o último passo (ligar ao `agenda.py`) · **Desbloqueia:** 012a: TRM-010, TRM-017 (`--verificar-api`). 012b: TRM-014 (dados reais), TRM-016, TRM-017, TRM-026, TRM-027
 
 **Problema** — Nada atualiza a situação depois da criação (disc. §1.2-2): o que aparece é a foto do
 dia em que a proposição entrou. O cliente da Câmara ignora `Retry-After` (backoff próprio de 2/4/8 s,
@@ -2077,7 +2104,7 @@ Fora: gravar tramitações (TRM-026), fase (TRM-027), Senado (TRM-050), agenda/p
    que viraram lei têm norma (critério de F0, disc. §8).
 9. `--dry-run` lê a API, não grava nada (nem IngestionRun) e imprime o que mudaria.
 10. Os chamadores antigos de `CamaraClient._get` continuam recebendo `[]` em falha (comportamento
-    preservado; teste).
+    preservado; teste), e 500/404 continuam levantando `httpx.HTTPStatusError` (teste).
 11. Órgão efetivo (A19): com `pl-3474-2023` (status em CCP), `orgao_efetivo_sigla`/`orgao_efetivo_nome`
     são os da comissão do registro mais recente em comissão; com `pl-1264-2024` (status na CFT), são
     os do próprio status. `TIPOS_ORGAO_COMISSAO = ("2", "3", "6", "9", "21", "13000", "81002")` e
@@ -2106,7 +2133,7 @@ class CamaraClient:
                  max_tentativas: int = 4, espera_max: float = 120.0) -> None: ...
     requisicoes: int                                   # contador de requisições enviadas
     def _resposta(self, path: str, params: dict | None = None) -> httpx.Response: ...
-    def _get(self, path: str, params: dict | None = None) -> Any: ...   # legado: _resposta + "dados"; FonteIndisponivel → log + []
+    def _get(self, path: str, params: dict | None = None) -> Any: ...   # legado, comportamento preservado: só 429/503/504 esgotados → log + []; qualquer outro status ≥ 400 (inclusive 404 e 500) levanta httpx.HTTPStatusError como hoje
     def _get_paginado_estrito(self, path: str, params: dict, max_paginas: int = 60) -> list[dict]: ...
     def obter_proposicao_estrito(self, proposicao_id: int) -> dict: ...
     def obter_tramitacoes_estrito(self, proposicao_id: int) -> list[dict]: ...
@@ -2159,8 +2186,9 @@ def executar(db: Session, client: CamaraClient, modo: Literal["diario", "complet
              dry_run: bool = False, orcamento: Orcamento, registrar_execucao: bool = True) -> ResultadoSync: ...
 ```
 
-Ordem dos alvos: `int(fonte_id)` crescente (determinístico). Commit por proposição (progresso
-parcial persiste); em `dry_run`, `db.rollback()` no fim. IngestionRun: até o merge do PR #47, criada e
+Ordem dos alvos: `int(fonte_id)` crescente (determinístico). Fora de `dry_run`, commit por
+proposição (progresso parcial persiste). Em `dry_run`, nenhum `commit`: só `flush`, e `db.rollback()`
+no fim (teste: depois do dry-run, `SELECT count(*)` igual ao de antes). IngestionRun: até o merge do PR #47, criada e
 fechada direto no módulo (mesmo padrão de `scripts/sync_votacoes_zil.py:266-310`); depois do merge,
 trocar por `apps.workers.execucoes.abrir_execucao`/`fechar_execucao` (`git show
 origin/047-deploy-cron:apps/workers/execucoes.py`).
@@ -2195,13 +2223,17 @@ dentro do `timeout-minutes: 45` do workflow `dados.yml` do PR #47.
 `Passo("tramitacao_diaria", _tramitacao("diario"))` no job `diario` **depois** de `proposicoes` e
 antes de `scores`; `Passo("tramitacao_completa", _tramitacao("completo"))` no job semanal
 `cadastros`; subcomando `tramitacao` para rodar isolado; `_tramitacao` chama `executar(...,
-registrar_execucao=False)` (o `agenda.rodar_passo` já abre a IngestionRun) e devolve `Contagem`.
+registrar_execucao=False)` (o `agenda.rodar_passo` já abre a IngestionRun) e devolve
+`Contagem(processados, criados, atualizados, erros=max(r.erros, 1 if r.status == "partial" else 0))`;
+se `r.status == "failed"`, levanta `RuntimeError` com `r.erro_detalhes[:5]`, para o `rodar_passo`
+registrar `failed`. O `erro_detalhes` completo vai para o log; gravá-lo na `IngestionRun` exige
+estender `fechar_execucao` no mesmo PR.
 Em `.github/workflows/dados.yml`, `tramitacao` nas opções do `workflow_dispatch`. Teste em
 `tests/unit/test_agenda.py`: ordem dos passos no `diario` e no `cadastros`.
 
 **Testes**
 - `tests/unit/test_camara_client_retry.py` (sintéticos): critérios 1, 2, 10.
-- `tests/unit/test_sync_tramitacao.py` (replay + SQLite): critérios 3–7, 9; `aplicar_norma` (TRM-013 crit. 5).
+- `tests/unit/test_sync_tramitacao.py` (replay + SQLite): critérios 3–7, 9.
 - Comando: `.venv/bin/python -m pytest tests/unit/test_camara_client_retry.py tests/unit/test_sync_tramitacao.py -v`.
 - Prova manual (critério 8): `python scripts/sync_tramitacao.py completo --dry-run`, depois sem
   `--dry-run`, e `SELECT tipo, numero, ano, situacao, sigla_orgao, norma_numero FROM proposicoes WHERE
@@ -2225,7 +2257,7 @@ diário; **não** chamar o Senado; **não** cair para `completo` quando a janela
 
 **Épico:** E1 Status honesto (F0) · **Prioridade:** P0 · **Horizonte:** Agora · **Estimativa:** P
 **Dono da spec:** Arquitetura · **Revisões obrigatórias:** Arquitetura; UI/UX (consumidor do contrato, TRM-015/016)
-**Depende de:** TRM-011, TRM-013; TRM-021 (só o carregador do glossário, para `*_texto`); PR #49 (mesmo schema) · **Desbloqueia:** TRM-015, TRM-016, TRM-017. O e2e de TRM-016 só lê `X-Total-Count` se a API falsa de TRM-001 expuser o cabeçalho por CORS (revisão de Arquitetura, item 1)
+**Depende de:** TRM-011, TRM-013, TRM-010 (critério 9); TRM-021 (só o carregador do glossário, para `*_texto`); PR #49 (mesmo schema, mergeado) · **Desbloqueia:** TRM-015, TRM-016, TRM-017. O e2e de TRM-016 só lê `X-Total-Count` se a API falsa de TRM-001 expuser o cabeçalho por CORS (revisão de Arquitetura, item 1)
 
 **Problema** — `ProposicaoRead` (`apps/api/schemas/__init__.py:48-67`) expõe só `situacao`; não há
 link para a página da Câmara em nenhuma proposição (disc. §1.5); a lista ordena por "analisadas
@@ -2254,7 +2286,8 @@ na lista; textos de regime e apreciação vindos do glossário **só** quando pu
 6. `GET /proposicoes?ordem=movimentacao` ordena por `ultima_movimentacao_em` desc, nulos por último,
    empate por `id`; sem `ordem`, a ordem atual não muda.
 7. `norma` presente quando há `norma_numero`, com `rotulo`, links e `links_verificados: false`.
-8. Falha ao carregar o mapa não derruba `ProposicaoRead`: textos nulos e um `logger.warning` por processo.
+8. Falha ao carregar o mapa não derruba `ProposicaoRead`: textos nulos e um `logger.warning` por falha de
+   carga (`carregar_mapa_producao` não guarda exceção; uma flag de módulo evita repetir a mesma mensagem).
 9. Com `PL 399/2025` (pacote `pl-399-2025`, urgência + conclusiva) registrado, `apreciacao_chave ==
    "apreciacao_conclusiva_com_urgencia"`; com só `glossario/apreciacao_conclusiva` publicável,
    `apreciacao_texto` é nulo.
@@ -2685,8 +2718,9 @@ um teste pytest que roda a cobertura sobre `data/` real; um job na CI.
 4. `--hashes` imprime `<id>\t<hash>` de todas as entradas, ordenado.
 5. `--estrito` transforma avisos (referência a glossário inexistente, situação observada sem mapa) em erro.
 6. Job `validar-tramitacao` na CI, verde.
-7. Teste de AST: `com_tudo_publicavel` só aparece em `tests/`, `scripts/validar_tramitacao.py` e
-   `apps/workers/tramitacao/relatorio.py`; e esse módulo não chama `add`, `commit`, `flush` nem
+7. Teste de AST: `com_tudo_publicavel` só aparece em `tests/`, `scripts/validar_tramitacao.py`,
+   `apps/workers/tramitacao/relatorio.py` e `apps/workers/revisao_tramitacao/` (pipeline de TRM-023:
+   só leitura, sem banco; o teste confere que o pacote não importa `sqlalchemy`); e esse módulo não chama `add`, `commit`, `flush` nem
    `execute` com `update`/`insert` (a projeção de TRM-027 nunca grava).
 
 | Regra | Erro quando |
@@ -2701,7 +2735,7 @@ um teste pytest que roda a cobertura sobre `data/` real; um job na CI.
 | V-E8 | frase com marcador fora de `Marcador` ou ausente de `quando`; último modelo da lista com filtro ou `quando`; rótulo > 32 caracteres; termo vedado (§2.1-8) em rótulo, frase, título ou glossário; frase com mais de 25 palavras por período (guia de TRM-022) |
 | V-E9 | `tipos_orgao_comissao` com código ausente de `camara-tipos-orgao.json`, ou parâmetros da R7 diferentes de `TIPOS_ORGAO_COMISSAO`/`SIGLAS_PLENARIO` de `packages/tramitacao/status.py` (o órgão efetivo de F0 usa as constantes) |
 | V-E10 | glossário: chave repetida; `(casa, cod)` em duas entradas; `tipo: situacao` sem `codigos`/`descricao_oficial`; `regime`/`apreciacao`/`desfecho`/`etapa` sem `base_legal`; referência inexistente (aviso; erro com `--estrito`) |
-| V-C1 | código de um snapshot que não está em exatamente um de: regra/marco, `ignorados`, `nao_mapeados.yml` |
+| V-C1 | código de `camara-situacoes.json`, `camara-tipos-tramitacao.json` ou `senado-tipos-situacao.json` (os demais snapshots só servem a V-E9 e TRM-052) que não está em exatamente um de: regra/marco, `ignorados`, `nao_mapeados.yml` |
 | V-C2 | código citado nos YAMLs que não existe no snapshot |
 | V-C3 | se existir `data/tramitacao/amostras/situacoes.json` (TRM-027 `relatorio --exportar-situacoes`): situação observada sem regra (aviso; erro com `--estrito`) |
 | V-R1…V-R9 | como a spec §6.9 (estado, hash, registros, `aprovado_em`, `bloqueia` sobreposto, base legal, `entradas_publicaveis`, `pendente`), com **V-R7 ampliada** a pedido de UI/UX: `base_legal_motivo` vale para critério interno do ZIL (regras R9, R10) **e** para glossário `tipo: situacao` administrativa, com o texto padronizado de §2.6 |
@@ -2861,7 +2895,9 @@ Ordem dos marcos: chave `(data or date.min, 0 se camara senão 1, sequencia or 0
 ordena a tupla recebida (por isso embaralhar não muda nada). `sit = mapa.situacao_por_codigo.get(
 (casa_fonte, cod_situacao))` → `(regra_id, SituacaoTratada)` ou nada. `exigir(*ids)`: se algum id não
 é publicável, devolve `nao_sabemos("mapa_nao_aprovado")` com a regra que casou e
-`nao_publicavel:<id>` nas evidências. **Entradas decisivas** = a regra que casou, a situação ou o
+`nao_publicavel:<id>` nas evidências. **Ordem:** assim que uma regra casa, `exigir` roda **antes** de
+qualquer saída interna da regra (inclusive `nao_sabemos` de R4, R5 e R7). Com a regra não publicável, o
+motivo é sempre `mapa_nao_aprovado`. **Entradas decisivas** = a regra que casou, a situação ou o
 marco que a sustentou, e a `FaseDef`/`DesfechoDef` do resultado (spec §6.8-2).
 
 | # | Casa quando | Resultado | Decisivas | Notas |
@@ -2955,7 +2991,7 @@ o mapa, e reclassificação offline quando o mapa muda.
 (candidato a tarefa futura; `coleta.py` continua igual).
 
 **Critérios de aceite**
-1. Sincronizar `pl-2-2024` grava 51 linhas, ordenáveis por `sequencia`; a segunda execução com as
+1. Sincronizar `pl-2-2024` grava `len(pacote)` linhas, ordenáveis por `sequencia`; a segunda execução com as
    mesmas respostas: 0 criadas, 0 atualizadas.
 2. Mudar só `codSituacao`/`descricaoSituacao`/`regime`/`apreciacao`/`uriUltimoRelator` nas linhas
    (pacote alterado em memória) não muda nenhum `hash_conteudo` e conta 0 atualizadas (A4).
@@ -2964,12 +3000,14 @@ o mapa, e reclassificação offline quando o mapa muda.
    `remessa_outra_casa` (190 com condição), seq. 30 e 51 nenhum (1236 em `nao_mapeados`, A6), seq. 66
    `norma_veto_parcial`; `pl-4272-2023` seq. 16 `prejudicialidade`.
 5. Linha que some da resposta ganha `removido_na_fonte_em`; se volta, o campo é limpo; nada é apagado.
+   Linhas com `removido_na_fonte_em` não entram em `entrada_do_banco` nem em `marcos[]`; resposta 200
+   com lista vazia quando o banco tem linhas não marca nada e registra `etapa: "tramitacoes_vazias"`.
 6. `sync_tramitacao.py recalcular --apenas-marcos` reclassifica todas as linhas com o mapa atual, sem
    rede, e informa quantas mudaram.
 
 **Specs técnicas**
 - Migration `8e47a1c3d5f6_tramitacoes.py` (`down_revision` = head de TRM-011): `op.create_table`
-  conforme §1.4, três índices, `UniqueConstraint` nomeada; `downgrade` derruba índices e tabela.
+  de `tramitacoes` e de `orgaos` (§1.4), três índices, `UniqueConstraint` nomeada e `uq_orgao_fonte`; `downgrade` derruba índices e tabela.
   Acrescentar ao `tests/integration/test_migrations.py`.
 - Modelo `Tramitacao` (§1.4); em `Proposicao`: `eventos_tramitacao: Mapped[list["Tramitacao"]] =
   relationship(back_populates="proposicao", order_by="Tramitacao.sequencia")` e o atributo legado
@@ -2989,8 +3027,8 @@ class ResultadoEventos:
     removidos: int = 0
     reaparecidos: int = 0
 
-def upsert_eventos_camara(db: Session, prop: Proposicao, linhas: Sequence[dict], mapa: Mapa,
-                          agora: datetime) -> ResultadoEventos: ...
+def upsert_eventos_camara(db: Session, client: CamaraClient, prop: Proposicao, linhas: Sequence[dict],
+                          mapa: Mapa, cache: CacheConsultas, agora: datetime) -> ResultadoEventos: ...
 def reclassificar_marcos(db: Session, mapa: Mapa, *, proposicao_ids: Sequence[UUID] | None = None) -> int: ...
 ```
 
@@ -3018,7 +3056,9 @@ detecta e a linha é atualizada (conta em `atualizados`). Lacunas de sequência 
 **Instruções para o agente implementador** — Branch `trm-026-tramitacoes`. Ordem: `classificar_linha`
 (puro) → migration + modelo → `upsert_eventos_camara` → integração no sync → `recalcular
 --apenas-marcos`. **Não** gravar os campos de `CAMPOS_NAO_HISTORICOS`; **não** ordenar por data;
-**não** apagar linha; **não** derivar fase aqui.
+**não** apagar linha; **não** derivar fase aqui. Em dev, `alembic upgrade head` antes de subir a API
+(o lifespan faz `create_all` com `ENV=development`, e a tabela criada por ele faz o `create_table` da
+migration falhar).
 
 ---
 
@@ -3026,7 +3066,7 @@ detecta e a linha é atualizada (conta em `atualizados`). Lacunas de sequência 
 
 **Revisão:** PM (processo) pendente · UI/UX e DS consultados
 
-**Épico:** E2 Mapa e glossário · **Prioridade:** P1 · **Horizonte:** Agora · **Estimativa:** M
+**Épico:** E2 Mapa e glossário · **Prioridade:** P1 · **Horizonte:** Agora · **Estimativa:** G — em dois PRs: (a) migration, casa iniciadora, cadeia, recalcular; (b) relatório, simulação, gatilhos
 **Dono da spec:** Arquitetura · **Revisões obrigatórias:** Arquitetura; Maintainer (workflow de produção)
 **Depende de:** TRM-025, TRM-026, decisão D2 (spec §10.2); PR #47 só para o workflow de recálculo · **Desbloqueia:** TRM-028, TRM-017 (métricas de fase)
 
@@ -3053,14 +3093,15 @@ gatilhos de recálculo, seleção de alvos incluindo cabeças. Fora: API (TRM-02
 3. `casa_iniciadora`: `pl-1847-2024` → `senado`; `pl-2-2024` → `camara`; MPV → `congresso`;
    `/autores` só é chamado quando a coluna está nula.
 4. Persistência: `fase`, `desfecho`, `fase_motivo`, `fase_regra`, `fase_versao_publicada`,
-   `fase_desde`, `orgao_desde`, `orgao_efetivo_sigla`, `orgao_efetivo_nome`, `fase_casa`,
-   `fase_evidencias`, `fase_calculada_em` gravados; segunda execução sem mudança não altera nada
+   `fase_desde`, `orgao_desde`, `fase_casa`, `fase_evidencias`, `fase_calculada_em` gravados (órgão
+   efetivo: gravado por TRM-012b, só lido aqui); segunda execução sem mudança não altera nada
    (nem `fase_calculada_em`). Com `pl-3474-2023` (status em CCP), `orgao_efetivo_sigla` é a comissão
    do último registro em comissão e a fase é `comissoes` (A19).
 5. `recalcular` (sem rede) processa cabeças antes das apensadas e recalcula as apensadas de uma
    cabeça que mudou, mesmo que elas não tenham se movido.
 6. **Gatilho de aprovação** (pedido do PM): (a) `diario` e `completo` comparam a `versao_publicada`
-   do mapa com a maior `fase_versao_publicada` do banco e, se diferente, rodam `recalcular` de todas
+   do mapa e, se existir proposição acompanhada (ou cabeça) com `fase_versao_publicada` diferente dela,
+   rodam `recalcular` de todas
    antes de sincronizar; (b) workflow `.github/workflows/tramitacao.yml` roda `validar` + `recalcular`
    em produção a cada push em `main` que toque `data/tramitacao/**` (depois do PR #47).
 7. Alvos (TRM-012) passam a incluir as cabeças das acompanhadas (D2); a lista (`categorias_zil IS NOT
@@ -3167,9 +3208,9 @@ Prova: `relatorio` no banco de desenvolvimento antes e depois. **Não** pôr cab
 
 **Revisão:** PM (processo) pendente · UI/UX e DS consultados
 
-**Épico:** E2 Mapa e glossário · **Prioridade:** P1 · **Horizonte:** Agora · **Estimativa:** M
+**Épico:** E2 Mapa e glossário · **Prioridade:** P1 · **Horizonte:** Agora · **Estimativa:** G — em dois PRs: (a) funções puras, endpoints e filtros; (b) gerador de fixtures e teste de regeneração
 **Dono da spec:** Arquitetura · **Revisões obrigatórias:** Arquitetura; UI/UX e Design System (consumidores: TRM-040–045, TRM-030–035)
-**Depende de:** TRM-027, TRM-022 (glossário), TRM-002 (pacotes golden para o gerador de fixtures do frontend, critério 9) · **Desbloqueia:** TRM-040, TRM-041, TRM-042, TRM-043, TRM-044, TRM-045, TRM-051; TRM-046-B (troca as fixtures "reais" pelas geradas — conflito 10 do DS)
+**Depende de:** TRM-027, TRM-014 (`_proposicao_read`), TRM-022 (glossário), TRM-002 (pacotes golden para o gerador de fixtures do frontend, critério 9) · **Desbloqueia:** TRM-040, TRM-041, TRM-042, TRM-043, TRM-044, TRM-045, TRM-051; TRM-046-B (troca as fixtures "reais" pelas geradas — conflito 10 do DS)
 
 **Problema** — Não há endpoint de tramitação, de mapa nem filtro por fase (disc. §1.5, §5.3).
 
@@ -3259,7 +3300,7 @@ def montar_frase(modelos: Sequence[ModeloFrase], valores: Mapping[str, Optional[
   "https://dadosabertos.camara.leg.br/api/v2/proposicoes/{fonte_id}"}`, `{"rotulo": "Câmara —
   tramitações", "url": ".../tramitacoes"}`, `{"rotulo": "Mapa de fases do ZIL, versão {n}", "url":
   f"{settings.REPO_URL}/blob/main/data/tramitacao/fases.yml"}` e, se apensada, as duas da cabeça.
-  `REPO_URL` nova em `core/config.py` com padrão `https://github.com/melissa-pereira-deel/manifesto-zil`.
+  `REPO_URL` nova em `core/config.py` com padrão `https://github.com/melissa-pereira-deel/zil-observatorio`.
 - `marcos[]`: linhas com `marco` não nulo, `marco_entrada` publicável, `linha_do_tempo` verdadeiro,
   não removidas, em ordem de `sequencia`; `titulo` = título da variante ou do marco; `votacao_id` =
   `Votacao` da proposição com `date(data) == date(data_hora)` quando o marco é `votacao_plenario` ou
@@ -3385,7 +3426,8 @@ legislação do Senado (disc. §3.4).
 
 **Solução** — Tabelas `normas`, `vetos`, `regulamentacoes` (disc. §5.1), com `fonte_dado` e
 `verificado_em`; migração das colunas `norma_*` de `proposicoes` para uma linha em `normas` +
-`norma_id` (dados copiados na migration; colunas antigas removidas numa migration seguinte);
+`norma_id` (dados copiados na migration; colunas antigas removidas numa migration seguinte, cujo `downgrade()` recria `norma_*` e as preenche a
+partir de `normas` — teste up/down/up com dados em `tests/integration/test_migrations.py`);
 `GET /legislacao/{tipo}/{num}/{ano}` do Senado (vides "Declaração de Regulamentação Permanente de
 Norma"; `urlDocumento` confirma o URN e liga `links_verificados`); curadoria em `data/normas/*.yml`
 com `scripts/validar_normas.py` (barra linguagem causal, disc. §7) e `scripts/apply_normas.py` (padrão
@@ -3405,20 +3447,20 @@ Alinhada às ondas da spec §5.1 (as ondas contam a partir do merge das dependê
 | Onda | Arquitetura — agente A | Arquitetura — agente B | Por quê |
 | --- | --- | --- | --- |
 | 0 | TRM-011 (colunas + teste de migration) | TRM-002 (clientes com transporte, replay, gravações) e TRM-020 (snapshots) | sem dependências; 021a também pode começar aqui (só esquema) |
-| 1 | TRM-010 (registrar), depois TRM-013 (norma) | TRM-021a (esquema, carga, `revisao.py`) → TRM-021b (conteúdo v0) | 010 e 013 precisam de 011 + 002; 021b precisa de 020 |
-| 2 | TRM-012 (cliente estrito, sync, IngestionRun) | TRM-024 (V-E/V-C já; V-R quando o formato de TRM-023 estiver mergeado) e TRM-014 (API F0) | **F0 de dados completa no fim desta onda** |
+| 1 | TRM-012a (cliente estrito), depois TRM-010 (registrar), depois TRM-013 (norma) | TRM-021a (esquema, carga, `revisao.py`) → TRM-021b (conteúdo v0) | 012a precisa de 002; 010 de 011 + 002 + 012a; 013 de 010; 021b precisa de 020 |
+| 2 | TRM-012b (sync, IngestionRun) | TRM-024 (V-E/V-C já; V-R quando o formato de TRM-023 estiver mergeado) e TRM-014 (API F0) | **F0 de dados completa no fim desta onda** |
 | 3 | TRM-026 (tabela `tramitacoes`) | TRM-025a → TRM-025b (motor + golden) | 026 precisa de 012; 025 de 021b + 024 + 002 |
 | 4 | TRM-027 (fase persistida, cadeia, gatilhos) | — (ou revisão dos lotes L2–L3 de TRM-029 com o motor) | junta 025 e 026 |
 | 5 | TRM-028 (API de tramitação e gerador de fixtures do frontend) | — | precisa de 027, do glossário (TRM-022) e dos pacotes de TRM-002; entrega as fixtures geradas para TRM-046-B |
 | D | TRM-050 → TRM-053; TRM-052; TRM-051 | | Depois |
 
-**Caminhos críticos** — F0: 011 → 010 → 012 e 011 → 013 → 014. F1: 020 → 021 → 024 → 025 → 027 → 028
+**Caminhos críticos** — F0: 002 → 012a → 010 → 013 → 012b e 011 → 010 → 014. F1: 020 → 021 → 024 → 025 → 027 → 028
 (o gargalo de calendário é humano: os lotes de TRM-029, spec §5.2).
 
 **Arquivos quentes (um PR por vez, rebase a cada merge)** — `apps/api/models/__init__.py` e
 `apps/api/schemas/__init__.py`: 011 → 014 → 026 → 027 → 028; migrations: 011 → 026 → 027 (→ 050 →
-053); `packages/camara_client/__init__.py`: 002 → 012; `apps/workers/tramitacao/sincronizacao.py`:
-012 → 013 (`aplicar_norma`) → 026 → 027; `apps/api/routers/legislativo.py`: PR #48/#49 → 014 → 028.
+053); `packages/camara_client/__init__.py`: 002 → 012a; `apps/workers/tramitacao/sincronizacao.py`:
+012 → 026 → 027; `apps/api/routers/legislativo.py`: PR #48/#49 → 014 → 028.
 
 **PR #47 (cron) — desacoplamento.** Nada de E1/E2 espera o #47:
 1. `scripts/sync_tramitacao.py` roda sozinho (local ou contra produção com `DATABASE_URL`) e grava a

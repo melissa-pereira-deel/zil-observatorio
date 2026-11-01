@@ -1718,7 +1718,7 @@ Não busque dados no componente; não use `tom` na vitrine de tramitação.
 
 **Épico:** E3 Componentes · **Prioridade:** P1 · **Horizonte:** Agora · **Estimativa:** P
 **Dono da spec:** Design System · **Revisões obrigatórias:** Design System + UI/UX
-**Depende de:** TRM-001, TRM-003, **TRM-037** (`Recolhivel`), TRM-031-A (só o adaptador `comoSabemosDaFase`) · **Desbloqueia:** TRM-040 (U6: "fase com Como sabemos"), TRM-047 (destino do link), TRM-053/054 (bloco "Depois da lei")
+**Depende de:** TRM-001, TRM-003, **TRM-037** (`Recolhivel`), TRM-031-A (só o adaptador `comoSabemosDaFase`) · **Desbloqueia:** TRM-040 (U6: "fase com Como sabemos"), o destino do link é TRM-047 (não bloqueia), TRM-053/054 (bloco "Depois da lei")
 
 **Problema** — O discovery pede, sob a fase, um `<details>` "Como sabemos" com
 a regra, a versão do mapa e o endpoint (disc. §6.1 item 3); a regra U6 do PM
@@ -1766,7 +1766,7 @@ export interface ComoSabemosProps {
   nota?: React.ReactNode;
   /** Link interno para a explicação do método. */
   saibaMais?: { rotulo: string; href: string };
-  /** `recolhivel` (padrão): dentro de <details>. `bloco`: aberto, sem <details> (metodologia). */
+  /** `recolhivel` (padrão): dentro de <details>. `bloco`: aberto, sem <details> (sem uso previsto no épico: TRM-047 é texto corrido, revisão UI/UX de 2026-11-01). */
   variante?: "recolhivel" | "bloco";
   aberto?: boolean;
   className?: string;
