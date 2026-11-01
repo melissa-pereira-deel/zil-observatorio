@@ -44,6 +44,9 @@ vírgula (`formatarScore`). Botão diz o que acontece ("Ver 18 parlamentares").
 | Superfície | `Card` (com `href` vira link inteiro), `Estat` (número + rótulo + fonte), `Painel` (chamada final) |
 | Lista de itens | `Lista` + `Linha` (ícone, título, sub, `fim`), ou `Placar*` para ranking |
 | Score | `ScorePilula`, `ScoreGrande` + `Medidor`, `VotosBarra` + `VotosLegenda` |
+| Plenário de uma votação | `Hemiciclo` (cadeiras já ordenadas; `lib/votacao.ts` monta os grupos), ou `HemicicloVotacao` em `components/PlenarioVotacao.tsx`, com os chips |
+| Dado por estado | `MapaUF` (grade das 27 UFs, cada uma um botão que filtra) + `Legenda` |
+| Distribuição | `Histograma` (barras por faixa, `destaque` acende) |
 | Pessoa | `Avatar` |
 | Cronologia | `LinhaDoTempo` + `Marco`; `Etapas` para tramitação |
 | Aviso | `Aviso` (`neutro` para dado não validado; `contra` para erro com o que fazer) |

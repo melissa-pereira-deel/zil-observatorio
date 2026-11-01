@@ -19,3 +19,6 @@ export { Paginacao } from "./Paginacao";
 export { TituloSecao, Citacao, Foto } from "./Texto";
 export { Revelar, Contador } from "./Revelar";
 export { LinhaDoTempo, Marco, Etapas } from "./Tempo";
+export { Hemiciclo, layoutHemiciclo, type Assento, type TomAssento } from "./Hemiciclo";
+export { MapaUF, Legenda, type ValorUF, type TomUF } from "./MapaUF";
+export { Histograma, type Faixa } from "./Histograma";

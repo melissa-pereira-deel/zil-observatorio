@@ -21,6 +21,19 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   variável `API_PUBLICA_URL` existe.
 - `scripts/sync_pipeline.py --limite N`: o enriquecimento processa só as N
   proposições pendentes mais recentes.
+- **Plenário das votações** (`components/ui/Hemiciclo.tsx`, `MapaUF.tsx`,
+  `Histograma.tsx`, `components/PlenarioVotacao.tsx`, `lib/votacao.ts`), do
+  artboard "Placar" do canvas de redesign:
+  - `/votacoes/[id]`: o placar vira hemiciclo de 513 cadeiras (Sim ·
+    Abstenção ou obstrução · Não votaram · Não) e mapa das bancadas por UF
+    com a parcela de sim. Hemiciclo, mapa e lista de votos dividem um filtro
+    só. Votação simbólica mostra aviso em vez de plenário vazio.
+  - Home, seção 06: a votação em destaque (PL 327/2021, PATEN, emendas do
+    Senado), com a ementa oficial. Some se a API não responder.
+  - `/ranking` (atrás de `rankingPublico`): score médio por UF, que filtra a
+    tabela, e histograma por faixa de score. Com um estado selecionado, as
+    barras acendem em tom neutro, não na cor de alinhamento.
+- `GET /votacoes?fonte_id=`: acha uma votação pelo ID da Câmara.
 - `specs/013-tramitacao/`: backlog de evolução a partir do discovery de
   tramitação, escrito por quatro especialistas (Product, Arquitetura, UI/UX,
   Design System) com revisão cruzada. `spec.md` traz o índice de 43 tarefas
@@ -310,6 +323,10 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   glossário e impacto de proposição `pronto`.
 - `scripts/marcar_recusas.py`: re-marca como `llm_recusou` as recusas já
   gravadas como `pronto` (`--dry-run` para listar). Só muda o status.
+- Voto do presidente da sessão: a Câmara manda `"Artigo 17"`, e os três
+  syncs só conheciam `"Art. 17"` — o presidente virava ausente. Um mapa só
+  em `apps/workers/crawlers/camara.py`, e tipo desconhecido agora gera aviso
+  no log. O score não muda: a fórmula trata Art. 17 como ausência.
 - **Enriquecimento dizia ao modelo que leis vigentes estavam revogadas**
   (`apps/workers/enrichment/__init__.py`). A busca por "revogado" corria no
   HTML inteiro do Planalto, e toda lei consolidada tem algum dispositivo
