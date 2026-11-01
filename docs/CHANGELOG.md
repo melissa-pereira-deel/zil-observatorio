@@ -34,6 +34,28 @@ Versions map to git tags (not yet created — pending deploy pipeline).
     tabela, e histograma por faixa de score. Com um estado selecionado, as
     barras acendem em tom neutro, não na cor de alinhamento.
 - `GET /votacoes?fonte_id=`: acha uma votação pelo ID da Câmara.
+- `specs/013-tramitacao/`: backlog de evolução a partir do discovery de
+  tramitação, escrito por quatro especialistas (Product, Arquitetura, UI/UX,
+  Design System) com revisão cruzada. `spec.md` traz o índice de 43 tarefas
+  em ondas, o processo de revisão do mapa de fases e do glossário por agentes
+  e pela maintainer (lotes L0–L7, nada publicado sem aprovação), os gates de
+  UI e de Design System e DoR/DoD; `backlog-dados.md`,
+  `backlog-design-system.md` e `backlog-interface.md` detalham cada tarefa
+  (problema, solução, critérios de aceite, specs técnicas e de design,
+  testes, instruções para o agente); `revisoes/` guarda as revisões cruzadas.
+  Numa segunda rodada (2026-11-01), um revisor de Arquitetura independente
+  leu o backlog de dados, TRM-017 e TRM-023, e um de UI/UX leu TRM-047: o
+  cliente estrito da Câmara virou TRM-012a, antes de TRM-010 (que dependia
+  dele), a dependência circular entre 012 e 013 saiu, e 023, 027 e 028
+  foram reestimadas como G, em dois PRs cada.
+- `docs/DISCOVERY-TRAMITACAO.md`: levantamento de onde vem o status das
+  proposições, do processo legislativo canônico por espécie (com prazos,
+  quóruns e o que é determinístico ou discricionário), das APIs da Câmara e
+  do Senado (o que usamos, o que não usamos, armadilhas), das fontes de
+  regulamentação e impacto, e dos MCPs existentes. Propõe um modelo de fases
+  auditável, a nova página da proposição, o modelo de dados e um plano em
+  fases (F0–F5). Achados: as 5 proposições do placar estão sem status (4
+  viraram lei) e o cliente do Senado está quebrado.
 - **Filtro de proposições analisadas** (`apps/api/routers/legislativo.py`,
   `apps/web/app/proposicoes/page.tsx`): `GET /proposicoes?analise=analisada|pendente`
   e um segmentado "Todas · Analisadas · Sem análise" na lista. Sem filtro, as

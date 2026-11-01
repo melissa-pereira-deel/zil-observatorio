@@ -4,6 +4,13 @@
 **Autores:** Product Manager, Software Architect, UI/UX Designer (agentes especializados)
 **Escopo:** Mapeamento completo dos dados disponiveis na API da Camara vs. dados atualmente utilizados pelo ZIL Observatorio, com propostas de features priorizadas.
 
+> **Atualizado por [`DISCOVERY-TRAMITACAO.md`](DISCOVERY-TRAMITACAO.md)
+> (2026-10-30).** Situação estruturada, cadeia legislativa, órgão e relator e
+> lei resultante foram revistos lá, com dados conferidos na API: `urnFinal`
+> vem sempre nulo, a coluna `tramitacoes` nunca foi preenchida, e a situação
+> por linha de `/tramitacoes` não é histórica. O resto deste documento segue
+> como registro.
+
 ---
 
 ## 1. Inventario da API da Camara
