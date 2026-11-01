@@ -10,7 +10,8 @@ export const NEWSLETTER_URL = process.env.NEXT_PUBLIC_NEWSLETTER_URL ?? "";
 
 /** O repositório, como está no remoto hoje. Mudar de organização é mudar aqui. */
 export const REPO_URL = "https://github.com/melissa-pereira-deel/zil-observatorio";
-export const REPO_ROTULO = "github.com/melissa-pereira-deel/zil-observatorio";
+/** Rótulo curto exibido no rodapé; o link continua indo para REPO_URL. */
+export const REPO_ROTULO = "github/zil-observatorio";
 export const ROADMAP_URL = `${REPO_URL}/blob/main/docs/ROADMAP.md`;
 export const CONTRIBUIR_URL = `${REPO_URL}/blob/main/CONTRIBUTING.md#curadoria-de-dados`;
 
