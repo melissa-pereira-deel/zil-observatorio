@@ -126,7 +126,7 @@ def votos_zil_parlamentar(
             alinhado=alinhado,
             proposicao_label=prop_label,
             proposicao_id=proposicao.id if proposicao else None,
-            resumo_simples=proposicao.resumo_simples if proposicao else None,
+            resumo_simples=proposicao.resumo_publicavel if proposicao else None,
         ))
 
     return results
