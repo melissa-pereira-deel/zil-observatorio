@@ -285,8 +285,9 @@
     fill: var(--superficie-4);
     transition: fill 120ms;
   }
+  /* Destaque sem matiz: verde e vermelho são só de alinhamento. */
   .zil-grafico .barra.is-aqui {
-    fill: var(--alinhado);
+    fill: var(--texto);
   }
   .zil-grafico .barra:hover {
     fill: var(--texto-2);

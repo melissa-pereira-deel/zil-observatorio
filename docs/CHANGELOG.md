@@ -20,7 +20,8 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - Home, seção 06: a votação em destaque (PL 327/2021, PATEN, emendas do
     Senado), com a ementa oficial. Some se a API não responder.
   - `/ranking` (atrás de `rankingPublico`): score médio por UF, que filtra a
-    tabela, e histograma por faixa de score.
+    tabela, e histograma por faixa de score. Com um estado selecionado, as
+    barras acendem em tom neutro, não na cor de alinhamento.
 - `GET /votacoes?fonte_id=`: acha uma votação pelo ID da Câmara.
 - **Filtro de proposições analisadas** (`apps/api/routers/legislativo.py`,
   `apps/web/app/proposicoes/page.tsx`): `GET /proposicoes?analise=analisada|pendente`
