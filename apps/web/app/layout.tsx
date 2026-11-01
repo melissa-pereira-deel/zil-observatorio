@@ -55,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span>2026 · AGPL-3.0</span>
               <a
                 href={REPO_URL}
+                title={REPO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-zil-texto-2 hover:text-zil-texto transition-colors duration-toque"
