@@ -22,7 +22,8 @@
 | Enriquecimento | Claude Haiku 4.5 via `ANTHROPIC_API_KEY` (opcional em dev) |
 | Testes | pytest 8 (320 testes, todos passando) |
 | Linting | ruff 0.8.6 (Python), ESLint + `next/core-web-vitals` (TypeScript) |
-| CI | GitHub Actions — 4 jobs, todos verdes |
+| CI | GitHub Actions — 4 jobs, todos verdes. Repositório público: minutos de Actions não custam nada |
+| Cron de produção | GitHub Actions (`dados`, `direcoes`, `acordar-api`) rodando `scripts/agenda.py` — ver "Cron" em [docs/DEPLOY.md](docs/DEPLOY.md) |
 
 ---
 
@@ -292,7 +293,7 @@ Resolvidas, mas entender o porquê evita reintroduzi-las:
 
 | Item | Problema |
 |------|----------|
-| Deploy em produção | **Preparado, não executado.** `render.yaml` (API + Postgres) e o runbook em [docs/DEPLOY.md](docs/DEPLOY.md) existem; o que falta é rodar o blueprint no Render e conectar o frontend na Vercel. Não há `vercel.json` (a Vercel detecta Next.js sozinha) nem workflow de deploy — as duas plataformas fazem build no push. Typesense e os workers Celery ficam deliberadamente fora de produção; o porquê está no `render.yaml`. |
+| Deploy em produção | **Preparado, não executado.** `render.yaml` (API no plano gratuito, Postgres no `basic-256mb` — o gratuito expira em 30 dias), o cron em `.github/workflows/` e o runbook em [docs/DEPLOY.md](docs/DEPLOY.md) existem; o que falta é rodar o blueprint no Render, cadastrar os segredos `PRODUCAO_DATABASE_URL` e `ANTHROPIC_API_KEY` no GitHub, popular o banco pelos workflows e conectar o frontend na Vercel. Não há `vercel.json` (a Vercel detecta Next.js sozinha) nem workflow de deploy — as duas plataformas fazem build no push. Typesense e os workers Celery ficam fora de produção; o agendamento é do Actions. |
 | Código dormente | Tabela `Financiamento` e enums `TipoAlerta`, `CanalAlerta`, `TipoFinanciamento` declarados e sem uso — resquícios de v2/v3. Conferido: nenhum uso fora de `apps/api/models/`. |
 | Lint em `tests/` | 56 erros de ruff em `tests/`, fora do escopo da CI (que cobre só `apps/` e `packages/`, e passa limpo). |
 
