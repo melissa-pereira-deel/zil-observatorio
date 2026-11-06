@@ -1,0 +1,219 @@
+{
+ "formato": 1,
+ "caso": "pl-4036-2026",
+ "gravado_em": "2026-11-05T22:48:05-03:00",
+ "sintetico": false,
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2640711",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 2640711,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2640711",
+     "siglaTipo": "PL",
+     "codTipo": 139,
+     "numero": 4036,
+     "ano": 2026,
+     "ementa": "Altera a Lei nº 10.973, de 2 de dezembro de 2004, e a Lei nº 8.958, de 20 de dezembro de 1994, para instituir mecanismos de simplificação da execução financeira de projetos de pesquisa científica, tecnológica e de inovação e da aquisição de insumos de baixo valor destinados à atividade de pesquisa.",
+     "dataApresentacao": "2026-07-17T18:06",
+     "uriOrgaoNumerador": null,
+     "statusProposicao": {
+      "dataHora": "2026-10-27T14:13",
+      "sequencia": 7,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Distribuição",
+      "codTipoTramitacao": "110",
+      "descricaoSituacao": null,
+      "codSituacao": null,
+      "despacho": "Às Comissões deCiência, Tecnologia e Inovação;Finanças e Tributação (Mérito e Art. 54, RICD) eConstituição e Justiça e de Cidadania (Art. 54, RICD).Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II.Regime de Tramitação: Ordinário (Art. 151, III, RICD).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2640711/autores",
+     "descricaoTipo": "Projeto de Lei",
+     "ementaDetalhada": null,
+     "keywords": "Alteração; Lei de Inovação Tecnológica (2004); Lei federal; Pesquisa científica; pesquisa e desenvolvimento; Inovação tecnológica; simplificação; Execução financeira; Agência de fomento à pesquisa; Dispensa de licitação; Prestação de contas; Procedimento licitatório simplificado; Transparência ativa",
+     "uriPropPrincipal": null,
+     "uriPropAnterior": null,
+     "uriPropPosterior": null,
+     "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3164465",
+     "urnFinal": null,
+     "texto": null,
+     "justificativa": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2640711"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:572402da64adc14a5cb83c4a9b34a9c6cfd0c1931e535096cb0a34566a93cf18"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2640711/tramitacoes",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "dataHora": "2026-07-17T18:06",
+      "sequencia": 1,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": null,
+      "codSituacao": null,
+      "despacho": "Apresentação do PL n. 4036/2026 (Projeto de Lei), pelo Deputado Amom Mandel (REPUBLIC/AM -Fdr PSDB-CIDADANIA), que \"Altera a Lei nº 10.973, de 2 de dezembro de 2004, e a Lei nº 8.958, de 20 de dezembro de 1994, para instituir mecanismos de simplificação da execução financeira de projetos de pesquisa científica, tecnológica e de inovação e da aquisição de insumos de baixo valor destinados à atividade de pesquisa\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3164465",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2026-10-27T14:13",
+      "sequencia": 7,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Distribuição",
+      "codTipoTramitacao": "110",
+      "descricaoSituacao": null,
+      "codSituacao": null,
+      "despacho": "Às Comissões deCiência, Tecnologia e Inovação;Finanças e Tributação (Mérito e Art. 54, RICD) eConstituição e Justiça e de Cidadania (Art. 54, RICD).Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II.Regime de Tramitação: Ordinário (Art. 151, III, RICD).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3182497",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2640711/tramitacoes"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:c453166d5cc5af5c8611daad463ecad80a8470634b6d6e9ff81a82404885459a"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2640711/autores",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/220715",
+      "nome": "Amom Mandel",
+      "codTipo": 10000,
+      "tipo": "Deputado(a)",
+      "ordemAssinatura": 1,
+      "proponente": 1
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2640711/autores"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:fcaa7415c1e525451d44f400209adfc2c5671897369c2be997342673115cd920"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2640711/relacionadas",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2640711/relacionadas"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:81aefc89d1f059ecf3369cc09c2b4115497b8fda6fe92840b1d64d8cd3e3a806"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/4",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 4,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+     "sigla": "MESA",
+     "nome": "Mesa Diretora da Câmara dos Deputados",
+     "apelido": "Mesa Diretora",
+     "codTipoOrgao": 1,
+     "tipoOrgao": "Comissão Diretora",
+     "nomePublicacao": "Mesa Diretora",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Sala de Reuniões do Espaço Cultural",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:409e90a97ee380ad8f34c54ee94c49671a9629c0f0982841f4fac24c22eefad9"
+  }
+ ]
+}

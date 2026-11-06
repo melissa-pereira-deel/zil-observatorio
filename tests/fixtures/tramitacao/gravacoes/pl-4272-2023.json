@@ -1,0 +1,387 @@
+{
+ "formato": 1,
+ "caso": "pl-4272-2023",
+ "gravado_em": "2026-11-05T22:46:50-03:00",
+ "sintetico": false,
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2384947",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 2384947,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2384947",
+     "siglaTipo": "PL",
+     "codTipo": 139,
+     "numero": 4272,
+     "ano": 2023,
+     "ementa": "Institui o Programa Nacional de Biodigestores destinado às famílias rurais de baixa renda para promover o acesso à energias alternativas de baixo custo e ambientalmente sustentáveis.",
+     "dataApresentacao": "2023-09-01T10:32",
+     "uriOrgaoNumerador": null,
+     "statusProposicao": {
+      "dataHora": "2023-11-30T00:00",
+      "sequencia": 16,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Arquivamento",
+      "codTipoTramitacao": "502",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Em face da aprovação da Subemenda Substitutiva Global ao Projeto de Lei nº 11.247, de 2018, proposição principal, adotada pelo relator da Comissão de Minas e Energia, esta proposição apensada fica prejudicada, na forma do art. 191, do RICD (Sessão Deliberativa Extraordinária de 29/11/2023 - 13h55 - 251ª Sessão).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2384947/autores",
+     "descricaoTipo": "Projeto de Lei",
+     "ementaDetalhada": "",
+     "keywords": "Criação, Programa de apoio, Biodigestor, destinação, Família de baixa renda, Área rural, incentivo, acesso, Fonte alternativa de energia, alteração, Lei de Licitações e Contratos Administrativos (2021), Dispensa de licitação, Contratação, Entidade privada, Entidade sem fins lucrativos, implementação, Produção, Biofertilizante, Cisterna, Tecnologia social, beneficiamento, Família de baixa renda, área rural",
+     "uriPropPrincipal": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2320126",
+     "uriPropAnterior": null,
+     "uriPropPosterior": null,
+     "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2322520",
+     "urnFinal": null,
+     "texto": null,
+     "justificativa": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2384947"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:a4fda239e8347f80ef3e20b38178f2cd4258ddc6a965781ac974132672f06b06"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2384947/tramitacoes",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "dataHora": "2023-09-01T10:32",
+      "sequencia": 1,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Arquivada",
+      "codSituacao": 923,
+      "despacho": "Apresentação do PL n. 4272/2023 (Projeto de Lei), pelo Deputado Túlio Gadêlha (REDE/PE -Fdr PSOL-REDE), que \"Institui o Programa Nacional de Biodigestores destinado às famílias rurais de baixa renda para promover o acesso à energias alternativas de baixo custo e ambientalmente sustentáveis\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2322520",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2023-09-11T18:51",
+      "sequencia": 7,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Despacho de Apensação",
+      "codTipoTramitacao": "129",
+      "descricaoSituacao": "Arquivada",
+      "codSituacao": 923,
+      "despacho": "Apense-se à(ao) PL-971/2022.Proposição Sujeita à Apreciação do PlenárioRegime de Tramitação: Prioridade (Art. 151, II, RICD)",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2325717",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2023-09-12T00:00",
+      "sequencia": 15,
+      "siglaOrgao": "CCP",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Publicação de Proposição",
+      "codTipoTramitacao": "604",
+      "descricaoSituacao": "Arquivada",
+      "codSituacao": 923,
+      "despacho": "Encaminhada à publicação. Publicação Inicial em avulso e no DCD de 13/09/2023.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2023-09-12T15:05",
+      "sequencia": 13,
+      "siglaOrgao": "CMADS",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Recebimento",
+      "codTipoTramitacao": "500",
+      "descricaoSituacao": "Tramitando em Conjunto",
+      "codSituacao": 925,
+      "despacho": "Recebimento pela CMADS.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2023-11-30T00:00",
+      "sequencia": 16,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Arquivamento",
+      "codTipoTramitacao": "502",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Em face da aprovação da Subemenda Substitutiva Global ao Projeto de Lei nº 11.247, de 2018, proposição principal, adotada pelo relator da Comissão de Minas e Energia, esta proposição apensada fica prejudicada, na forma do art. 191, do RICD (Sessão Deliberativa Extraordinária de 29/11/2023 - 13h55 - 251ª Sessão).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2384947/tramitacoes"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:af4776b9d0ae63c7c0842011fb0a44acec47ccd981b955d034136d2b8c8ab4ef"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2384947/autores",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/157130",
+      "nome": "Túlio Gadêlha",
+      "codTipo": 10000,
+      "tipo": "Deputado(a)",
+      "ordemAssinatura": 1,
+      "proponente": 1
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2384947/autores"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:0cd8488ed74614a0c8ddab2ad222281572f2189a47718d090a12ff639262b704"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2384947/relacionadas",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2384947/relacionadas"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:16833838f5466de05cfb3ee72b64a5dd9c24ec9021b61374f586ca957e9696bd"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/180",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 180,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+     "sigla": "PLEN",
+     "nome": "Plenário",
+     "apelido": "Plenário",
+     "codTipoOrgao": 26,
+     "tipoOrgao": "Plenário Virtual",
+     "nomePublicacao": "Plenário",
+     "nomeResumido": "Plenário",
+     "dataInicio": "2020-03-20T00:00",
+     "dataInstalacao": "2020-03-20T00:00",
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Plenário da Câmara dos Deputados",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:aedc7e9ef2c54077f74dc09a535c55a4af76ff8baee98e2b6a5a4240e6df33f3"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/4",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 4,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+     "sigla": "MESA",
+     "nome": "Mesa Diretora da Câmara dos Deputados",
+     "apelido": "Mesa Diretora",
+     "codTipoOrgao": 1,
+     "tipoOrgao": "Comissão Diretora",
+     "nomePublicacao": "Mesa Diretora",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Sala de Reuniões do Espaço Cultural",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:409e90a97ee380ad8f34c54ee94c49671a9629c0f0982841f4fac24c22eefad9"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/186",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 186,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186",
+     "sigla": "CCP",
+     "nome": "COORDENAÇÃO DE COMISSÕES PERMANENTES",
+     "apelido": "COORDENAÇÃO DE COMISSÕES PERMANENTES",
+     "codTipoOrgao": 12000,
+     "tipoOrgao": "Órgão da Câmara dos Deputados",
+     "nomePublicacao": "COORDENAÇÃO DE COMISSÕES PERMANENTES",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": null,
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:60274ed1f6b314e030c95ee0ce71ba55c9d4e91c02199d1566cb659b2b93e736"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/6174",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 6174,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+     "sigla": "CMADS",
+     "nome": "Comissão de Meio Ambiente e Desenvolvimento Sustentável",
+     "apelido": "Meio Ambiente e Desenvolvimento Sustentável",
+     "codTipoOrgao": 2,
+     "tipoOrgao": "Comissão Permanente",
+     "nomePublicacao": "Comissão de Meio Ambiente e Desenvolvimento Sustentável",
+     "nomeResumido": "Meio Ambiente",
+     "dataInicio": "2011-03-02T00:00",
+     "dataInstalacao": "2026-03-04T00:00",
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Anexo II, Plenário 02",
+     "urlWebsite": "https://www.camara.leg.br/CMADS"
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:a389621a169b069823e6aa074a16ffdc43ff332b2349d6628bafbeb3ada50254"
+  }
+ ]
+}

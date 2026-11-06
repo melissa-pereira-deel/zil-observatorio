@@ -1,0 +1,712 @@
+{
+ "formato": 1,
+ "caso": "pl-359-2025",
+ "gravado_em": "2026-11-05T22:47:15-03:00",
+ "sintetico": false,
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2483457",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 2483457,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2483457",
+     "siglaTipo": "PL",
+     "codTipo": 139,
+     "numero": 359,
+     "ano": 2025,
+     "ementa": "Altera a Lei nº 7.797, de 10 de julho de 1989, e a Lei nº 9.605 de 12 de fevereiro de 1998, para dispor sobre a utilização de recursos do Fundo Nacional do Meio Ambiente para projetos ligados à pesquisa e desenvolvimento (P&D) na produção sustentável de alimentos humanos e rações animais.",
+     "dataApresentacao": "2025-02-10T18:20",
+     "uriOrgaoNumerador": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+     "statusProposicao": {
+      "dataHora": "2026-04-30T16:49",
+      "sequencia": 32,
+      "siglaOrgao": "CMADS",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220701",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Parecer do(a) Relator(a)",
+      "codTipoTramitacao": "322",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Parecer do Relator, Dep. Delegado Matheus Laiola (UNIÃO-PR), pela rejeição.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3121680",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2483457/autores",
+     "descricaoTipo": "Projeto de Lei",
+     "ementaDetalhada": "",
+     "keywords": "Alteração, Lei do Fundo Nacional do Meio Ambiente (1989), Lei dos Crimes Ambientais (1998), aplicação, recursos, Fundo Nacional do Meio Ambiente (FNMA), pesquisa e desenvolvimento, Produção sustentável, alimento, Ração animal.",
+     "uriPropPrincipal": null,
+     "uriPropAnterior": null,
+     "uriPropPosterior": null,
+     "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2853255",
+     "urnFinal": null,
+     "texto": null,
+     "justificativa": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2483457"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:456cf2ba0539910b8926ef3687e1314c847a3c230a5dd4520ee7e85b41abba5b"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2483457/tramitacoes",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "dataHora": "2025-02-10T18:20",
+      "sequencia": 1,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Apresentação do PL n. 359/2025 (Projeto de Lei), pelo Deputado Márcio Honaiser (PDT/MA), que \"Altera a Lei nº 7.797, de 10 de julho de 1989, e a Lei nº 9.605 de 12 de fevereiro de 1998, para dispor sobre a utilização de recursos do Fundo Nacional do Meio Ambiente para projetos ligados à pesquisa e desenvolvimento (P&D) na produção sustentável de alimentos humanos e rações animais. \".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2853255",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-02-27T17:19",
+      "sequencia": 8,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Distribuição",
+      "codTipoTramitacao": "110",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Às Comissões de Agricultura, Pecuária, Abastecimento e Desenvolvimento Rural; Meio Ambiente e Desenvolvimento Sustentável; Finanças e Tributação (Art. 54 RICD) e Constituição e Justiça e de Cidadania (Art. 54 RICD)Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 IIRegime de Tramitação: Ordinário (Art. 151, III, RICD)",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2856127",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-03-06T00:00",
+      "sequencia": 14,
+      "siglaOrgao": "CCP",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Publicação de Proposição",
+      "codTipoTramitacao": "604",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Encaminhada à publicação. Publicação Inicial em avulso e no DCD de 07/03/2025.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-03-07T09:00",
+      "sequencia": 15,
+      "siglaOrgao": "CAPADR",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Recebimento",
+      "codTipoTramitacao": "500",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Recebimento pela CAPADR.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-04-03T00:00",
+      "sequencia": 16,
+      "siglaOrgao": "CAPADR",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Designação de Relator(a)",
+      "codTipoTramitacao": "320",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Designado Relator, Dep. Pezenti (MDB-SC)",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-04-04T00:00",
+      "sequencia": 17,
+      "siglaOrgao": "CAPADR",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Abertura de Prazo",
+      "codTipoTramitacao": "350",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Prazo para Emendas ao Projeto (5 sessões a partir de 07/04/2025)",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-04-15T18:47",
+      "sequencia": 18,
+      "siglaOrgao": "CAPADR",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Encerramento de Prazo",
+      "codTipoTramitacao": "600",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Encerrado o prazo de 5 sessões para apresentação de emendas ao projeto (de 04/04/2025 a 15/04/2025). Não foram apresentadas emendas.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-07-08T16:25",
+      "sequencia": 20,
+      "siglaOrgao": "CAPADR",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Parecer do(a) Relator(a)",
+      "codTipoTramitacao": "322",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Parecer do Relator, Dep. Pezenti (MDB-SC), pela aprovação.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2950958",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-07-08T16:25",
+      "sequencia": 19,
+      "siglaOrgao": "CAPADR",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Recebimento - Relator(a)",
+      "codTipoTramitacao": "501",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Apresentação do PRL n. 1 CAPADR (Parecer do Relator), pelo Deputado Pezenti (MDB/SC).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2950958",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-08-27T10:30",
+      "sequencia": 21,
+      "siglaOrgao": "CAPADR",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Leitura e publicação do Parecer",
+      "codTipoTramitacao": "330",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Lido o Parecer.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-08-27T10:30",
+      "sequencia": 22,
+      "siglaOrgao": "CAPADR",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Aprovação do Parecer",
+      "codTipoTramitacao": "336",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Aprovado o Parecer.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-08-28T00:00",
+      "sequencia": 26,
+      "siglaOrgao": "CCP",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Publicação de Proposição",
+      "codTipoTramitacao": "604",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Encaminhada à publicação. Parecer da Comissão de Agricultura, Pecuária, Abastecimento e Desenvolvimento Rural Publicado em avulso e no DCD de 29/08/2025, Letra A.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-08-28T10:52",
+      "sequencia": 25,
+      "siglaOrgao": "CCP",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Publicação de Proposição",
+      "codTipoTramitacao": "604",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Parecer recebido para publicação.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-09-01T10:35",
+      "sequencia": 27,
+      "siglaOrgao": "CMADS",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/161440",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Recebimento",
+      "codTipoTramitacao": "500",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Recebimento pelo(a) CMADS.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-10-01T15:40",
+      "sequencia": 28,
+      "siglaOrgao": "CMADS",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220701",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Designação de Relator(a)",
+      "codTipoTramitacao": "320",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Designado Relator, Dep. Delegado Matheus Laiola (UNIÃO-PR).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-10-02T00:00",
+      "sequencia": 29,
+      "siglaOrgao": "CMADS",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220701",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Abertura de Prazo",
+      "codTipoTramitacao": "350",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Prazo para Emendas ao Projeto (5 sessões a partir de 03/10/2025)",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2025-10-16T00:00",
+      "sequencia": 30,
+      "siglaOrgao": "CMADS",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220701",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Encerramento de Prazo",
+      "codTipoTramitacao": "600",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Encerrado o prazo de 5 sessões para apresentação de emendas ao projeto (de 02/10/2025 a 16/10/2025). Não foram apresentadas emendas.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2026-04-30T16:49",
+      "sequencia": 32,
+      "siglaOrgao": "CMADS",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220701",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Parecer do(a) Relator(a)",
+      "codTipoTramitacao": "322",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Parecer do Relator, Dep. Delegado Matheus Laiola (UNIÃO-PR), pela rejeição.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3121680",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2026-04-30T16:49",
+      "sequencia": 31,
+      "siglaOrgao": "CMADS",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220701",
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Recebimento - Relator(a)",
+      "codTipoTramitacao": "501",
+      "descricaoSituacao": "Pronta para Pauta",
+      "codSituacao": 924,
+      "despacho": "Apresentação do PRL n. 1 CMADS (Parecer do Relator), pelo Deputado Delegado Matheus Laiola (UNIÃO/PR).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3121680",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2483457/tramitacoes"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:c133f7ca6cab67de1614e75d483471249f58bbf103764f162dc79e1479eecd1a"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2483457/autores",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/220687",
+      "nome": "Márcio Honaiser",
+      "codTipo": 10000,
+      "tipo": "Deputado(a)",
+      "ordemAssinatura": 1,
+      "proponente": 1
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2483457/autores"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:e8325482e308e70ac3b53d903450bd4546576cb9e57be88c3243a13ede722f00"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2483457/relacionadas",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "id": 2554503,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2554503",
+      "siglaTipo": "PAR",
+      "codTipo": "187",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Parecer da Comissão  (CAPADR) ao PL 359/2025",
+      "dataApresentacao": "2025-08-28T10:41"
+     },
+     {
+      "id": 2533042,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2533042",
+      "siglaTipo": "PRL",
+      "codTipo": "190",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Parecer do Relator, Dep. Pezenti (MDB-SC), pela aprovação.",
+      "dataApresentacao": "2025-07-08T16:25"
+     },
+     {
+      "id": 2620535,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2620535",
+      "siglaTipo": "PRL",
+      "codTipo": "190",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Parecer do Relator, Dep. Delegado Matheus Laiola (UNIÃO-PR), pela rejeição.",
+      "dataApresentacao": "2026-04-30T16:49"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2483457/relacionadas"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:29ec2940801a07f0a22f606fd41a0ff0ee4b57e7be7e5133c863448ffc6ffe9b"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/6174",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 6174,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174",
+     "sigla": "CMADS",
+     "nome": "Comissão de Meio Ambiente e Desenvolvimento Sustentável",
+     "apelido": "Meio Ambiente e Desenvolvimento Sustentável",
+     "codTipoOrgao": 2,
+     "tipoOrgao": "Comissão Permanente",
+     "nomePublicacao": "Comissão de Meio Ambiente e Desenvolvimento Sustentável",
+     "nomeResumido": "Meio Ambiente",
+     "dataInicio": "2011-03-02T00:00",
+     "dataInstalacao": "2026-03-04T00:00",
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Anexo II, Plenário 02",
+     "urlWebsite": "https://www.camara.leg.br/CMADS"
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6174"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:a389621a169b069823e6aa074a16ffdc43ff332b2349d6628bafbeb3ada50254"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/4",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 4,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+     "sigla": "MESA",
+     "nome": "Mesa Diretora da Câmara dos Deputados",
+     "apelido": "Mesa Diretora",
+     "codTipoOrgao": 1,
+     "tipoOrgao": "Comissão Diretora",
+     "nomePublicacao": "Mesa Diretora",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Sala de Reuniões do Espaço Cultural",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:409e90a97ee380ad8f34c54ee94c49671a9629c0f0982841f4fac24c22eefad9"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/186",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 186,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186",
+     "sigla": "CCP",
+     "nome": "COORDENAÇÃO DE COMISSÕES PERMANENTES",
+     "apelido": "COORDENAÇÃO DE COMISSÕES PERMANENTES",
+     "codTipoOrgao": 12000,
+     "tipoOrgao": "Órgão da Câmara dos Deputados",
+     "nomePublicacao": "COORDENAÇÃO DE COMISSÕES PERMANENTES",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": null,
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:60274ed1f6b314e030c95ee0ce71ba55c9d4e91c02199d1566cb659b2b93e736"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/2001",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 2001,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001",
+     "sigla": "CAPADR",
+     "nome": "Comissão de Agricultura, Pecuária, Abastecimento e Desenvolvimento Rural",
+     "apelido": "Agricultura, Pecuária, Abastecimento e Desenvolvimento Rural",
+     "codTipoOrgao": 2,
+     "tipoOrgao": "Comissão Permanente",
+     "nomePublicacao": "Comissão de Agricultura, Pecuária, Abastecimento e Desenvolvimento Rural",
+     "nomeResumido": "Agropecuária",
+     "dataInicio": "2011-03-02T00:00",
+     "dataInstalacao": "2026-02-04T00:00",
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Anexo II, Plenário 06",
+     "urlWebsite": "https://www.camara.leg.br/CAPADR"
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2001"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:e241c703133e18d907406f8dc1363be555bbaa4b31839d067877d667d60bc21b"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/deputados/220701",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 220701,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/220701",
+     "nomeCivil": "MATHEUS ARAUJO LAIOLA",
+     "ultimoStatus": {
+      "id": 220701,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/220701",
+      "nome": "Delegado Matheus Laiola",
+      "siglaPartido": "UNIÃO",
+      "uriPartido": null,
+      "siglaUf": "PR",
+      "idLegislatura": 57,
+      "urlFoto": "https://www.camara.leg.br/internet/deputado/bandep/220701.jpg",
+      "email": null,
+      "data": "2023-02-01",
+      "nomeEleitoral": "Delegado Matheus Laiola",
+      "gabinete": {
+       "nome": "505",
+       "predio": "4",
+       "sala": "505",
+       "andar": "5",
+       "telefone": "3215-5505",
+       "email": "dep.delegadomatheuslaiola@camara.leg.br"
+      },
+      "situacao": "Exercício",
+      "condicaoEleitoral": "Titular",
+      "descricaoStatus": null
+     },
+     "cpf": "[removido pelo gravador]",
+     "sexo": "M",
+     "urlWebsite": null,
+     "redeSocial": [
+      "https://twitter.com/MatheusLaiola",
+      "https://www.facebook.com/delegadomatheuslaiola",
+      "https://www.instagram.com/delegado.matheuslaiola"
+     ],
+     "dataNascimento": "[removido pelo gravador]",
+     "dataFalecimento": null,
+     "ufNascimento": "[removido pelo gravador]",
+     "municipioNascimento": "[removido pelo gravador]",
+     "escolaridade": "Pós-Graduação"
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/deputados/220701"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:c83d07b7ff79621e080eb6bcc2d9f410586c9d188c546afe002c0a3ad34b94b4",
+   "campos_removidos": [
+    "dados.cpf",
+    "dados.dataNascimento",
+    "dados.ufNascimento",
+    "dados.municipioNascimento"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,99 @@
+{
+ "formato": 1,
+ "caso": "sinteticos/500-persistente",
+ "gravado_em": null,
+ "sintetico": true,
+ "por_que": "Escrito à mão: 500 em todas as tentativas.",
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000500",
+   "params": {},
+   "status": 500,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "status": 500,
+    "title": "Internal Server Error"
+   },
+   "sha256_corpo": "sha256:8a535e8ec5f0a64e27cf5bcde74cd1b71ba00cf4aff7cd6ea84e5d42833fe3bd"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000500",
+   "params": {},
+   "status": 500,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "status": 500,
+    "title": "Internal Server Error"
+   },
+   "sha256_corpo": "sha256:8a535e8ec5f0a64e27cf5bcde74cd1b71ba00cf4aff7cd6ea84e5d42833fe3bd"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000500",
+   "params": {},
+   "status": 500,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "status": 500,
+    "title": "Internal Server Error"
+   },
+   "sha256_corpo": "sha256:8a535e8ec5f0a64e27cf5bcde74cd1b71ba00cf4aff7cd6ea84e5d42833fe3bd"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000500",
+   "params": {},
+   "status": 500,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "status": 500,
+    "title": "Internal Server Error"
+   },
+   "sha256_corpo": "sha256:8a535e8ec5f0a64e27cf5bcde74cd1b71ba00cf4aff7cd6ea84e5d42833fe3bd"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000500",
+   "params": {},
+   "status": 500,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "status": 500,
+    "title": "Internal Server Error"
+   },
+   "sha256_corpo": "sha256:8a535e8ec5f0a64e27cf5bcde74cd1b71ba00cf4aff7cd6ea84e5d42833fe3bd"
+  }
+ ]
+}

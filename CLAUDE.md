@@ -122,6 +122,12 @@ python3 scripts/sync_pipeline.py --dry-run                         # preview com
 python3 scripts/sync_pipeline.py --skip-enrichment --skip-scores   # só discovery + votações
 python3 scripts/sync_pipeline.py --skip-discovery --skip-votacoes  # só enrichment + scores
 
+# Respostas gravadas das APIs (golden da tramitação). Único passo que acessa a rede: os testes
+# leem os pacotes por tests/replay.py. Regravar é decisão explícita, com o diff em PR próprio.
+python scripts/gravar_respostas.py --caso pl-327-2021                        # regrava um caso de casos.yml
+python scripts/gravar_respostas.py --todos                                   # regrava todos
+python scripts/gravar_respostas.py --caso candidatos/2269745 --fonte-id 2269745   # contraexemplo do adversarial
+
 # Recusas do modelo gravadas como resumo `pronto` antes de 2026-10-30 → `llm_recusou`
 python3 scripts/marcar_recusas.py --dry-run   # lista
 python3 scripts/marcar_recusas.py             # re-marca (só o status; o texto fica)
