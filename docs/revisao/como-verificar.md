@@ -6,8 +6,11 @@ escreve a linha. Os itens em si estão em
 [`checklist-design-system.md`](checklist-design-system.md) e
 [`checklist-arquitetura.md`](checklist-arquitetura.md).
 
-`a definir` não afrouxa o item. Enquanto a linha estiver assim, o revisor prova
-o item com o que tiver à mão e cita a evidência. Sem evidência, o item é ✗.
+`a definir` não afrouxa o item, e sozinho também não o derruba. Item que a leitura
+ou uma busca prova segue com a evidência. Item cuja prova depende de helper, job
+ou artefato que ainda não existe sai ✗ "não verificado", listado à parte, e não
+conta como achado do PR. Quando o helper já existe e a prova não está lá, é achado
+do PR.
 
 ## UI/UX
 
