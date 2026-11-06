@@ -1,0 +1,7 @@
+# data/tramitacao/nao_mapeados.yml — códigos sem tratamento (viram nao_sabemos ou "não é marco").
+# Reescrito por scripts/atualizar_referencias_tramitacao.py. Pode ser editado à mão para REMOVER
+# um código ao mapeá-lo em fases.yml ou marcos.yml.
+versao_esquema: 1
+situacoes_camara: []
+situacoes_senado: []
+tramitacao_camara: []

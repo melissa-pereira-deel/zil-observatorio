@@ -43,6 +43,27 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   LLM às quartas (até 30); `direcoes` aplica a curadoria a cada merge em
   `data/direcoes/`; `acordar-api` mantém a API gratuita acordada quando a
   variável `API_PUBLICA_URL` existe.
+- **Mapa de tramitação: esquema e carga, sem conteúdo** (TRM-021a, spec 013):
+  - `packages/tramitacao/mapa.py`: modelos estritos dos arquivos de
+    `data/tramitacao/` e `carregar_mapa`. Campo desconhecido levanta
+    `MapaInvalido` citando arquivo e caminho; dados ausentes levantam
+    `MapaIndisponivel`, nunca um mapa vazio em silêncio. As duas são as únicas
+    exceções da carga, para a API poder degradar em vez de responder 500: arquivo
+    fora de UTF-8, valor que o hash não sabe ler (`!!binary`, `!!set`), chave
+    repetida no YAML e chave com espaço nas pontas viram `MapaInvalido`.
+    `ZIL_DATA_DIR` é respeitado; sem ela, vale o repositório e depois
+    `/data/tramitacao`.
+  - `packages/tramitacao/revisao.py`: `hash_entrada` e `entradas_publicaveis`,
+    implementação única, reexportada em `apps/workers/tramitacao/revisao.py`. Só
+    entrada `aprovado` com hash igual ao conteúdo atual é publicável, conferido
+    na carga: editar uma entrada a tira do ar sem tocar em `revisao.yml`.
+  - `data/tramitacao/`: `fases.yml`, `marcos.yml`, `ritos.yml`, `glossario.yml`,
+    `nao_mapeados.yml` e `revisao.yml`, válidos e vazios. Nada aprovado
+    (`versao_publicada: 0`); nada do site muda, pois nenhum código consome o mapa
+    ainda.
+  - `docker-compose.yml`: `api`, `worker` e `beat` montam `./packages` em
+    `/app/packages`. O mount de `apps/api` em `/app` escondia o pacote da imagem,
+    e o loader não importaria no container de desenvolvimento.
 - `scripts/sync_pipeline.py --limite N`: o enriquecimento processa só as N
   proposições pendentes mais recentes.
 - **Plenário das votações** (`components/ui/Hemiciclo.tsx`, `MapaUF.tsx`,
