@@ -105,7 +105,7 @@ python3 scripts/painel.py --injection            # métrica 2 — qualquer falha
 python3 scripts/painel.py --calibrar --out data/painel/calibracao/   # grava transcrições
 
 # Tabelas de código da tramitação (Câmara e Senado). Roda por PR, não no cron.
-# Sai 0 em dia ou gravado; 1 em erro, sem gravar nada; 2 com --verificar e diferença.
+# Sai 0 em dia ou gravado; 1 em erro; 2 com --verificar e diferença.
 python3 scripts/atualizar_referencias_tramitacao.py --verificar          # só compara
 python3 scripts/atualizar_referencias_tramitacao.py                      # grava snapshots e YAMLs
 python3 scripts/atualizar_referencias_tramitacao.py --aceitar-remocoes   # libera queda de mais de 10%

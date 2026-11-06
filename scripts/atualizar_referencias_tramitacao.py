@@ -5,8 +5,9 @@ Roda por PR, não no cron: muda arquivos do repositório, não o banco.
 
     python scripts/atualizar_referencias_tramitacao.py [--verificar] [--aceitar-remocoes] [--dir data/tramitacao]
 
-Saída: 0 em dia ou gravado; 1 erro (rede, fonte fora do formato, gravação recusada), sem gravar nada;
-2 só com --verificar, há diferença.
+Saída: 0 em dia ou gravado; 1 erro (rede, fonte fora do formato ou vazia, --dir inexistente, gravação
+recusada ou interrompida); 2 só com --verificar, há diferença. Só a gravação interrompida pode deixar
+arquivo trocado: ver `gravar`.
 """
 
 from __future__ import annotations
@@ -26,12 +27,12 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from packages.tramitacao.referencias import TABELAS, Plano, planejar  # noqa: E402
+from packages.tramitacao.referencias import SUBDIRETORIO, TABELAS, Plano, planejar  # noqa: E402
 
 DIRETORIO_PADRAO = _REPO_ROOT / "data" / "tramitacao"
 
 
-def baixar(transport: Optional[httpx.BaseTransport] = None, intervalo: float = 1.0) -> dict[str, object]:
+def baixar(transport: Optional[httpx.BaseTransport], intervalo: float) -> dict[str, object]:
     corpos: dict[str, object] = {}
     with httpx.Client(timeout=30, transport=transport, headers={"Accept": "application/json"}) as cliente:
         for indice, (arquivo, (url, _)) in enumerate(TABELAS.items()):
@@ -44,10 +45,19 @@ def baixar(transport: Optional[httpx.BaseTransport] = None, intervalo: float = 1
 
 
 def gravar(diretorio: Path, gravacoes: dict[str, str]) -> None:
-    """Escreve tudo em temporários antes de trocar: uma falha de disco não deixa metade atualizada."""
+    """Cada arquivo é trocado de forma atômica; o conjunto não é.
+
+    Escrever tudo em temporários antes de trocar cobre a falha mais provável (disco cheio): nela, nada
+    muda. Uma falha entre duas trocas deixa parte dos arquivos nova. Por isso os snapshots são os
+    últimos: enquanto um deles não foi trocado, a diferença continua visível, e rodar de novo termina o
+    trabalho, porque YAML já ajustado não é trocado outra vez. Na ordem inversa, a segunda execução não
+    veria mais a diferença e os YAMLs ficariam para trás.
+    """
     temporarios: list[tuple[Path, Path]] = []
+    snapshots_por_ultimo = sorted(gravacoes, key=lambda relativo: relativo.startswith(f"{SUBDIRETORIO}/"))
     try:
-        for relativo, conteudo in gravacoes.items():
+        for relativo in snapshots_por_ultimo:
+            conteudo = gravacoes[relativo]
             destino = diretorio / relativo
             destino.parent.mkdir(parents=True, exist_ok=True)
             temporario = destino.with_name(destino.name + ".tmp")
@@ -103,6 +113,11 @@ def main(
     args = parser.parse_args(argv)
     hoje = hoje or datetime.now(ZoneInfo("America/Sao_Paulo")).date()
 
+    # Sem isto, um --dir digitado errado viraria linha de base e criaria uma árvore nova com exit 0.
+    if not args.dir.is_dir():
+        print(f"Erro: o diretório {args.dir} não existe. Nada foi gravado.", file=sys.stderr)
+        return 1
+
     try:
         plano = planejar(args.dir, baixar(transport, intervalo), hoje, args.aceitar_remocoes)
     except httpx.HTTPError as exc:
@@ -114,13 +129,19 @@ def main(
 
     imprimir(plano)
 
-    if args.verificar:
-        return 2 if plano.mudou else 0
-    if plano.problemas:
+    # Tabela vazia é falha da fonte, não diferença: quem automatiza sobre o código de saída não pode
+    # ler uma como a outra. As demais recusas dependem de decisão humana e seguem como diferença.
+    if plano.fonte_vazia or (plano.problemas and not args.verificar):
         print("\nNada foi gravado.")
         return 1
+    if args.verificar:
+        return 2 if plano.mudou else 0
     if plano.gravacoes:
-        gravar(args.dir, plano.gravacoes)
+        try:
+            gravar(args.dir, plano.gravacoes)
+        except OSError as exc:
+            print(f"Erro ao gravar: {exc}. Parte dos arquivos pode ter mudado; rode de novo.", file=sys.stderr)
+            return 1
         print("\nGravados:")
         for relativo in plano.gravacoes:
             print(f"  {relativo}")

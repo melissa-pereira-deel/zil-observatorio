@@ -42,6 +42,7 @@ SECAO_NAO_MAPEADOS = {
     "senado-tipos-situacao.json": "situacoes_senado",
 }
 SECOES_DE_SITUACAO = {"situacoes_camara": "camara", "situacoes_senado": "senado"}
+TIPOS_ORGAO = "camara-tipos-orgao.json"
 
 CABECALHO_NAO_MAPEADOS = (
     "# data/tramitacao/nao_mapeados.yml — códigos sem tratamento (viram nao_sabemos ou \"não é marco\").\n"
@@ -92,6 +93,10 @@ class Plano:
     @property
     def mudou(self) -> bool:
         return any(t.mudou for t in self.tabelas)
+
+    @property
+    def fonte_vazia(self) -> bool:
+        return any(t.total == 0 for t in self.tabelas)
 
 
 def extrair_lista(arquivo: str, corpo: object) -> list[dict]:
@@ -242,9 +247,16 @@ def _do_codigo(entrada: dict, cod: str) -> bool:
 
 def _entradas_do_codigo(nome: str, dados: dict, arquivo: str, cod: str) -> Iterator[tuple[str, dict]]:
     """Entradas de um YAML que tratam este código desta tabela, como (chave, entrada)."""
-    secao = SECAO_NAO_MAPEADOS.get(arquivo)
-    if secao is None:
+    if arquivo == TIPOS_ORGAO:
+        # Tipo de órgão não tem entrada própria: quem o usa são os parâmetros da regra (R7).
+        if nome == FASES:
+            for regra in _dicts(dados.get("regras")):
+                parametros = regra.get("parametros")
+                usados = parametros.get("tipos_orgao_comissao") if isinstance(parametros, dict) else None
+                if isinstance(usados, list) and cod in map(str, usados):
+                    yield f"regra_{regra.get('id')}", regra
         return
+    secao = SECAO_NAO_MAPEADOS[arquivo]
     if nome == NAO_MAPEADOS:
         for entrada in _dicts(dados.get(secao)):
             if _do_codigo(entrada, cod):
@@ -268,6 +280,20 @@ def _entradas_do_codigo(nome: str, dados: dict, arquivo: str, cod: str) -> Itera
                 yield str(entrada.get("chave")), entrada
 
 
+def _codigos_que_ficam(entrada: dict, novo: str, renomeados: list[tuple[str, str, str, str]]) -> list[str]:
+    """Códigos de uma entrada de glossário que não passam, nesta execução, ao texto `novo`."""
+    grupo = {
+        (SECOES_DE_SITUACAO[SECAO_NAO_MAPEADOS[arquivo]], cod)
+        for arquivo, cod, _, texto_novo in renomeados
+        if SECAO_NAO_MAPEADOS.get(arquivo) in SECOES_DE_SITUACAO and texto_novo.strip() == novo
+    }
+    return [
+        str(c.get("cod"))
+        for c in _dicts(entrada.get("codigos"))
+        if (c.get("casa"), str(c.get("cod"))) not in grupo
+    ]
+
+
 def _renomear_no_yaml(
     nome: str, texto: str, dados: dict, renomeados: list[tuple[str, str, str, str]]
 ) -> str:
@@ -282,6 +308,14 @@ def _renomear_no_yaml(
             if atual is None:
                 continue
             atual = str(atual).strip()
+            # Vem antes de "já ajustado": a entrada tem uma descrição só e não pode valer para os dois
+            # textos, mesmo que alguém já a tenha trocado à mão. A saída é separar a entrada.
+            ficam = _codigos_que_ficam(entrada, novo, renomeados) if nome == GLOSSARIO else []
+            if ficam:
+                raise SubstituicaoInesperada(
+                    f'glossario/{chave} cobre também {", ".join(ficam)}, que não passa a "{novo}" '
+                    f"como o código {cod}; separe a entrada, porque ela só tem uma descricao_oficial"
+                )
             if atual == novo:  # já ajustado à mão, a saída de um aborto anterior
                 continue
             if atual != antigo:
@@ -351,7 +385,6 @@ def _planejar_yamls(diretorio: Path, plano: Plano, hoje: date) -> None:
 
     textos: dict[str, str] = {}
     dados: dict[str, dict] = {}
-    invalidos: set[str] = set()
     for nome in YAMLS:
         caminho = Path(diretorio) / nome
         if not caminho.exists():
@@ -362,7 +395,6 @@ def _planejar_yamls(diretorio: Path, plano: Plano, hoje: date) -> None:
             textos[nome] = texto
         except ReferenciaInvalida as exc:
             plano.problemas.append(str(exc))
-            invalidos.add(nome)
 
     def afetadas(arquivo: str, cod: str, nomes: tuple[str, ...] = YAMLS) -> list[str]:
         return [
@@ -385,10 +417,10 @@ def _planejar_yamls(diretorio: Path, plano: Plano, hoje: date) -> None:
             try:
                 novo_texto = _renomear_no_yaml(nome, textos[nome], dados[nome], renomeados)
             except SubstituicaoInesperada as exc:
-                plano.problemas.append(f"{nome}: {exc}. Ajuste à mão e rode de novo")
+                plano.problemas.append(f"{nome}: a troca de descrição não pode ser feita")
+                plano.decisoes_humanas.append(f"{nome}: {exc}. Ajuste à mão e rode de novo")
                 continue
             if novo_texto != textos[nome]:
-                textos[nome] = novo_texto
                 plano.gravacoes[nome] = novo_texto
 
     pendentes: list[tuple[str, dict]] = []
@@ -420,7 +452,7 @@ def _planejar_yamls(diretorio: Path, plano: Plano, hoje: date) -> None:
             pendentes.append((arquivo, item))
             plano.entradas_afetadas.append(f"nao_mapeados/{SECAO_NAO_MAPEADOS[arquivo]}/{cod}")
 
-    if pendentes and NAO_MAPEADOS not in invalidos:
+    if pendentes:
         try:
             plano.gravacoes[NAO_MAPEADOS] = acrescentar_nao_mapeados(dados.get(NAO_MAPEADOS), pendentes, hoje)
         except ReferenciaInvalida as exc:
