@@ -78,6 +78,12 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `/ranking` (atrás de `rankingPublico`): score médio por UF, que filtra a
     tabela, e histograma por faixa de score. Com um estado selecionado, as
     barras acendem em tom neutro, não na cor de alinhamento.
+- **Textos da tramitação** (`apps/web/lib/tramitacao/textos.ts`, `especies.ts`,
+  `estilo.ts`): a coluna `textos.ts` da matriz de estados e as regras V-E1 a
+  V-E10 do guia de redação, testadas contra a spec, para que as superfícies de
+  tramitação digam a mesma coisa do mesmo jeito. Nenhuma tela usa o módulo
+  ainda. `apps/web/lib/api.ts`: os campos de F0 de `Proposicao` (TRM-014) entram
+  opcionais, para a página não quebrar contra a API anterior.
 - `GET /votacoes?fonte_id=`: acha uma votação pelo ID da Câmara.
 - `specs/013-tramitacao/`: backlog de evolução a partir do discovery de
   tramitação, escrito por quatro especialistas (Product, Arquitetura, UI/UX,

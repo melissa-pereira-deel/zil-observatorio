@@ -11,6 +11,22 @@ export interface Parlamentar {
   total_votos_zil: number;
 }
 
+export type SituacaoEstado = "informada" | "recem_apresentada" | "sem_situacao" | "nao_sincronizada";
+
+export interface NormaResumo {
+  tipo: "lei_ordinaria" | "lei_complementar" | "lei" | "decreto_legislativo" | "emenda_constitucional" | "resolucao";
+  rotulo: string; // "Lei 14.871/2024"
+  numero: number;
+  ano: number;
+  data: string | null; // date, "AAAA-MM-DD"
+  veto: "parcial" | null;
+  url_normas_leg: string | null;
+  url_planalto: string | null;
+  links_verificados: boolean;
+  fonte: "despacho_camara" | "senado_norma_gerada" | "curadoria";
+  verificada_em: string | null; // InstanteUTC, ISO com -03:00
+}
+
 export interface Proposicao {
   id: string;
   fonte_id: string;
@@ -28,6 +44,27 @@ export interface Proposicao {
   contexto_status: string | null;
   resumo_simples: string | null;
   confianca: number | null;
+  // Tramitação F0 (TRM-014). Opcionais para a página não quebrar contra a API anterior.
+  cod_situacao?: string | null;
+  situacao_estado?: SituacaoEstado; // a API sempre manda (padrão "nao_sincronizada"); opcional só para a API antiga
+  sigla_orgao?: string | null; // órgão do último registro — não vai à tela
+  orgao_nome?: string | null; // idem
+  orgao_efetivo_sigla?: string | null;
+  orgao_efetivo_nome?: string | null;
+  regime?: string | null;
+  regime_chave?: string | null;
+  regime_texto?: string | null;
+  apreciacao?: string | null;
+  apreciacao_chave?: string | null;
+  apreciacao_texto?: string | null;
+  relator_nome?: string | null;
+  ultima_movimentacao_em?: string | null; // HorarioCamara, ISO com -03:00
+  detalhe_sincronizado_em?: string | null; // InstanteUTC, ISO com -03:00
+  url_camara?: string | null;
+  principal_fonte_id?: string | null;
+  principal_url_camara?: string | null;
+  situacao_glossario?: string | null;
+  norma?: NormaResumo | null;
 }
 
 export interface LeiReferenciada {
