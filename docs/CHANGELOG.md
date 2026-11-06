@@ -10,6 +10,16 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- `apps/api/data/migrations/versions/3a9c5e71b2d4_status_e_norma_proposicao.py`,
+  `apps/api/models/__init__.py`: 28 colunas nulas e 3 índices em `proposicoes`
+  para o `statusProposicao` completo da Câmara (código da situação, órgão,
+  regime, apreciação, relator, proposição principal, última movimentação) e a
+  norma resultante (TRM-011). Só o lugar: TRM-010 e TRM-013 preenchem. **Quem
+  faz deploy precisa rodar `alembic upgrade head`** antes de o código novo ler a
+  tabela; a API faz isso ao subir (`apps/api/entrypoint.sh`).
+- `tests/integration/test_migrations.py`: primeiro teste de migration do
+  repositório, em SQLite temporário: sobe, desce, sobe de novo e compara o
+  modelo com o banco.
 - **Cron de produção no GitHub Actions** (`scripts/agenda.py`,
   `.github/workflows/dados.yml`, `direcoes.yml`, `acordar-api.yml`): os jobs
   do Celery beat como subcomandos de linha de comando (`diario`, `cadastros`,
