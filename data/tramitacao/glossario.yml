@@ -1,0 +1,6 @@
+# data/tramitacao/glossario.yml — termos explicados em linguagem simples.
+# Esquema: packages/tramitacao/mapa.py (ArquivoGlossario). Os textos são de TRM-022.
+# O estado de revisão NÃO mora aqui: data/tramitacao/revisao.yml (scripts de TRM-023).
+versao_esquema: 1
+aviso: Texto do ZIL, não oficial.
+entradas: []

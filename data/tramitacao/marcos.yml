@@ -1,0 +1,7 @@
+# data/tramitacao/marcos.yml — códigos de tramitação que são marco, e os conferidos que não são.
+# Esquema: packages/tramitacao/mapa.py (ArquivoMarcos).
+# O estado de revisão NÃO mora aqui: data/tramitacao/revisao.yml (scripts de TRM-023).
+# Esqueleto de TRM-021a: o conteúdo-rascunho entra em TRM-021b.
+versao_esquema: 1
+marcos: []
+ignorados: []

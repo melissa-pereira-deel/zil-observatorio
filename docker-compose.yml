@@ -61,6 +61,8 @@ services:
       # /data/... — sem este mount o classificador cai numa taxonomia
       # embutida com 44% das keywords e a Bússola responde vazia.
       - ./data:/data:ro
+      # O mount de apps/api em /app esconde o /app/packages da imagem.
+      - ./packages:/app/packages:ro
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-zil}:${POSTGRES_PASSWORD:-zil}@db:5432/${POSTGRES_DB:-zil}
       REDIS_URL: redis://redis:6379/0
@@ -90,6 +92,8 @@ services:
       # /data/... — sem este mount o classificador cai numa taxonomia
       # embutida com 44% das keywords e a Bússola responde vazia.
       - ./data:/data:ro
+      # O mount de apps/api em /app esconde o /app/packages da imagem.
+      - ./packages:/app/packages:ro
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-zil}:${POSTGRES_PASSWORD:-zil}@db:5432/${POSTGRES_DB:-zil}
       REDIS_URL: redis://redis:6379/0
@@ -115,6 +119,8 @@ services:
       # /data/... — sem este mount o classificador cai numa taxonomia
       # embutida com 44% das keywords e a Bússola responde vazia.
       - ./data:/data:ro
+      # O mount de apps/api em /app esconde o /app/packages da imagem.
+      - ./packages:/app/packages:ro
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-zil}:${POSTGRES_PASSWORD:-zil}@db:5432/${POSTGRES_DB:-zil}
       REDIS_URL: redis://redis:6379/0

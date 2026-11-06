@@ -10,6 +10,23 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Mapa de tramitação: esquema e carga, sem conteúdo** (TRM-021a, spec 013):
+  - `packages/tramitacao/mapa.py`: modelos estritos dos arquivos de
+    `data/tramitacao/` e `carregar_mapa`. Campo desconhecido levanta
+    `MapaInvalido` citando arquivo e caminho; dados ausentes levantam
+    `MapaIndisponivel`, nunca um mapa vazio em silêncio. `ZIL_DATA_DIR` é
+    respeitado; sem ela, vale o repositório e depois `/data/tramitacao`.
+  - `packages/tramitacao/revisao.py`: `hash_entrada` e `entradas_publicaveis`,
+    implementação única, reexportada em `apps/workers/tramitacao/revisao.py`. Só
+    entrada `aprovado` com hash igual ao conteúdo atual é publicável, conferido
+    na carga: editar uma entrada a tira do ar sem tocar em `revisao.yml`.
+  - `data/tramitacao/`: `fases.yml`, `marcos.yml`, `ritos.yml`, `glossario.yml`,
+    `nao_mapeados.yml` e `revisao.yml`, válidos e vazios. Nada aprovado
+    (`versao_publicada: 0`); nada do site muda, pois nenhum código consome o mapa
+    ainda.
+  - `docker-compose.yml`: `api`, `worker` e `beat` montam `./packages` em
+    `/app/packages`. O mount de `apps/api` em `/app` escondia o pacote da imagem,
+    e o loader não importaria no container de desenvolvimento.
 - **Cron de produção no GitHub Actions** (`scripts/agenda.py`,
   `.github/workflows/dados.yml`, `direcoes.yml`, `acordar-api.yml`): os jobs
   do Celery beat como subcomandos de linha de comando (`diario`, `cadastros`,
