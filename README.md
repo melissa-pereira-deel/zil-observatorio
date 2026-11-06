@@ -51,7 +51,7 @@ Todo o código é aberto e toda classificação é auditável via git.
 | Agendamento Celery (6 tarefas) | ✅ |
 | Frontend — 8 páginas | ✅ |
 | 151 testes automatizados | ✅ |
-| CI (GitHub Actions, 4 jobs) | ✅ |
+| CI (GitHub Actions, 5 jobs) | ✅ |
 | Deploy em produção | config pronta — ver [DEPLOY.md](docs/DEPLOY.md) |
 
 ### Dados editoriais
@@ -81,7 +81,7 @@ ver [ADR-004](docs/decisions/004-placar-focado.md) e
 ## Quick Start (desenvolvimento)
 
 ```bash
-# Pré-requisitos: Python 3.12 e Node.js 20.
+# Pré-requisitos: Python 3.12 e Node.js 22.
 # Redis só é necessário para os workers Celery; Docker, para o ambiente completo.
 # Os testes rodam sem nenhum dos dois.
 

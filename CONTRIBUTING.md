@@ -42,7 +42,7 @@ Este projeto adota o [Contributor Covenant v2.1](https://www.contributor-covenan
 - Docker e Docker Compose
 - Git
 - Make (opcional, mas recomendado)
-- Node.js 20+ (para desenvolvimento frontend sem Docker)
+- Node.js 22 (para desenvolvimento frontend sem Docker)
 - Python 3.12+ (para desenvolvimento backend sem Docker)
 
 ### Setup do ambiente
