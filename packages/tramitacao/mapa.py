@@ -10,7 +10,7 @@ from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
 from types import MappingProxyType
-from typing import Annotated, Callable, Iterable, Literal, Mapping, Optional, Union
+from typing import Annotated, Any, Callable, Iterable, Iterator, Literal, Mapping, Optional, Union
 
 import yaml
 from pydantic import BaseModel, Field, HttpUrl, ValidationError, field_validator, model_validator
@@ -25,6 +25,7 @@ from packages.tramitacao.tipos import (
     Especie,
     Estrito,
     Fase,
+    Identificador,
     Motivo,
     RegraId,
 )
@@ -87,7 +88,7 @@ class ModeloFrase(Estrito):
 
 
 class NaoMapeado(Estrito):
-    cod: str
+    cod: Identificador
     descricao_oficial: str
     motivo: str = Field(pattern=r"^(sem_evidencia|fora_do_escopo|inativo|codigo_novo_\d{4}-\d{2}-\d{2})$")
     nota: Optional[str] = None
@@ -135,7 +136,7 @@ class ApensadaDef(Procedencia):
 
 
 class SituacaoTratada(Estrito):
-    cod: str
+    cod: Identificador
     descricao_oficial: str
     fase: Optional[Fase] = None
     desfecho: Optional[Desfecho] = None
@@ -184,7 +185,7 @@ class Variante(Estrito):
 
 
 class MarcoDef(Procedencia):
-    cod: str = Field(pattern=r"^[0-9]+$")
+    cod: Identificador = Field(pattern=r"^[0-9]+$")
     casa: Casa
     descricao_oficial: str
     marco: TipoMarco
@@ -200,7 +201,7 @@ class MarcoDef(Procedencia):
 
 
 class Ignorado(Estrito):
-    cod: str
+    cod: Identificador
     descricao_oficial: str
     nota: str
 
@@ -283,7 +284,7 @@ class ArquivoRitos(Estrito):
 
 class CodigoRef(Estrito):
     casa: Casa
-    cod: str
+    cod: Identificador
 
 
 class Exemplo(Estrito):
@@ -294,7 +295,7 @@ class Exemplo(Estrito):
 
 
 class EntradaGlossario(Procedencia):
-    chave: str = Field(pattern=r"^[a-z][a-z0-9_]{2,59}$")
+    chave: Identificador = Field(pattern=r"^[a-z][a-z0-9_]{2,59}$")
     tipo: Literal["situacao", "regime", "apreciacao", "fase", "desfecho", "apensada",
                   "etapa", "especie", "conceito"]
     termo: str = Field(max_length=120)
@@ -393,14 +394,90 @@ def _caminho(loc: Iterable[Union[int, str]]) -> str:
     return texto or "(raiz)"
 
 
-def _ler_yaml(arquivo: Path, problemas: list[str]) -> Optional[dict]:
+class _CarregadorSemChaveRepetida(yaml.SafeLoader):
+    """O safe_load, recusando chave repetida num mesmo mapeamento.
+
+    O PyYAML fica com o último valor sem avisar: hash e modelo veriam a última linha, e a revisão
+    poderia ter lido a primeira. A conferência é anterior à expansão do `<<`, então sobrescrever o
+    que veio dele continua valendo.
+    """
+
+    def compose_mapping_node(self, anchor):
+        no = super().compose_mapping_node(anchor)
+        vistas = set()
+        for chave, _ in no.value:
+            if not isinstance(chave, yaml.ScalarNode):
+                continue
+            if chave.value in vistas:
+                raise yaml.composer.ComposerError(None, None, f"chave repetida: {chave.value}", chave.start_mark)
+            vistas.add(chave.value)
+        return no
+
+
+def _codificavel(texto: str) -> bool:
     try:
-        bruto = yaml.safe_load(arquivo.read_text(encoding="utf-8"))
-    except yaml.YAMLError as erro:
+        texto.encode("utf-8")
+    except UnicodeEncodeError:
+        return False
+    return True
+
+
+def _fora_do_json(
+    valor: Any, loc: tuple = (), acima: frozenset[int] = frozenset(), *, aceita_data: bool = False
+) -> Iterator[tuple[tuple, str]]:
+    """Caminho de cada valor que o YAML constrói e o hash não sabe ler (§2.1-4).
+
+    O Pydantic não pega todos: em modo não estrito, bytes de `!!binary` viram str e o set de `!!set`
+    vira lista. Sem esta checagem, o json.dumps de hash_entrada estouraria na carga, e só em entrada
+    aprovada, porque rascunho nem tem hash calculado.
+    """
+    if isinstance(valor, (dict, list)):
+        if id(valor) in acima:
+            yield loc, "referência circular"
+            return
+        acima = acima | {id(valor)}
+        if isinstance(valor, list):
+            for posicao, filho in enumerate(valor):
+                yield from _fora_do_json(filho, (*loc, posicao), acima, aceita_data=aceita_data)
+            return
+        for chave, filho in valor.items():
+            if not isinstance(chave, str):
+                yield (*loc, str(chave)), f"chave do tipo {type(chave).__name__}"
+            elif not _codificavel(chave):
+                yield (*loc, ascii(chave)), "chave que não é texto válido em UTF-8"
+            else:
+                yield from _fora_do_json(filho, (*loc, chave), acima, aceita_data=aceita_data)
+    elif isinstance(valor, str):
+        if not _codificavel(valor):
+            yield loc, "texto que não é válido em UTF-8"
+    elif valor is None or isinstance(valor, (bool, int, float)):
+        return
+    elif not (aceita_data and isinstance(valor, date)):
+        yield loc, f"valor do tipo {type(valor).__name__}, que o hash não sabe ler"
+
+
+def _ler_yaml(arquivo: Path, problemas: list[str], *, aceita_data: bool = False) -> Optional[dict]:
+    """Toda falha de leitura vira MapaIndisponivel ou problema de MapaInvalido, as duas únicas que a
+    API captura (§1.5): qualquer outra exceção seria um 500 em `GET /proposicoes`."""
+    try:
+        texto = arquivo.read_text(encoding="utf-8")
+    except OSError as erro:
+        raise MapaIndisponivel(f"{arquivo.name}: não foi possível ler: {erro}") from erro
+    except UnicodeDecodeError as erro:
+        problemas.append(f"{arquivo.name}: o arquivo não está em UTF-8: {erro}")
+        return None
+    try:
+        bruto = yaml.load(texto, Loader=_CarregadorSemChaveRepetida)
+        fora_do_json = list(_fora_do_json(bruto, aceita_data=aceita_data))
+    except (yaml.YAMLError, ValueError, RecursionError) as erro:
+        # ValueError (data ou inteiro impossível) e RecursionError não são yaml.YAMLError.
         problemas.append(f"{arquivo.name}: YAML inválido: {erro}")
         return None
     if not isinstance(bruto, dict):
         problemas.append(f"{arquivo.name}: o arquivo precisa ser um mapeamento, e veio {type(bruto).__name__}")
+        return None
+    if fora_do_json:
+        problemas.extend(f"{arquivo.name}: {_caminho(loc)}: {motivo}" for loc, motivo in fora_do_json)
         return None
     return bruto
 
@@ -444,9 +521,6 @@ def carregar_mapa(diretorio: Optional[Path] = None) -> Mapa:
     base = resolver_diretorio() if diretorio is None else Path(diretorio)
     if not base.is_dir():
         raise MapaIndisponivel(f"diretório inexistente: {base}")
-    faltando = [nome for nome in _ARQUIVOS_DE_CONTEUDO if not (base / nome).is_file()]
-    if faltando:
-        raise MapaIndisponivel(f"arquivos ausentes em {base}: {', '.join(faltando)}")
 
     problemas: list[str] = []
     brutos: dict[str, dict] = {}
@@ -462,7 +536,7 @@ def carregar_mapa(diretorio: Optional[Path] = None) -> Mapa:
 
     revisao: Optional[ArquivoRevisao] = ArquivoRevisao(versao_publicada=0, entradas={})
     if (base / "revisao.yml").is_file():
-        bruto = _ler_yaml(base / "revisao.yml", problemas)
+        bruto = _ler_yaml(base / "revisao.yml", problemas, aceita_data=True)
         revisao = None if bruto is None else _validar("revisao.yml", ArquivoRevisao, bruto, problemas)
 
     if problemas:

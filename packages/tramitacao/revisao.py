@@ -11,7 +11,7 @@ from typing import Literal, Mapping, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from packages.tramitacao.tipos import Conjunto, Estrito, Revisao
+from packages.tramitacao.tipos import Conjunto, Estrito, Identificador, Revisao
 
 __all__ = [
     "ArquivoRevisao",
@@ -40,12 +40,13 @@ class EstadoEntrada(Estrito):
 class ArquivoRevisao(Estrito):
     versao_publicada: int = Field(ge=0)
     publicada_em: Optional[date] = None
-    entradas: dict[str, EstadoEntrada]
+    entradas: dict[Identificador, EstadoEntrada]
 
 
 class _RegistroDeLote(BaseModel):
-    # Escritos por script e podem evoluir: quem lê usa os campos que conhece e ignora o resto (§2.8).
-    model_config = ConfigDict(extra="ignore", frozen=True, str_strip_whitespace=True)
+    # Escritos por script e podem evoluir (§2.8). Campo a mais é guardado, não descartado: TRM-024 lê só
+    # os que conhece, mas TRM-023 escreve por estes modelos e perderia `vereditos` (spec §6.5).
+    model_config = ConfigDict(extra="allow", frozen=True, str_strip_whitespace=True)
 
 
 class EntradaConsolidada(_RegistroDeLote):

@@ -14,8 +14,12 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `packages/tramitacao/mapa.py`: modelos estritos dos arquivos de
     `data/tramitacao/` e `carregar_mapa`. Campo desconhecido levanta
     `MapaInvalido` citando arquivo e caminho; dados ausentes levantam
-    `MapaIndisponivel`, nunca um mapa vazio em silêncio. `ZIL_DATA_DIR` é
-    respeitado; sem ela, vale o repositório e depois `/data/tramitacao`.
+    `MapaIndisponivel`, nunca um mapa vazio em silêncio. As duas são as únicas
+    exceções da carga, para a API poder degradar em vez de responder 500: arquivo
+    fora de UTF-8, valor que o hash não sabe ler (`!!binary`, `!!set`), chave
+    repetida no YAML e chave com espaço nas pontas viram `MapaInvalido`.
+    `ZIL_DATA_DIR` é respeitado; sem ela, vale o repositório e depois
+    `/data/tramitacao`.
   - `packages/tramitacao/revisao.py`: `hash_entrada` e `entradas_publicaveis`,
     implementação única, reexportada em `apps/workers/tramitacao/revisao.py`. Só
     entrada `aprovado` com hash igual ao conteúdo atual é publicável, conferido
