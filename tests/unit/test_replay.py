@@ -527,6 +527,7 @@ class TestProtecaoNaoAfrouxou:
             {"despacho": f"{UUID_COM_CPF_VALIDO} cpf 11144477736"},
             {"url": f"https://x.test/{UUID_COM_CPF_VALIDO}/111.444.777-35"},
             {"url": f"https://x.test/{UUID_COM_CPF_VALIDO}-111.444.777-35"},
+            {"url": "https://x.test/550e8400-e29b-41d4-a716-446655440000/111.444.777-35"},  # UUID termina em dígito
             {"despacho": f"{UUID_COM_CPF_VALIDO}111.444.777-35"},
         ],
     )
