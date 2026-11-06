@@ -141,6 +141,10 @@ Cada passo grava uma linha em `ingestion_runs`, com status e contagens.
 2. **Root Directory: `apps/web`** ← passo mais fácil de errar; o Next.js não
    está na raiz do repositório
 3. Framework: Next.js (detectado automaticamente)
+4. Depois de criar, em **Settings → Build and Deployment**: **Node.js Version =
+   22.x**. É a versão da CI. A Vercel pega a versão desse painel, não do
+   `.nvmrc`: sem o ajuste, o projeto novo fica na versão padrão dela, que a CI
+   não testa
 
 ### 3.2 Variáveis de ambiente
 
@@ -344,6 +348,7 @@ Senado não impede o score da Câmara), mas o job termina vermelho.
 - [ ] Banco populado pelos workflows `dados` (`cadastros`, `diario`) e `direcoes`, todos verdes
 - [ ] Variável `API_PUBLICA_URL` definida depois do DNS; `acordar-api` verde
 - [ ] Projeto na Vercel com **Root Directory `apps/web`**
+- [ ] Projeto na Vercel com **Node.js Version = 22.x**
 - [ ] `NEXT_PUBLIC_API_URL` apontando para a API, sem barra no final
 - [ ] `CORS_ORIGINS` contém a origem exata do frontend
 - [ ] `/ranking` e `/parlamentar/<id>` servem a página `/em-breve`

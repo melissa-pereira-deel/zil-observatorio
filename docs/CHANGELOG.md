@@ -10,6 +10,20 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Testes de componente no frontend** (`apps/web/vitest.config.mts`,
+  `apps/web/tests/`, job `test-frontend` em `.github/workflows/ci.yml`): Vitest
+  5, Testing Library e jest-axe, com versões exatas. `npm run test` roda
+  `tests/componentes/**` e `tests/unit/**`; o primeiro teste é o do `Selo`. Até
+  aqui nenhum arquivo do kit tinha teste, e acessibilidade se conferia a olho.
+- **Cron de produção no GitHub Actions** (`scripts/agenda.py`,
+  `.github/workflows/dados.yml`, `direcoes.yml`, `acordar-api.yml`): os jobs
+  do Celery beat como subcomandos de linha de comando (`diario`, `cadastros`,
+  `enriquecer --limite N`, e cada passo isolado), registrando cada passo em
+  `ingestion_runs` pelo mesmo caminho das tasks (`apps/workers/execucoes.py`).
+  `dados` roda o sync diário, os cadastros às segundas e o enriquecimento com
+  LLM às quartas (até 30); `direcoes` aplica a curadoria a cada merge em
+  `data/direcoes/`; `acordar-api` mantém a API gratuita acordada quando a
+  variável `API_PUBLICA_URL` existe.
 - **Mapa de tramitação: esquema e carga, sem conteúdo** (TRM-021a, spec 013):
   - `packages/tramitacao/mapa.py`: modelos estritos dos arquivos de
     `data/tramitacao/` e `carregar_mapa`. Campo desconhecido levanta
@@ -31,15 +45,6 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `docker-compose.yml`: `api`, `worker` e `beat` montam `./packages` em
     `/app/packages`. O mount de `apps/api` em `/app` escondia o pacote da imagem,
     e o loader não importaria no container de desenvolvimento.
-- **Cron de produção no GitHub Actions** (`scripts/agenda.py`,
-  `.github/workflows/dados.yml`, `direcoes.yml`, `acordar-api.yml`): os jobs
-  do Celery beat como subcomandos de linha de comando (`diario`, `cadastros`,
-  `enriquecer --limite N`, e cada passo isolado), registrando cada passo em
-  `ingestion_runs` pelo mesmo caminho das tasks (`apps/workers/execucoes.py`).
-  `dados` roda o sync diário, os cadastros às segundas e o enriquecimento com
-  LLM às quartas (até 30); `direcoes` aplica a curadoria a cada merge em
-  `data/direcoes/`; `acordar-api` mantém a API gratuita acordada quando a
-  variável `API_PUBLICA_URL` existe.
 - `scripts/sync_pipeline.py --limite N`: o enriquecimento processa só as N
   proposições pendentes mais recentes.
 - **Plenário das votações** (`components/ui/Hemiciclo.tsx`, `MapaUF.tsx`,
@@ -174,6 +179,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- **Node 22 no frontend** (`.github/workflows/ci.yml`, `apps/web/Dockerfile`,
+  `apps/web/.nvmrc`): sai o Node 20, em fim de vida desde 30/04/2026, que as
+  bibliotecas de teste não aceitam mais.
+- `apps/web/package.json`: `npm run lint` passa a olhar também `tests/`. O
+  padrão do `next lint` não inclui essa pasta.
 - `apps/web`: a abertura da home passa a ter vídeo de fundo de borda a borda,
   sob a barra de navegação em vidro (`components/VideoAbertura.tsx`). Os
   arquivos vão em `apps/web/public/abertura/` (especificação e cuidados no
