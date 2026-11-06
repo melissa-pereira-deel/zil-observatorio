@@ -20,9 +20,9 @@
 | Workers | Celery 5, Redis 7, httpx 0.27 |
 | Frontend | Next.js 14, TypeScript 5, Tailwind CSS, React 18 |
 | Enriquecimento | Claude Haiku 4.5 via `ANTHROPIC_API_KEY` (opcional em dev) |
-| Testes | pytest 8 (320 testes, todos passando) |
+| Testes | pytest 8 (320 testes, todos passando); frontend: Vitest 5 + Testing Library + jest-axe |
 | Linting | ruff 0.8.6 (Python), ESLint + `next/core-web-vitals` (TypeScript) |
-| CI | GitHub Actions — 4 jobs, todos verdes. Repositório público: minutos de Actions não custam nada |
+| CI | GitHub Actions — 5 jobs, todos verdes. Repositório público: minutos de Actions não custam nada |
 | Cron de produção | GitHub Actions (`dados`, `direcoes`, `acordar-api`) rodando `scripts/agenda.py` — ver "Cron" em [docs/DEPLOY.md](docs/DEPLOY.md) |
 
 ---
@@ -84,8 +84,9 @@ cd apps/api && uvicorn main:app --reload
 cd apps/web
 npm run dev                      # dev server
 npm run build                    # build produção
-npm run lint                     # ESLint (config em .eslintrc.json)
+npm run lint                     # ESLint (config em .eslintrc.json), inclui tests/
 npx tsc --noEmit                 # type check
+npm run test                     # Vitest: tests/componentes e tests/unit (Node 22, ver .nvmrc)
 
 # Workers (requer Redis)
 # Da raiz o módulo é apps.workers.tasks; dentro do container é workers.tasks,
@@ -517,6 +518,37 @@ test:     testes
 refactor: refatoração sem mudança de comportamento
 chore:    infra, CI, deps
 ```
+
+---
+
+## Revisão de PR
+
+Os gates moram em `docs/revisao/`:
+[UI/UX](docs/revisao/checklist-ui-ux.md) (U1–U14),
+[Design System](docs/revisao/checklist-design-system.md) (S1–S12),
+[Arquitetura](docs/revisao/checklist-arquitetura.md) (A1–A8) e
+[como verificar cada item](docs/revisao/como-verificar.md). O template está em
+`.github/pull_request_template.md`.
+
+Toda tarefa que muda o que a pessoa vê passa por dois gates antes do merge, UI/UX
+e Design System. O fluxo (spec 013, §7.1):
+
+1. O agente implementador abre o PR com o template preenchido e a CI verde.
+2. Os agentes `revisor-ui-ux` e `revisor-design-system` (`.claude/agents/`)
+   revisam em paralelo e deixam **um comentário cada** no PR, com todos os itens
+   marcados ✓, ✗ ou N/A (N/A exige motivo).
+3. O implementador resolve cada ✗ e pede nova revisão só dos itens afetados.
+4. A maintainer confere a prévia no celular (ou os screenshots de 375 px) e
+   mergeia. ✗ não resolvido só passa com o motivo escrito por ela no PR.
+
+Componente do kit (TRM-030 a 036): o DS é o gate principal; o UI/UX verifica o uso
+em contexto (estados e textos). Página (TRM-015, 016, 040 a 047): o inverso.
+Backend passa pelo `revisor-arquitetura`, com o mesmo formato.
+
+✓ sem evidência conta como ✗. Os agentes nunca aprovam, pedem mudanças pelo GitHub
+ou mergeiam. Para rodar um deles sem publicar nada, diga "não comente": a tabela
+volta como resposta. Definições em `.claude/agents/` só carregam no início de uma
+sessão.
 
 ---
 
