@@ -105,6 +105,12 @@ python3 scripts/painel.py --calibrar             # métricas 1, 3 e 5 do go/no-g
 python3 scripts/painel.py --injection            # métrica 2 — qualquer falha é no-go
 python3 scripts/painel.py --calibrar --out data/painel/calibracao/   # grava transcrições
 
+# Tabelas de código da tramitação (Câmara e Senado). Roda por PR, não no cron.
+# Sai 0 em dia ou gravado; 1 em erro; 2 com --verificar e diferença.
+python3 scripts/atualizar_referencias_tramitacao.py --verificar          # só compara
+python3 scripts/atualizar_referencias_tramitacao.py                      # grava snapshots e YAMLs
+python3 scripts/atualizar_referencias_tramitacao.py --aceitar-remocoes   # libera queda de mais de 10%
+
 # Pipeline de dados editorial (rodar na ordem, da raiz)
 python3 scripts/migrate_enrichment.py       # migração: novos campos Feature 002 (idempotente)
 python3 scripts/sync_votacoes_zil.py        # sync só votações ZIL definidas nos YAMLs

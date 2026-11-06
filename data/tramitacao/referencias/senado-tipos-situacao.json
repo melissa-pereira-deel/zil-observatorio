@@ -1,0 +1,1233 @@
+{
+  "tabela": "senado.tipos-situacao",
+  "fonte": "https://legis.senado.leg.br/dadosabertos/processo/tipos-situacao",
+  "obtido_em": "2026-11-05",
+  "total": 175,
+  "itens": [
+    {
+      "cod": "AGAUDPUB",
+      "id": 7352323,
+      "nome": "AGUARDANDO AUDIÊNCIA PÚBLICA",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGCD",
+      "id": 142,
+      "nome": "AGUARDANDO DECISÃO DA CÂMARA DOS DEPUTADOS",
+      "data_inicio": "2007-01-01T00:00:00",
+      "data_fim": "2024-07-01T00:00:00"
+    },
+    {
+      "cod": "AGDDO",
+      "id": 86,
+      "nome": "AGENDADA PARA ORDEM DO DIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGDESP",
+      "id": 175,
+      "nome": "AGUARDANDO DESPACHO",
+      "data_inicio": "2016-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGDO (RQ)",
+      "id": 126,
+      "nome": "AGENDADO REQUERIMENTO PARA A ORDEM DO DIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGDOC",
+      "id": 82,
+      "nome": "AGUARDANDO DOCUMENTAÇÃO COMPLEMENTAR SOLICITADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGDREL",
+      "id": 87,
+      "nome": "AGUARDANDO DESIGNAÇÃO DO RELATOR",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGEMD_PRELIM",
+      "id": 7366366,
+      "nome": "AGUARDANDO RECEBIMENTO DE EMENDAS AO RELATÓRIO PRELIMINAR",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGENT",
+      "id": 5,
+      "nome": "AGUARDANDO ELABORAÇÃO DE NOTA TÉCNICA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "AGERF",
+      "id": 6,
+      "nome": "AGUARDANDO ELABORAÇÃO REDAÇÃO FINAL",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "AGERV",
+      "id": 7,
+      "nome": "AGUARDANDO ELABORAÇÃO REDAÇÃO DO VENCIDO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "AGINCL(RQ)",
+      "id": 95,
+      "nome": "AGUARDANDO INCLUSÃO ORDEM DO DIA DE REQUERIMENTO",
+      "data_inicio": "2000-02-09T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGINCO",
+      "id": 9,
+      "nome": "AGUARDANDO INSTALAÇÃO DA COMISSÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGIND",
+      "id": 10,
+      "nome": "AGUARDANDO DESIGNAÇÃO MEMBROS COMISSÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGINF",
+      "id": 11,
+      "nome": "AGUARDANDO INFORMAÇÕES",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGINFCOMP",
+      "id": 100,
+      "nome": "AGUARDANDO INFORMAÇÕES COMPLEMENTARES",
+      "data_inicio": "2000-02-23T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGINR",
+      "id": 12,
+      "nome": "AGUARDANDO INTERPOSIÇÃO DE RECURSO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGLEIT",
+      "id": 13,
+      "nome": "AGUARDANDO LEITURA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGLEIT(RQ)",
+      "id": 118,
+      "nome": "AGUARDANDO LEITURA DE REQUERIMENTO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGLPAR",
+      "id": 14,
+      "nome": "AGUARDANDO LEITURA PARECER (ES)",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGMESA",
+      "id": 16,
+      "nome": "AGUARDANDO DECISÃO DA MESA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGPAR",
+      "id": 106,
+      "nome": "AGUARDANDO PARECER (CN)",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGPPDL",
+      "id": 167,
+      "nome": "AGUARDANDO PRAZO PARA ELABORAÇÃO DO PDL NA COMISSÃO MISTA",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGPPDLP",
+      "id": 168,
+      "nome": "AGUARDANDO PRAZO PARA ELABORAÇÃO DO PDL POR PARLAMENTAR",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGPROV",
+      "id": 180,
+      "nome": "AGUARDANDO PROVIDÊNCIAS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGPUB",
+      "id": 18,
+      "nome": "AGUARDANDO PUBLICAÇÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "AGREMD",
+      "id": 20,
+      "nome": "AGUARDANDO RECEBIMENTO DE EMENDAS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGREMESA",
+      "id": 88,
+      "nome": "AGUARDANDO RECEBIMENTO DE EMENDAS PERANTE A MESA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGTSUP(DT)",
+      "id": 121,
+      "nome": "AGUARDANDO TURNO SUPLEMENTAR EM APRECIAÇÃO TERMINATIVA",
+      "data_inicio": "2001-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AGUARD",
+      "id": 21,
+      "nome": "AGUARDANDO DESPACHO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "AMPVPREF",
+      "id": 166,
+      "nome": "APROVADA A MEDIDA PROVISÓRIA - PREFERÊNCIA SOBRE PLV",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "ANXDA",
+      "id": 23,
+      "nome": "ANEXADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "ANXDO",
+      "id": 24,
+      "nome": "ANEXADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "AORFI",
+      "id": 156,
+      "nome": "ATENDIMENDO DA ADEQUAÇÃO ORÇAMENTÁRIA E FINANCEIRA",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APAM",
+      "id": 158,
+      "nome": "APROVADO O PARECER NA COMISSÃO - PELA APROVAÇÃO DA MEDIDA",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APAPM",
+      "id": 159,
+      "nome": "APROVADO O PARECER NA COMISSÃO - APROVAÇÃO PARCIAL DA MEDIDA",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APCONST",
+      "id": 154,
+      "nome": "ATENDIMENTO DOS PRESUPOSTOS CONSTITUCIONAIS",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APLVPREF",
+      "id": 165,
+      "nome": "APROVADO PROJETO DE LEI DE CONVERSÃO PREFERÊNCIA SOBRE MEDID",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APMAR",
+      "id": 145,
+      "nome": "APROVADA \"AD REFERENDUM\" DA MESA",
+      "data_inicio": "2007-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APPARPREL",
+      "id": 182,
+      "nome": "APROVADO PARECER PRELIMINAR NA COMISSÃO",
+      "data_inicio": "2019-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APPDL",
+      "id": 163,
+      "nome": "APROVADO O PARECER NA COMISSÃO - PELA APRESENTAÇÃO DE PDL",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APPLVA",
+      "id": 164,
+      "nome": "APROVADO PROJETO DE LEI DE CONVERSÃO COM ALTERAÇÕES",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APPREJM",
+      "id": 162,
+      "nome": "APROVADO PARECER NA COMISSÃO - PREJUDICIONALIDADE DA MEDID",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRCD(DT)",
+      "id": 146,
+      "nome": "APRECIADA EM DECISÃO TERMINATIVA PELAS COMISSÕES",
+      "data_inicio": "2008-10-10T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRMED",
+      "id": 160,
+      "nome": "APROVADO O PARECER NA COMISSÃO - PELA REJEIÇÃO DA MEDIDA",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APROV_APRES_PLEN",
+      "id": 7370365,
+      "nome": "APROVADA A APRESENTAÇÃO PERANTE O PLENÁRIO DO SENADO",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRPARAD",
+      "id": 173,
+      "nome": "APROVADO PARECER DE ADMISSIBILIDADE",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRPARPR",
+      "id": 174,
+      "nome": "APROVADO PARECER DE PRONÚNCIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVD",
+      "id": 25,
+      "nome": "APROVADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVD(DT)",
+      "id": 96,
+      "nome": "APROVADA A MATÉRIA (DECISÃO TERMINATIVA)",
+      "data_inicio": "1988-10-05T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVD(ESF)",
+      "id": 132,
+      "nome": "APROVADA(S) EMENDA(S) DO SENADO FEDERAL",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVD(MPV)",
+      "id": 124,
+      "nome": "APROVADA A MEDIDA PROVISÓRIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVD(PLV)",
+      "id": 122,
+      "nome": "APROVADO O PROJETO DE LEI DE CONVERSÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVD(RQ)",
+      "id": 140,
+      "nome": "APROVADO O REQUERIMENTO",
+      "data_inicio": "2006-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVDP",
+      "id": 26,
+      "nome": "APROVADA PARCIALMENTE",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "APRVPAR",
+      "id": 89,
+      "nome": "APROVADO PARECER NA COMISSÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVPARCOMITE",
+      "id": 7352396,
+      "nome": "APROVADO PARECER DE COMITÊ",
+      "data_inicio": "2000-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVPARCON",
+      "id": 119,
+      "nome": "APROVADO PARECER NO CONSELHO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APRVSUB",
+      "id": 113,
+      "nome": "APROVADO O SUBSTITUTIVO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "APTPLV",
+      "id": 161,
+      "nome": "APROVADO O PARECER NA COMISSÃO - NOS TERMOS DO PLV",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "ARQV",
+      "id": 137,
+      "nome": "ARQUIVADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "ARQVD",
+      "id": 28,
+      "nome": "ARQUIVADA AO FINAL DA LEGISLATURA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "ARQVO",
+      "id": 29,
+      "nome": "AO ARQUIVO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "ARQV_CD",
+      "id": 7371638,
+      "nome": "ARQUIVADO NA CÂMARA DOS DEPUTADOS",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AUDIÊNCIA",
+      "id": 110,
+      "nome": "AUDIÊNCIA PÚBLICA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "2021-03-09T00:00:00"
+    },
+    {
+      "cod": "AUDPUBCANCEL",
+      "id": 7352322,
+      "nome": "AUDIÊNCIA PÚBLICA CANCELADA",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AUDPUBREALIZ",
+      "id": 7352321,
+      "nome": "AUDIÊNCIA PÚBLICA REALIZADA",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AUTUAFIN",
+      "id": 115,
+      "nome": "AUTUAÇÃO FINALIZADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AVALCANCEL",
+      "id": 7352327,
+      "nome": "AVALIAÇÃO CANCELADA",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "AVALCONCL",
+      "id": 7352326,
+      "nome": "AVALIAÇÃO CONCLUÍDA",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "COMEXT",
+      "id": 32,
+      "nome": "COMISSÃO TEMPORÁRIA EXTINTA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "COMPA",
+      "id": 112,
+      "nome": "COMPARECIMENTO",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "CONCL.",
+      "id": 34,
+      "nome": "COMISSÃO CONCLUIDA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "CONCLUSO",
+      "id": 129,
+      "nome": "AUTOS ENCAMINHADOS À CONCLUSÃO",
+      "data_inicio": "2003-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "CONHECIDA",
+      "id": 107,
+      "nome": "CONHECIDA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "CPIEXTINTA",
+      "id": 143,
+      "nome": "CPI EXTINTA FINAL DA LEGISLATURA",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "DEFERD",
+      "id": 109,
+      "nome": "DEFERIDA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "DEPOIM",
+      "id": 111,
+      "nome": "DEPOIMENTO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "DESARQLEG",
+      "id": 149,
+      "nome": "DESARQUIVADA - RISF ART 332 § 1º",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "DESIST_APRES",
+      "id": 7351483,
+      "nome": "DESISTÊNCIA DE APRESENTAÇÃO",
+      "data_inicio": "2020-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "DEVOLV",
+      "id": 39,
+      "nome": "DEVOLVIDA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "DEVOLVDJ",
+      "id": 179,
+      "nome": "DEVOLVIDO EM ATENDIMENTO A DECISAO JUDICIAL",
+      "data_inicio": "2016-12-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "EMVIGOR-EC32",
+      "id": 7371639,
+      "nome": "EM VIGOR NOS TERMOS DA EMENDA CONSTITUCIONAL 32",
+      "data_inicio": "2001-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "EPPDL",
+      "id": 169,
+      "nome": "ENCERRADO O PRAZO PARA ELABORAÇÃO DO PDL NA COMISSÃO MISTA",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "EPPDLP",
+      "id": 170,
+      "nome": "ENCERRADO O PRAZO PARA ELABORAÇÃO DO PDL POR PARLAMENTAR",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "EPREM",
+      "id": 153,
+      "nome": "ENCERRADO O PRAZO PARA RECEBIMENTO DE EMENDAS",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "EPREMESA",
+      "id": 7380792,
+      "nome": "ENCERRADO O PRAZO PARA RECEBIMENTO DE EMENDAS PERANTE A MESA",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "EXAME",
+      "id": 104,
+      "nome": "EM EXAME TÉCNICO PRELIMINAR",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "FIXA",
+      "id": 151,
+      "nome": "FIXAÇÃO DE CALENDÁRIO",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "HOMENAGEM",
+      "id": 131,
+      "nome": "HOMENAGEM REALIZADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "IMPUGNADA",
+      "id": 7353445,
+      "nome": "IMPUGNADA",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INADMITIDA",
+      "id": 136,
+      "nome": "NÃO ADMISSÃO DOS PRESSUPOSTOS CONSTITUCIONAIS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INCLOD",
+      "id": 78,
+      "nome": "INCLUÍDA EM ORDEM DO DIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INCLOD(PAR",
+      "id": 127,
+      "nome": "INCLUÍDO PARECER EM ORDEM DO DIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INCLOD(RQ)",
+      "id": 114,
+      "nome": "INCLUÍDO REQUERIMENTO EM ORDEM DO DIA DA SESSÃO DELIBERATIVA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INDEFD",
+      "id": 108,
+      "nome": "INDEFERIDA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INDENCAM",
+      "id": 7359085,
+      "nome": "INDICAÇÃO ENCAMINHADA",
+      "data_inicio": "2022-05-24T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INFNEG",
+      "id": 105,
+      "nome": "INFORMAÇÕES NEGADAS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INFREC",
+      "id": 79,
+      "nome": "INFORMAÇÕES RECEBIDAS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INPAUTA",
+      "id": 138,
+      "nome": "INCLUÍDA NA PAUTA DA REUNIÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "INSTALADA",
+      "id": 178,
+      "nome": "COMISSÃO INSTALADA",
+      "data_inicio": "2015-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "LEITURA",
+      "id": 147,
+      "nome": "MATÉRIA LIDA EM PLENÁRIO.",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "LICDEF",
+      "id": 116,
+      "nome": "LICENÇA PRÉVIA DEFERIDA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "LICIND",
+      "id": 117,
+      "nome": "LICENÇA PRÉVIA INDEFERIDA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "MATDESP",
+      "id": 177,
+      "nome": "MATÉRIA DESPACHADA",
+      "data_inicio": "2016-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "MESA",
+      "id": 41,
+      "nome": "MESA DIRETORA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "MPV_ANTES_EMC32",
+      "id": 7366362,
+      "nome": "EM TRAMITAÇÃO ANTES DA EC 32",
+      "data_inicio": "1989-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "NAORFI",
+      "id": 157,
+      "nome": "NÃO ATENDIMENDO DA ADEQUAÇÃO ORÇAMENTÁRIA E FINANCEIRA",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "NPCONST",
+      "id": 155,
+      "nome": "NÃO ATENDIMENTO DOS PRESUPOSTOS CONSTITUCIONAIS",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PEDVISTA",
+      "id": 90,
+      "nome": "PEDIDO DE VISTA CONCEDIDO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PREJFINLEG",
+      "id": 144,
+      "nome": "PREJUDICADA AO FINAL DA LEGISLATURA",
+      "data_inicio": "2003-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PRFP",
+      "id": 152,
+      "nome": "PRAZO FINAL PRORROGADO",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PRJDA",
+      "id": 43,
+      "nome": "PREJUDICADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PRNTPAUTCS",
+      "id": 128,
+      "nome": "PRONTA PARA A PAUTA NO CONSELHO",
+      "data_inicio": "2003-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PROC_DESCONSTITUIDO",
+      "id": 7359964,
+      "nome": "PROCESSO DESCONSTITUÍDO",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PRONDEPLEN",
+      "id": 8,
+      "nome": "PRONTO PARA DELIBERAÇÃO DO PLENÁRIO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PRONTPAUT",
+      "id": 42,
+      "nome": "PRONTA PARA A PAUTA NA COMISSÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PROVCANCEL",
+      "id": 7352325,
+      "nome": "PROVIDÊNCIA CANCELADA",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "PROVCONCL",
+      "id": 7352324,
+      "nome": "PROVIDÊNCIA CONCLUÍDA",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "REAUTUADO",
+      "id": 7372927,
+      "nome": "REAUTUADO",
+      "data_inicio": "2024-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RECAUT",
+      "id": 4,
+      "nome": "RECEBIDOS AUTÓGRAFOS DA PRESIDÊNCIA DA REPÚBLICA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "RECOR",
+      "id": 3,
+      "nome": "RECEBIDA NESTE ÓRGÃO.",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "RELATOR",
+      "id": 91,
+      "nome": "MATÉRIA COM A RELATORIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "REMIN",
+      "id": 47,
+      "nome": "REMESSA MINISTÉRIOS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "REQAPROV",
+      "id": 7352317,
+      "nome": "REQUERIMENTO APROVADO",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "REQPREJUD",
+      "id": 7352319,
+      "nome": "REQUERIMENTO PREJUDICADO",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "REQREJEIT",
+      "id": 7352318,
+      "nome": "REQUERIMENTO REJEITADO",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "REQRETIRADO",
+      "id": 7352320,
+      "nome": "REQUERIMENTO RETIRADO",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RJTDA",
+      "id": 49,
+      "nome": "REJEITADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RJTDA(DT)",
+      "id": 97,
+      "nome": "REJEITADA A MATÉRIA (DECISÃO TERMINATIVA)",
+      "data_inicio": "1988-10-05T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RJTDA(ESF)",
+      "id": 133,
+      "nome": "REJEITADA(S) EMENDA(S) DO SENADO FEDERAL",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RJTDA(MPV)",
+      "id": 125,
+      "nome": "REJEITADA A MEDIDA PROVISÓRIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "2014-01-22T00:00:00"
+    },
+    {
+      "cod": "RJTDA(PLV)",
+      "id": 123,
+      "nome": "REJEITADO O PROJETO DE LEI DE CONVERSÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "2014-01-22T00:00:00"
+    },
+    {
+      "cod": "RMCD",
+      "id": 52,
+      "nome": "REMETIDA À CÂMARA DOS DEPUTADOS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RMCD(MPV)",
+      "id": 135,
+      "nome": "MEDIDA PROVISÓRIA ENVIADA À CÂMARA DOS DEPUTADOS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RMCD(PLV)",
+      "id": 134,
+      "nome": "PROJETO DE LEI DE CONVERSÃO REMETIDO À CÂMARA DOS DEPUTADOS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RMCLDF",
+      "id": 53,
+      "nome": "REMETIDA À CAMARA LEGISLATIVA DO DF",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "RMGC",
+      "id": 54,
+      "nome": "REMETIDA AO GABINETE CIVIL",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RMPRO",
+      "id": 55,
+      "nome": "REMETIDA À PROMULGAÇÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RMPROPENDENTE",
+      "id": 7369335,
+      "nome": "REMETIDA À PROMULGAÇÃO COM DISPOSITIVOS PENDENTES DE DELIBERAÇÃO",
+      "data_inicio": "2023-10-09T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RMSAN",
+      "id": 57,
+      "nome": "REMETIDA À SANÇÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RTCU",
+      "id": 59,
+      "nome": "REMETIDA AO TRIBUNAL DE CONTAS DA UNIÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RTPA",
+      "id": 60,
+      "nome": "RETIRADA PELO AUTOR",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "RVGA",
+      "id": 48,
+      "nome": "REVOGADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "SACM",
+      "id": 84,
+      "nome": "COMISSÕES MISTAS",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "SBRTA",
+      "id": 62,
+      "nome": "SOBRESTADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "SEFICA",
+      "id": 63,
+      "nome": "SEM EFICÁCIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "SESSAO",
+      "id": 130,
+      "nome": "SESSÃO REALIZADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "SOBPAUTCN",
+      "id": 172,
+      "nome": "SOBRESTANDO A PAUTA DO CONGRESSO NACIONAL",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TINS",
+      "id": 7353374,
+      "nome": "TRANSFORMADO EM INDICAÇÃO DO SENADO FEDERAL",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TNJR",
+      "id": 64,
+      "nome": "TRANSFORMADA EM NORMA JURÍDICA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TNJRVETO",
+      "id": 92,
+      "nome": "TRANSFORMADA EM NORMA JURÍDICA COM VETO PARCIAL",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPDF",
+      "id": 65,
+      "nome": "TRANSFORMADA EM PROJETO DE LEI DO DF",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "TPDN",
+      "id": 101,
+      "nome": "TRANSFORMADA EM PROJ. DE DEC. LEGISLATIVO DO CONGRESSO",
+      "data_inicio": "2000-02-23T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPDS",
+      "id": 66,
+      "nome": "TRANSFORMADA EM PROJETO DECRETO LEGISLATIVO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPEC",
+      "id": 150,
+      "nome": "TRANSFORMADA EM PROPOSTA DE EMENDA CONSTITUCIONAL",
+      "data_inicio": "2000-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPLCONV",
+      "id": 171,
+      "nome": "TRANSFORMADA EM PROJETO DE LEI DE CONVERSÃO",
+      "data_inicio": "2013-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPLN",
+      "id": 99,
+      "nome": "TRANSFORMADA EM PROJETO DE LEI DO CONGRESSO",
+      "data_inicio": "2000-02-23T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPLP",
+      "id": 7388032,
+      "nome": "TRANSFORMADA EM PROJETO DE LEI COMPLEMENTAR DO SENADO",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPLS",
+      "id": 67,
+      "nome": "TRANSFORMADA EM PROJETO DE LEI DO SENADO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPLV",
+      "id": 68,
+      "nome": "TRANSFORMADA EM PROJETO DE LEI DE CONVERSÃO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPRCN",
+      "id": 69,
+      "nome": "TRANSFORMADA EM PROJETO DE RESOLUÇÃO - CN",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TPRS",
+      "id": 70,
+      "nome": "TRANSFORMADA EM PROJETO DE RESOLUÇÃO DO SENADO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TRAMITA",
+      "id": 148,
+      "nome": "MATÉRIA EM TRAMITAÇÃO",
+      "data_inicio": "1971-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TRCOM",
+      "id": 74,
+      "nome": "EM TRAMITAÇÃO NAS COMISSÕES",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "TRINTER",
+      "id": 141,
+      "nome": "TRAMITAÇÃO INTERROMPIDA",
+      "data_inicio": "2006-12-06T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TRMENC",
+      "id": 183,
+      "nome": "TRAMITAÇÃO ENCERRADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "TRMINT",
+      "id": 72,
+      "nome": "TRAMITAÇÃO INTERNA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "URGCA",
+      "id": 76,
+      "nome": "EM REGIME DE URGÊNCIA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "1999-11-26T00:00:00"
+    },
+    {
+      "cod": "VETDELIB",
+      "id": 184,
+      "nome": "VETO DELIBERADO PELO PLENÁRIO",
+      "data_inicio": "1990-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "VETODERR",
+      "id": 103,
+      "nome": "VETO DERRUBADO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "2019-12-31T00:00:00"
+    },
+    {
+      "cod": "VETOMANT",
+      "id": 102,
+      "nome": "VETO MANTIDO",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": "2019-12-31T00:00:00"
+    },
+    {
+      "cod": "VET_ANTES_RCN_1",
+      "id": 7366363,
+      "nome": "EM TRAMITAÇÃO ANTES DA RESOLUÇÃO N° 1 DE 2013 DO CONGRESSO NACIONAL",
+      "data_inicio": "1989-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "VOTOENC",
+      "id": 181,
+      "nome": "VOTO ENCAMINHADO",
+      "data_inicio": "2019-01-01T00:00:00",
+      "data_fim": null
+    },
+    {
+      "cod": "VTDA",
+      "id": 77,
+      "nome": "VETADA",
+      "data_inicio": "1900-01-01T00:00:00",
+      "data_fim": null
+    }
+  ]
+}

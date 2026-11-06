@@ -25,6 +25,15 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   5, Testing Library e jest-axe, com versões exatas. `npm run test` roda
   `tests/componentes/**` e `tests/unit/**`; o primeiro teste é o do `Selo`. Até
   aqui nenhum arquivo do kit tinha teste, e acessibilidade se conferia a olho.
+- **Tabelas de código da tramitação em snapshots** (`data/tramitacao/referencias/`,
+  `packages/tramitacao/referencias.py`, `scripts/atualizar_referencias_tramitacao.py`):
+  situações (99) e tipos de tramitação (235) e de órgão (55) da Câmara e tipos de
+  situação (175) do Senado, gravados como a fonte devolveu em 2026-11-05. O script
+  baixa, compara pelo código e mostra novos, removidos e renomeados; `--verificar` sai
+  2 com diferença, e a mudança da fonte aparece num diff de PR, não em produção. Código
+  novo vai para `nao_mapeados.yml`; renomeado troca `descricao_oficial` nos YAMLs e
+  aborta sem gravar se a contagem não bater; removido fica para decisão humana. Não
+  roda no cron.
 - **Cron de produção no GitHub Actions** (`scripts/agenda.py`,
   `.github/workflows/dados.yml`, `direcoes.yml`, `acordar-api.yml`): os jobs
   do Celery beat como subcomandos de linha de comando (`diario`, `cadastros`,

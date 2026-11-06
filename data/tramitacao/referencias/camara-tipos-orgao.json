@@ -1,0 +1,338 @@
+{
+  "tabela": "camara.codTipoOrgao",
+  "fonte": "https://dadosabertos.camara.leg.br/api/v2/referencias/orgaos/codTipoOrgao",
+  "obtido_em": "2026-11-05",
+  "total": 55,
+  "itens": [
+    {
+      "cod": "1",
+      "nome": "Comissão Diretora",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "2",
+      "nome": "Comissão Permanente",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "3",
+      "nome": "Comissão Especial",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "4",
+      "nome": "Comissão Parlamentar de Inquérito",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "5",
+      "nome": "Comissão Externa",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "6",
+      "nome": "Comissão Mista Permanente",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "7",
+      "nome": "Comissão de Sindicância",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "8",
+      "nome": "Comissão Representativa do CN",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "9",
+      "nome": "Comissão Medida Provisória",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "10",
+      "nome": "Grupo de Trabalho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "11",
+      "nome": "Conselho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "12",
+      "nome": "Procuradoria Parlamentar",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "13",
+      "nome": "Corregedoria",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "14",
+      "nome": "Ouvidoria",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "15",
+      "nome": "COORDENADORIA DA MULHER",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "20",
+      "nome": "Comissão Parlamentar Mista de Inquérito",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "21",
+      "nome": "Comissão Mista Especial",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "22",
+      "nome": "Conferência",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "25",
+      "nome": "Subcomissão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "26",
+      "nome": "Plenário Virtual",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "27",
+      "nome": "Plenário Virtual CD",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "28",
+      "nome": "GRUPO DE TRABALHO DE COMISSÕES",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "101",
+      "nome": "Partido Político",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "102",
+      "nome": "Bloco Parlamentar",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "103",
+      "nome": "Governo na CD",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "104",
+      "nome": "Minoria na CD",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "105",
+      "nome": "Governo no CN",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "106",
+      "nome": "Minoria no CN",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "110",
+      "nome": "Comissão da Câmara dos Deputados",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "121",
+      "nome": "Maioria na CD",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "122",
+      "nome": "Oposição na CD",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "123",
+      "nome": "Maioria no CN",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "124",
+      "nome": "Oposição no CN",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "200",
+      "nome": "TEMPORÁRIA",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1000",
+      "nome": "Importação das proposições inativas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "12000",
+      "nome": "Órgão da Câmara dos Deputados",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "12500",
+      "nome": "Órgão Legislativo da CD",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "13000",
+      "nome": "Comissão Temporária da CD",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "21000",
+      "nome": "Comissão do Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "22000",
+      "nome": "Órgão do Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "30000",
+      "nome": "Órgão do Poder Executivo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "40000",
+      "nome": "Órgão do Poder Legislativo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "50000",
+      "nome": "Órgão do Poder Judiciário",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "70000",
+      "nome": "Sociedade Civil",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "80000",
+      "nome": "Liderança",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81000",
+      "nome": "Bancada",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81001",
+      "nome": "Órgão do Congresso Nacional",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81002",
+      "nome": "Comissão Mista",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81003",
+      "nome": "Comissão Permanente do Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81004",
+      "nome": "Comissão Temporária do Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81005",
+      "nome": "Gabinete Parlamentar",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81006",
+      "nome": "Órgão Remessa Requerimento de Informação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81007",
+      "nome": "MPU - Ministério Público da União",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81008",
+      "nome": "DPU - Defensoria Pública da União",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "81009",
+      "nome": "Partido Político",
+      "sigla": "",
+      "descricao": ""
+    }
+  ]
+}
