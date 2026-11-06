@@ -118,6 +118,44 @@ class Proposicao(Base):
     ementa_hash: Mapped[Optional[str]] = mapped_column(String(64))
     enriquecido_em: Mapped[Optional[datetime]] = mapped_column(DateTime)
 
+    # ── Status da Câmara (TRM-011) ──
+    # O estado atual da proposição, nunca histórico: a situação de cada linha de
+    # /tramitacoes repete o valor de hoje. `situacao` (acima) segue com a descrição.
+    cod_situacao: Mapped[Optional[str]] = mapped_column(String(10))
+    sigla_orgao: Mapped[Optional[str]] = mapped_column(String(30))
+    orgao_fonte_id: Mapped[Optional[str]] = mapped_column(String(20))
+    orgao_nome: Mapped[Optional[str]] = mapped_column(String(255))
+    orgao_tipo_cod: Mapped[Optional[str]] = mapped_column(String(10))
+    cod_tipo_tramitacao: Mapped[Optional[str]] = mapped_column(String(10))
+    descricao_tramitacao: Mapped[Optional[str]] = mapped_column(String(255))
+    regime: Mapped[Optional[str]] = mapped_column(String(255))
+    apreciacao: Mapped[Optional[str]] = mapped_column(String(255))
+    status_sequencia: Mapped[Optional[int]] = mapped_column(Integer)
+    status_url: Mapped[Optional[str]] = mapped_column(String(500))
+    # O statusProposicao inteiro, como veio: auditoria, não fonte de leitura.
+    status_bruto: Mapped[Optional[dict]] = mapped_column(JSON(none_as_null=True))
+    ultima_movimentacao_em: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    relator_fonte_id: Mapped[Optional[str]] = mapped_column(String(20))
+    relator_nome: Mapped[Optional[str]] = mapped_column(String(255))
+    principal_fonte_id: Mapped[Optional[str]] = mapped_column(String(20))
+    # O status às vezes aponta Mesa ou CCP, onde caiu o último registro; o órgão
+    # efetivo é o último Plenário ou comissão em que a proposição esteve.
+    orgao_efetivo_sigla: Mapped[Optional[str]] = mapped_column(String(30))
+    orgao_efetivo_nome: Mapped[Optional[str]] = mapped_column(String(255))
+    # Nula = o detalhe nunca foi lido com sucesso.
+    detalhe_sincronizado_em: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    origem_registro: Mapped[Optional[str]] = mapped_column(String(30))
+
+    # ── Norma resultante (TRM-013) ──
+    norma_tipo: Mapped[Optional[str]] = mapped_column(String(30))
+    norma_numero: Mapped[Optional[int]] = mapped_column(Integer)
+    norma_ano: Mapped[Optional[int]] = mapped_column(Integer)
+    norma_data: Mapped[Optional[date]] = mapped_column(Date)
+    norma_veto: Mapped[Optional[str]] = mapped_column(String(10))
+    norma_fonte: Mapped[Optional[str]] = mapped_column(String(30))
+    norma_tramitacao_sequencia: Mapped[Optional[int]] = mapped_column(Integer)
+    norma_verificada_em: Mapped[Optional[datetime]] = mapped_column(DateTime)
+
     votacoes: Mapped[list["Votacao"]] = relationship(back_populates="proposicao")
     explicacoes: Mapped[list["Explicacao"]] = relationship(back_populates="proposicao")
 
@@ -125,6 +163,9 @@ class Proposicao(Base):
         UniqueConstraint("fonte_id", "fonte", name="uq_proposicao_fonte"),
         Index("ix_proposicao_tipo_ano", "tipo", "ano"),
         Index("ix_proposicao_contexto_status", "contexto_status"),
+        Index("ix_proposicao_ultima_mov", "ultima_movimentacao_em"),
+        Index("ix_proposicao_cod_situacao", "cod_situacao"),
+        Index("ix_proposicao_principal_fonte", "principal_fonte_id"),
     )
 
     @property
