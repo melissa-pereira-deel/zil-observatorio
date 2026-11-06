@@ -10,6 +10,12 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Textos da tramitação** (`apps/web/lib/tramitacao/textos.ts`, `especies.ts`,
+  `estilo.ts`): a coluna `textos.ts` da matriz de estados e as regras V-E1 a
+  V-E10 do guia de redação, testadas contra a spec, para que as superfícies de
+  tramitação digam a mesma coisa do mesmo jeito. Nenhuma tela usa o módulo
+  ainda. `apps/web/lib/api.ts`: os campos de F0 de `Proposicao` (TRM-014) entram
+  opcionais, para a página não quebrar contra a API anterior.
 - **Testes de componente no frontend** (`apps/web/vitest.config.mts`,
   `apps/web/tests/`, job `test-frontend` em `.github/workflows/ci.yml`): Vitest
   5, Testing Library e jest-axe, com versões exatas. `npm run test` roda
