@@ -293,6 +293,24 @@ class TestProtecaoDoCpf:
         assert "dados" in mensagem
         assert not re.search(r"\d{3}\D?\d{3}\D?\d{3}", mensagem)
 
+    def test_uuids_com_digitos_em_forma_de_cpf_nao_interrompem_a_gravacao(self):
+        # Quantos um processo do Senado traz, todos no único formato de UUID que parecia CPF.
+        documentos = [{"id": f"550e8400-e29b-41d4-a123-123456{n:02d}abcd"} for n in range(40)]
+        corpo = {"documentos": documentos}
+        [envelope] = self._gravar(
+            "/processo/1", corpo, "https://legis.senado.leg.br/dadosabertos", "/dadosabertos"
+        ).respostas
+        assert envelope["corpo"] == {"documentos": documentos}
+        assert "campos_removidos" not in envelope
+
+    def test_cpf_ao_lado_de_uuid_interrompe_sem_expor_o_valor(self):
+        corpo = {"dados": {"id": "550e8400-e29b-41d4-a123-12345678abcd", "despacho": "CPF 111.444.777-36"}}
+        with pytest.raises(gr.GravacaoInterrompida) as erro:
+            self._gravar("/proposicoes/1/tramitacoes", corpo)
+        mensagem = str(erro.value)
+        assert "dados.despacho" in mensagem
+        assert not re.search(r"\d{3}\D?\d{3}\D?\d{3}", mensagem)
+
     def test_interrupcao_nao_grava_pacote_e_sai_com_1(self, raiz, capsys):
         arquivo = raiz / "gravacoes" / "pl-1.json"
         arquivo.write_text('{"anterior": true}', encoding="utf-8")
