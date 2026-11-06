@@ -1,0 +1,466 @@
+{
+ "formato": 1,
+ "caso": "mpv-perdeu-eficacia",
+ "gravado_em": "2026-11-05T22:47:43-03:00",
+ "sintetico": false,
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2601389",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 2601389,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2601389",
+     "siglaTipo": "MPV",
+     "codTipo": 291,
+     "numero": 1336,
+     "ano": 2026,
+     "ementa": "Altera a Lei nº 8.036, de 11 de maio de 1990, que dispõe sobre o Fundo de Garantia do Tempo de Serviço.",
+     "dataApresentacao": "2026-02-06T00:00",
+     "uriOrgaoNumerador": null,
+     "statusProposicao": {
+      "dataHora": "2026-08-07T11:55",
+      "sequencia": 9,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 62, CF)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Perdeu a Eficácia",
+      "codSituacao": 1292,
+      "despacho": "Apresentação do DOC n. 1322/2026 (Ofício do Congresso Nacional), pelo CN        , que \"OFCN 163/2026, que comunica o término de prazo para edição de decreto legislativo\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3169505",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2601389/autores",
+     "descricaoTipo": "Medida Provisória",
+     "ementaDetalhada": "",
+     "keywords": "Alteração, Lei do FGTS (1990), fixação, prazo máximo, utilização, recursos financeiros, Fundo de Garantia do Tempo de Serviço (FGTS), financiamento, operação de crédito, hospital filantrópico, entidade beneficente, assistência, pessoa com deficiência, Sistema Único de Saúde (SUS).",
+     "uriPropPrincipal": null,
+     "uriPropAnterior": null,
+     "uriPropPosterior": null,
+     "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3079716",
+     "urnFinal": null,
+     "texto": null,
+     "justificativa": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2601389"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:c5513dd9582d52f5740fbc2450c53ae71fb3642cf379126d793e6284f3234522"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2601389/tramitacoes",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "dataHora": "2026-02-06T00:00",
+      "sequencia": 1,
+      "siglaOrgao": "EXEC",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/253",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 62, CF)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Perdeu a Eficácia",
+      "codSituacao": 1292,
+      "despacho": "Publicação da Medida Provisória no Diário Oficial da União.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3079716",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2026-02-06T00:00",
+      "sequencia": 3,
+      "siglaOrgao": "CN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/111",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 62, CF)",
+      "descricaoTramitacao": "Abertura de Prazo",
+      "codTipoTramitacao": "350",
+      "descricaoSituacao": "Perdeu a Eficácia",
+      "codSituacao": 1292,
+      "despacho": "Prazo para Emendas: 06/02/2026 a 12/02/2026.Comissão Mista: Declaração incidental de inconstitucionalidade do art. 5º, caput, art. 6º, §§ 1º e 2º, da Resolução do Congresso Nacional nº 1/2002, com eficácia ex nunc - Ação Direta de Inconstitucionalidade nº 4.029 (DOU de 16/03/2012) .Sobrestar Pauta: a partir de 23/03/2026.Congresso Nacional: 06/02/2026 a 06/04/2026.Prorrogação pelo Congresso Nacional: 05/06/2026.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2026-02-11T17:25",
+      "sequencia": 4,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 62, CF)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Perdeu a Eficácia",
+      "codSituacao": 1292,
+      "despacho": "Apresentação do DOC n. 80/2026 (Ofício do Congresso Nacional), pelo CN        , que \"Comunica, de ordem, a constituição de comissão mista e o calendário de tramitação da MPV 1336/2026\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3082955",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2026-04-07T00:00",
+      "sequencia": 5,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 62, CF)",
+      "descricaoTramitacao": "Prorrogação de Prazo",
+      "codTipoTramitacao": "352",
+      "descricaoSituacao": "Perdeu a Eficácia",
+      "codSituacao": 1292,
+      "despacho": "Prorrogação do prazo para Deliberação da Medida Provisória nº 1.336, de 2026, por 60 dias. Data final após prorrogação: 5/6/2026. Motivação: ATO DO PRESIDENTE DA MESA DO CONGRESSO NACIONAL Nº 22, DE 2026.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3117430",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2026-06-08T00:00",
+      "sequencia": 6,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 62, CF)",
+      "descricaoTramitacao": "Perda de eficácia",
+      "codTipoTramitacao": "620",
+      "descricaoSituacao": "Perdeu a Eficácia",
+      "codSituacao": 1292,
+      "despacho": "Perda de eficácia na Comissão Mista",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2026-06-09T08:45",
+      "sequencia": 7,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 62, CF)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Perdeu a Eficácia",
+      "codSituacao": 1292,
+      "despacho": "Apresentação do DOC n. 663/2026 (Ofício do Congresso Nacional), pelo CN        , que \"Ofício CN nº 99/2026: Término de prazo de Medida Provisória\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3142899",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2026-06-10T00:00",
+      "sequencia": 8,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 62, CF)",
+      "descricaoTramitacao": "Perda de eficácia",
+      "codTipoTramitacao": "620",
+      "descricaoSituacao": "Perdeu a Eficácia",
+      "codSituacao": 1292,
+      "despacho": "Ato n. 48, de 09/06/2026, do Presidente da Mesa do Congresso Nacional, comunica o encerramento do prazo de vigência da Medida Provisória n. 1336, de 2026, no dia 5 de junho do corrente ano (DOU de 09/06/2026 - Seção 1 - página 03)",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3143831",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2026-08-07T11:55",
+      "sequencia": 9,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 62, CF)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Perdeu a Eficácia",
+      "codSituacao": 1292,
+      "despacho": "Apresentação do DOC n. 1322/2026 (Ofício do Congresso Nacional), pelo CN        , que \"OFCN 163/2026, que comunica o término de prazo para edição de decreto legislativo\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3169505",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2601389/tramitacoes"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:fbdd7574ee9b9db73f5496e985a02c477ffab41c94a834c11114584a6542443b"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2601389/autores",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/253",
+      "nome": "Poder Executivo",
+      "codTipo": 30000,
+      "tipo": "Órgão do Poder Executivo",
+      "ordemAssinatura": 1,
+      "proponente": 1
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2601389/autores"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:2774e2b94073e358b6c8cc4d173202633ad54e9442f6a8b9703a1d4896b8b794"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2601389/relacionadas",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "id": 2602897,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2602897",
+      "siglaTipo": "DOC",
+      "codTipo": "1033",
+      "numero": "80",
+      "ano": "2026",
+      "ementa": "Comunica, de ordem, a constituição de comissão mista e o calendário de tramitação da MPV 1336/2026.",
+      "dataApresentacao": "2026-02-11T17:25"
+     },
+     {
+      "id": 2630398,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2630398",
+      "siglaTipo": "DOC",
+      "codTipo": "1033",
+      "numero": "663",
+      "ano": "2026",
+      "ementa": "Ofício CN nº 99/2026: Término de prazo de Medida Provisória.",
+      "dataApresentacao": "2026-06-09T08:45"
+     },
+     {
+      "id": 2642291,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2642291",
+      "siglaTipo": "DOC",
+      "codTipo": "1033",
+      "numero": "1322",
+      "ano": "2026",
+      "ementa": "OFCN 163/2026, que comunica o término de prazo para edição de decreto legislativo.",
+      "dataApresentacao": "2026-08-07T11:55"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2601389/relacionadas"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:138d13b3230be81bfc2dc3944b3946c58a5c5736c18517c3bcf1c061a9b4df9a"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/4",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 4,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+     "sigla": "MESA",
+     "nome": "Mesa Diretora da Câmara dos Deputados",
+     "apelido": "Mesa Diretora",
+     "codTipoOrgao": 1,
+     "tipoOrgao": "Comissão Diretora",
+     "nomePublicacao": "Mesa Diretora",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Sala de Reuniões do Espaço Cultural",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:409e90a97ee380ad8f34c54ee94c49671a9629c0f0982841f4fac24c22eefad9"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/253",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 253,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/253",
+     "sigla": "EXEC",
+     "nome": "Poder Executivo",
+     "apelido": "Poder Executivo",
+     "codTipoOrgao": 30000,
+     "tipoOrgao": "Órgão do Poder Executivo",
+     "nomePublicacao": "Poder Executivo",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": null,
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/253"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:e8f952df51a71c48883b06b8fc8002a4f31c1917388f81667436bef424824e81"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/111",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 111,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/111",
+     "sigla": "CN",
+     "nome": "CONGRESSO NACIONAL",
+     "apelido": "CONGRESSO NACIONAL",
+     "codTipoOrgao": 81001,
+     "tipoOrgao": "Órgão do Congresso Nacional",
+     "nomePublicacao": "CN",
+     "nomeResumido": "Congresso Nacional",
+     "dataInicio": "2020-03-20T00:00",
+     "dataInstalacao": "2020-03-20T00:00",
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Plenário da Câmara dos Deputados",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/111"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:5c903623fc72ddd7bd75719df484a8defd8355140522aae84fd0b09e43a7bc78"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/180",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 180,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+     "sigla": "PLEN",
+     "nome": "Plenário",
+     "apelido": "Plenário",
+     "codTipoOrgao": 26,
+     "tipoOrgao": "Plenário Virtual",
+     "nomePublicacao": "Plenário",
+     "nomeResumido": "Plenário",
+     "dataInicio": "2020-03-20T00:00",
+     "dataInstalacao": "2020-03-20T00:00",
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Plenário da Câmara dos Deputados",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:aedc7e9ef2c54077f74dc09a535c55a4af76ff8baee98e2b6a5a4240e6df33f3"
+  }
+ ]
+}

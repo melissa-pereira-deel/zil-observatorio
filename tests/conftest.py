@@ -74,6 +74,20 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
     app.dependency_overrides.clear()
 
 
+@pytest.fixture
+def gravacoes():
+    """Respostas reais gravadas (TRM-002), servidas sem rede.
+
+    O teardown confere `nao_gravadas` porque há chamadores com `except Exception`:
+    eles engolem `RequisicaoNaoGravada`, e o teste passaria sem o dado que pediu.
+    """
+    from tests.replay import Gravacoes
+
+    g = Gravacoes()
+    yield g
+    assert g.nao_gravadas == []
+
+
 # ── Seed helpers ──
 
 def make_parlamentar(

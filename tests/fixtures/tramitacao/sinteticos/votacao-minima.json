@@ -1,0 +1,72 @@
+{
+ "formato": 1,
+ "caso": "sinteticos/votacao-minima",
+ "gravado_em": null,
+ "sintetico": true,
+ "por_que": "Escrito à mão: id de votação inventado; aponta para a proposição real 2426923 (PL 1264/2024), sem votos nem orientações.",
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/votacoes/900000000-1",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": "900000000-1",
+     "proposicaoPrincipal": {
+      "id": 2426923,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2426923",
+      "siglaTipo": "PL",
+      "numero": 1264,
+      "ano": 2024
+     }
+    },
+    "links": []
+   },
+   "sha256_corpo": "sha256:ae94a54f095be1fb5044888d8784e815d7eede2333471ea571789506e74c3024"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/votacoes/900000000-1/votos",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [],
+    "links": []
+   },
+   "sha256_corpo": "sha256:a5052f2a12605e61035602922361485631cf2e37898c77dd6effe0f6434c31dd"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/votacoes/900000000-1/orientacoes",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [],
+    "links": []
+   },
+   "sha256_corpo": "sha256:a5052f2a12605e61035602922361485631cf2e37898c77dd6effe0f6434c31dd"
+  }
+ ]
+}

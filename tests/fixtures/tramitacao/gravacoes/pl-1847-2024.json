@@ -1,0 +1,4037 @@
+{
+ "formato": 1,
+ "caso": "pl-1847-2024",
+ "gravado_em": "2026-11-05T22:46:40-03:00",
+ "sintetico": false,
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2454704",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 2454704,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2454704",
+     "siglaTipo": "PL",
+     "codTipo": 139,
+     "numero": 1847,
+     "ano": 2024,
+     "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei             nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+     "dataApresentacao": "2024-08-22T11:33",
+     "uriOrgaoNumerador": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+     "statusProposicao": {
+      "dataHora": "2025-06-30T00:00",
+      "sequencia": 97,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Recebido Ofício nº 133/2025 do Congresso Nacional, que comunica a Apreciação de Veto pelo Congresso Nacional (PL 1847-2024).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2944825",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2454704/autores",
+     "descricaoTipo": "Projeto de Lei",
+     "ementaDetalhada": "",
+     "keywords": "Transição, fim, exoneração tributária, folha de pagamento, reoneração, redução gradual, adicional, Contribuição Social para o Financiamento da Seguridade Social devida pelo Importador de Bens Estrangeiros ou Serviços do Exterior (Cofins-Importação), equilíbrio fiscal, geração de emprego compensação, renúncia fiscal, contribuição previdenciária, município, negociação, crédito, transação (direito), dívida, autarquia, fundação pública, atualização, valor, bens imóveis, Regime Especial de Regularização Geral de Bens Cambial e Tributária (RERCT-Geral), combate, fraude, gasto público, depósito judicial, depósito extrajudicial, benefício fiscal, tributação.",
+     "uriPropPrincipal": null,
+     "uriPropAnterior": null,
+     "uriPropPosterior": null,
+     "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2468612",
+     "urnFinal": null,
+     "texto": null,
+     "justificativa": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2454704"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:ab7e7894ed913df91851a01870805fa1722a2f512c27b0eb7c16d6e97caa5bb3"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2454704/tramitacoes",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "dataHora": "2024-08-22T00:00",
+      "sequencia": 1,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Recebimento",
+      "codTipoTramitacao": "500",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Recebido o Ofício nº 859/2024, do Senado Federal, que submete à revisão da Câmara dos Deputados, nos termos do art. 65 da Constjtuição Federal, o Projeto de Lei n° 1.847, de 2024, de autoria do Senador Efraim Filho, constante do autógrafo em anexo, que \"Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 70 e 8° da Lei n° 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8° da Lei n° 10.865, de 30 de abril de 2004; altera as Leis n°s 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos- Lei nos 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis n°s 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e aLein° 12.099,de 27 de novembro de 2009\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2468707",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-08-22T11:33",
+      "sequencia": 2,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Apresentação do PL n. 1847/2024 (Projeto de Lei), pelo Senado Federal, que \"Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei             nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2468612",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-08-26T16:03",
+      "sequencia": 8,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Requerimento",
+      "codTipoTramitacao": "194",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Apresentação do REQ n. 3346/2024 (Requerimento de Urgência (Art. 155 do RICD)), pelo Deputado José Guimarães (PT/CE -Fdr PT-PCdoB-PV) e outros, que \"Requer, nos termos do artigo 155 do Regimento Interno, tramitação sob o regime urgência do Projeto de Lei nº 1.847, de 2024. \".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2469454",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-09T00:00",
+      "sequencia": 14,
+      "siglaOrgao": "CCP",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Publicação de Proposição",
+      "codTipoTramitacao": "604",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Encaminhada à publicação. Publicação Inicial em avulso e no DCD de 10/09/2024 PAG 243",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2867263",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-09T17:00",
+      "sequencia": 15,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Aprovação de Urgência (154, 155 ou 64 CF)",
+      "codTipoTramitacao": "196",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Aprovado o requerimento nº 3346/2024,do Sr. José Guimarães, que solicita urgência (art. 155) para o PL 1847/2024.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-09T17:00",
+      "sequencia": 21,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Aprovação de Urgência (154, 155 ou 64 CF)",
+      "codTipoTramitacao": "196",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Alteração do Regime de Tramitação desta proposição em virtude da Aprovação do REQ 3346/2024.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-09T19:55",
+      "sequencia": 9,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Distribuição",
+      "codTipoTramitacao": "110",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Às Comissões de Administração e Serviço Público; Previdência, Assistência Social, Infância, Adolescência e Família; Finanças e Tributação (Mérito e Art. 54, RICD) e Constituição e Justiça e de Cidadania (Art. 54 RICD)Proposição Sujeita à Apreciação do PlenárioRegime de Tramitação: Prioridade (Art. 151, II, RICD)",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2469438",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T00:00",
+      "sequencia": 28,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Designação de Relator(a)",
+      "codTipoTramitacao": "320",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Designada Relatora, Dep. Any Ortiz (CIDADANIA-RS)",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T00:00",
+      "sequencia": 68,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Designação de Relator(a)",
+      "codTipoTramitacao": "320",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Designado Relator, Dep. José Guimarães (PT-CE)",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 31,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Discussão (Plenário)",
+      "codTipoTramitacao": "222",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Discussão em turno único.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 32,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Obstrução Discussão (Plenário)",
+      "codTipoTramitacao": "223",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação do Requerimento do Dep. Altineu Côrtes, que solicita a retirada de pauta deste Projeto de Lei.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 33,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encaminhamento da Votação",
+      "codTipoTramitacao": "219",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Encaminhou a Votação a Dep. Adriana Ventura (NOVO-SP).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 34,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Rejeição de Proposição (Plenário)",
+      "codTipoTramitacao": "1236",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Rejeitado o Requerimento. Sim: 43; Não: 243; Total: 286.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 35,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Parecer do(a) Relator(a)",
+      "codTipoTramitacao": "322",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Leitura realizada em Plenário pelo Dep. José Guimarães (PT-CE) do parecer da Relatora, Dep. Any Ortiz (CIDADANIA-RS),  pela:• Comissão de Administração e Serviço Público, que conclui pela pela aprovação do Projeto de Lei nº 1.847, de 2024;• Comissão de Previdência, Assistência Social, Infância, Adolescência e Família, que conclui pela pela aprovação do Projeto de Lei nº 1.847, de 2024;• Comissão de Finanças e Tributação, que conclui pela compatibilidade e adequação financeira e orçamentária; e, no mérito, pela aprovação do Projeto de Lei nº 1.847, de 2024;• Comissão de Constituição e Justiça e de Cidadania, que conclui pela constitucionalidade, juridicidade e boa técnica legislativa do Projeto de Lei nº 1.847, de 2024.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2475964",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 36,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Obstrução Discussão (Plenário)",
+      "codTipoTramitacao": "223",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação do Requerimento do Dep. Altineu Côrtes, que solicita o adiamento da discussão por uma sessão.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 37,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encaminhamento da Votação",
+      "codTipoTramitacao": "219",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Encaminhou a Votação a Dep. Adriana Ventura (NOVO-SP).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 38,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Rejeição de Proposição (Plenário)",
+      "codTipoTramitacao": "1236",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Rejeitado o Requerimento. Sim: 57; Não: 269; Abstenção: 4; Total: 330.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 39,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Discussão da Materia pelos(as) Deputados(as)",
+      "codTipoTramitacao": "242",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Discutiram a Matéria: Dep. Rosangela Moro (UNIÃO-SP), Dep. Bia Kicis (PL-DF), Dep. Adriana Ventura (NOVO-SP), Dep. Joaquim Passarinho (PL-PA) e Dep. Daniela Reinehr (PL-SC).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 40,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encerramento de Discussão",
+      "codTipoTramitacao": "227",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Encerrada a discussão.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 41,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Acessórios",
+      "codTipoTramitacao": "1245",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "O Projeto foi emendado. Foram apresentadas as Emendas de Plenário n°s 1 a 19.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 42,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Parecer do(a) Relator(a)",
+      "codTipoTramitacao": "322",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Parecer às Emendas de Plenário proferido pelo Relator, Dep. José Guimarães (PT-CE) pela:• Comissão de Administração e Serviço Público, que conclui pela rejeição de todas as Emendas de Plenário;• Comissão de Previdência, Assistência Social, Infância, Adolescência e Família, que conclui pela rejeição de todas as Emendas de Plenário;• Comissão de Finanças e Tributação, que conclui pela adequação financeira e orçamentária de todas as Emendas de Plenário; e, nomérito, pela rejeição de todas as Emendas;• Comissão de Constituição e Justiça e de Cidadania, que conclui pela constitucionalidade, juridicidade e boa técnica legislativa de todas asEmendas de Plenário.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2476139",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 43,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Obstruçao Votação (Plenário)",
+      "codTipoTramitacao": "1232",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação do Requerimento do Dep. Altineu Côrtes, que solicita adiamento da votação por uma sessão.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 44,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encaminhamento da Votação",
+      "codTipoTramitacao": "219",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Encaminhou a Votação a Dep. Adriana Ventura (NOVO-SP).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 45,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Rejeição de Proposição (Plenário)",
+      "codTipoTramitacao": "1236",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Rejeitado o Requerimento. Sim: 53; Não: 240; Abstenção: 2; Total: 295.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 46,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Votação (Plenário)",
+      "codTipoTramitacao": "1231",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação em turno único.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 47,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encaminhamento da Votação",
+      "codTipoTramitacao": "219",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Encaminhou a Votação da Matéria a Dep. Bia Kicis (PL-DF).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 48,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Aprovação de Proposição (Plenário)",
+      "codTipoTramitacao": "1235",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Aprovado o Projeto de Lei nº 1.847, de 2024, ressalvados os destaques.  Sim: 253; Não: 67; Abstenção: 4; Total: 324.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 49,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Votação (Plenário)",
+      "codTipoTramitacao": "1231",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação das Emendas de Plenário, com parecer pela rejeição, ressalvados os destaques.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 50,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Rejeição de Proposição (Plenário)",
+      "codTipoTramitacao": "1236",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Rejeitadas as Emendas de Plenário. Sim: 57; Não: 228; Abstenção: 3; Total: 288.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 51,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Destaques (Plenário)",
+      "codTipoTramitacao": "1233",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação do DTQ 5 (PL): Emenda de Plenário nº 18 (161, II).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 52,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encaminhamento da Votação",
+      "codTipoTramitacao": "219",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Encaminharam a Votação: Dep. Adriana Ventura (NOVO-SP) e Dep. José Guimarães (PT-CE).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 53,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Rejeição de Proposição (Plenário)",
+      "codTipoTramitacao": "1236",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Rejeitada a Emenda de Plenário nº 18. Sim: 133; Não: 204; Total: 337.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 54,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Destaques (Plenário)",
+      "codTipoTramitacao": "1233",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação do DTQ 4 (PL): Destaque para Votação em Separado do art. 43, para fins de sua supressão. (161, I).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 55,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encaminhamento da Votação",
+      "codTipoTramitacao": "219",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Encaminhou a Votação a Dep. Rosangela Moro (UNIÃO-SP).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 56,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Manutenção do texto (Plenário)",
+      "codTipoTramitacao": "1237",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Mantido o texto. Sim: 206; Não: 70; Total: 276.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 57,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Destaques (Plenário)",
+      "codTipoTramitacao": "1233",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação do DTQ 2 (PL): Destaque para Votação em Separado do art 44 para fins de sua supressão. (161, I).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 58,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encaminhamento da Votação",
+      "codTipoTramitacao": "219",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Encaminhou a Votação a Dep. Adriana Ventura (NOVO-SP).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 59,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Manutenção do texto (Plenário)",
+      "codTipoTramitacao": "1237",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Mantido o texto. Sim: 200; Não: 80; Abstenção: 1; Total: 281.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 60,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Destaques (Plenário)",
+      "codTipoTramitacao": "1233",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação do DTQ 3 (PL): Destaque para Votação em Separado do capítulo VIII, para fins de sua supressão. (161, I).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 61,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encaminhamento da Votação",
+      "codTipoTramitacao": "219",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Encaminharam a Votação: Dep. Bia Kicis (PL-DF) e Dep. Adriana Ventura (NOVO-SP).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 62,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Manutenção do texto (Plenário)",
+      "codTipoTramitacao": "1237",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Mantido o texto. Sim: 189; Não: 140; Total: 329.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 63,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Retirada pelo Autor(a) (Plenário)",
+      "codTipoTramitacao": "1241",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Retirado o DTQ 1 (PL): Destaque para Votação em Separado do artigo 45 para fins de sua supressão. (161, I).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 64,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Retirada pelo Autor(a) (Plenário)",
+      "codTipoTramitacao": "1241",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Retirado o DTQ 6 (UNIÃO, PP, Federação PSDB CIDADANIA, PDT, AVANTE, SOLIDARIEDADE, PRD): Emenda de Plenário nº 6 (161, II).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 65,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Retirada pelo Autor(a) (Plenário)",
+      "codTipoTramitacao": "1241",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Retirado o DTQ 7 (Fdr PSOL-REDE): Emenda de Plenário n. 2 (161, II).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 66,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Votação (Plenário)",
+      "codTipoTramitacao": "1231",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Votação da Emenda de Redação nº 1.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T13:55",
+      "sequencia": 67,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encerramentos",
+      "codTipoTramitacao": "1244",
+      "descricaoSituacao": "Aguardando Deliberação",
+      "codSituacao": 903,
+      "despacho": "Adiada a votação por falta de quórum.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T19:50",
+      "sequencia": 25,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Requerimento",
+      "codTipoTramitacao": "194",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Apresentação do REQ n. 3631/2024 (Requerimento de Retirada de Proposição de Iniciativa Coletiva), pelo Deputado Kim Kataguiri (UNIÃO/SP), que \" Requer a retirada de tramitação de proposição\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2475877",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T19:51",
+      "sequencia": 26,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Requerimento",
+      "codTipoTramitacao": "194",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Apresentação do REQ n. 3632/2024 (Requerimento de Retirada de Proposição de Iniciativa Coletiva), pelo Deputado Kim Kataguiri (UNIÃO/SP), que \" Requer a retirada de tramitação de proposição\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2475879",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T20:04",
+      "sequencia": 24,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Requerimento",
+      "codTipoTramitacao": "194",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Apresentação do RPDR n. 36/2024 (Requerimento Procedimental Genérico de Sessão/Reunião), pelo Deputado Altineu Côrtes (PL/RJ), que \"Requerimento Procedimental Genérico\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2475875",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T20:54",
+      "sequencia": 29,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/220549",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Recebimento - Relator(a)",
+      "codTipoTramitacao": "501",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Apresentação do PRLP n. 1 PLEN (Parecer Preliminar de Plenário), pela Deputada Any Ortiz (CIDADANIA/RS -Fdr PSDB-CIDADANIA).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2475964",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T22:38",
+      "sequencia": 69,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Recebimento - Relator(a)",
+      "codTipoTramitacao": "501",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Apresentação do PRLE n. 1 PLEN (Parecer Preliminar às Emendas de Plenário), pelo Deputado José Guimarães (PT/CE -Fdr PT-PCdoB-PV).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2476135",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-11T22:52",
+      "sequencia": 70,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Recebimento - Relator(a)",
+      "codTipoTramitacao": "501",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Apresentação do PRLE n. 2 PLEN (Parecer Preliminar às Emendas de Plenário), pelo Deputado José Guimarães (PT/CE -Fdr PT-PCdoB-PV).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2476139",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T00:00",
+      "sequencia": 71,
+      "siglaOrgao": "CCP",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Publicação de Proposição",
+      "codTipoTramitacao": "604",
+      "descricaoSituacao": "Aguardando Encaminhamento",
+      "codSituacao": 910,
+      "despacho": "Encaminhada à publicação. Parecer Proferido em Plenário das Comissões de Administração e Serviço Público; Previdência, Assistência Social, Infância, Adolescência e Família; Finanças e Tributação e Constituição e Justiça e de Cidadania Publicado em avulso e no DCD de 12/09/2024, Letra A.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T00:00",
+      "sequencia": 86,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Expedição de Documento",
+      "codTipoTramitacao": "190",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Apresentação do autógrafo.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2476309",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T00:00",
+      "sequencia": 89,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Ofício nº 501/2024/PS-GSE, que encaminha a Mensagem nº 41/2024-SGM-P",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2476267",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T00:00",
+      "sequencia": 91,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Expedição de Documento",
+      "codTipoTramitacao": "190",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Remessa dos Autógrafos à sanção por meio da Mensagem nº 41/2024.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2476315",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T00:01",
+      "sequencia": 92,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Recebimento - Redação Final",
+      "codTipoTramitacao": "506",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Apresentação da RDF n. 1 PLEN (Redação Final), pelo Deputado José Guimarães (PT/CE -Fdr PT-PCdoB-PV).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2476468",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T09:00",
+      "sequencia": 72,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Votação (Plenário)",
+      "codTipoTramitacao": "1231",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Continuação da votação em turno único.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T09:00",
+      "sequencia": 73,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Votação (Plenário)",
+      "codTipoTramitacao": "1231",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Votação da Emenda de Redação nº 1.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T09:00",
+      "sequencia": 74,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Aprovação de Proposição (Plenário)",
+      "codTipoTramitacao": "1235",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Aprovada a Emenda de Redação n° 1 Sim: 231; Não: 54; Abstenção: 1; Total: 286.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T09:00",
+      "sequencia": 75,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Votação (Plenário)",
+      "codTipoTramitacao": "1231",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Votação da Redação Final.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T09:00",
+      "sequencia": 76,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Aprovação de Proposição (Plenário)",
+      "codTipoTramitacao": "1235",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Aprovada a Redação Final assinada pelo relator, Dep. José Guimarães (PT-CE).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-12T09:00",
+      "sequencia": 77,
+      "siglaOrgao": "PLEN",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Encaminhamento (Plenário)",
+      "codTipoTramitacao": "1243",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "A matéria vai à sanção (PL 1.847-A/2024).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-16T00:00",
+      "sequencia": 94,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Transformado em Norma Jurídica com Veto Parcial",
+      "codTipoTramitacao": "1012",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Transformado na Lei Ordinária 14973/2024. DOU 16/09/24 PÁG 01 COL 01 - EDIÇÃO EXTRA. Vetado parcialmente. (MSC 1097/24-PE). Razões do veto: DOU 16/09/24 PÁG 05 COL 01 - EDIÇÃO EXTRA.",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2024-09-17T00:00",
+      "sequencia": 96,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Remessa do Ofício nº  502/2024/PS-GSE ao Senado Federal, comunicando envio à sanção.",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2477527",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2025-06-30T00:00",
+      "sequencia": 97,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "regime": "Urgência (Art. 155, RICD)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Transformado em Norma Jurídica",
+      "codSituacao": 1140,
+      "despacho": "Recebido Ofício nº 133/2025 do Congresso Nacional, que comunica a Apreciação de Veto pelo Congresso Nacional (PL 1847-2024).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2944825",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2454704/tramitacoes"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:2ec55271f9cc2d1fe80791ccd193a8fe6c06e094819c63181f67f8a430344766"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2454704/autores",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/78",
+      "nome": "Senado Federal - Efraim Filho",
+      "codTipo": 40000,
+      "tipo": "Órgão do Poder Legislativo",
+      "ordemAssinatura": 1,
+      "proponente": 1
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2454704/autores"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:e6e345790f9406a6e711bd3e8f3a1e0e43aaa119e4cf35b568f7160e804ddeae"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2454704/relacionadas",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "id": 2458064,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458064",
+      "siglaTipo": "PEP",
+      "codTipo": "442",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Parecer às Emendas de Plenário proferido pelo Relator, Dep. José Guimarães (PT-CE) pela:\r\n• Comissão de Administração e Serviço Público, que conclui pela rejeição de todas as Emendas de Plenário;\r\n• Comissão de Previdência, Assistência Social, Infância, Adolescência e Família, que conclui pela rejeição de todas as Emendas de Plenário;\r\n• Comissão de Finanças e Tributação, que conclui pela adequação financeira e orçamentária de todas as Emendas de Plenário; e, no\r\nmérito, pela rejeição de todas as Emendas;\r\n• Comissão de Constituição e Justiça e de Cidadania, que conclui pela constitucionalidade, juridicidade e boa técnica legislativa de todas as\r\nEmendas de Plenário.",
+      "dataApresentacao": "2024-09-11T13:55"
+     },
+     {
+      "id": 2458059,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458059",
+      "siglaTipo": "PPP",
+      "codTipo": "192",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Leitura realizada em Plenário pelo Dep. José Guimarães (PT-CE) do parecer da Relatora, Dep. Any Ortiz (CIDADANIA-RS),  pela:\r\n• Comissão de Administração e Serviço Público, que conclui pela pela aprovação do Projeto de Lei nº 1.847, de 2024;\r\n• Comissão de Previdência, Assistência Social, Infância, Adolescência e Família, que conclui pela pela aprovação do Projeto de Lei nº 1.847, de 2024;\r\n• Comissão de Finanças e Tributação, que conclui pela compatibilidade e adequação financeira e orçamentária; e, no mérito, pela aprovação do Projeto de Lei nº 1.847, de 2024;\r\n• Comissão de Constituição e Justiça e de Cidadania, que conclui pela constitucionalidade, juridicidade e boa técnica legislativa do Projeto de Lei nº 1.847, de 2024.",
+      "dataApresentacao": "2024-09-11T13:55"
+     },
+     {
+      "id": 2458061,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458061",
+      "siglaTipo": "PRLE",
+      "codTipo": "1001",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009. Autor: SENADO FEDERAL - EFRAIM FILHO Relator:Deputado JOSÉ GUIMARÃES I - VOTO do Relator Durante a discussão da matéria, foram apresentadas seis emendas de Plenário. Após amplo diálogo com diversos Líderes Partidários, consideramos que, em que pese a nobre intenção dos senhores Parlamentares, as emendas apresentadas não deverão ser aprovadas, uma vez que o texto já representa o acordo político possível em torno da matéria. Ante o exposto, no âmbito das Comissões de Administração e Serviço Público; e de Previdência, Assistência Social, Infância, Adolescência e Família, somos pela rejeição de todas as Emendas de Plenário. Na Comissão de Finanças e Tributação, somos pela adequação financeira e orçamentária de todas as Emendas de Plenário e, no mérito, pela rejeição de todas as emendas. Na Comissão de Constituição e Justiça e de Cidadania, somos pela constitucionalidade, juridicidade e boa técnica legislativa de todas as Emendas de Plenário e, no mérito, pela sua rejeição. Sala das Sessões, setembro de 2024. Deputado JOSÉ GUIMARÃES Relator",
+      "dataApresentacao": "2024-09-11T22:38"
+     },
+     {
+      "id": 2458063,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458063",
+      "siglaTipo": "PRLE",
+      "codTipo": "1001",
+      "numero": "2",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009. Autor: SENADO FEDERAL - EFRAIM FILHO Relator:Deputado JOSÉ GUIMARÃES I - VOTO do Relator Durante a discussão da matéria, foram apresentadas dezenove emendas de Plenário. Após amplo diálogo com diversos Líderes Partidários, consideramos que, em que pese a nobre intenção dos senhores Parlamentares, as emendas apresentadas não deverão ser aprovadas, uma vez que o texto já representa o acordo político possível em torno da matéria. Ante o exposto, no âmbito das Comissões de Administração e Serviço Público; e de Previdência, Assistência Social, Infância, Adolescência e Família, somos pela rejeição de todas as Emendas de Plenário. Na Comissão de Finanças e Tributação, somos pela adequação financeira e orçamentária de todas as Emendas de Plenário e, no mérito, pela rejeição de todas as emendas. Na Comissão de Constituição e Justiça e de Cidadania, somos pela constitucionalidade, juridicidade e boa técnica legislativa de todas as Emendas de Plenário e, no mérito, pela sua rejeição. Sala das Sessões, setembro de 2024. Deputado JOSÉ GUIMARÃES Relator",
+      "dataApresentacao": "2024-09-11T22:52"
+     },
+     {
+      "id": 2458044,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458044",
+      "siglaTipo": "PRLP",
+      "codTipo": "891",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T20:54"
+     },
+     {
+      "id": 2458211,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458211",
+      "siglaTipo": "RDF",
+      "codTipo": "197",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-12T00:01"
+     },
+     {
+      "id": 2457980,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457980",
+      "siglaTipo": "DTQ",
+      "codTipo": "846",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Destaque para Votação em Separado",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2458025,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458025",
+      "siglaTipo": "DTQ",
+      "codTipo": "846",
+      "numero": "2",
+      "ano": "0",
+      "ementa": "Destaque para Votação em Separado",
+      "dataApresentacao": "2024-09-11T20:04"
+     },
+     {
+      "id": 2458026,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458026",
+      "siglaTipo": "DTQ",
+      "codTipo": "846",
+      "numero": "3",
+      "ano": "0",
+      "ementa": "Destaque para Votação em Separado",
+      "dataApresentacao": "2024-09-11T20:04"
+     },
+     {
+      "id": 2458033,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458033",
+      "siglaTipo": "DTQ",
+      "codTipo": "846",
+      "numero": "4",
+      "ano": "0",
+      "ementa": "Destaque para Votação em Separado",
+      "dataApresentacao": "2024-09-11T20:11"
+     },
+     {
+      "id": 2458040,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458040",
+      "siglaTipo": "DTQ",
+      "codTipo": "1011",
+      "numero": "5",
+      "ano": "0",
+      "ementa": "Destaque de Emenda",
+      "dataApresentacao": "2024-09-11T20:37"
+     },
+     {
+      "id": 2458051,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458051",
+      "siglaTipo": "DTQ",
+      "codTipo": "1011",
+      "numero": "6",
+      "ano": "0",
+      "ementa": "Destaque de Emenda - PL 1847/2024",
+      "dataApresentacao": "2024-09-11T21:10"
+     },
+     {
+      "id": 2458054,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458054",
+      "siglaTipo": "DTQ",
+      "codTipo": "1011",
+      "numero": "7",
+      "ano": "0",
+      "ementa": "Destaque de Emenda - PL 1847/2024",
+      "dataApresentacao": "2024-09-11T21:15"
+     },
+     {
+      "id": 2457855,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457855",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T16:41"
+     },
+     {
+      "id": 2457858,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457858",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "2",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T16:41"
+     },
+     {
+      "id": 2457868,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457868",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "3",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T16:49"
+     },
+     {
+      "id": 2457873,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457873",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "4",
+      "ano": "0",
+      "ementa": "Emenda PL 1847/2024  - Supressão Cap.VIII (arts.45 a 48) que tratam do Confisco dos saldos ditos esquecidos em contas bancárias.",
+      "dataApresentacao": "2024-09-11T16:53"
+     },
+     {
+      "id": 2457874,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457874",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "5",
+      "ano": "0",
+      "ementa": "EMENDA  ao PL 1847/2024: Acrescente-se art. 27-A ao Projeto de Lei, com a seguinte redação:",
+      "dataApresentacao": "2024-09-11T16:53"
+     },
+     {
+      "id": 2457888,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457888",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "6",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T17:02"
+     },
+     {
+      "id": 2457985,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457985",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "7",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2457987,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457987",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "8",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2457988,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457988",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "9",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2457990,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457990",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "10",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2457993,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457993",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "11",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2458030,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458030",
+      "siglaTipo": "REQ",
+      "codTipo": "312",
+      "numero": "3632",
+      "ano": "2024",
+      "ementa": "Requer a retirada de tramitação de proposição.",
+      "dataApresentacao": "2024-09-11T19:51"
+     },
+     {
+      "id": 2457996,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457996",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "12",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2457998,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457998",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "13",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2458001,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458001",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "14",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2458002,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458002",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "15",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:37"
+     },
+     {
+      "id": 2458004,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458004",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "16",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:41"
+     },
+     {
+      "id": 2458006,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458006",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "17",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T18:41"
+     },
+     {
+      "id": 2458028,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458028",
+      "siglaTipo": "REQ",
+      "codTipo": "312",
+      "numero": "3631",
+      "ano": "2024",
+      "ementa": "Requer a retirada de tramitação de proposição.",
+      "dataApresentacao": "2024-09-11T19:50"
+     },
+     {
+      "id": 2458022,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458022",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "18",
+      "ano": "0",
+      "ementa": "Estabelece regime de transição para a contribuição substitutiva prevista nos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto no § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004; altera as Leis nºs 8.212, de 24 de julho de 1991, 8.742, de 7 de dezembro de 1993, 10.522, de 19 de julho de 2002, 10.779, de 25 de novembro de 2003, 10.865, de 30 de abril de 2004, 12.546, de 14 de dezembro de 2011, e 13.988, de 14 de abril de 2020; e revoga dispositivos dos Decretos-Lei nºs 1.737, de 20 de dezembro de 1979, e 2.323, de 26 de fevereiro de 1987, e das Leis nºs 9.703, de 17 de novembro de 1998, e 11.343, de 23 de agosto de 2006, e a Lei nº 12.099, de 27 de novembro de 2009.",
+      "dataApresentacao": "2024-09-11T19:53"
+     },
+     {
+      "id": 2458062,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458062",
+      "siglaTipo": "EMP",
+      "codTipo": "870",
+      "numero": "19",
+      "ano": "0",
+      "ementa": "emenda PL 1847/2024",
+      "dataApresentacao": "2024-09-11T22:46"
+     },
+     {
+      "id": 2458047,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458047",
+      "siglaTipo": "ERD",
+      "codTipo": "872",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Modifique-se a redação do art. 45 do projeto:",
+      "dataApresentacao": "2024-09-11T20:58"
+     },
+     {
+      "id": 2455033,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2455033",
+      "siglaTipo": "REQ",
+      "codTipo": "392",
+      "numero": "3346",
+      "ano": "2024",
+      "ementa": "Requer, nos termos do artigo 155 do Regimento Interno, tramitação sob o regime urgência do Projeto de Lei nº 1.847, de 2024.",
+      "dataApresentacao": "2024-08-26T16:03"
+     },
+     {
+      "id": 2458035,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458035",
+      "siglaTipo": "DOC",
+      "codTipo": "1003",
+      "numero": "1114",
+      "ano": "2024",
+      "ementa": "Of. nº 501/2024/PS-GSE, que encaminha a Mensagem n. 41 de envio à sanção presidencial do PL 1847-2024.",
+      "dataApresentacao": "2024-09-11T20:05"
+     },
+     {
+      "id": 2458036,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458036",
+      "siglaTipo": "DOC",
+      "codTipo": "1003",
+      "numero": "1115",
+      "ano": "2024",
+      "ementa": "Of. nº 502/2024/PS-GSE, que comunica ao Senado Federal o envio à sanção do PL 1847-2024",
+      "dataApresentacao": "2024-09-11T20:05"
+     },
+     {
+      "id": 2458140,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458140",
+      "siglaTipo": "DOC",
+      "codTipo": "1003",
+      "numero": "1123",
+      "ano": "2024",
+      "ementa": "Of. nº 501/2024/PS-GSE, que encaminha a Mensagem n. 41 de envio à sanção presidencial do PL 1847-2024.",
+      "dataApresentacao": "2024-09-12T11:55"
+     },
+     {
+      "id": 2458141,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458141",
+      "siglaTipo": "DOC",
+      "codTipo": "1003",
+      "numero": "1124",
+      "ano": "2024",
+      "ementa": "Of. nº 502/2024/PS-GSE, que comunica ao Senado Federal o envio à sanção do PL 1847-2024",
+      "dataApresentacao": "2024-09-12T11:55"
+     },
+     {
+      "id": 2458477,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458477",
+      "siglaTipo": "DOC",
+      "codTipo": "1003",
+      "numero": "1189",
+      "ano": "2024",
+      "ementa": "Of. nº 502/2024/PS-GSE, que comunica ao Senado Federal o envio à sanção do PL 1847-2024",
+      "dataApresentacao": "2024-09-17T10:28"
+     },
+     {
+      "id": 2529366,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2529366",
+      "siglaTipo": "DOC",
+      "codTipo": "1033",
+      "numero": "741",
+      "ano": "2025",
+      "ementa": "Ofício CN nº 133/2025 Apreciação de Veto pelo Congresso Nacional (PL 1847-2024).",
+      "dataApresentacao": "2025-06-30T16:01"
+     },
+     {
+      "id": 2457958,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457958",
+      "siglaTipo": "RPD",
+      "codTipo": "328",
+      "numero": "1",
+      "ano": "0",
+      "ementa": "Requerimento de Retirada de Matéria da Pauta",
+      "dataApresentacao": "2024-09-11T18:09"
+     },
+     {
+      "id": 2457960,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457960",
+      "siglaTipo": "RPD",
+      "codTipo": "892",
+      "numero": "2",
+      "ano": "0",
+      "ementa": "Requerimento de Adiamento da Discussão Matéria Urgente - PL 1847/2024",
+      "dataApresentacao": "2024-09-11T18:09"
+     },
+     {
+      "id": 2457962,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457962",
+      "siglaTipo": "RPD",
+      "codTipo": "467",
+      "numero": "3",
+      "ano": "0",
+      "ementa": "Requerimento de Adiamento da Votação Matéria Urgente",
+      "dataApresentacao": "2024-09-11T18:09"
+     },
+     {
+      "id": 2457963,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457963",
+      "siglaTipo": "RPD",
+      "codTipo": "1051",
+      "numero": "4",
+      "ano": "0",
+      "ementa": "Votação Nominal do Requerimento de Retirada de Pauta - PL 1847/2024-Requerimento de Retirada de Matéria da Pauta",
+      "dataApresentacao": "2024-09-11T18:09"
+     },
+     {
+      "id": 2457964,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457964",
+      "siglaTipo": "RPD",
+      "codTipo": "1043",
+      "numero": "5",
+      "ano": "0",
+      "ementa": "Votação Nominal do Requerimento de Adiamento da Votação (matéria urgente) - PL 1847/2024-Requerimento de Adiamento da Votação Matéria Urgente",
+      "dataApresentacao": "2024-09-11T18:09"
+     },
+     {
+      "id": 2457966,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457966",
+      "siglaTipo": "RPD",
+      "codTipo": "1041",
+      "numero": "6",
+      "ano": "0",
+      "ementa": "Requerimento Procedimental Genérico",
+      "dataApresentacao": "2024-09-11T18:09"
+     },
+     {
+      "id": 2457984,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2457984",
+      "siglaTipo": "RPD",
+      "codTipo": "1053",
+      "numero": "7",
+      "ano": "0",
+      "ementa": "Votação Nominal do Destaque para Votação em Separado - PL 1847/2024-Destaque para Votação em Separado",
+      "dataApresentacao": "2024-09-11T18:36"
+     },
+     {
+      "id": 2458029,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458029",
+      "siglaTipo": "RPD",
+      "codTipo": "1053",
+      "numero": "8",
+      "ano": "0",
+      "ementa": "Votação Nominal do Destaque para Votação em Separado - PL 1847/2024-Destaque para Votação em Separado",
+      "dataApresentacao": "2024-09-11T20:04"
+     },
+     {
+      "id": 2458031,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458031",
+      "siglaTipo": "RPD",
+      "codTipo": "1053",
+      "numero": "9",
+      "ano": "0",
+      "ementa": "Votação Nominal do Destaque para Votação em Separado - PL 1847/2024-Destaque para Votação em Separado",
+      "dataApresentacao": "2024-09-11T20:04"
+     },
+     {
+      "id": 2458034,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458034",
+      "siglaTipo": "RPD",
+      "codTipo": "1053",
+      "numero": "10",
+      "ano": "0",
+      "ementa": "Votação Nominal do Destaque para Votação em Separado - PL 1847/2024-Destaque para Votação em Separado",
+      "dataApresentacao": "2024-09-11T20:11"
+     },
+     {
+      "id": 2458041,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458041",
+      "siglaTipo": "RPD",
+      "codTipo": "1054",
+      "numero": "11",
+      "ano": "0",
+      "ementa": "Votação Nominal do Destaque de Emenda - PL 1847/2024-Destaque de Emenda",
+      "dataApresentacao": "2024-09-11T20:37"
+     },
+     {
+      "id": 2458052,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458052",
+      "siglaTipo": "RPD",
+      "codTipo": "1054",
+      "numero": "12",
+      "ano": "0",
+      "ementa": "Votação Nominal do Destaque de Emenda - PL 1847/2024-Destaque de Emenda - PL 1847/2024",
+      "dataApresentacao": "2024-09-11T21:10"
+     },
+     {
+      "id": 2458055,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458055",
+      "siglaTipo": "RPD",
+      "codTipo": "1054",
+      "numero": "13",
+      "ano": "0",
+      "ementa": "Votação Nominal do Destaque de Emenda - PL 1847/2024-Destaque de Emenda - PL 1847/2024",
+      "dataApresentacao": "2024-09-11T21:15"
+     },
+     {
+      "id": 2458060,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458060",
+      "siglaTipo": "RPD",
+      "codTipo": "890",
+      "numero": "14",
+      "ano": "0",
+      "ementa": "Requerimento Procedimental Genérico - PL 1847/2024",
+      "dataApresentacao": "2024-09-11T22:30"
+     },
+     {
+      "id": 2458073,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458073",
+      "siglaTipo": "RPD",
+      "codTipo": "332",
+      "numero": "15",
+      "ano": "0",
+      "ementa": "Requerimento Procedimental Genérico - PL 1847/2024",
+      "dataApresentacao": "2024-09-12T01:14"
+     },
+     {
+      "id": 2458027,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2458027",
+      "siglaTipo": "RPDR",
+      "codTipo": "889",
+      "numero": "36",
+      "ano": "2024",
+      "ementa": "Requerimento Procedimental Genérico",
+      "dataApresentacao": "2024-09-11T20:04"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2454704/relacionadas"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:5da27cbbbf78a96ec1cabb59a217084319333877fd9e6646e6fa52b20625d242"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/4",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 4,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+     "sigla": "MESA",
+     "nome": "Mesa Diretora da Câmara dos Deputados",
+     "apelido": "Mesa Diretora",
+     "codTipoOrgao": 1,
+     "tipoOrgao": "Comissão Diretora",
+     "nomePublicacao": "Mesa Diretora",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Sala de Reuniões do Espaço Cultural",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:409e90a97ee380ad8f34c54ee94c49671a9629c0f0982841f4fac24c22eefad9"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/180",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 180,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180",
+     "sigla": "PLEN",
+     "nome": "Plenário",
+     "apelido": "Plenário",
+     "codTipoOrgao": 26,
+     "tipoOrgao": "Plenário Virtual",
+     "nomePublicacao": "Plenário",
+     "nomeResumido": "Plenário",
+     "dataInicio": "2020-03-20T00:00",
+     "dataInstalacao": "2020-03-20T00:00",
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Plenário da Câmara dos Deputados",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/180"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:aedc7e9ef2c54077f74dc09a535c55a4af76ff8baee98e2b6a5a4240e6df33f3"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/186",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 186,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186",
+     "sigla": "CCP",
+     "nome": "COORDENAÇÃO DE COMISSÕES PERMANENTES",
+     "apelido": "COORDENAÇÃO DE COMISSÕES PERMANENTES",
+     "codTipoOrgao": 12000,
+     "tipoOrgao": "Órgão da Câmara dos Deputados",
+     "nomePublicacao": "COORDENAÇÃO DE COMISSÕES PERMANENTES",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": null,
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/186"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:60274ed1f6b314e030c95ee0ce71ba55c9d4e91c02199d1566cb659b2b93e736"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/deputados/141470",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 141470,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+     "nomeCivil": "JOSÉ NOBRE GUIMARÃES",
+     "ultimoStatus": {
+      "id": 141470,
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470",
+      "nome": "José Guimarães",
+      "siglaPartido": "PT",
+      "uriPartido": null,
+      "siglaUf": "CE",
+      "idLegislatura": 57,
+      "urlFoto": "https://www.camara.leg.br/internet/deputado/bandep/141470.jpg",
+      "email": null,
+      "data": "2026-04-14",
+      "nomeEleitoral": "José Guimarães",
+      "gabinete": {
+       "nome": null,
+       "predio": null,
+       "sala": null,
+       "andar": null,
+       "telefone": null,
+       "email": null
+      },
+      "situacao": "Licença",
+      "condicaoEleitoral": "Titular",
+      "descricaoStatus": ""
+     },
+     "cpf": "[removido pelo gravador]",
+     "sexo": "M",
+     "urlWebsite": null,
+     "redeSocial": [],
+     "dataNascimento": "[removido pelo gravador]",
+     "dataFalecimento": null,
+     "ufNascimento": "[removido pelo gravador]",
+     "municipioNascimento": "[removido pelo gravador]",
+     "escolaridade": "Superior"
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/deputados/141470"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:934657dc564c53932bb221eaa54c31a4c87963b51200c66d2cfd614ae7ca8547",
+   "campos_removidos": [
+    "dados.cpf",
+    "dados.dataNascimento",
+    "dados.ufNascimento",
+    "dados.municipioNascimento"
+   ]
+  },
+  {
+   "host": "senado",
+   "metodo": "GET",
+   "caminho": "/processo",
+   "params": {
+    "sigla": "PL",
+    "numero": "1847",
+    "ano": "2024"
+   },
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": [
+    {
+     "autoria": "Senador Efraim Filho (UNIÃO/PB)",
+     "casaIdentificadora": "SF",
+     "codigoMateria": 163641,
+     "dataApresentacao": "2024-05-15",
+     "dataDeliberacao": "2024-08-20",
+     "dataSituacaoAtual": "2024-09-16",
+     "ementa": "Estabelece um regime de transição para a contribuição substitutiva prevista pelos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto pelo § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004.",
+     "enteIdentificador": "SF",
+     "id": 8663585,
+     "identificacao": "PL 1847/2024",
+     "normaGerada": "Lei nº 14.973 de 16/09/2024",
+     "objetivo": "Iniciadora",
+     "siglaTipoDeliberacao": "APROVADA_NO_PLENARIO",
+     "situacaoAtual": "TRANSFORMADA EM NORMA JURÍDICA COM VETO PARCIAL",
+     "tipoConteudo": "Norma Geral",
+     "tipoDocumento": "Projeto de Lei Ordinária",
+     "tramitando": "Não",
+     "urlDocumento": "https://legis.senado.gov.br/sdleg-getter/dadosabertos/documento/86bbbc39-4c5e-43bd-9da6-664ba4b369fc"
+    }
+   ],
+   "sha256_corpo": "sha256:8c8258ede8b3f72ee660afa177562c6b390521d117939c57e90ff1013430be10"
+  },
+  {
+   "host": "senado",
+   "metodo": "GET",
+   "caminho": "/processo/8663585",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "id": 8663585,
+    "codigoMateria": 163641,
+    "identificacao": "PL 1847/2024",
+    "sigla": "PL",
+    "descricaoSigla": "Projeto de Lei",
+    "numero": "1847",
+    "ano": 2024,
+    "objetivo": "Iniciadora",
+    "casaIdentificadora": "SF",
+    "siglaEnteIdentificador": "SF",
+    "identificacaoExterna": {},
+    "conteudo": {
+     "id": 7568765,
+     "idTipo": 11,
+     "siglaTipo": "NORMA_GERAL",
+     "tipo": "Norma Geral",
+     "ementa": "Estabelece um regime de transição para a contribuição substitutiva prevista pelos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto pelo § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004.",
+     "tipoNormaIndicada": "LEI"
+    },
+    "documento": {
+     "id": 9609008,
+     "siglaTipo": "PROJETO_LEI_ORDINARIA",
+     "tipo": "Projeto de Lei Ordinária",
+     "dataApresentacao": "2024-05-15",
+     "indexacao": " ALTERAÇÃO ,  LEI FEDERAL ,  DISPOSIÇÕES TRANSITORIAS ,  REGIME JURIDICO ,  TRIBUTOS ,  CONTRIBUIÇÃO PARA FINANCIAMENTO DA SEGURIDADE SOCIAL (COFINS) ,  IMPORTAÇÃO ,  CONTRIBUIÇÃO PREVIDENCIARIA ,  EMPRESA ,  SUBSTITUIÇÃO ,  COTA PATRONAL ,  BASE DE CALCULO ,  RECEITA BRUTA .",
+     "url": "https://legis.senado.gov.br/sdleg-getter/dadosabertos/documento/86bbbc39-4c5e-43bd-9da6-664ba4b369fc",
+     "autoria": [
+      {
+       "autor": "Efraim Filho",
+       "sexo": "M",
+       "siglaTipo": "SENADOR",
+       "descricaoTipo": "SENADOR",
+       "ordem": 1,
+       "outrosAutoresNaoInformados": "Não",
+       "codigoParlamentar": 4642,
+       "uf": "PB",
+       "siglaPartido": "UNIÃO",
+       "partido": "União Brasil",
+       "siglaCargo": "SENADOR",
+       "cargo": "Senador",
+       "idEnte": 1,
+       "siglaEnte": "SF",
+       "casaEnte": "SF",
+       "ente": "Senado Federal"
+      }
+     ],
+     "resumoAutoria": "Senador Efraim Filho (UNIÃO/PB)"
+    },
+    "tramitando": "Não",
+    "dataInicioEfetivo": "2024-05-15",
+    "situacaoAtual": "TRANSFORMADA EM NORMA JURÍDICA COM VETO PARCIAL",
+    "siglaSituacaoAtual": "TNJRVETO",
+    "dataSituacaoAtual": "2024-09-16",
+    "classificacoes": [
+     {
+      "codigo": 34951911,
+      "descricao": "Contribuição Previdenciária",
+      "descricaoHierarquia": "Economia e Desenvolvimento / Tributos / Contribuição Previdenciária"
+     },
+     {
+      "codigo": 34999627,
+      "descricao": "Contribuição Social",
+      "descricaoHierarquia": "Economia e Desenvolvimento / Tributos / Contribuição Social"
+     }
+    ],
+    "autoriaIniciativa": [
+     {
+      "autor": "Efraim Filho",
+      "sexo": "M",
+      "siglaTipo": "SENADOR",
+      "descricaoTipo": "SENADOR",
+      "ordem": 1,
+      "outrosAutoresNaoInformados": "Não",
+      "codigoParlamentar": 4642,
+      "uf": "PB",
+      "siglaPartido": "UNIÃO",
+      "partido": "União Brasil",
+      "siglaCargo": "SENADOR",
+      "cargo": "Senador",
+      "idEnte": 1,
+      "siglaEnte": "SF",
+      "casaEnte": "SF",
+      "ente": "Senado Federal"
+     }
+    ],
+    "idProcessoCasaInicial": 8663585,
+    "identificacaoProcessoInicial": "PL 1847/2024",
+    "siglaCasaIniciadora": "SF",
+    "comissaoMpv": "{}",
+    "apensadoA": [
+     {
+      "id": 8578310,
+      "identificacao": "PL 4719/2020",
+      "tramitando": "Não",
+      "tipoApensamento": "Tramitação conjunta",
+      "dataApensamento": "2024-07-08",
+      "dataDesapensamento": "2024-08-20"
+     }
+    ],
+    "outrosNumeros": [
+     {
+      "idOutroProcesso": 8725141,
+      "sigla": "PL",
+      "numero": "01847",
+      "ano": 2024,
+      "tramitando": "Não",
+      "externaAoCongresso": "Não",
+      "casaIdentificadora": "CD",
+      "siglaEnteIdentificador": "CD",
+      "enteIdentificador": "Câmara dos Deputados"
+     }
+    ],
+    "processosRelacionados": [
+     {
+      "idOutroProcesso": 8726298,
+      "tipoRelacao": "VETO",
+      "sigla": "VET",
+      "numero": "28",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "CN",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Congresso Nacional"
+     },
+     {
+      "idOutroProcesso": 8709778,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "585",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8709788,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "586",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8709859,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "589",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8710626,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "592",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8710653,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "593",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8710829,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "594",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8710833,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "595",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8714522,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "598",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8714616,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "601",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8714642,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "603",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     },
+     {
+      "idOutroProcesso": 8714647,
+      "tipoRelacao": "REFERENCIA",
+      "sigla": "RQS",
+      "numero": "604",
+      "ano": 2024,
+      "tramitando": "Não",
+      "casaIdentificadora": "SF",
+      "siglaEnteIdentificador": "PLEN",
+      "enteIdentificador": "Plenário do Senado Federal"
+     }
+    ],
+    "despachos": [
+     {
+      "id": 9693723,
+      "data": "2024-07-08",
+      "siglaTipoMotivacao": "DECISAO_PRESID",
+      "tipoMotivacao": "Decisão da Presidência",
+      "cancelado": "Não",
+      "encontroLegislativo": {
+       "colegiado": {}
+      },
+      "providencias": [
+       {
+        "id": 8695949,
+        "tipo": "TRAMITACAO_CONJUNTA",
+        "descricao": "Tramitação Conjunta",
+        "ordem": 1,
+        "analiseTempo": "SUCESSIVA",
+        "analiseConteudo": "MATERIA",
+        "reexame": "Não",
+        "unidadesDestinatarias": null
+       }
+      ]
+     },
+     {
+      "id": 9695121,
+      "data": "2024-07-09",
+      "siglaTipoMotivacao": "DECISAO_PRESID",
+      "tipoMotivacao": "Decisão da Presidência",
+      "cancelado": "Não",
+      "encontroLegislativo": {
+       "colegiado": {}
+      },
+      "providencias": [
+       {
+        "id": 8696205,
+        "tipo": "AO_PLENARIO_03_2023",
+        "descricao": "Ao Plenário",
+        "ordem": 1,
+        "analiseTempo": "SUCESSIVA",
+        "analiseConteudo": null,
+        "reexame": "Não",
+        "unidadesDestinatarias": [
+         {
+          "ordem": 1,
+          "tipoAnaliseDeliberacao": "NAO_TERMINATIVA",
+          "colegiado": {
+           "codigo": 1998,
+           "sigla": "PLEN",
+           "casa": "SF",
+           "nome": "Plenário do Senado Federal"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "autuacoes": [
+     {
+      "numero": 1,
+      "descricao": "Autuação Principal",
+      "idEnteControleAtual": 55304,
+      "siglaEnteControleAtual": "SEXPE",
+      "nomeEnteControleAtual": "Secretaria de Expediente",
+      "situacoes": [
+       {
+        "idTipo": 175,
+        "sigla": "AGDESP",
+        "descricao": "AGUARDANDO DESPACHO",
+        "inicio": "2024-05-15",
+        "fim": "2024-07-07",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        }
+       },
+       {
+        "idTipo": 78,
+        "sigla": "INCLOD",
+        "descricao": "INCLUÍDA EM ORDEM DO DIA",
+        "inicio": "2024-07-07",
+        "fim": "2024-07-08",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        }
+       },
+       {
+        "idTipo": 95,
+        "sigla": "AGINCL(RQ)",
+        "descricao": "AGUARDANDO INCLUSÃO ORDEM DO DIA DE REQUERIMENTO",
+        "inicio": "2024-07-08",
+        "fim": "2024-07-09",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        }
+       },
+       {
+        "idTipo": 78,
+        "sigla": "INCLOD",
+        "descricao": "INCLUÍDA EM ORDEM DO DIA",
+        "inicio": "2024-07-09",
+        "fim": "2024-07-17",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        }
+       },
+       {
+        "idTipo": 8,
+        "sigla": "PRONDEPLEN",
+        "descricao": "PRONTO PARA DELIBERAÇÃO DO PLENÁRIO",
+        "inicio": "2024-07-17",
+        "fim": "2024-08-04",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        }
+       },
+       {
+        "idTipo": 78,
+        "sigla": "INCLOD",
+        "descricao": "INCLUÍDA EM ORDEM DO DIA",
+        "inicio": "2024-08-04",
+        "fim": "2024-08-20",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        }
+       },
+       {
+        "idTipo": 113,
+        "sigla": "APRVSUB",
+        "descricao": "APROVADO O SUBSTITUTIVO",
+        "inicio": "2024-08-20",
+        "fim": "2024-08-26",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        }
+       },
+       {
+        "idTipo": 52,
+        "sigla": "RMCD",
+        "descricao": "REMETIDA À CÂMARA DOS DEPUTADOS",
+        "inicio": "2024-08-26",
+        "fim": "2024-09-12",
+        "colegiado": {},
+        "enteAdministrativo": {
+         "id": 55304,
+         "casa": "SF",
+         "sigla": "SEXPE",
+         "nome": "Secretaria de Expediente"
+        }
+       },
+       {
+        "idTipo": 57,
+        "sigla": "RMSAN",
+        "descricao": "REMETIDA À SANÇÃO",
+        "inicio": "2024-09-12",
+        "fim": "2024-09-16",
+        "colegiado": {},
+        "enteAdministrativo": {
+         "id": 2,
+         "casa": "CD",
+         "sigla": "CD",
+         "nome": "Câmara dos Deputados"
+        }
+       },
+       {
+        "idTipo": 92,
+        "sigla": "TNJRVETO",
+        "descricao": "TRANSFORMADA EM NORMA JURÍDICA COM VETO PARCIAL",
+        "inicio": "2024-09-16",
+        "colegiado": {},
+        "enteAdministrativo": {
+         "id": 55304,
+         "casa": "SF",
+         "sigla": "SEXPE",
+         "nome": "Secretaria de Expediente"
+        }
+       }
+      ],
+      "informesLegislativos": [
+       {
+        "id": 2193049,
+        "data": "2024-05-15 14:27:18",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Autuado o Projeto de Lei nº 1847/2024. O projeto vai à publicação.",
+        "idSituacaoIniciada": 175,
+        "siglaSituacaoIniciada": "AGDESP",
+        "documentosAssociados": [
+         {
+          "id": 9609034,
+          "tipo": "Avulso inicial da matéria",
+          "siglaTipo": "AVULSO_INICIAL",
+          "identificacao": "Avulso inicial da matéria - SF245211109645",
+          "descricao": "-",
+          "data": "2024-05-15T00:00:00",
+          "autoria": "Senado Federal",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/a8824d11-8f99-469d-8138-98a92415578d"
+         },
+         {
+          "id": 9609008,
+          "tipo": "Projeto de Lei Ordinária",
+          "siglaTipo": "PROJETO_LEI_ORDINARIA",
+          "identificacao": "PL 1847/2024",
+          "descricao": "Estabelece um regime de transição para a contribuição substitutiva prevista pelos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto pelo § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004.",
+          "data": "2024-05-15T14:26:37",
+          "autoria": "Senador Efraim Filho (UNIÃO/PB)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/86bbbc39-4c5e-43bd-9da6-664ba4b369fc"
+         }
+        ]
+       },
+       {
+        "id": 2201876,
+        "data": "2024-07-07 22:52:32",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Incluído em Ordem do Dia da Sessão Deliberativa Ordinária de 10/07/2024.\r\n(Pendente de apresentação de requerimento de urgência)",
+        "idSituacaoIniciada": 78,
+        "siglaSituacaoIniciada": "INCLOD"
+       },
+       {
+        "id": 2202072,
+        "data": "2024-07-08 19:31:03",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "descricao": "A Presidência determina, nos termos do artigo 48, § 1º, do Regimento Interno, a tramitação conjunta do Projeto de Lei nº 4.719, de 2020, com o Projeto de Lei nº 1.847, de 2024, por tratarem de tema correlato. \r\nAs matérias passam a tramitar em conjunto e serão incluídas na Ordem do Dia da Sessão Deliberativa Ordinária de 10/07/2024 (Pendente de apresentação de requerimento de urgência).",
+        "idSituacaoIniciada": 95,
+        "siglaSituacaoIniciada": "AGINCL(RQ)"
+       },
+       {
+        "id": 2202072,
+        "data": "2024-07-08 19:31:03",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "descricao": "A Presidência determina, nos termos do artigo 48, § 1º, do Regimento Interno, a tramitação conjunta do Projeto de Lei nº 4.719, de 2020, com o Projeto de Lei nº 1.847, de 2024, por tratarem de tema correlato. \r\nAs matérias passam a tramitar em conjunto e serão incluídas na Ordem do Dia da Sessão Deliberativa Ordinária de 10/07/2024 (Pendente de apresentação de requerimento de urgência).",
+        "idSituacaoIniciada": 95,
+        "siglaSituacaoIniciada": "AGINCL(RQ)"
+       },
+       {
+        "id": 2202297,
+        "data": "2024-07-09 09:07:45",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebida a Emenda nº 1, do Senador Alessandro Vieira, ao PL 1847/2024.",
+        "documentosAssociados": [
+         {
+          "id": 9695013,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 1 PLEN - PL 1847/2024",
+          "descricao": "Emenda ao PL 1847/2024 (CNM)",
+          "data": "2024-05-29T14:22:19",
+          "autoria": "Senador Alessandro Vieira (MDB/SE)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/92fa8d3d-7f9e-4d46-a0fa-a13dae892a59"
+         }
+        ]
+       },
+       {
+        "id": 2202334,
+        "data": "2024-07-09 09:26:34",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Designado o Senador Jaques Wagner Relator de Plenário."
+       },
+       {
+        "id": 2202336,
+        "data": "2024-07-09 09:30:33",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebida a Emenda nº 2, do Senador Angelo Coronel, ao PL 1847/2024.",
+        "documentosAssociados": [
+         {
+          "id": 9695076,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 2 PLEN - PL 1847/2024",
+          "descricao": "Emenda ao PL 1847/2024 - desoneração",
+          "data": "2024-05-17T18:22:07",
+          "autoria": "Senador Angelo Coronel (PSD/BA)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/807ceb69-e9c0-404a-86f5-45e0ef69d674"
+         }
+        ]
+       },
+       {
+        "id": 2203296,
+        "data": "2024-07-14 18:58:41",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Incluído em Ordem do Dia da Sessão Deliberativa Ordinária Semipresencial de 16/07/2024.\r\n(Pendente de apresentação de requerimento de urgência)"
+       },
+       {
+        "id": 2203510,
+        "data": "2024-07-16 18:21:59",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "descricao": "(Sessão Deliberativa Ordinária Semipresencial, realizada em 16/07/2024) \r\nAdiada a apreciação da matéria."
+       },
+       {
+        "id": 2203522,
+        "data": "2024-07-16 18:38:26",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Incluído em Ordem do Dia da Sessão Deliberativa Ordinária Semipresencial de 17/07/2024.\r\n(Pendente de apresentação de requerimento de urgência)"
+       },
+       {
+        "id": 2203684,
+        "data": "2024-07-17 16:52:24",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "descricao": "(Sessão Deliberativa Ordinária – Semipresencial – realizada em 17/07/2024)\r\nMatéria retirada de pauta.",
+        "idSituacaoIniciada": 8,
+        "siglaSituacaoIniciada": "PRONDEPLEN"
+       },
+       {
+        "id": 2203684,
+        "data": "2024-07-17 16:52:24",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "descricao": "(Sessão Deliberativa Ordinária – Semipresencial – realizada em 17/07/2024)\r\nMatéria retirada de pauta.",
+        "idSituacaoIniciada": 8,
+        "siglaSituacaoIniciada": "PRONDEPLEN"
+       },
+       {
+        "id": 2204619,
+        "data": "2024-08-04 18:03:14",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Incluído em Ordem do Dia da Sessão Deliberativa Ordinária de 07/08/2024.\r\n(Pendente de apresentação de requerimento de urgência)",
+        "idSituacaoIniciada": 78,
+        "siglaSituacaoIniciada": "INCLOD"
+       },
+       {
+        "id": 2204619,
+        "data": "2024-08-04 18:03:14",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Incluído em Ordem do Dia da Sessão Deliberativa Ordinária de 07/08/2024.\r\n(Pendente de apresentação de requerimento de urgência)",
+        "idSituacaoIniciada": 78,
+        "siglaSituacaoIniciada": "INCLOD"
+       },
+       {
+        "id": 2205068,
+        "data": "2024-08-07 14:30:34",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebidas as Emendas nºs 1 e 2, da Senadora Mara Gabrilli, ao PL 4719/2020."
+       },
+       {
+        "id": 2205231,
+        "data": "2024-08-07 18:02:55",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "descricao": "(Sessão Deliberativa Ordinária realizada em 07/08/2024)\r\nAdiada a apreciação da matéria."
+       },
+       {
+        "id": 2205636,
+        "data": "2024-08-11 16:24:41",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Incluído em Ordem do Dia da Sessão Deliberativa Ordinária de 14/08/2024.\r\n(Pendente de apresentação de requerimento de urgência)"
+       },
+       {
+        "id": 2206413,
+        "data": "2024-08-14 17:21:12",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Relatório do Senador Jaques Wagner.",
+        "documentosAssociados": [
+         {
+          "id": 9777969,
+          "tipo": "Relatório Legislativo",
+          "siglaTipo": "RELATORIO",
+          "identificacao": "Relatório Legislativo - SF245142962767",
+          "descricao": "Relatório ao PL 1847/2024",
+          "data": "2024-08-14T17:17:24",
+          "autoria": "Senador Jaques Wagner (PT/BA)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/9546e495-670f-41ba-afb0-bf5de23a984a"
+         }
+        ]
+       },
+       {
+        "id": 2206479,
+        "data": "2024-08-14 18:24:52",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento n° 585, de 2024, da liderança do PP, de destaque para votação em separado do art. 4º do Substitutivo.",
+        "documentosAssociados": [
+         {
+          "id": 9778375,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 585/2024",
+          "descricao": "Requer, pela Liderança do PP, destaque para votação em separado do art. 4 do Substitutivo ao Projeto de Lei nº 1847/2024.",
+          "data": "2024-08-14T18:22:03",
+          "autoria": "Líder do PP Tereza Cristina (PP/MS)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/7eeb6716-1006-459b-8491-2b9db6bd2e31"
+         }
+        ]
+       },
+       {
+        "id": 2206483,
+        "data": "2024-08-14 18:27:07",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento n° 586, de 2024, da liderança do PL, de destaque para votação em separado do art. 18 do Substitutivo.",
+        "documentosAssociados": [
+         {
+          "id": 9778407,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 586/2024",
+          "descricao": "Requer, pela Liderança do PL, destaque para votação em separado do art. 18 do Substitutivo.",
+          "data": "2024-08-14T18:23:39",
+          "autoria": "Líder do PL Carlos Portinho (PL/)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/6d58ff67-fb8d-454d-919d-45d919e98667"
+         }
+        ]
+       },
+       {
+        "id": 2206489,
+        "data": "2024-08-14 18:41:23",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento n° 589, de 2024, da liderança do União, de destaque para votação em separado do art. 47 ao Substitutivo.",
+        "documentosAssociados": [
+         {
+          "id": 9778500,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 589/2024",
+          "descricao": "Requer, pela Liderança do União, destaque para votação em separado do art. 47 do Substitutivo ao Projeto de Lei nº 1847/2024.",
+          "data": "2024-08-14T18:37:13",
+          "autoria": "Líder do UNIÃO Professora Dorinha Seabra (UNIÃO/TO)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/a159094b-b4ce-4461-984b-20e3783d986b"
+         }
+        ]
+       },
+       {
+        "id": 2206531,
+        "data": "2024-08-14 22:08:42",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Incluído em Ordem do Dia da continuação da Sessão Deliberativa Ordinária de 14/08/2024, a ser realizada em 15/08/2024, às 9h.\r\n(Pendente de apresentação de requerimento de urgência)"
+       },
+       {
+        "id": 2206597,
+        "data": "2024-08-15 10:15:17",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento n° 592, de 2024, da liderança do PL, de destaque para votação em separado do art. 4º do Substitutivo de Plenário.",
+        "documentosAssociados": [
+         {
+          "id": 9780662,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 592/2024",
+          "descricao": "Requer, pela Liderança do PL, destaque para votação em separado do art. 4º do Substitutivo de Plenário do Projeto de Lei nº 1.847/2024.",
+          "data": "2024-08-15T10:10:41",
+          "autoria": "Líder do PL Carlos Portinho (PL/)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/965165a0-308f-4be8-92b0-ada350de4357"
+         }
+        ]
+       },
+       {
+        "id": 2206580,
+        "data": "2024-08-15 10:19:56",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento nº 593, de 2024, de Líderes, solicitando urgência para a matéria.",
+        "documentosAssociados": [
+         {
+          "id": 9780724,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 593/2024",
+          "descricao": "Requer urgência para o Projeto de Lei nº 1847/2024, nos termos dos arts. 336, III, e 338, III, do Regimento Interno do Senado Federal.",
+          "data": "2024-08-15T10:15:32",
+          "autoria": "Líder do Bloco Parlamentar Democracia Davi Alcolumbre (UNIÃO/AP), Líder do PSB Jorge Kajuru (PSB/GO)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/e3d02bfc-aa4e-4653-8bd1-c5885e1c7621"
+         }
+        ]
+       },
+       {
+        "id": 2206606,
+        "data": "2024-08-15 11:25:04",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento n° 595, de 2024, da liderança do PL, de destaque para votação em separado dos incisos I e II do §2º do art. 45 do Substitutivo.",
+        "documentosAssociados": [
+         {
+          "id": 9781104,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 595/2024",
+          "descricao": "Requer, pela Liderança do PL, destaque para votação em separado dos incisos I e II do §2º do art. 45 do Substitutivo de Plenário ao Projeto de Lei nº 1.847/2024.",
+          "data": "2024-08-15T11:20:44",
+          "autoria": "Líder do PL Carlos Portinho (PL/)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/b4570565-4bea-4ad9-8783-0caa880cad8c"
+         }
+        ]
+       },
+       {
+        "id": 2206608,
+        "data": "2024-08-15 11:25:19",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento nº 594, de 2024, do Senador Carlos Portinho, de retirada do Requerimento nº 592, de 2024, em caráter definitivo.",
+        "documentosAssociados": [
+         {
+          "id": 9781101,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 594/2024",
+          "descricao": "Requer a retirada definitiva do Requerimento nº 592/2024.",
+          "data": "2024-08-15T11:19:37",
+          "autoria": "Líder do PL Carlos Portinho (PL/)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/8e837546-f9f2-434c-9ab3-21708af867c3"
+         }
+        ]
+       },
+       {
+        "id": 2206618,
+        "data": "2024-08-15 13:08:55",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "descricao": "(Continuação da Sessão Deliberativa Ordinária, iniciada em 14/08/2024) \r\nEncaminhado à publicação e aprovado o Requerimento nº 593/2024, de iniciativa de Líderes, que solicita urgência para as matérias. \r\nProferido pelo Senador Jaques Wagner e encaminhado à publicação, o Parecer nº 135, de 2024-PLEN-SF, favorável ao Projeto de Lei nº 1.847, de 2024, na forma da Emenda nº 3 (Substitutivo), com a rejeição das Emendas nºs 1 e 2; e pela tramitação autônoma do Projeto de Lei nº 4.719, de 2020. \r\nA Presidência suspende a discussão da matéria que será retomada em outra sessão. \r\n(Encaminhados à publicação os Requerimentos nºs 592/2024, 594/2024 e 595/2024)",
+        "documentosAssociados": [
+         {
+          "id": 9781680,
+          "tipo": "Parecer",
+          "siglaTipo": "PARECER",
+          "identificacao": "P.S 135/2024 - PLEN",
+          "descricao": "Parecer nº 135/2024-PLEN/SF",
+          "data": "2024-08-15T00:00:00",
+          "autoria": "Senador Jaques Wagner (PT/BA)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/ce38cbf1-2ca7-4eb5-9985-f84a5d93844b"
+         },
+         {
+          "id": 9786111,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 3 PLEN - PL 1847/2024",
+          "descricao": "Emenda nº 3-PLEN - SUBSTITUTIVO",
+          "data": "2024-08-15T00:00:00",
+          "autoria": "Senador Jaques Wagner (PT/BA)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/a2b008a7-f993-4c82-935c-1f34c041f97e"
+         }
+        ]
+       },
+       {
+        "id": 2206855,
+        "data": "2024-08-18 20:40:09",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Incluído em Ordem do Dia da Sessão Deliberativa Ordinária Semipresencial de 20/08/2024.\r\nContinuação da discussão, em turno único."
+       },
+       {
+        "id": 2206924,
+        "data": "2024-08-19 12:11:16",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebida a Emenda nº 4, do Senador Laércio Oliveira, à Emenda nº 3 (Substitutivo).\r\n(Pendente de aprovação do Substitutivo, em turno único).",
+        "documentosAssociados": [
+         {
+          "id": 9787495,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 4 PLEN - PL 1847/2024",
+          "descricao": "Emenda ao PL 1847/2024",
+          "data": "2024-08-19T12:00:17",
+          "autoria": "Senador Laércio Oliveira (PP/SE)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/406b389b-24df-48f8-89ef-9febfd70313b"
+         }
+        ]
+       },
+       {
+        "id": 2206962,
+        "data": "2024-08-19 18:13:17",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebidas as Emendas nºs 5 a 13, do Senador Mecias de Jesus, à Emenda nº 3 (Substitutivo).\r\n(Pendente da aprovação do Substitutivo, em turno único).",
+        "documentosAssociados": [
+         {
+          "id": 9787938,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 5 PLEN - PL 1847/2024",
+          "descricao": "Emenda  ao PL 1847/2024",
+          "data": "2024-08-19T17:58:59",
+          "autoria": "Senador Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/77d0f1e7-0e7b-4414-ad78-01070d7457cc"
+         },
+         {
+          "id": 9787954,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 6 PLEN - PL 1847/2024",
+          "descricao": "Emenda 1 ao PL 1847/2024",
+          "data": "2024-08-19T18:21:11",
+          "autoria": "Senador Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/5580c13a-db1f-46b9-9db2-534c85319adb"
+         },
+         {
+          "id": 9787978,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 7 PLEN - PL 1847/2024",
+          "descricao": "Emenda 2 ao PL 1847/2024",
+          "data": "2024-08-19T18:21:26",
+          "autoria": "Senador Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/05845f8a-c19c-4eac-b64f-618dfa021fb1"
+         },
+         {
+          "id": 9787982,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 8 PLEN - PL 1847/2024",
+          "descricao": "Emenda 3 ao PL 1847/2024",
+          "data": "2024-08-19T18:21:54",
+          "autoria": "Senador Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/0654cf74-d058-43a7-9fcc-e83faf2f15f5"
+         },
+         {
+          "id": 9787986,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 9 PLEN - PL 1847/2024",
+          "descricao": "Emenda 4 ao PL 1847/2024",
+          "data": "2024-08-19T18:22:08",
+          "autoria": "Senador Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/4c0f9b62-ccfa-4d1f-819a-4444f5c22c07"
+         },
+         {
+          "id": 9787990,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 10 PLEN - PL 1847/2024",
+          "descricao": "Emenda 5 ao PL 1847/2024",
+          "data": "2024-08-19T18:22:35",
+          "autoria": "Senador Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/c7bdf550-a076-4895-9112-76c906857999"
+         },
+         {
+          "id": 9787994,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 11 PLEN - PL 1847/2024",
+          "descricao": "Emenda 6 ao PL 1847/2024",
+          "data": "2024-08-19T18:23:01",
+          "autoria": "Senador Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/8e942768-62bd-49eb-ad95-98754bbe3ff7"
+         },
+         {
+          "id": 9787998,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 12 PLEN - PL 1847/2024",
+          "descricao": "Emenda 7 ao PL 1847/2024",
+          "data": "2024-08-19T18:23:21",
+          "autoria": "Senador Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/c7f66d2e-1ec9-40d9-9dfd-a4cd8c33af66"
+         },
+         {
+          "id": 9788021,
+          "tipo": "Emenda",
+          "siglaTipo": "EMENDA",
+          "identificacao": "EMENDA 13 PLEN - PL 1847/2024",
+          "descricao": "Emenda 8 ao PL 1847/2024",
+          "data": "2024-08-19T18:23:33",
+          "autoria": "Senador Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/e268e960-4e57-462d-95d7-94fa79124f88"
+         }
+        ]
+       },
+       {
+        "id": 2207157,
+        "data": "2024-08-20 15:34:30",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento n° 598, de 2024, da liderança do Republicanos, de destaque para votação em separado da Emenda nº 5.",
+        "documentosAssociados": [
+         {
+          "id": 9788536,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 598/2024",
+          "descricao": "Requer, pela Liderança do Republicanos, destaque para votação em separado da Emenda nº 5 à Emenda nº 3 (Substitutivo) do Projeto de Lei nº 1847/2024.",
+          "data": "2024-08-20T15:28:48",
+          "autoria": "Líder do REPUBLICANOS Mecias de Jesus (REPUBLICANOS/RR)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/ed58f974-bcf5-4751-a7a6-a36cb596bd3c"
+         }
+        ]
+       },
+       {
+        "id": 2207162,
+        "data": "2024-08-20 16:19:39",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido novo Relatório do Senador Jaques Wagner.",
+        "documentosAssociados": [
+         {
+          "id": 9788639,
+          "tipo": "Relatório Legislativo",
+          "siglaTipo": "RELATORIO",
+          "identificacao": "Relatório Legislativo - SF249189629862",
+          "descricao": "Complementação de Voto - PL 1847/2024",
+          "data": "2024-08-20T16:17:09",
+          "autoria": "Senador Jaques Wagner (PT/BA)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/45eecb67-f0cc-4be1-a660-1b2ad4457ae3"
+         }
+        ]
+       },
+       {
+        "id": 2207170,
+        "data": "2024-08-20 17:14:35",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento n° 601, de 2024, da liderança do União Brasil, de destaque para votação em separado da Emenda nº 45.",
+        "documentosAssociados": [
+         {
+          "id": 9788779,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 601/2024",
+          "descricao": "Requer, pela Liderança do União Brasil, destaque para votação em separado da Emenda nº 45 ao Substitutivo do Projeto de Lei nº 1847/2024.",
+          "data": "2024-08-20T17:09:45",
+          "autoria": "Líder do UNIÃO Professora Dorinha Seabra (UNIÃO/TO)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/76fe5bd4-07ef-4f3b-95b6-a6a92d3139cd"
+         }
+        ]
+       },
+       {
+        "id": 2207174,
+        "data": "2024-08-20 17:31:54",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento nº 603, de 2024, da Liderança do PL, de retirada do Requerimento nº 595/2024, o qual apresentava destaque para votação em separado dos incisos I e II do §2º do art. 45 do Substitutivo.",
+        "documentosAssociados": [
+         {
+          "id": 9788838,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 603/2024",
+          "descricao": "Requer, pela liderança do PL. a retirada do Requerimento nº 595, de 2024.",
+          "data": "2024-08-20T17:25:39",
+          "autoria": "Líder do PL Carlos Portinho (PL/)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/58efbc85-16bc-4836-a3a1-273077af87db"
+         }
+        ]
+       },
+       {
+        "id": 2207176,
+        "data": "2024-08-20 17:35:54",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebido o Requerimento n° 604, de 2024, da liderança do PL, de destaque para votação em separado dos incisos I e II do §2º do art. 43 do Substitutivo ao PL 1.847 de 2024.",
+        "documentosAssociados": [
+         {
+          "id": 9788843,
+          "tipo": "Requerimento",
+          "siglaTipo": "REQUERIMENTO",
+          "identificacao": "RQS 604/2024",
+          "descricao": "Requer, pela Liderança do PL, destaque para votação em separado dos incisos I e II do §2º do art. 43 do Substitutivo ao PL 1.847 de 2024.",
+          "data": "2024-08-20T17:26:25",
+          "autoria": "Líder do PL Carlos Portinho (PL/)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/0fe3b2d0-aa07-47f1-9124-9663be273885"
+         }
+        ]
+       },
+       {
+        "id": 2207182,
+        "data": "2024-08-20 19:36:09",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "descricao": "Recebida a declaração de voto do Senador Eduardo Girão, contrário ao Projeto.",
+        "documentosAssociados": [
+         {
+          "id": 9788980,
+          "tipo": "Ofício",
+          "siglaTipo": "OFICIO",
+          "identificacao": "OF 154/2024 - Gabinete do Senador Eduardo Girão",
+          "descricao": "Declaração de voto contrário ao PL 1847/2024.",
+          "data": "2024-08-20T19:31:33",
+          "autoria": "Senador Eduardo Girão (NOVO/CE)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/30708d26-81fd-42de-8086-e9f28f7b0a73"
+         }
+        ]
+       },
+       {
+        "id": 2207184,
+        "data": "2024-08-20 19:47:09",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "descricao": "(Sessão Deliberativa Ordinária, semipresencial, realizada em 20/08/2024)    \r\nEncaminhadas à publicação as Emendas nºs 1, 2 e 4 a 13-PLEN.   \r\nProferida pelo Senador Jaques Wagner complementação de voto ao Parecer nº 135, de 2024–PLEN/SF, favorável ao Projeto, nos termos da Emenda nº 14 (Substitutivo), que apresenta, pela rejeição das Emendas nºs 1 a 13 – PLEN; e pela tramitação autônoma do Projeto de Lei nº 4.719, de 2020. \r\nEncerrada a discussão. \r\nPrejudicado o RQS nº 585/2024, da Liderança do PP, de destaque, para votação em separado do art. 4º do Substitutivo. \r\nPrejudicado o RQS nº 586/2024, da Liderança do PL, de destaque, para votação em separado do art. 18º do Substitutivo. \r\nEncaminhado à publicação e retirado o RQS nº 598/2024, da Liderança do Republicanos, que solicita destaque, para votação em separado, da Emenda nº 5, que suprime o art. 46 da Emenda nº 3, equivalente ao art. 44 da Emenda nº 14, novo Substitutivo do Relator. \r\nEncaminhado à publicação e prejudicado o RQS nº 601/2024, da Liderança do União Brasil, que solicita destaque para votação em separado do art. 45 do Substitutivo.  \r\nEncaminhado à publicação e prejudicado o RQS nº 604/2024, da Liderança do PL, que solicita destaque para votação em separado dos incisos I e II do §2º do art. 43 do Substitutivo. \r\nAprovada a Emenda nº 14 (novo Substitutivo do Relator), nos termos do parecer, em turno único, com a supressão dos arts. 18 e 45, com alteração redacional no caput do art 4º, no § 2º do art. 43 e no caput do art. 46; e com a inclusão de § 5º ao art. 23, ficando prejudicados o Projeto de Lei nº 1.847, de 2024, e as demais emendas, com os votos contrários dos Senadores Flávio Bolsonaro e Magno Malta. \r\nEncaminhado à publicação o Parecer nº 136, de 2024-PLEN/SF, da Comissão Diretora, oferecendo a redação para o turno suplementar. Encerrada a discussão, sem emendas, o Substitutivo é dado como definitivamente adotado, sem votação. \r\nO Projeto de Lei nº 1.847/2024, aprovado na forma de Substitutivo, vai à Câmara dos Deputados. \r\nO Projeto de Lei nº 4.719, de 2020, retoma sua tramitação autônoma e vai ao exame da CAS, seguindo posteriormente à CAE. \r\n(Encaminhado à publicação o RQS nº 603, de 2024)",
+        "idSituacaoIniciada": 113,
+        "siglaSituacaoIniciada": "APRVSUB",
+        "documentosAssociados": [
+         {
+          "id": 9789009,
+          "tipo": "Parecer de redação",
+          "siglaTipo": "PARECER_REDACAO",
+          "identificacao": "P.S 136/2024 - PLEN",
+          "descricao": "Parecer nº 136, de 2024-PLEN/SF, oferecendo a redação para o turno suplementar.",
+          "data": "2024-08-20T00:00:00",
+          "autoria": "Comissão Diretora do Senado Federal",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/7e667237-a5fb-4305-b33e-5d06c4f0c589"
+         },
+         {
+          "id": 9789056,
+          "tipo": "Relatório Legislativo",
+          "siglaTipo": "RELATORIO",
+          "identificacao": "Relatório Legislativo - SF241360653585",
+          "descricao": "Complementação de voto ao Parecer nº 135, de 2024, contendo notas taquigráficas com modificações acolhidas pelo relator em Plenário.",
+          "data": "2024-08-20T00:00:00",
+          "autoria": "Senador Jaques Wagner (PT/BA)",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/330040e3-5e47-4210-98b0-a3423de1669b"
+         }
+        ]
+       },
+       {
+        "id": 2207623,
+        "data": "2024-08-23 16:19:28",
+        "colegiado": {},
+        "enteAdministrativo": {
+         "id": 55304,
+         "casa": "SF",
+         "sigla": "SEXPE",
+         "nome": "Secretaria de Expediente"
+        },
+        "descricao": "Anexado o texto revisado.",
+        "documentosAssociados": [
+         {
+          "id": 9790905,
+          "tipo": "Minuta",
+          "siglaTipo": "MINUTA",
+          "identificacao": "Minuta - SF245648995299",
+          "data": "2024-08-23T16:19:25",
+          "autoria": "Senado Federal",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/c8b8f367-d208-4a8a-957b-9c1d6a481402"
+         }
+        ]
+       },
+       {
+        "id": 2207757,
+        "data": "2024-08-26 16:11:07",
+        "colegiado": {},
+        "enteAdministrativo": {
+         "id": 55304,
+         "casa": "SF",
+         "sigla": "SEXPE",
+         "nome": "Secretaria de Expediente"
+        },
+        "descricao": "Remetido Ofício SF nº 859, de 22/08/24, ao Senhor Primeiro-Secretário da Câmara dos Deputados, encaminhando autógrafo do projeto para revisão, nos termos do art. 65 da Constituição Federal.",
+        "idSituacaoIniciada": 52,
+        "siglaSituacaoIniciada": "RMCD",
+        "documentosAssociados": [
+         {
+          "id": 9790161,
+          "tipo": "Ofício",
+          "siglaTipo": "OFICIO",
+          "identificacao": "OFSF 859/2024",
+          "descricao": "Encaminha à revisão da Câmara dos Deputados o Projeto de Lei n° 1.847, de 2024.",
+          "data": "2024-08-22T00:00:00",
+          "autoria": "Primeiro-Secretário do Senado Federal",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/dc480d88-9715-4a30-902c-63ac0b15ff5d"
+         },
+         {
+          "id": 9805713,
+          "tipo": "Projeto de Lei Ordinária",
+          "siglaTipo": "PROJETO_LEI_ORDINARIA",
+          "identificacao": "Autógrafo - PL 1847/2024",
+          "descricao": "Estabelece um regime de transição para a contribuição substitutiva prevista pelos arts. 7º e 8º da Lei nº 12.546, de 14 de dezembro de 2011, e para o adicional sobre a Cofins-Importação previsto pelo § 21 do art. 8º da Lei nº 10.865, de 30 de abril de 2004.",
+          "data": "2024-09-12T00:00:00",
+          "autoria": "Senado Federal",
+          "url": "https://legis.senado.leg.br/sdleg-getter/dadosabertos/documento/863a0f6c-d5e9-484d-a533-8bf3bae45d5d"
+         }
+        ]
+       },
+       {
+        "id": 2211619,
+        "data": "2024-09-16 12:00:00",
+        "colegiado": {},
+        "enteAdministrativo": {
+         "id": 55304,
+         "casa": "SF",
+         "sigla": "SEXPE",
+         "nome": "Secretaria de Expediente"
+        },
+        "descricao": "(PR) PRESIDÊNCIA DA REPÚBLICA.\r\nSANCIONADA. LEI 14973 DE 2024. (vetada parcialmente: vide MSG 1097 de 2024).\r\nDOUE (Diário Oficial da União - Edição Extra) - 16/09/2024 - Seção I - págs. 1 e 4.\r\nSancionada em 16/09/2024.\r\n\r\nÀ COARQ.",
+        "idSituacaoIniciada": 92,
+        "siglaSituacaoIniciada": "TNJRVETO"
+       },
+       {
+        "id": 2211933,
+        "data": "2024-09-18 14:41:19",
+        "colegiado": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        },
+        "enteAdministrativo": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "descricao": "Encaminhado à publicação o Ofício nº 502, de 2024, da Câmara dos Deputados, que comunica o envio à sanção do Projeto de Lei nº 1.847, de 2024.\r\nA matéria vai à Secretaria de Expediente."
+       }
+      ],
+      "movimentacoes": [
+       {
+        "id": 9693711,
+        "dataEnvio": "2024-07-08 19:05:12",
+        "enteOrigem": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "dataRecebimento": "2024-07-08 19:28:21",
+        "enteDestino": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9694680,
+        "dataEnvio": "2024-07-09 07:53:59",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": "2024-07-09 08:50:08",
+        "enteDestino": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "colegiadoDestino": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        }
+       },
+       {
+        "id": 9700983,
+        "dataEnvio": "2024-07-10 18:54:12",
+        "enteOrigem": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "dataRecebimento": "2024-07-16 17:19:23",
+        "enteDestino": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9714085,
+        "dataEnvio": "2024-07-16 18:35:10",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": "2024-07-16 18:38:18",
+        "enteDestino": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "colegiadoDestino": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        }
+       },
+       {
+        "id": 9716125,
+        "dataEnvio": "2024-07-17 16:30:23",
+        "enteOrigem": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "dataRecebimento": "2024-07-17 16:52:15",
+        "enteDestino": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9716316,
+        "dataEnvio": "2024-07-17 17:15:04",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": "2024-07-17 17:19:04",
+        "enteDestino": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "colegiadoDestino": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        }
+       },
+       {
+        "id": 9759706,
+        "dataEnvio": "2024-08-07 17:53:29",
+        "enteOrigem": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "dataRecebimento": "2024-08-07 18:02:17",
+        "enteDestino": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9759853,
+        "dataEnvio": "2024-08-07 18:19:56",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": "2024-08-07 18:24:09",
+        "enteDestino": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "colegiadoDestino": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        }
+       },
+       {
+        "id": 9778907,
+        "dataEnvio": "2024-08-14 19:51:54",
+        "enteOrigem": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "dataRecebimento": "2024-08-15 12:49:12",
+        "enteDestino": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9781628,
+        "dataEnvio": "2024-08-15 13:25:33",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": null,
+        "enteDestino": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "colegiadoDestino": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        }
+       },
+       {
+        "id": 9782306,
+        "dataEnvio": "2024-08-15 16:17:35",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": "2024-08-15 16:25:15",
+        "enteDestino": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "colegiadoDestino": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        }
+       },
+       {
+        "id": 9788986,
+        "dataEnvio": "2024-08-20 19:34:07",
+        "enteOrigem": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "dataRecebimento": "2024-08-20 19:44:27",
+        "enteDestino": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9788991,
+        "dataEnvio": "2024-08-20 19:48:39",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": null,
+        "enteDestino": {
+         "id": 55304,
+         "casa": "SF",
+         "sigla": "SEXPE",
+         "nome": "Secretaria de Expediente"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9789059,
+        "dataEnvio": "2024-08-20 20:38:31",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": "2024-08-20 20:38:47",
+        "enteDestino": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "colegiadoDestino": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        }
+       },
+       {
+        "id": 9789049,
+        "dataEnvio": "2024-08-20 20:42:30",
+        "enteOrigem": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "dataRecebimento": "2024-08-20 20:43:01",
+        "enteDestino": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9789114,
+        "dataEnvio": "2024-08-21 10:03:08",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": "2024-08-21 18:31:17",
+        "enteDestino": {
+         "id": 7359809,
+         "casa": "SF",
+         "sigla": "NRELE",
+         "nome": "Núcleo de Redação Legislativa"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9790800,
+        "dataEnvio": "2024-08-23 12:27:06",
+        "enteOrigem": {
+         "id": 7359809,
+         "casa": "SF",
+         "sigla": "NRELE",
+         "nome": "Núcleo de Redação Legislativa"
+        },
+        "dataRecebimento": "2024-08-23 16:17:35",
+        "enteDestino": {
+         "id": 55304,
+         "casa": "SF",
+         "sigla": "SEXPE",
+         "nome": "Secretaria de Expediente"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9808619,
+        "dataEnvio": "2024-09-18 13:28:38",
+        "enteOrigem": {
+         "id": 55304,
+         "casa": "SF",
+         "sigla": "SEXPE",
+         "nome": "Secretaria de Expediente"
+        },
+        "dataRecebimento": "2024-09-18 13:36:14",
+        "enteDestino": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "colegiadoDestino": {
+         "codigo": 1998,
+         "casa": "SF",
+         "sigla": "PLEN",
+         "nome": "Plenário do Senado Federal"
+        }
+       },
+       {
+        "id": 9808695,
+        "dataEnvio": "2024-09-18 13:49:46",
+        "enteOrigem": {
+         "id": 55312,
+         "casa": "SF",
+         "sigla": "SLSF",
+         "nome": "Secretaria Legislativa do Senado Federal"
+        },
+        "dataRecebimento": "2024-09-18 14:39:36",
+        "enteDestino": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "colegiadoDestino": {}
+       },
+       {
+        "id": 9809025,
+        "dataEnvio": "2024-09-18 14:44:21",
+        "enteOrigem": {
+         "id": 13594,
+         "casa": "SF",
+         "sigla": "SEADI",
+         "nome": "Secretaria de Atas e Diários"
+        },
+        "dataRecebimento": "2024-09-18 15:10:36",
+        "enteDestino": {
+         "id": 55304,
+         "casa": "SF",
+         "sigla": "SEXPE",
+         "nome": "Secretaria de Expediente"
+        },
+        "colegiadoDestino": {}
+       }
+      ]
+     }
+    ],
+    "deliberacao": {
+     "data": "2024-08-20",
+     "siglaTipo": "APROVADA_NO_PLENARIO",
+     "tipoDeliberacao": "Aprovada pelo Plenário",
+     "idDestino": 1,
+     "siglaDestino": "CAMARA",
+     "destino": "À Câmara dos Deputados"
+    },
+    "normaGerada": {
+     "codigo": 39625610,
+     "siglaTipo": "LEI-n",
+     "tipo": "Lei Numerada",
+     "numero": 14973,
+     "anoAssinatura": "2024",
+     "dataAssinatura": "2024-09-16",
+     "descricao": "Lei nº 14.973 de 16/09/2024",
+     "dataPublicacao": "2024-09-16",
+     "siglaVeiculoPublicacao": "DOUE",
+     "veiculoPublicacao": "[Diário Oficial da União - Edição Extra  de 16/09/2024 - nº 179-A] (p. 1, col. 1)"
+    }
+   },
+   "sha256_corpo": "sha256:45957b5c38871f2ff25093598b180aa568484a02dc17d02c89aef7af5efdc7d3"
+  }
+ ]
+}

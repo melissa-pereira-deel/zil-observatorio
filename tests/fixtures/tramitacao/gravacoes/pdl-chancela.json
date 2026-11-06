@@ -1,0 +1,219 @@
+{
+ "formato": 1,
+ "caso": "pdl-chancela",
+ "gravado_em": "2026-11-05T22:47:38-03:00",
+ "sintetico": false,
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2419365",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 2419365,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2419365",
+     "siglaTipo": "PDL",
+     "codTipo": 557,
+     "numero": 32,
+     "ano": 2024,
+     "ementa": "Susta os efeitos dos dispositivos da Portaria MTE. n° 3872 de 21 de dezembro de 2023, que dispõe sobre a aprendizagem profissional, o Cadastro Nacional de Aprendizagem Profissional e o Catálogo Nacional da Aprendizagem Profissional.",
+     "dataApresentacao": "2024-03-05T19:57",
+     "uriOrgaoNumerador": null,
+     "statusProposicao": {
+      "dataHora": "2025-03-11T21:40",
+      "sequencia": 8,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": null,
+      "descricaoTramitacao": "Despacho de Apensação",
+      "codTipoTramitacao": "129",
+      "descricaoSituacao": "Aguardando Despacho do Presidente da Câmara dos Deputados (Chancela)",
+      "codSituacao": 1201,
+      "despacho": "Apense-se à(ao) PDL-469/2023.Proposição Sujeita à Apreciação do PlenárioRegime de Tramitação: Ordinário (Art. 151, III, RICD)",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2419365/autores",
+     "descricaoTipo": "Projeto de Decreto Legislativo de Sustação de Atos Normativos do Poder Executivo",
+     "ementaDetalhada": "",
+     "keywords": "Sustação, Portaria ministerial, Ministério do Trabalho e Emprego, Educação e formação profissional, Cadastro Nacional de Aprendizagem Profissional (CNAP), Catálogo Nacional de Programas de Aprendizagem Profissional (CONAP), Sistema S, Serviço Nacional de Aprendizagem Rural (Senar).",
+     "uriPropPrincipal": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2410362",
+     "uriPropAnterior": null,
+     "uriPropPosterior": null,
+     "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2391612",
+     "urnFinal": null,
+     "texto": null,
+     "justificativa": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2419365"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:7d18234ef858de46c39072f0f977fbc6393aa129f9a45585e93fecec58f24a1c"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2419365/tramitacoes",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "dataHora": "2024-03-05T19:57",
+      "sequencia": 1,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": null,
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": "Aguardando Despacho do Presidente da Câmara dos Deputados (Chancela)",
+      "codSituacao": 1201,
+      "despacho": "Apresentação do PDL n. 32/2024 (Projeto de Decreto Legislativo de Sustação de Atos Normativos do Poder Executivo), pelo Deputado Evair Vieira de Melo (PP/ES), que \"Susta os efeitos dos dispositivos da Portaria MTE nº 3.544, de 19 de outubro de 2023, que dispõe sobre a aprendizagem profissional, o Cadastro Nacional de Aprendizagem Profissional e o Catálogo Nacional da Aprendizagem Profissional\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2391612",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     },
+     {
+      "dataHora": "2025-03-11T21:40",
+      "sequencia": 8,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": null,
+      "descricaoTramitacao": "Despacho de Apensação",
+      "codTipoTramitacao": "129",
+      "descricaoSituacao": "Aguardando Despacho do Presidente da Câmara dos Deputados (Chancela)",
+      "codSituacao": 1201,
+      "despacho": "Apense-se à(ao) PDL-469/2023.Proposição Sujeita à Apreciação do PlenárioRegime de Tramitação: Ordinário (Art. 151, III, RICD)",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=2391994",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação do Plenário"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2419365/tramitacoes"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:3be97b53abbd3741e088b27dfd0841022134b13cea36dc0b3a9e972d03c26638"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2419365/autores",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/178871",
+      "nome": "Evair Vieira de Melo",
+      "codTipo": 10000,
+      "tipo": "Deputado(a)",
+      "ordemAssinatura": 1,
+      "proponente": 1
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2419365/autores"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:0c6e11b90c8df59365f019affc93514f8d842b98c80802a4b8be72382add360f"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2419365/relacionadas",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2419365/relacionadas"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:5b05c151448d5154bf0726a0a8b6e04e37780a7f7991684b81b2bc0087a091b6"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/4",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 4,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+     "sigla": "MESA",
+     "nome": "Mesa Diretora da Câmara dos Deputados",
+     "apelido": "Mesa Diretora",
+     "codTipoOrgao": 1,
+     "tipoOrgao": "Comissão Diretora",
+     "nomePublicacao": "Mesa Diretora",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Sala de Reuniões do Espaço Cultural",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:409e90a97ee380ad8f34c54ee94c49671a9629c0f0982841f4fac24c22eefad9"
+  }
+ ]
+}

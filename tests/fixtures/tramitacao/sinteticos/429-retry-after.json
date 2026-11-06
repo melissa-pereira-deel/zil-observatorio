@@ -1,0 +1,47 @@
+{
+ "formato": 1,
+ "caso": "sinteticos/429-retry-after",
+ "gravado_em": null,
+ "sintetico": true,
+ "por_que": "Escrito à mão: 429 com retry-after de 2 s, depois 200.",
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000429",
+   "params": {},
+   "status": 429,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "2",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "status": 429,
+    "title": "Too Many Requests"
+   },
+   "sha256_corpo": "sha256:0d3547631eca2eb532bed207750656b5170ec07809f5a6b33eefe00d7258b305"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000429",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 900000429
+    },
+    "links": []
+   },
+   "sha256_corpo": "sha256:c60aa535e10d9a47be53c451cf4419d794815d2520bf65656b2020158a5d6a1e"
+  }
+ ]
+}

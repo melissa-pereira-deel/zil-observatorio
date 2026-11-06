@@ -66,6 +66,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
     e o loader não importaria no container de desenvolvimento.
 - `scripts/sync_pipeline.py --limite N`: o enriquecimento processa só as N
   proposições pendentes mais recentes.
+- **Respostas gravadas das APIs da Câmara e do Senado** (TRM-002,
+  `tests/fixtures/tramitacao/`): 18 casos reais, a janela de 7 dias e 4 sintéticos, com replay
+  offline em `tests/replay.py` e a fixture `gravacoes`. Requisição não gravada falha o teste, mesmo
+  quando o chamador engole a exceção. `CamaraClient` e `SenadoClient` aceitam `transport=`; sem o
+  argumento, nada muda. `scripts/gravar_respostas.py` regrava os pacotes pelo cliente de produção,
+  respeitando `Retry-After`. Ele remove todo campo de CPF, data e local de nascimento, e interrompe a
+  gravação se achar um valor com forma de CPF em qualquer corpo, ou se a janela de 7 dias vier truncada.
 - **Plenário das votações** (`components/ui/Hemiciclo.tsx`, `MapaUF.tsx`,
   `Histograma.tsx`, `components/PlenarioVotacao.tsx`, `lib/votacao.ts`), do
   artboard "Placar" do canvas de redesign:

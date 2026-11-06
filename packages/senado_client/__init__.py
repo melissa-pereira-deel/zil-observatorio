@@ -69,12 +69,13 @@ class MateriaSenAPI:
 class SenadoClient:
     """Client para a API de Dados Abertos do Senado Federal."""
 
-    def __init__(self, base_url: str = BASE_URL):
+    def __init__(self, base_url: str = BASE_URL, *, transport: Optional[httpx.BaseTransport] = None):
         self.base_url = base_url
         self.client = httpx.Client(
             base_url=base_url,
             headers=HEADERS,
             timeout=30.0,
+            transport=transport,
         )
 
     def _get(self, path: str, params: Optional[dict] = None) -> Any:

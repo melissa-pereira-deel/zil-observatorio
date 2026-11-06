@@ -1,0 +1,65 @@
+{
+ "formato": 1,
+ "caso": "sinteticos/503-sem-retry-after",
+ "gravado_em": null,
+ "sintetico": true,
+ "por_que": "Escrito à mão: 503, 503, 200, sem retry-after.",
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000503",
+   "params": {},
+   "status": 503,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "status": 503,
+    "title": "Service Unavailable"
+   },
+   "sha256_corpo": "sha256:350976dbb108ca9eee1878e7eb8a337726b3790fc27c835db9a0e7f37790a390"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000503",
+   "params": {},
+   "status": 503,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "status": 503,
+    "title": "Service Unavailable"
+   },
+   "sha256_corpo": "sha256:350976dbb108ca9eee1878e7eb8a337726b3790fc27c835db9a0e7f37790a390"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/900000503",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": null,
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 900000503
+    },
+    "links": []
+   },
+   "sha256_corpo": "sha256:0e8a984994f95daf5bcb39e48070546fb180c795f1a6fb188399cc78757fe7d2"
+  }
+ ]
+}

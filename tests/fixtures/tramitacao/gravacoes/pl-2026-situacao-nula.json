@@ -1,0 +1,219 @@
+{
+ "formato": 1,
+ "caso": "pl-2026-situacao-nula",
+ "gravado_em": "2026-11-05T22:47:46-03:00",
+ "sintetico": false,
+ "respostas": [
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2642308",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 2642308,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2642308",
+     "siglaTipo": "PL",
+     "codTipo": 139,
+     "numero": 4947,
+     "ano": 2026,
+     "ementa": "Institui o Programa Nacional de Energia Solar para Escolas e Unidades Públicas de Saúde - PRONESP, estabelece mecanismos de financiamento pela União para instalação de sistemas de geração de energia solar fotovoltaica em escolas e hospitais públicos e determina o reinvestimento da economia obtida em ações de saúde e educação.",
+     "dataApresentacao": "2026-08-08T11:30",
+     "uriOrgaoNumerador": null,
+     "statusProposicao": {
+      "dataHora": "2026-10-29T15:34",
+      "sequencia": 8,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Distribuição",
+      "codTipoTramitacao": "110",
+      "descricaoSituacao": null,
+      "codSituacao": null,
+      "despacho": "Às Comissões deMinas e Energia;Educação;Saúde;Finanças e Tributação (Mérito e Art. 54, RICD) eConstituição e Justiça e de Cidadania (Art. 54, RICD).Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II.Regime de Tramitação: Ordinário (Art. 151, III, RICD).",
+      "url": null,
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     "uriAutores": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2642308/autores",
+     "descricaoTipo": "Projeto de Lei",
+     "ementaDetalhada": null,
+     "keywords": "criação; Ação governamental; Financiamento público; implementação; Energia solar fotovoltaica; Sistema de energia solar fotovoltaica; Escola pública; Unidade pública de saúde; Sustentabilidade ambiental; Fonte alternativa de energia; Eficiência energética",
+     "uriPropPrincipal": null,
+     "uriPropAnterior": null,
+     "uriPropPosterior": null,
+     "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3169544",
+     "urnFinal": null,
+     "texto": null,
+     "justificativa": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2642308"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:d5ad94ece398788a1dbe7c08872ec84a9d77f094f0458bf2093a510a777d0e66"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2642308/tramitacoes",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "dataHora": "2026-08-08T11:30",
+      "sequencia": 1,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "codTipoTramitacao": "100",
+      "descricaoSituacao": null,
+      "codSituacao": null,
+      "despacho": "Apresentação do PL n. 4947/2026 (Projeto de Lei), pelo Deputado Marreca Filho (PRD/MA), que \"Institui o Programa Nacional de Energia Solar para Escolas e Unidades Públicas de Saúde - PRONESP, estabelece mecanismos de financiamento pela União para instalação de sistemas de geração de energia solar fotovoltaica em escolas e hospitais públicos e determina o reinvestimento da economia obtida em ações de saúde e educação\".",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3169544",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     },
+     {
+      "dataHora": "2026-10-29T15:34",
+      "sequencia": 8,
+      "siglaOrgao": "MESA",
+      "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+      "uriUltimoRelator": null,
+      "regime": "Ordinário (Art. 151, III, RICD)",
+      "descricaoTramitacao": "Distribuição",
+      "codTipoTramitacao": "110",
+      "descricaoSituacao": null,
+      "codSituacao": null,
+      "despacho": "Às Comissões deMinas e Energia;Educação;Saúde;Finanças e Tributação (Mérito e Art. 54, RICD) eConstituição e Justiça e de Cidadania (Art. 54, RICD).Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II.Regime de Tramitação: Ordinário (Art. 151, III, RICD).",
+      "url": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3184123",
+      "ambito": "Regimental",
+      "apreciacao": "Proposição Sujeita à Apreciação Conclusiva pelas Comissões - Art. 24 II"
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2642308/tramitacoes"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:e95c3e539a564f2698d0afcd0248abc57fe906a4541a13b04fcd52605b594789"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2642308/autores",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [
+     {
+      "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/204566",
+      "nome": "Marreca Filho",
+      "codTipo": 10000,
+      "tipo": "Deputado(a)",
+      "ordemAssinatura": 1,
+      "proponente": 1
+     }
+    ],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2642308/autores"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:bbc4fa591b25ab4e000d3023d383201e81109b59eb0fc368aaffec2d5021c941"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/proposicoes/2642308/relacionadas",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": [],
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2642308/relacionadas"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:61bc1f2ea6f7fb5bbce6635c1f1faed9d6c96a6b4c6dce5345f05c66be8329c8"
+  },
+  {
+   "host": "camara",
+   "metodo": "GET",
+   "caminho": "/orgaos/4",
+   "params": {},
+   "status": 200,
+   "cabecalhos": {
+    "x-total-count": null,
+    "link": null,
+    "retry-after": "30",
+    "content-type": "application/json"
+   },
+   "corpo": {
+    "dados": {
+     "id": 4,
+     "uri": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4",
+     "sigla": "MESA",
+     "nome": "Mesa Diretora da Câmara dos Deputados",
+     "apelido": "Mesa Diretora",
+     "codTipoOrgao": 1,
+     "tipoOrgao": "Comissão Diretora",
+     "nomePublicacao": "Mesa Diretora",
+     "nomeResumido": null,
+     "dataInicio": null,
+     "dataInstalacao": null,
+     "dataFim": null,
+     "dataFimOriginal": null,
+     "casa": "",
+     "sala": "Sala de Reuniões do Espaço Cultural",
+     "urlWebsite": null
+    },
+    "links": [
+     {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4"
+     }
+    ]
+   },
+   "sha256_corpo": "sha256:409e90a97ee380ad8f34c54ee94c49671a9629c0f0982841f4fac24c22eefad9"
+  }
+ ]
+}

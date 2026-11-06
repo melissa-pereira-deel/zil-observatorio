@@ -1,0 +1,176 @@
+# Casos golden da tramitação (TRM-002). `hoje` é escrito por scripts/gravar_respostas.py:
+# é a data da gravação, o `hoje` da R9 nos testes. `esperado` é preenchido em TRM-025 e
+# conferido pela maintainer. Lista e motivos: specs/013-tramitacao/backlog-dados.md.
+casos:
+- slug: pl-327-2021
+  casa: camara
+  fonte_id: '2269745'
+  rotulo: PL 327/2021
+  por_que: Ofício depois do marco; urgência; emendas do Senado; veto
+  receita: proposicao_completa
+  senado:
+    sigla: PL
+    numero: 327
+    ano: 2021
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-2-2024
+  casa: camara
+  fonte_id: '2416804'
+  rotulo: PL 2/2024
+  por_que: Urgência constitucional; Plenário com parecer em Plenário; veto parcial; linhas fora de ordem
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-528-2020
+  casa: camara
+  fonte_id: '2238434'
+  rotulo: PL 528/2020
+  por_que: Lei 14.993/2024
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-1847-2024
+  casa: camara
+  fonte_id: '2454704'
+  rotulo: PL 1847/2024
+  por_que: Iniciado no Senado (A11)
+  receita: proposicao_completa
+  senado:
+    sigla: PL
+    numero: 1847
+    ano: 2024
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-1264-2024
+  casa: camara
+  fonte_id: '2426923'
+  rotulo: PL 1264/2024
+  por_que: Comissão (CFT), sem relator; regime "Ordinário" (A13)
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-4272-2023
+  casa: camara
+  fonte_id: '2384947'
+  rotulo: PL 4272/2023
+  por_que: '"Aguardando Encaminhamento" + 502 "fica prejudicada" (A7)'
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-5-2025
+  casa: camara
+  fonte_id: '2482075'
+  rotulo: PL 5/2025
+  por_que: Cadeia de 4 níveis até o PL 5941/2013
+  receita: proposicao_com_cadeia
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-278-2026
+  casa: camara
+  fonte_id: '2600838'
+  rotulo: PL 278/2026
+  por_que: Situação nula com marco 251 (A8)
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-359-2025
+  casa: camara
+  fonte_id: '2483457'
+  rotulo: PL 359/2025
+  por_que: Pauta em comissão com parecer pela rejeição
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: plp-68-2024
+  casa: camara
+  fonte_id: '2430143'
+  rotulo: PLP 68/2024
+  por_que: PLP; LC 214/2025 com veto parcial (A10)
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pec-45-2019
+  casa: camara
+  fonte_id: '2196833'
+  rotulo: PEC 45/2019
+  por_que: PEC; 1140 sem marco de norma (A9); substitutivo do Senado
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pdl-chancela
+  casa: camara
+  fonte_id: '2419365'
+  rotulo: PDL 32/2024
+  por_que: PDL em "(Chancela)" — R8
+  como_escolhido: Menor id entre os PDL com situação atual "(Chancela)" nos arquivos em massa proposicoes-2024
+    e proposicoes-2025 da Câmara, confirmado no detalhe. A spec manda consultar o banco de desenvolvimento;
+    esta tarefa não pode tocar nele.
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: mpv-perdeu-eficacia
+  casa: camara
+  fonte_id: '2601389'
+  rotulo: MPV 1336/2026
+  por_que: MPV — R3 perdeu_eficacia
+  como_escolhido: 'Menor id de /proposicoes?siglaTipo=MPV&codSituacao=1292 cuja situação atual no detalhe
+    é "Perdeu a Eficácia". O filtro codSituacao também devolve quem passou por ela: as duas primeiras
+    MPV da lista hoje estão em "Transformado em Norma Jurídica".'
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-2026-situacao-nula
+  casa: camara
+  fonte_id: '2642308'
+  rotulo: PL 4947/2026
+  por_que: R9
+  como_escolhido: 'Regra da spec: primeiro PL de 2026 do pacote janela-d7 com codSituacao nulo no detalhe
+    e apresentação há menos de 90 dias (89 dias em 2026-11-05).'
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pronta-pauta-plenario
+  casa: camara
+  fonte_id: '2437265'
+  rotulo: PL 2130/2024
+  por_que: '"Pronta para Pauta" com órgão PLEN — R7'
+  como_escolhido: 'Menor id com codSituacao 924 e siglaOrgao PLEN no detalhe, entre os 53 candidatos dos
+    arquivos em massa proposicoes-2024 e proposicoes-2025. A spec manda consultar o banco de desenvolvimento,
+    que esta tarefa não pode tocar, e depois a janela: o único item da janela com essa marca nos arquivos
+    em massa (PL 4480/2025) tem siglaOrgao MESA no detalhe.'
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-399-2025
+  casa: camara
+  fonte_id: '2483732'
+  rotulo: PL 399/2025
+  por_que: Urgência + apreciação conclusiva (A18) — TRM-014
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-3474-2023
+  casa: camara
+  fonte_id: '2373188'
+  rotulo: PL 3474/2023
+  por_que: '"Aguardando Designação de Relator(a)" com órgão CCP (A19) — órgão efetivo'
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: pl-4036-2026
+  casa: camara
+  fonte_id: '2640711'
+  rotulo: PL 4036/2026
+  por_que: Situação nula há 105 dias, último registro "Distribuição" (A20) — R9 pelo histórico
+  receita: proposicao_completa
+  hoje: '2026-11-05'
+  esperado: null
+- slug: janela-d7
+  casa: camara
+  fonte_id: null
+  rotulo: Janela de 7 dias
+  por_que: Seleção de alvos e orçamento
+  receita: janela
+  hoje: '2026-11-05'
+  esperado: null
