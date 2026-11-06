@@ -9,6 +9,7 @@ import {
   prefixoNorma,
   rotuloProposicao,
 } from "@/lib/tramitacao/especies";
+import { TEXTOS } from "@/lib/tramitacao/textos";
 
 describe("nomes das espécies", () => {
   it.each([
@@ -49,6 +50,12 @@ describe("comArtigo", () => {
     expect(comArtigo("REQ 12/2024")).toBe("a proposição REQ 12/2024");
     expect(comArtigo("Proposição")).toBe("a proposição");
   });
+
+  it("combina com rotuloProposicao quando falta o tipo", () => {
+    expect(comArtigo(rotuloProposicao({ tipo: null, numero: 5, ano: 2020 }))).toBe("a proposição 5/2020");
+    expect(comArtigo(rotuloProposicao({ tipo: "", numero: 5, ano: 2020 }))).toBe("a proposição 5/2020");
+    expect(comArtigo(rotuloProposicao({ tipo: null, numero: null, ano: null }))).toBe("a proposição");
+  });
 });
 
 describe("rotuloProposicao", () => {
@@ -88,6 +95,18 @@ describe("prefixoNorma (F04)", () => {
 
   it("aceita proposição sem tipo", () => {
     expect(prefixoNorma(null, "lei")).toBe("Virou lei");
+  });
+
+  // A API pode ampliar o enum antes do front. Sem texto na §4 para isso, o
+  // prefixo some (notas de uso: "sem variante, a oração some").
+  it("tipo de norma fora do enum não tem prefixo", () => {
+    expect(prefixoNorma("PL", "tratado" as unknown as NormaResumo["tipo"])).toBeNull();
+    expect(prefixoNorma("MPV", null as unknown as NormaResumo["tipo"])).toBeNull();
+  });
+
+  it("sem prefixo, F04 mostra só o rótulo, sem escrever undefined", () => {
+    const prefixo = prefixoNorma("PL", "tratado" as unknown as NormaResumo["tipo"]);
+    expect(TEXTOS.F04.linha({ prefixo, rotulo: "Lei 14.871/2024" })).toBe("Lei 14.871/2024");
   });
 });
 

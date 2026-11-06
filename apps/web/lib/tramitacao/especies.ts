@@ -41,20 +41,26 @@ export function especieConhecida(tipo: string | null): boolean {
 
 /** "o PL 5941/2013", "a PEC 45/2019". Sem nome conhecido, não chuta o gênero da sigla. */
 export function comArtigo(rotulo: string): string {
-  if (rotulo === PROPOSICAO) return "a proposição";
+  // Rótulo sem tipo, de `rotuloProposicao`: "Proposição" ou "Proposição 5/2020".
+  if (rotulo === PROPOSICAO || rotulo.startsWith(`${PROPOSICAO} `)) {
+    return `a proposição${rotulo.slice(PROPOSICAO.length)}`;
+  }
   const artigo = ESPECIES.get(rotulo.split(" ")[0])?.artigo;
   return artigo ? `${artigo} ${rotulo}` : `a proposição ${rotulo}`;
 }
 
 /** "PL 4861/2023". Dado que falta some do rótulo, em vez de virar "null". */
 export function rotuloProposicao(p: Pick<Proposicao, "tipo" | "numero" | "ano">): string {
-  const tipo = p.tipo ?? PROPOSICAO;
+  const tipo = p.tipo || PROPOSICAO;
   if (p.numero === null) return tipo;
   return p.ano === null ? `${tipo} ${p.numero}` : `${tipo} ${p.numero}/${p.ano}`;
 }
 
-/** Prefixo da linha F04: "Virou lei", "Convertida em lei"... */
-export function prefixoNorma(tipoProposicao: string | null, tipoNorma: NormaResumo["tipo"]): string {
+/**
+ * Prefixo da linha F04: "Virou lei", "Convertida em lei"... Nulo para tipo fora
+ * do enum, que a API pode ampliar antes do front: a §4 não tem texto para isso.
+ */
+export function prefixoNorma(tipoProposicao: string | null, tipoNorma: NormaResumo["tipo"]): string | null {
   switch (tipoNorma) {
     case "lei_ordinaria":
     case "lei_complementar":
@@ -66,5 +72,7 @@ export function prefixoNorma(tipoProposicao: string | null, tipoNorma: NormaResu
       return "Virou emenda constitucional";
     case "resolucao":
       return "Virou resolução";
+    default:
+      return null;
   }
 }

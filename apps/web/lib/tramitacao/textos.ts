@@ -70,7 +70,7 @@ export const TEXTOS = {
     lista: "Situação na Câmara: ainda não conferida.",
   },
   F04: {
-    linha: (d: { prefixo: string; rotulo: string }) => `${d.prefixo}: ${d.rotulo}`,
+    linha: (d: { prefixo: string | null; rotulo: string }) => (d.prefixo ? `${d.prefixo}: ${d.rotulo}` : d.rotulo),
     vetoParcial: "Sancionada com veto parcial: partes do texto foram vetadas pelo Presidente da República.",
     lerNormasLeg: "Ler o texto no normas.leg.br",
     lerPlanalto: "Ler o texto no Planalto",

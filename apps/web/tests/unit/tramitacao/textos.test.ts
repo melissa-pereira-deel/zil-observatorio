@@ -7,16 +7,23 @@ import { IDS_MATRIZ, TEXTOS } from "@/lib/tramitacao/textos";
 
 const SPEC = resolve(__dirname, "../../../../../specs/013-tramitacao/backlog-interface.md");
 
-/** Linhas da tabela de §4: { ID: { fonte, linha } }. */
-function matriz(): Record<string, { fonte: string; linha: string }> {
+type LinhaDaMatriz = { fonte: string; selo: string; texto: string };
+
+/** Linhas da tabela de §4, por ID, com as células que os testes leem. */
+function matriz(): Record<string, LinhaDaMatriz> {
   const secao = readFileSync(SPEC, "utf8").split("## 4. Matriz de estados e textos")[1].split("\n## 5.")[0];
-  const linhas: Record<string, { fonte: string; linha: string }> = {};
+  const linhas: Record<string, LinhaDaMatriz> = {};
   for (const linha of secao.split("\n")) {
     const id = /^\| ([A-Z]\d+[a-z]?) \|/.exec(linha)?.[1];
-    if (id) linhas[id] = { fonte: linha.split(/(?<!\\)\|/)[7].trim(), linha };
+    if (!id) continue;
+    const celulas = linha.split(/(?<!\\)\|/).map((c) => c.trim());
+    linhas[id] = { selo: celulas[3], texto: celulas[4], fonte: celulas[7] };
   }
   return linhas;
 }
+
+/** Os trechos entre aspas retas de uma célula, na ordem. As curvas fazem parte do texto. */
+const trechos = (celula: string) => Array.from(celula.matchAll(/"([^"]*)"/g)).map((t) => t[1]);
 
 type Args = Record<string, unknown>;
 type Texto = { caminho: string; texto: string };
@@ -28,7 +35,10 @@ const m = (marcador: string) => marcador as never;
 const CASOS: Record<string, Args[]> = {
   "I10.corpo": [{ n: m("{n}") }],
   "F02.paginaRecem": [{ dataApresentacao: m("{data_apresentacao}") }],
-  "F04.linha": [{ prefixo: m("{prefixo}"), rotulo: m("{norma.rotulo}") }],
+  "F04.linha": [
+    { prefixo: m("{prefixo}"), rotulo: m("{norma.rotulo}") },
+    { prefixo: null, rotulo: m("{norma.rotulo}") },
+  ],
   F09: [{ data: m("{data}") }],
   "X01.leitor": [{ rotulo: m("{rotulo}") }],
   L02: [
@@ -123,16 +133,12 @@ const preencher = (texto: string) =>
   Object.entries(EXEMPLOS).reduce((t, [marcador, exemplo]) => t.split(marcador).join(exemplo), texto);
 
 const idDe = (caminho: string) => /^[A-Z]\d+[a-z]?(?:_[A-Z_]+)?/.exec(caminho)![0];
+const baseDe = (caminho: string) => caminho.replace(/\(.*$/, "");
 
-/** IDs (ou caminhos) cujo texto casa com a regra, com os marcadores preenchidos. */
-function violacoes(regra: string) {
+/** Strings que casam com a regra, com os marcadores preenchidos, como pede o critério 2. */
+function violacoes(regra: string, ajuste: (preenchido: string) => string = (t) => t) {
   const r = REGRAS_ESTILO.find((x) => x.id === regra)!;
-  return todos().saida.filter(({ texto }) => {
-    // V-E7 proíbe data escrita no texto. A do marcador vem da API, por `dataBR`
-    // (§2.4, "datas só vêm da API"), e sempre casaria.
-    const preenchido = preencher(texto);
-    return r.regex.test(regra === "V-E7" ? preenchido.split(DATA_EXEMPLO).join("") : preenchido);
-  });
+  return todos().saida.filter(({ texto }) => r.regex.test(ajuste(preencher(texto))));
 }
 
 describe("critério 1: TEXTOS e a matriz", () => {
@@ -162,60 +168,197 @@ describe("critério 1: TEXTOS e a matriz", () => {
   });
 });
 
+// Variantes que a §4 descreve sem escrever por extenso: a saída gerada se compara
+// com um valor fixo. A chave é o caminho que `coletar` produz.
+const VARIANTES: Record<string, string> = {
+  'F04.linha({"prefixo":null,"rotulo":"{norma.rotulo}"})': "{norma.rotulo}",
+  'L02({"movimentacao":"{data}","apresentada":null})': "Última movimentação em {data}",
+  'L02({"movimentacao":null,"apresentada":"{data}"})': "Apresentada em {data}",
+  'L04({"n":1})': "1 proposição",
+  'L04({"n":"{n}","analise":"analisada"})': "{n} proposições analisadas",
+  'L04({"n":1,"analise":"analisada"})': "1 proposição analisada",
+  'L04({"n":"{n}","analise":"pendente"})': "{n} proposições sem análise",
+  'L04({"n":"{n}","de":130})': "{n} de 130 proposições",
+  'L04({"n":"{n}","faseChip":"{rótulo do chip}"})': "{n} proposições — fase: {rótulo do chip}",
+  'N01.corpo({"situacao":"{situacao}","versaoPublicada":null})':
+    "A situação oficial na Câmara, “{situacao}”, ainda não está no nosso mapa de fases. Preferimos não adivinhar.",
+  'N01.corpo({"situacao":null,"versaoPublicada":null})':
+    "A situação oficial desta proposição ainda não está no nosso mapa de fases. Preferimos não adivinhar.",
+  'N04.corpo({"conferidoEm":null})':
+    "Os dados da Câmara não bastam para saber: a situação oficial não foi informada, ou a Câmara não respondeu quando conferimos. Confira o andamento no site da Câmara.",
+  'N05.corpo({"tipo":"PLP"})': "O ZIL ainda não acompanha as fases de projetos de lei complementar.",
+  'N05.corpo({"tipo":"REQ"})': "O ZIL ainda não acompanha as fases deste tipo de proposição.",
+  'N05.corpo({"tipo":null})': "O ZIL ainda não acompanha as fases deste tipo de proposição.",
+  'K00.intro({"especieIndefinida":"{especie_indefinida}","casa":"camara"})':
+    "O caminho de {especie_indefinida} que começa na Câmara. A etapa atual aparece marcada.",
+  'K00.intro({"especieIndefinida":"{especie_indefinida}","casa":"senado"})':
+    "O caminho de {especie_indefinida} que começa no Senado. A etapa atual aparece marcada.",
+  'V01.aviso.corpo({"versaoPublicada":null})':
+    "Escrito a partir da Constituição e dos regimentos da Câmara e do Senado. Cada etapa cita a regra.",
+};
+
+// Trechos entre aspas da linha da §4 que não são texto de TEXTOS.
+const FORA_DE_TEXTOS: Record<string, string[]> = {
+  // Nome de seção ou de estado, citado para situar o texto.
+  I07: ["Onde está agora", "O caminho inteiro"],
+  V01: ["Depois que vira lei", "Como montamos este mapa"],
+  // Valor de enum, e prefixos que moram em especies.ts (especies.test.ts).
+  F04: ["Virou lei", "Convertida em lei", "Virou decreto legislativo", "Virou emenda constitucional", "Virou resolução", "parcial"],
+  // A §4 abrevia com "…": o valor inteiro está em VARIANTES.
+  L04: ["… analisadas", "… sem análise", " — fase: {rótulo do chip}"],
+  N04: ["… quando conferimos. Confira o andamento no site da Câmara."],
+  N05: ["O ZIL ainda não acompanha as fases de {especie_plural}.", "deste tipo de proposição"],
+  K00: ["O caminho de {especie_indefinida} que começa {na Câmara \\| no Senado}. A etapa atual aparece marcada."],
+  // Texto do kit, na mesma linha.
+  M02: ["Todos os {n} registros", "1 registro", "{n} registros carregados.", "Tentar de novo", "Mostrando {a}–{b} de {total}"],
+  // Só visual, ou endereço.
+  L06: ["→"],
+  C01: ["/metodologia#tramitacao", "(abre em nova aba)"],
+};
+
+// Campos que a §4 escreve por referência: "Mesmo título e corpo", "Título idem".
+const TITULO_N = "Não sabemos em que fase está";
+const POR_REFERENCIA: Record<string, (linhas: Record<string, LinhaDaMatriz>) => string[]> = {
+  A02: (linhas) => trechos(linhas.A01.texto).slice(0, 2),
+  N03: () => [TITULO_N],
+  N04: () => [TITULO_N],
+  N05: () => [TITULO_N],
+};
+
+/** O que a §4 manda para o ID: referências, depois os trechos da linha, menos o que não é de TEXTOS. */
+function esperadoDaSpec(id: string, linhas: Record<string, LinhaDaMatriz>): string[] {
+  const base = id.replace(/_.*/, "");
+  // N00 é o único sem texto entre aspas: o rótulo abre a célula do selo.
+  if (id === "N00") return [/^(.+?) \(glifo/.exec(linhas.N00.selo)![1]];
+  const lista = trechos(linhas[base].texto);
+  // Remove a última ocorrência: os nomes de seção repetidos são os citados depois do `h2`.
+  for (const fora of FORA_DE_TEXTOS[base] ?? []) lista.splice(lista.lastIndexOf(fora), 1);
+  return [...(POR_REFERENCIA[base]?.(linhas) ?? []), ...lista];
+}
+
+/** O que TEXTOS gera para os IDs de uma linha da §4 (C01 e suas chaves extras são uma linha só). */
+function geradoPorLinha(id: string): string[] {
+  return todos()
+    .saida.filter(({ caminho }) => idDe(caminho).replace(/_.*/, "") === id && !(caminho in VARIANTES))
+    .map(({ texto }) => texto);
+}
+
 describe("os textos são os da §4, sem reescrever", () => {
-  // Variantes que a §4 descreve em vez de escrever por extenso.
-  const DERIVADOS = new Set([
-    'L04({"n":"{n}","analise":"analisada"})',
-    'L04({"n":1,"analise":"analisada"})',
-    'L04({"n":"{n}","analise":"pendente"})',
-    'L04({"n":"{n}","de":130})',
-    'L04({"n":"{n}","faseChip":"{rótulo do chip}"})',
-    'L04({"n":1})',
-    'N01.corpo({"situacao":"{situacao}","versaoPublicada":null})',
-    'N01.corpo({"situacao":null,"versaoPublicada":null})',
-    'N04.corpo({"conferidoEm":null})',
-    'N05.corpo({"tipo":"PLP"})',
-    'N05.corpo({"tipo":"REQ"})',
-    'N05.corpo({"tipo":null})',
-    'K00.intro({"especieIndefinida":"{especie_indefinida}","casa":"camara"})',
-    'K00.intro({"especieIndefinida":"{especie_indefinida}","casa":"senado"})',
-    'V01.aviso.corpo({"versaoPublicada":null})',
-  ]);
+  const LINHAS_REVISADAS = Array.from(new Set(IDS_MATRIZ.map((id) => id.replace(/_.*/, ""))));
 
-  // Linhas que a §4 escreve por referência: "Mesmo título e corpo", "Título idem".
-  const IDEM: Record<string, string> = { A02: "A01", N03: "N01", N04: "N01", N05: "N01" };
-
-  it("toda string está, letra a letra, na linha do seu ID", () => {
-    const linhas = matriz();
-    const fora = todos()
-      .saida.filter(({ caminho }) => !DERIVADOS.has(caminho))
-      .filter(({ caminho, texto }) => {
-        const id = idDe(caminho).replace(/_.*/, "");
-        return !linhas[id].linha.includes(texto) && !linhas[IDEM[id]]?.linha.includes(texto);
-      });
-    expect(fora).toEqual([]);
+  // Igualdade da lista inteira, na ordem: pega texto truncado, vazio, trocado
+  // de lugar ou apagado, nos dois sentidos.
+  it.each(LINHAS_REVISADAS)("%s é igual à linha da matriz, trecho a trecho", (id) => {
+    expect(geradoPorLinha(id)).toEqual(esperadoDaSpec(id, matriz()));
   });
 
-  it("as variantes derivadas dizem o que a §4 manda", () => {
-    expect(TEXTOS.L04({ n: 12 })).toBe("12 proposições");
-    expect(TEXTOS.L04({ n: 1 })).toBe("1 proposição");
-    expect(TEXTOS.L04({ n: 12, analise: "analisada" })).toBe("12 proposições analisadas");
-    expect(TEXTOS.L04({ n: 1, analise: "analisada" })).toBe("1 proposição analisada");
-    expect(TEXTOS.L04({ n: 12, analise: "pendente" })).toBe("12 proposições sem análise");
-    expect(TEXTOS.L04({ n: 12, de: 130 })).toBe("12 de 130 proposições");
-    expect(TEXTOS.L04({ n: 12, faseChip: "Nas comissões" })).toBe("12 proposições — fase: Nas comissões");
-    expect(TEXTOS.N04.corpo({ conferidoEm: null })).toBe(
-      "Os dados da Câmara não bastam para saber: a situação oficial não foi informada, ou a Câmara não respondeu quando conferimos. Confira o andamento no site da Câmara.",
+  it("toda exceção de FORA_DE_TEXTOS existe mesmo na linha", () => {
+    const linhas = matriz();
+    const fantasmas = Object.entries(FORA_DE_TEXTOS).flatMap(([id, lista]) =>
+      lista.filter((t) => !trechos(linhas[id].texto).includes(t)).map((t) => `${id}: ${t}`),
     );
-    expect(TEXTOS.N05.corpo({ tipo: "PLP" })).toBe("O ZIL ainda não acompanha as fases de projetos de lei complementar.");
-    expect(TEXTOS.N05.corpo({ tipo: "REQ" })).toBe("O ZIL ainda não acompanha as fases deste tipo de proposição.");
-    expect(TEXTOS.N05.corpo({ tipo: null })).toBe("O ZIL ainda não acompanha as fases deste tipo de proposição.");
-    expect(TEXTOS.K00.intro({ especieIndefinida: "um projeto de lei", casa: "senado" })).toBe(
-      "O caminho de um projeto de lei que começa no Senado. A etapa atual aparece marcada.",
+    expect(fantasmas).toEqual([]);
+  });
+
+  it("cada variante gera exatamente o valor fixo", () => {
+    const geradas = Object.fromEntries(
+      todos()
+        .saida.filter(({ caminho }) => caminho in VARIANTES)
+        .map(({ caminho, texto }) => [caminho, texto]),
     );
-    expect(TEXTOS.M03({ n: 1 })).toBe("Ver o marco anterior");
-    expect(TEXTOS.S02({ n: 1 })).toBe("1 resultado");
-    expect(TEXTOS.L02({ movimentacao: null, apresentada: null })).toBeNull();
+    expect(geradas).toEqual(VARIANTES);
+  });
+
+  // A ordem não pega par trocado junto com a chave. Aqui o nome do campo decide:
+  // nestes, a direção muda o sentido do texto.
+  it("cada campo direcional diz o que o nome promete", () => {
+    expect(TEXTOS.L03).toEqual({
+      vazio: "Ordenar",
+      movimentacao: "Movimentação mais recente",
+      apresentacaoRecente: "Apresentação mais recente",
+      apresentacaoAntiga: "Apresentação mais antiga",
+    });
+    expect(TEXTOS.L05.casa).toEqual({ camara: "Começou na Câmara", senado: "Começou no Senado" });
+    expect(TEXTOS.L05.fases).toEqual({
+      todas: "Todas",
+      apresentada: "Apresentadas",
+      comissoes: "Nas comissões",
+      plenario: "No Plenário",
+      outra_casa: "Na outra Casa",
+      retorno: "De volta à Casa de origem",
+      sancao: "Com o Presidente da República",
+      veto_congresso: "Veto em análise",
+      promulgacao: "Aguardando promulgação",
+      norma: "Viraram norma",
+      encerradas: "Encerradas",
+      nao_identificada: "Fase não identificada",
+    });
+    expect(TEXTOS.V01.chips).toEqual({
+      PL: "Lei (PL)",
+      PLP: "Lei complementar (PLP)",
+      PEC: "Emenda à Constituição (PEC)",
+      MPV: "Medida provisória (MPV)",
+      PDL: "Decreto legislativo (PDL)",
+      camara: "Na Câmara",
+      senado: "No Senado",
+    });
+    expect(TEXTOS.I07.tituloCaminho).toBe("Não conseguimos carregar o caminho agora");
+    expect(TEXTOS.I07.tituloExplicacoes).toBe("Não conseguimos carregar as explicações agora");
+    expect(TEXTOS.F02.pagina).toBe("Ainda não informada pela Câmara.");
+    expect(TEXTOS.F02.lista).toBe("Situação na Câmara: ainda não informada.");
+    expect(TEXTOS.F03.pagina).toBe("Ainda não informada pela Câmara.");
+    expect(TEXTOS.F03.lista).toBe("Situação na Câmara: ainda não informada.");
+    expect(TEXTOS.F13.pagina).toBe("Ainda não conferimos a situação desta proposição na Câmara.");
+    expect(TEXTOS.F13.lista).toBe("Situação na Câmara: ainda não conferida.");
+    expect(TEXTOS.I12.semFase.titulo).toBe("Nenhuma proposição com esses filtros");
+    expect(TEXTOS.I12.comFase.titulo).toBe("Nenhuma proposição nesta fase com esses filtros");
+    expect(TEXTOS.F06.dt).toBe("Regime e quem decide");
+    expect(TEXTOS.F11.dt).toBe("Tramita junto com");
+    expect(TEXTOS.F04.lerNormasLeg).toBe("Ler o texto no normas.leg.br");
+    expect(TEXTOS.F04.lerPlanalto).toBe("Ler o texto no Planalto");
+    expect(TEXTOS.L05.grupoPauta).toBe("Pauta");
+    expect(TEXTOS.L05.grupoFase).toBe("Fase");
+    expect(TEXTOS.K00.introMpv).toBe("O caminho de uma medida provisória. A etapa atual aparece marcada.");
+    expect(TEXTOS.K00.botao).toBe("Entender como uma proposição vira lei");
+    expect(TEXTOS.V01.chapeu).toBe("Como funciona");
+    expect(TEXTOS.V01.h1).toBe("Como uma proposição vira lei");
+    expect(TEXTOS.V01.grupoTipo).toBe("Tipo de proposição");
+    expect(TEXTOS.V01.grupoComeca).toBe("Começa");
+    expect(TEXTOS.V01.h2).toEqual({
+      caminho: "O caminho",
+      outrasSituacoes: "Outras situações da Câmara",
+      ondePodeParar: "Onde uma proposição pode parar",
+      emConjunto: "Tramitação em conjunto",
+      depoisDaLei: "Depois que vira lei",
+      comoMontamos: "Como montamos este mapa",
+    });
+    expect(TEXTOS.V01.mapa.linkGithub).toBe("Ver o mapa no GitHub");
+    expect(TEXTOS.V01.mapa.linkSituacoes).toBe("O que quer dizer cada situação");
+    expect(TEXTOS.V02.chapeu).toBe("Como funciona");
+    expect(TEXTOS.V02.h1).toBe("Esta página ainda está em revisão");
+    expect(TEXTOS.V02.botaoProposicoes).toBe("Ver proposições");
+    expect(TEXTOS.V02.botaoMetodologia).toBe("Como o ZIL trabalha");
+    expect(TEXTOS.S01.chapeu).toBe("Como funciona");
+    expect(TEXTOS.S01.h1).toBe("O que quer dizer cada situação");
+    expect(TEXTOS.S01.h2).toEqual({
+      situacoes: "Situações na Câmara",
+      regimes: "Regimes de tramitação",
+      quemDecide: "Quem decide: comissões ou Plenário",
+    });
+    expect(TEXTOS.S01.chips).toEqual({ situacoes: "Situações", regimes: "Regimes", quemDecide: "Quem decide" });
+    expect(TEXTOS.S01.busca.rotulo).toBe("Buscar situação ou termo");
+  });
+
+  it("título e ação são os que a §4 rotula assim", () => {
+    const linhas = matriz();
+    const rotulado = (id: string, rotulo: string) => new RegExp(`${rotulo} "([^"]*)"`, "i").exec(linhas[id].texto)?.[1];
+    for (const id of ["I03", "I05", "I10", "N01", "N02", "N06"] as const) {
+      expect(TEXTOS[id].titulo).toBe(rotulado(id, "título"));
+    }
+    for (const id of ["I03", "I05", "I07", "I10", "A01", "A02"] as const) {
+      expect(TEXTOS[id].acao).toBe(rotulado(id, "ação"));
+    }
+    expect(TEXTOS.S03.acao).toBe(rotulado("S03", "ação"));
   });
 });
 
@@ -236,17 +379,14 @@ describe("marcador nulo nunca vira texto (notas de uso da §4)", () => {
 });
 
 describe("critério 2: guia de redação (§2.4)", () => {
-  it.each(["V-E1", "V-E2", "V-E3", "V-E4", "V-E5", "V-E6", "V-E7", "V-E8", "V-E9"])(
-    "%s: nenhuma string casa",
-    (regra) => {
-      expect(violacoes(regra)).toEqual([]);
-    },
-  );
+  it.each(["V-E1", "V-E2", "V-E3", "V-E4", "V-E5", "V-E6", "V-E8", "V-E9"])("%s: nenhuma string casa", (regra) => {
+    expect(violacoes(regra)).toEqual([]);
+  });
 
-  // NÃO CUMPRIDO: os textos da §4 dizem "ZIL" e "API", e o padrão de V-E10
-  // casa com as duas palavras. Mudar o texto ou a regra é decisão da
-  // maintainer, na §4 e na §2.4. A lista é exata: um caso novo reprova aqui, e
-  // cada caso resolvido obriga a tirar a linha.
+  // CRITÉRIO 2 NÃO CUMPRIDO: 16 strings casam. Mudar texto ou regra é decisão da
+  // maintainer, na §4 e na §2.4. As listas são exatas: um caso novo reprova aqui,
+  // e cada caso resolvido obriga a tirar a linha. O merge pede as duas vazias.
+  const PENDENTES_V_E7 = ["F02.paginaRecem", "F09", "L02", "N04.corpo"];
   const PENDENTES_V_E10: Record<string, string[]> = {
     API: ["I03.corpo", "I10.corpo"],
     ZIL: [
@@ -263,13 +403,28 @@ describe("critério 2: guia de redação (§2.4)", () => {
     ],
   };
 
-  it("V-E10: só casam os textos pendentes de decisão, e só por ZIL ou API", () => {
+  it.todo("critério 2 não cumprido: esvaziar PENDENTES_V_E7 e PENDENTES_V_E10, por decisão da maintainer");
+
+  it("são 16 strings pendentes", () => {
+    const total = PENDENTES_V_E7.length + Object.values(PENDENTES_V_E10).flat().length;
+    expect(total).toBe(16);
+  });
+
+  it("PENDENTE V-E7: casam só as strings com marcador de data", () => {
+    const achados = Array.from(new Set(violacoes("V-E7").map(({ caminho }) => baseDe(caminho))));
+    expect(achados.sort()).toEqual([...PENDENTES_V_E7].sort());
+  });
+
+  it("V-E7: sem o valor do marcador, nenhuma data escrita no texto", () => {
+    expect(violacoes("V-E7", (t) => t.split(DATA_EXEMPLO).join(""))).toEqual([]);
+  });
+
+  it("PENDENTE V-E10: casam só as strings com ZIL ou API", () => {
     const achados: Record<string, string[]> = {};
     for (const { caminho, texto } of violacoes("V-E10")) {
       const siglas = preencher(texto).match(/\b[A-Z]{3,}\b/g) ?? [];
       for (const sigla of siglas.filter((s) => !["PL", "PLP", "PEC", "MPV", "PDL", "PLV"].includes(s))) {
-        const base = caminho.replace(/\(.*$/, "");
-        achados[sigla] = Array.from(new Set([...(achados[sigla] ?? []), base]));
+        achados[sigla] = Array.from(new Set([...(achados[sigla] ?? []), baseDe(caminho)]));
       }
     }
     for (const lista of Object.values(achados)) lista.sort();
