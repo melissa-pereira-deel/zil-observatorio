@@ -10,6 +10,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
 ## [Unreleased]
 
 ### Added
+- **Testes de componente no frontend** (`apps/web/vitest.config.mts`,
+  `apps/web/tests/`, job `test-frontend` em `.github/workflows/ci.yml`): Vitest
+  5, Testing Library e jest-axe, com versões exatas. `npm run test` roda
+  `tests/componentes/**` e `tests/unit/**`; o primeiro teste é o do `Selo`. Até
+  aqui nenhum arquivo do kit tinha teste, e acessibilidade se conferia a olho.
 - **Cron de produção no GitHub Actions** (`scripts/agenda.py`,
   `.github/workflows/dados.yml`, `direcoes.yml`, `acordar-api.yml`): os jobs
   do Celery beat como subcomandos de linha de comando (`diario`, `cadastros`,
@@ -153,6 +158,11 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   - `PORTAL_TRANSPARENCIA_KEY=` vazio em `.env.example`.
 
 ### Changed
+- **Node 22 no frontend** (`.github/workflows/ci.yml`, `apps/web/Dockerfile`,
+  `apps/web/.nvmrc`): sai o Node 20, em fim de vida desde 30/04/2026, que as
+  bibliotecas de teste não aceitam mais.
+- `apps/web/package.json`: `npm run lint` passa a olhar também `tests/`. O
+  padrão do `next lint` não inclui essa pasta.
 - `apps/web`: a abertura da home passa a ter vídeo de fundo de borda a borda,
   sob a barra de navegação em vidro (`components/VideoAbertura.tsx`). Os
   arquivos vão em `apps/web/public/abertura/` (especificação e cuidados no

@@ -20,9 +20,9 @@
 | Workers | Celery 5, Redis 7, httpx 0.27 |
 | Frontend | Next.js 14, TypeScript 5, Tailwind CSS, React 18 |
 | Enriquecimento | Claude Haiku 4.5 via `ANTHROPIC_API_KEY` (opcional em dev) |
-| Testes | pytest 8 (320 testes, todos passando) |
+| Testes | pytest 8 (320 testes, todos passando); frontend: Vitest 5 + Testing Library + jest-axe |
 | Linting | ruff 0.8.6 (Python), ESLint + `next/core-web-vitals` (TypeScript) |
-| CI | GitHub Actions — 4 jobs, todos verdes. Repositório público: minutos de Actions não custam nada |
+| CI | GitHub Actions — 5 jobs, todos verdes. Repositório público: minutos de Actions não custam nada |
 | Cron de produção | GitHub Actions (`dados`, `direcoes`, `acordar-api`) rodando `scripts/agenda.py` — ver "Cron" em [docs/DEPLOY.md](docs/DEPLOY.md) |
 
 ---
@@ -84,8 +84,9 @@ cd apps/api && uvicorn main:app --reload
 cd apps/web
 npm run dev                      # dev server
 npm run build                    # build produção
-npm run lint                     # ESLint (config em .eslintrc.json)
+npm run lint                     # ESLint (config em .eslintrc.json), inclui tests/
 npx tsc --noEmit                 # type check
+npm run test                     # Vitest: tests/componentes e tests/unit (Node 22, ver .nvmrc)
 
 # Workers (requer Redis)
 # Da raiz o módulo é apps.workers.tasks; dentro do container é workers.tasks,
