@@ -1,0 +1,1418 @@
+{
+  "tabela": "camara.codTipoTramitacao",
+  "fonte": "https://dadosabertos.camara.leg.br/api/v2/referencias/proposicoes/codTipoTramitacao",
+  "obtido_em": "2026-11-05",
+  "total": 235,
+  "itens": [
+    {
+      "cod": "5",
+      "nome": "Não Informado",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "100",
+      "nome": "Apresentação de Proposição",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "104",
+      "nome": "Desapensação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "105",
+      "nome": "Leitura e publicação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "106",
+      "nome": "Apensação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "107",
+      "nome": "Não Apensação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "110",
+      "nome": "Distribuição ",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "112",
+      "nome": "Redistribuição ",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "113",
+      "nome": "Envio para a redação Final",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "115",
+      "nome": "Declarada insubsistência",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "120",
+      "nome": "Criação de Comissão Temporária",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "121",
+      "nome": "Constituição de Comissão Temporária",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "122",
+      "nome": "Instalação de Comissão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "125",
+      "nome": "Despacho à CCJR - Redação Final",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "126",
+      "nome": "Despacho à Promulgação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "127",
+      "nome": "Despacho à Sanção",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "128",
+      "nome": "Remessa ao Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "129",
+      "nome": "Despacho de Apensação ",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "130",
+      "nome": "Despacho de Desapensação ",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "131",
+      "nome": "Despacho de sujeita a Arquivamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "132",
+      "nome": "Despacho de sujeita a Devolução",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "133",
+      "nome": "Devolução ao(à) autor(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "134",
+      "nome": "Despacho de Arquivamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "135",
+      "nome": "Despacho de Desarquivamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "137",
+      "nome": "Remessa à Presidência da República",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "138",
+      "nome": "Remessa a Ministério",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "139",
+      "nome": "Despacho de Não Acolhimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "140",
+      "nome": "Desarquivamento - Errata",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "150",
+      "nome": "Inclusão em Pauta",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "151",
+      "nome": "Inclusão de Urgência em Pauta",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "160",
+      "nome": "Destituição de Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "161",
+      "nome": "Recebimento na Mesa solicitando resposta",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "162",
+      "nome": "Recebimento de Resposta",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "170",
+      "nome": "Devolução ao(à) Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "171",
+      "nome": "Devolução à Mesa para Novo Despacho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "180",
+      "nome": "Encaminhamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "181",
+      "nome": "Encaminhamento - art. 52, § 6º do RICD",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "190",
+      "nome": "Expedição de Documento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "191",
+      "nome": "Aprovação de Recurso",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "192",
+      "nome": "Apresentação de Recurso",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "193",
+      "nome": "Rejeição de Recurso",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "194",
+      "nome": "Apresentação de Requerimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "195",
+      "nome": "Aprovação de Requerimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "196",
+      "nome": "Aprovação de Urgência (154, 155 ou 64 CF)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "197",
+      "nome": "Rejeição de Proposicao",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "198",
+      "nome": "Prejudicado",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "199",
+      "nome": "Providência Interna",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "200",
+      "nome": "Retirada pelo(a) Autor(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "201",
+      "nome": "Proposição Devolvida ao(à) Autor(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "203",
+      "nome": "Notificação de Despacho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "210",
+      "nome": "Leitura de Parecer em substituição à Comissão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "211",
+      "nome": "Leitura e publicação da Redação Final",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "214",
+      "nome": "Leitura e publicação de Parecer favorável de admissibilidade de PEC",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "215",
+      "nome": "Leitura e publicação do Parecer - Urgência (154,155 ou 64 CF)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "216",
+      "nome": "Discussão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "219",
+      "nome": "Encaminhamento da Votação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "220",
+      "nome": "Discussão (Inicio e Continuacao)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "221",
+      "nome": "Adiamento de Discussão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "222",
+      "nome": "Discussão (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "223",
+      "nome": "Obstrução Discussão (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "226",
+      "nome": "Recebimento de Emenda de Plenário",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "227",
+      "nome": "Encerramento de Discussão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "231",
+      "nome": "Votação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "232",
+      "nome": "Votação em 1º Turno",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "233",
+      "nome": "Votação em 2º Turno",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "234",
+      "nome": "Adiamento de Votação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "237",
+      "nome": "Aprovação em 1º turno",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "238",
+      "nome": "Aprovação em 1º turno - com redação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "239",
+      "nome": "Aprovação da Redação Final",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "240",
+      "nome": "Aprovação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "241",
+      "nome": "Aprovação de Proposição Interna",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "242",
+      "nome": "Discussão da Materia pelos(as) Deputados(as)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "244",
+      "nome": "Aprovação de Proposição em Plenário",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "245",
+      "nome": "Verificação de Votação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "250",
+      "nome": "Retirada de Pauta",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "251",
+      "nome": "Transformação em Norma Jurídica",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "260",
+      "nome": "Rejeição de Requerimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "263",
+      "nome": "Retirada de Requerimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "300",
+      "nome": "Apresentação de Proposição interna - Comissão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "319",
+      "nome": "Análise Parecer",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "320",
+      "nome": "Designação de Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "321",
+      "nome": "Redistribuição a Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "322",
+      "nome": "Parecer do(a) Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "323",
+      "nome": "Parecer do(a) Relator(a) - Emendas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "324",
+      "nome": "Parecer do(a) Relator(a) - Manifestação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "325",
+      "nome": "Parecer do(a) Relator(a) - Parcial",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "326",
+      "nome": "Parecer do(a) Relator(a) - Revisão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "327",
+      "nome": "Designação de Relator(a) do Vencedor",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "328",
+      "nome": "Designação de Relator(a) Parcial",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "329",
+      "nome": "Designação de Relator(a) Revisor(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "330",
+      "nome": "Leitura e publicação do Parecer",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "331",
+      "nome": "Cancelamento de Parecer",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "335",
+      "nome": "Rejeição do Parecer do(a) Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "336",
+      "nome": "Aprovação do Parecer",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "337",
+      "nome": "Apresentação do Relatório Prévio",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "338",
+      "nome": "Aprovação do Relatório Prévio ou Parcial",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "339",
+      "nome": "Rejeição do Relatório Prévio",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "340",
+      "nome": "Apresentação do Relatório Final",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "350",
+      "nome": "Abertura de Prazo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "352",
+      "nome": "Prorrogação de Prazo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "353",
+      "nome": "Reabertura de Prazo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "362",
+      "nome": "Prejudicado Requerimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "400",
+      "nome": "Recebimento de Emenda",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "401",
+      "nome": "Recebimento de Emenda a Substitutivo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "420",
+      "nome": "Pedido de Vista",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "430",
+      "nome": "Manifestação de Voto",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "431",
+      "nome": "Declaração de Voto em Separado",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "435",
+      "nome": "Declaração de Prejudicialidade",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "440",
+      "nome": "Prorrogação de prazo para conclusão de CPI",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "441",
+      "nome": "Conclusão de CPI",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "451",
+      "nome": "Manifestação pela Prejudicialidade",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "452",
+      "nome": "Manifestação pela Incompetência",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "469",
+      "nome": "Transformada em Nova Proposição",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "500",
+      "nome": "Recebimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "501",
+      "nome": "Recebimento - Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "502",
+      "nome": "Arquivamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "503",
+      "nome": "Desarquivamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "504",
+      "nome": "Notificação de Apensação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "505",
+      "nome": "Notificação de Desapensação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "506",
+      "nome": "Recebimento - Redação Final",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "507",
+      "nome": "Recebimento - Relator(a) (Sem Manifestação)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "508",
+      "nome": "Recebimento - Parecer Preliminar",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "510",
+      "nome": "Dispensada a Redação Final",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "600",
+      "nome": "Encerramento de Prazo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "601",
+      "nome": "Saída de membro da comissão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "602",
+      "nome": "Devolução de Vista",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "603",
+      "nome": "Novo despacho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "604",
+      "nome": "Publicação de Proposição",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "605",
+      "nome": "Publicação de Despacho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "606",
+      "nome": "Publicação de Parecer",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "607",
+      "nome": "Recebimento de autógrafos",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "608",
+      "nome": "Remessa à Promulgação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "609",
+      "nome": "Remessa à Sanção",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "610",
+      "nome": "Submeta-se a Plenário",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "611",
+      "nome": "Publicação de Documento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "620",
+      "nome": "Perda de eficácia",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "630",
+      "nome": "Reentrada na comissão por arquivamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "640",
+      "nome": "Desarquivamento a Pedido",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "650",
+      "nome": "Desarquivamento de Ofício",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "700",
+      "nome": "Conferência Sinopse 2001",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "710",
+      "nome": "Revisão de despacho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "720",
+      "nome": "Adoção de Proposição pela Comissão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "910",
+      "nome": "Notificação de Encaminhamento Fora de Fluxo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "997",
+      "nome": "Deliberação* (inativa)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "998",
+      "nome": "Pronta para ordem do dia* (inativa)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "999",
+      "nome": "Despacho* (inativa)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1000",
+      "nome": "Notificação de Apoiamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1001",
+      "nome": "Decisão da Presidência",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1002",
+      "nome": "Notificação - Pasta genérica",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1003",
+      "nome": "Notificação (Sinopse) - Revisão da Ementa / Indexação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1004",
+      "nome": "Notificação (CeDi) - Legislação Citada",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1005",
+      "nome": "Notificações",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1006",
+      "nome": "Pela Recusa",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1007",
+      "nome": "Recebimento de Retorno",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1008",
+      "nome": "Não Deliberado",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1009",
+      "nome": "Tramitação de Proposição Acessória",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1010",
+      "nome": "Devolução à CCP",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1011",
+      "nome": "Criação de TVRs",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1012",
+      "nome": "Transformado em Norma Jurídica com Veto Parcial",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1013",
+      "nome": "Vetado Totalmente",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1020",
+      "nome": "Ofício de Devolução ao(à) Autor(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1021",
+      "nome": "Questão de Ordem",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1022",
+      "nome": "Oficio Conferência Apoiamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1023",
+      "nome": "Despacho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1024",
+      "nome": "Arquivamento - Art.133 do RI",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1025",
+      "nome": "Deferido o requerimento de retirada pelo(a) autor(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1026",
+      "nome": "Autorização de abertura de prazo recursal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1027",
+      "nome": "Pareceres Favoráveis nas Comissões",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1028",
+      "nome": "Pareceres Contrários quanto ao Mérito",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1029",
+      "nome": "Parecer pela Inadequação Financeira e/ou Orçamentária",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1030",
+      "nome": "Parecer pela Inconstitucionalidade ou Injuridicidade",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1031",
+      "nome": "Contra Declaração de Prejudicialidade",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1032",
+      "nome": "Contra Despacho de Devolução ao(à) Autor(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1033",
+      "nome": "Contra Despacho pelo Indeferimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1034",
+      "nome": "Arquivamento da representação, por inépcia/ausência de justa causa.",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1035",
+      "nome": "Arquivamento da representação, por improcedência.",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1036",
+      "nome": "Despacho Revisto",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1037",
+      "nome": "Pela perda do mandato de deputado(a) federal.",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1038",
+      "nome": "Volta a aguardar criação de nova Comissão Especial.",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1040",
+      "nome": "Ratificação de Parecer",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1041",
+      "nome": "Remessa ao Congresso Nacional",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1042",
+      "nome": "Relatório de Conferência de Assinaturas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1043",
+      "nome": "Ação de Relatoria",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1050",
+      "nome": "Notificacao para Publicação Intermediária",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1051",
+      "nome": "Encerramento de Comissão Temporária",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1052",
+      "nome": "Substituição de Versão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1053",
+      "nome": "Apresentação de Quadro Analítico",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1054",
+      "nome": "Não Acolhimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1055",
+      "nome": "Providência Interna - Comunicação de Dilatação de Prazo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1056",
+      "nome": "Providência Interna - Comunicação de resposta ostensiva",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1057",
+      "nome": "Providência Interna - Comunicação de resposta reservada",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1058",
+      "nome": "Leitura de proposição em Plenário",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1059",
+      "nome": "Instauração de Processo - COÉTICA",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1060",
+      "nome": "Sorteio para Escolha do(a) Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1061",
+      "nome": "Início da Instrução Probatória",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1062",
+      "nome": "Encerramento da Instrução Probatória",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1070",
+      "nome": "Sessão Solene",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1071",
+      "nome": "Comissão Geral",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1231",
+      "nome": "Votação (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1232",
+      "nome": "Obstruçao Votação (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1233",
+      "nome": "Destaques (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1234",
+      "nome": "Votação (Outros Requerimentos)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1235",
+      "nome": "Aprovação de Proposição (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1236",
+      "nome": "Rejeição de Proposição (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1237",
+      "nome": "Manutenção do texto (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1238",
+      "nome": "Supressão do texto (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1239",
+      "nome": "Verificação de Votação (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1240",
+      "nome": "Prejudicialidade (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1241",
+      "nome": "Retirada pelo Autor(a) (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1242",
+      "nome": "Não Acolhimento (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1243",
+      "nome": "Encaminhamento (Plenário)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1244",
+      "nome": "Encerramentos",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1245",
+      "nome": "Acessórios",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1250",
+      "nome": "Saída de Relator(a) da Comissão - Sem Parecer Apresentado",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1255",
+      "nome": "Saída de Relator(a) da Comissão - Com Parecer Apresentado",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1260",
+      "nome": "Retorno de Relator(a) à Comissão",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1261",
+      "nome": "Aprovação de Requerimento Procedimental",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1262",
+      "nome": "Rejeição de Requerimento Procedimental",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1263",
+      "nome": "Prejudicado Requerimento Procedimental",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1264",
+      "nome": "Retirada de Requerimento Procedimental",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1265",
+      "nome": "Inadmissibilidade de Requerimento Procedimental",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1500",
+      "nome": "Matéria apreciada em Plenário",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1501",
+      "nome": "Notificação do Representado",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1502",
+      "nome": "Abertura de Prazo para Defesa Escrita",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1504",
+      "nome": "Encerramento de Prazo Para Apresentação da Defesa Escrita",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1505",
+      "nome": "Apresentação do Plano de Trabalho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1510",
+      "nome": "Ofício do Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1515",
+      "nome": "Ofício do Congresso Nacional",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1516",
+      "nome": "Leitura do Oficio CN de encaminhamento de MPV",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1517",
+      "nome": "Suspensão de Tramitação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1518",
+      "nome": "Aprovação no Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1519",
+      "nome": "Aprovação no Senado Federal - Com Emendas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1520",
+      "nome": "Publicação de TVR",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1521",
+      "nome": "Geração de documento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1522",
+      "nome": "Geração de Guia de Transferência",
+      "sigla": "",
+      "descricao": ""
+    }
+  ]
+}

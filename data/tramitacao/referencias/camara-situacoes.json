@@ -1,0 +1,602 @@
+{
+  "tabela": "camara.codSituacao",
+  "fonte": "https://dadosabertos.camara.leg.br/api/v2/referencias/proposicoes/codSituacao",
+  "obtido_em": "2026-11-05",
+  "total": 99,
+  "itens": [
+    {
+      "cod": "900",
+      "nome": "Aguardando Autógrafos na Mesa",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "901",
+      "nome": "Aguardando Constituição de Comissão Temporária ",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "902",
+      "nome": "Aguardando Criação de Comissão Temporária",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "903",
+      "nome": "Aguardando Deliberação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "904",
+      "nome": "Aguardando Deliberação de Recurso",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "905",
+      "nome": "Aguardando Despacho do Presidente da Câmara dos Deputados",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "906",
+      "nome": "Aguardando Distribuição",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "907",
+      "nome": "Aguardando Designação de Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "910",
+      "nome": "Aguardando Encaminhamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "911",
+      "nome": "Aguardando Instalação de Comissão Temporária",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "912",
+      "nome": "Aguardando Leitura e Publicação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "914",
+      "nome": "Aguardando Originais para Envio ao Arquivo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "915",
+      "nome": "Aguardando Parecer",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "917",
+      "nome": "Aguardando Recebimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "918",
+      "nome": "Aguardando Recurso",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "920",
+      "nome": "Aguardando Deliberação sobre Prejudicialidade",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "921",
+      "nome": "Aguardando Resposta ",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "922",
+      "nome": "Aguardando Vistas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "923",
+      "nome": "Arquivada",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "924",
+      "nome": "Pronta para Pauta",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "925",
+      "nome": "Tramitando em Conjunto",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "926",
+      "nome": "Aguardando Apreciação pelo Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "927",
+      "nome": "Aguardando Apensação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "928",
+      "nome": "Aguardando Análise de Parecer",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "929",
+      "nome": "Aguardando Redação Final",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "930",
+      "nome": "Enviada ao Arquivo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "931",
+      "nome": "Aguardando Remessa ao Arquivo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "932",
+      "nome": "Aguardando Definição Encaminhamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "933",
+      "nome": "Aguardando Conhecimento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "934",
+      "nome": "Aguardando despacho de Emenda",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "935",
+      "nome": "Aguardando despacho de Substitutivo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "936",
+      "nome": "Aguardando Providências Internas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "937",
+      "nome": "Vetado totalmente",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "939",
+      "nome": "Aguardando Apreciação do Veto",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "940",
+      "nome": "Aguardando Despacho de Arquivamento ",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "941",
+      "nome": "Recusado",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "950",
+      "nome": "Retirado pelo(a) Autor(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1000",
+      "nome": "Aguardando Recebimento para Publicação - Relatadas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1010",
+      "nome": "Aguardando Informações do DCD - Novas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1020",
+      "nome": "Aguardando Encaminhamento à Publicação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1030",
+      "nome": "Aguardando Informações do DCD - Relatadas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1040",
+      "nome": "Aguardando Encaminhamento à CCP para Publicação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1050",
+      "nome": "Aguardando análise de prazo recursal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1052",
+      "nome": "Aguardando Abertura de Prazo para Recurso",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1060",
+      "nome": "Encaminhada à Publicação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1070",
+      "nome": "Aguardando Envio ao Executivo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1080",
+      "nome": "Aguardando Recebimento para Publicação - Novas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1090",
+      "nome": "Aguardando Análise",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1091",
+      "nome": "Ag. Análise de Inconstitucionalidade",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1110",
+      "nome": "Aguardando Despacho do Presidente",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1120",
+      "nome": "Devolvida ao(à) Autor(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1140",
+      "nome": "Transformado em Norma Jurídica",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1150",
+      "nome": "Aguardando Sanção",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1160",
+      "nome": "Aguardando Remessa à Sanção",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1161",
+      "nome": "Outros",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1170",
+      "nome": "Aguardando Designação - Aguardando Devolução de Relator(a) que deixou de ser Membro",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1180",
+      "nome": "Aguardando Apoiamento - Conferência de Assinaturas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1185",
+      "nome": "Aguardando Apoiamento - Coleta de Assinaturas",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1200",
+      "nome": "Aguardando Autorização do Despacho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1201",
+      "nome": "Aguardando Despacho do Presidente da Câmara dos Deputados (Chancela)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1210",
+      "nome": "Aguardando Chancela e Publicação do Despacho",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1220",
+      "nome": "Aguardando Despacho do Presidente da Câmara dos Deputados (Análise)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1221",
+      "nome": "Aguardando Despacho do Presidente da Câmara dos Deputados (Autorização)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1222",
+      "nome": "Prejudicialidade",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1223",
+      "nome": "Aguardando Despacho - Requerimentos",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1230",
+      "nome": "Transformado em nova proposição",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1250",
+      "nome": "Inativa Sinopse (Carga Jan/2001)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1260",
+      "nome": "Desmembrada ",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1270",
+      "nome": "Aguardando Envio à Redação Final",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1280",
+      "nome": "Comissão em funcionamento",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1285",
+      "nome": "Tramitação Finalizada",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1290",
+      "nome": "Aguardando Indexação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1291",
+      "nome": "Aguardando Indexação (Substituição de Versão)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1292",
+      "nome": "Perdeu a Eficácia",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1293",
+      "nome": "Aguardando Envio ao Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1294",
+      "nome": "Aguardando Promulgação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1295",
+      "nome": "Aguardando Reformulação de Parecer",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1296",
+      "nome": "Aguardando Eleição do(a) Presidente da Comissão Especial e do(a) Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1297",
+      "nome": "Aguardando Parecer da Comissão Especial",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1298",
+      "nome": "Aguardando Manifestação do(a)(s) Acusado(a)(s)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1299",
+      "nome": "Enviada ao Congresso Nacional",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1300",
+      "nome": "Aguardando Leitura do Parecer da Comissão Especial",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1301",
+      "nome": "Aguardando Interstício Regimental",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1302",
+      "nome": "Aguardando Publicação",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1303",
+      "nome": "Enviada ao Senado Federal",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1304",
+      "nome": "Aguardando Solicitação de Relatoria na CMO",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1305",
+      "nome": "Enviada ao TCU",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1310",
+      "nome": "Em tramitação no Conselho de Ética",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1311",
+      "nome": "<Não Definido>",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1312",
+      "nome": "Aguardando Instauração do Processo",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1313",
+      "nome": "Aguardando Parecer Preliminar no Conselho de Ética",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1314",
+      "nome": "Aguardando Defesa Escrita no Conselho de Ética",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1350",
+      "nome": "Aguardando Notificação do(a) Representado(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1355",
+      "nome": "Em Instrução Probatória",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1360",
+      "nome": "Tramitação Suspensa",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1380",
+      "nome": "Aguardando Elaboração do Parecer pelo(a) Relator(a)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1381",
+      "nome": "Aguardando análise do Presidente da Câmara - (Decisão)",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1382",
+      "nome": "Aguardando Despacho do Presidente da Câmara dos Deputados",
+      "sigla": "",
+      "descricao": ""
+    },
+    {
+      "cod": "1383",
+      "nome": "Recebido pelo Protocolo Digital",
+      "sigla": "",
+      "descricao": ""
+    }
+  ]
+}
