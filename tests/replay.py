@@ -40,6 +40,9 @@ _CPF_COM_SEPARADOR = re.compile(
 # Letra colada na borda é trecho de UUID ou de identificador, não documento.
 _ONZE_DIGITOS = re.compile(r"(?<![0-9A-Za-z])\d{11}(?![0-9A-Za-z])")
 _CPF_ROTULADO = re.compile(r"cpf\W{0,15}\d{9,11}(?!\d)", re.IGNORECASE)
+# Sem bordas: UUID aparece colado em URL codificada, como %2F<uuid>. Cinco blocos hexadecimais nessa
+# ordem não são como alguém escreve um CPF, e o que estiver ao lado continua sendo lido.
+_UUID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", re.IGNORECASE)
 
 
 class RequisicaoNaoGravada(AssertionError):
@@ -64,6 +67,9 @@ def _digitos_verificadores_conferem(digitos: str) -> bool:
 def _tem_forma_de_cpf(texto: str) -> bool:
     if _CPF_ROTULADO.search(texto):
         return True
+    # O fim de um UUID pode ter a forma `ddd-dddddddd`, então ele sai antes da busca. O "#" não é
+    # dígito nem separador: não emenda o que estava dos dois lados.
+    texto = _UUID.sub("#", texto)
     # Com separador, a forma já basta. Só os 11 dígitos corridos precisam da conta, porque um
     # id numérico pode ter esse tamanho, e só 1 em cada 100 passaria nela por acaso.
     if any(not m.group().isdigit() for m in _CPF_COM_SEPARADOR.finditer(texto)):

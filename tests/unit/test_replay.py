@@ -3,9 +3,11 @@
 import copy
 import json
 import os
+import random
 import re
 import subprocess
 import sys
+import uuid
 from datetime import date
 from pathlib import Path
 
@@ -418,6 +420,127 @@ class TestVarreduraDeCpf:
         assert "dados.ultimoStatus.cpf" in texto
         assert "11144477735" not in texto
         assert "444" not in texto
+
+
+# Montados à mão para cair no único formato de UUID que parecia CPF: `[ab]ddd-dddddddd` seguido de
+# letra. O segundo traz nesse trecho o número didático, com dígito verificador válido: é o caso que
+# exigir a conta na forma com separador não resolveria.
+UUID_COM_FORMA_DE_CPF = "550e8400-e29b-41d4-a123-12345678abcd"
+UUID_COM_CPF_VALIDO = "550e8400-e29b-41d4-b111-44477735cdef"
+
+
+class TestUuidNaoEhCpf:
+    @pytest.mark.parametrize("valor", [UUID_COM_FORMA_DE_CPF, UUID_COM_CPF_VALIDO])
+    def test_os_exemplos_sao_uuid_v4_de_verdade(self, valor):
+        assert uuid.UUID(valor).version == 4
+
+    @pytest.mark.parametrize(
+        "corpo",
+        [
+            {"id": UUID_COM_FORMA_DE_CPF},
+            {"id": UUID_COM_CPF_VALIDO},
+            {"id": UUID_COM_CPF_VALIDO.upper()},
+            {"id": "550e8400-e29b-71d4-a123-12345678abcd"},  # v7: o mesmo risco, em outra versão
+            {"url": f"https://legis.senado.leg.br/dadosabertos/processo/documento/{UUID_COM_CPF_VALIDO}"},
+            {"url": f"https%3A%2F%2Fx.test%2F{UUID_COM_CPF_VALIDO}"},
+            {"url": f"https://x.test/{UUID_COM_CPF_VALIDO}xyz"},
+            {"texto": f"documento {UUID_COM_CPF_VALIDO}, anexo {UUID_COM_FORMA_DE_CPF}."},
+            {UUID_COM_CPF_VALIDO: 1},
+            {"dados": [{"documentos": [{"id": UUID_COM_FORMA_DE_CPF}]}]},
+        ],
+    )
+    def test_nao_confunde_uuid_com_cpf(self, corpo):
+        assert achados_de_cpf(corpo) == []
+
+    def test_amostra_de_uuid_v4_nao_acha_nada(self):
+        # Semente fixa: sem a máscara, cerca de 1 em cada 1.000 dá achado.
+        gerador = random.Random(20261106)
+        amostra = [str(uuid.UUID(int=gerador.getrandbits(128), version=4)) for _ in range(20_000)]
+        assert sum(bool(achados_de_cpf(valor)) for valor in amostra) == 0
+
+    @pytest.mark.parametrize(
+        "corpo",
+        [
+            # A máscara não pode emendar o que estava separado pelo UUID e criar um CPF que não existe.
+            {"x": f"111444{UUID_COM_FORMA_DE_CPF}77735"},
+            {"x": f"111 444 777{UUID_COM_FORMA_DE_CPF}35"},
+        ],
+    )
+    def test_uuid_no_meio_nao_emenda_numeros(self, corpo):
+        assert achados_de_cpf(corpo) == []
+
+
+class TestProtecaoNaoAfrouxou:
+    """O que a correção do UUID poderia ter perdido. Só o número didático, nunca um CPF de alguém."""
+
+    @pytest.mark.parametrize(
+        ("corpo", "caminho"),
+        [
+            ({"despacho": "111.444.777-35"}, "despacho"),
+            ({"despacho": "111 444 777 35"}, "despacho"),
+            ({"despacho": "111 444 777 35"}, "despacho"),
+            ({"dados": {"partes": [{"autor": {"obs": "111.444.777-35"}}]}}, "dados.partes[0].autor.obs"),
+            ({"documentoTitular": "111.444.777-35"}, "documentoTitular"),
+            ({"numDoc": "11144477735"}, "numDoc"),
+            ({"numDoc": 11144477735}, "numDoc"),
+            ({"despacho": "O requerente, inscrito sob o nº 111.444.777-35, compareceu."}, "despacho"),
+            ({"111.444.777-35": "na chave"}, "<chave com forma de CPF>"),
+        ],
+    )
+    def test_acha_no_caminho_certo(self, corpo, caminho):
+        assert achados_de_cpf(corpo) == [caminho]
+
+    @pytest.mark.parametrize(
+        "texto",
+        [
+            "111.444.777-36",
+            "111 444 777 36",
+            "111.111.111-11",
+            "000.000.000-00",
+            "CPF: 111.444.777-36",
+        ],
+    )
+    def test_com_separador_nao_depende_do_digito_verificador(self, texto):
+        # Número com erro de digitação ou de OCR ainda aponta para uma pessoa. Só os 11 dígitos
+        # corridos precisam da conta, porque um id numérico pode ter esse tamanho.
+        assert achados_de_cpf({"despacho": texto}) == ["despacho"]
+
+    @pytest.mark.parametrize(
+        "texto",
+        [
+            "CPF111.444.777-35",
+            "CPF/MF111.444.777-35",
+            "no111.444.777-35",
+            "111.444.777-35residente",
+        ],
+    )
+    def test_letra_colada_no_numero_com_separador_nao_esconde(self, texto):
+        # Texto de PDF perde espaço. Recusar letra na borda apagaria estes casos.
+        assert achados_de_cpf({"despacho": texto}) == ["despacho"]
+
+    @pytest.mark.parametrize(
+        "corpo",
+        [
+            {"despacho": f"anexo {UUID_COM_CPF_VALIDO}; requerente 111.444.777-35"},
+            {"despacho": f"requerente 111.444.777-35; anexo {UUID_COM_CPF_VALIDO}"},
+            {"despacho": f"{UUID_COM_CPF_VALIDO} 11144477735"},
+            {"despacho": f"{UUID_COM_CPF_VALIDO} cpf 11144477736"},
+            {"url": f"https://x.test/{UUID_COM_CPF_VALIDO}/111.444.777-35"},
+            {"url": f"https://x.test/{UUID_COM_CPF_VALIDO}-111.444.777-35"},
+            {"despacho": f"{UUID_COM_CPF_VALIDO}111.444.777-35"},
+        ],
+    )
+    def test_uuid_ao_lado_nao_esconde_o_cpf(self, corpo):
+        assert achados_de_cpf(corpo)
+
+    def test_cpf_em_outro_campo_do_mesmo_corpo(self):
+        corpo = {"id": UUID_COM_CPF_VALIDO, "despacho": "111.444.777-35"}
+        assert achados_de_cpf(corpo) == ["despacho"]
+
+    @pytest.mark.parametrize("trecho", ["a123-12345678b", "a123-12345678abcd", "41d4-a123-12345678abcd"])
+    def test_trecho_solto_de_uuid_continua_interrompendo(self, trecho):
+        # Sem os cinco blocos não dá para dizer que é UUID. Interromper é o erro barato: não vaza.
+        assert achados_de_cpf({"id": trecho}) == ["id"]
 
 
 # ── Critério 4: requisição não gravada ──
