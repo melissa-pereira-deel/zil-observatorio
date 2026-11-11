@@ -478,7 +478,7 @@ class TestProtecaoNaoAfrouxou:
         [
             ({"despacho": "111.444.777-35"}, "despacho"),
             ({"despacho": "111 444 777 35"}, "despacho"),
-            ({"despacho": "111 444 777 35"}, "despacho"),
+            ({"despacho": "111\u00a0444\u00a0777\u00a035"}, "despacho"),
             ({"dados": {"partes": [{"autor": {"obs": "111.444.777-35"}}]}}, "dados.partes[0].autor.obs"),
             ({"documentoTitular": "111.444.777-35"}, "documentoTitular"),
             ({"numDoc": "11144477735"}, "numDoc"),
