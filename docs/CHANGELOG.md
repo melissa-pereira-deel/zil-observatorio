@@ -372,6 +372,12 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+- `tests/replay.py`: o detector de CPF do gravador de respostas confundia cerca de
+  0,1% dos UUID v4 com CPF (`[ab]ddd-dddddddd` no fim do UUID), o que dava cerca de
+  4% de chance de interromper a gravação de um processo do Senado, com seus cerca de
+  40 UUIDs. UUID completo agora sai do texto antes da busca. Só deixa de ser achado
+  o que está dentro dos cinco blocos do UUID; a forma com separador continua sem
+  depender do dígito verificador, e letra colada continua não escondendo o número.
 - **Recusas do modelo apareciam como resumo** (`apps/workers/enrichment/__init__.py`,
   `apps/api/schemas/__init__.py`, `apps/api/routers/`, `apps/web/app/proposicoes/page.tsx`).
   O system prompt mandava o modelo "dizer que não sabe" sem lhe dar onde, e a
