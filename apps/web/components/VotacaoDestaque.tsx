@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { HemicicloVotacao } from "@/components/PlenarioVotacao";
 import { Button, Card, Esqueleto, Selo, TituloSecao } from "@/components/ui";
 import { VOTACAO_DESTAQUE } from "@/lib/destaque";
+import { fetchComPrazo } from "@/lib/fetchComPrazo";
 import { CADEIRAS, type GrupoVoto, type VotoIndividual } from "@/lib/votacao";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -32,10 +33,10 @@ export function VotacaoDestaque() {
   useEffect(() => {
     async function carregar() {
       try {
-        const lista: Votacao[] = await fetch(`${API_BASE}/votacoes?fonte_id=${VOTACAO_DESTAQUE}`).then((r) => r.json());
+        const lista: Votacao[] = await fetchComPrazo(`${API_BASE}/votacoes?fonte_id=${VOTACAO_DESTAQUE}`).then((r) => r.json());
         const v = lista[0];
         if (!v) throw new Error(`votação ${VOTACAO_DESTAQUE} não está no banco`);
-        const res = await fetch(`${API_BASE}/votacoes/${v.id}/votos`);
+        const res = await fetchComPrazo(`${API_BASE}/votacoes/${v.id}/votos`);
         const vs: VotoIndividual[] = await res.json();
         if (!vs.length) throw new Error("votação sem voto individual");
         setVotacao(v);
