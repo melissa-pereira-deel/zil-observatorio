@@ -372,6 +372,13 @@ Versions map to git tags (not yet created — pending deploy pipeline).
   divergência que o #26 eliminou entre `candidatas.py` e o classificador.
 
 ### Fixed
+- `apps/web/lib/fetchComPrazo.ts`, `apps/web/components/VotacaoDestaque.tsx`,
+  `apps/web/components/RankingPreview.tsx`: os fetches da home desistem depois de
+  8 s. Antes, uma API que aceitava a conexão e não respondia (um uvicorn
+  `--reload` cujo worker morreu no startup, por exemplo com o Postgres fora)
+  prendia o hemiciclo e a prévia do placar no esqueleto até o timeout de TCP do
+  navegador, mais de um minuto. Agora o hemiciclo some e a prévia mostra o aviso
+  de falha, como já acontecia com a API desligada.
 - `tests/replay.py`: o detector de CPF do gravador de respostas confundia cerca de
   0,1% dos UUID v4 com CPF (`[ab]ddd-dddddddd` no fim do UUID), o que dava cerca de
   4% de chance de interromper a gravação de um processo do Senado, com seus cerca de

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Aviso, Button, Icone, Placar, PlacarLinha, PlacarLinhaEsqueleto, Selo } from "@/components/ui";
 import type { Parlamentar } from "@/lib/api";
+import { fetchComPrazo } from "@/lib/fetchComPrazo";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -63,8 +64,8 @@ export function RankingPreview() {
     async function load() {
       try {
         const [topRes, bottomRes] = await Promise.all([
-          fetch(`${API_BASE}/parlamentares?ordem=score_desc&per_page=5`),
-          fetch(`${API_BASE}/parlamentares?ordem=score_asc&per_page=5`),
+          fetchComPrazo(`${API_BASE}/parlamentares?ordem=score_desc&per_page=5`),
+          fetchComPrazo(`${API_BASE}/parlamentares?ordem=score_asc&per_page=5`),
         ]);
 
         if (!topRes.ok || !bottomRes.ok) throw new Error("API error");
